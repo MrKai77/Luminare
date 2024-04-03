@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     let sidebarWidth: CGFloat = 260
     let mainViewWidth: CGFloat = 390
+    let mainViewSectionOuterPadding: CGFloat = 12
     let previewViewWidth: CGFloat = 520
     let windowHeight: CGFloat = 600
 
@@ -29,11 +30,16 @@ struct ContentView: View {
 
                 Divider()
 
-                GeometryReader { _ in
+                VStack(spacing: 0) {
+                    TabHeaderView($activeTab)
+
                     VStack(spacing: 0) {
-                        TabHeaderView($activeTab)
                         self.activeTab.view
                     }
+                    .padding(mainViewSectionOuterPadding)
+
+                    Spacer()
+                        .frame(minHeight: 0)
                 }
                 .frame(width: mainViewWidth)
 
@@ -49,5 +55,6 @@ struct ContentView: View {
         .fixedSize()
 
         .buttonStyle(GlassyButtonStyle())
+        .toggleStyle(.switch)
     }
 }

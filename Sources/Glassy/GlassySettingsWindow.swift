@@ -13,13 +13,18 @@ import SwiftUI
 public class GlassySettingsWindow {
     var windowController: NSWindowController?
     var tabs: [SettingsTabGroup]
+    var tint: Color
 
-    public init(_ tabs: [SettingsTabGroup]) {
+    public init(_ tabs: [SettingsTabGroup], tint: Color = .accentColor) {
         self.tabs = tabs
+        self.tint = tint
     }
 
     public func show() {
-        let view = NSHostingView(rootView: ContentView(self.tabs))
+        let view = NSHostingView(
+            rootView: ContentView(self.tabs)
+                .tint(self.tint)
+        )
         print(view.bounds)
 
         let window = NSWindow(
