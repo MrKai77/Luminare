@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-struct GlassySidebarView<Content>: View where Content: View {
+struct GlassySidebarView: View {
     let titlebarHeight: CGFloat = 50
     let groupSpacing: CGFloat = 24
     let itemPadding: CGFloat = 12
     let groupTitlePadding: CGFloat = 8
     let itemSpacing: CGFloat = 4
 
-    @Binding var activeTab: SettingsTab<Content>
-    let groups: [SettingsTabGroup<Content>]
+    @Binding var activeTab: SettingsTab
+    let groups: [SettingsTabGroup]
 
-    init(_ groups: [SettingsTabGroup<Content>], _ activeTab: Binding<SettingsTab<Content>>) {
+    init(_ groups: [SettingsTabGroup], _ activeTab: Binding<SettingsTab>) {
         self._activeTab = activeTab
         self.groups = groups
     }
@@ -43,7 +43,7 @@ struct GlassySidebarView<Content>: View where Content: View {
         .padding(.horizontal, itemPadding)
     }
 
-    @ViewBuilder func groupTitle(_ group: SettingsTabGroup<Content>) -> some View {
+    @ViewBuilder func groupTitle(_ group: SettingsTabGroup) -> some View {
         if let title = group.title {
             HStack {
                 Text(title)

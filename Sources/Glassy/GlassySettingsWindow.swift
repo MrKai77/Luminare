@@ -10,11 +10,11 @@
 
 import SwiftUI
 
-public class GlassySettingsWindow<Content> where Content: View {
+public class GlassySettingsWindow {
     var windowController: NSWindowController?
-    var tabs: [SettingsTabGroup<Content>]
+    var tabs: [SettingsTabGroup]
 
-    public init(_ tabs: [SettingsTabGroup<Content>]) {
+    public init(_ tabs: [SettingsTabGroup]) {
         self.tabs = tabs
     }
 

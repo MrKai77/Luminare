@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct GlassySidebarGroupItem<Content>: View where Content: View {
-    @Binding var activeTab: SettingsTab<Content>
-    let tab: SettingsTab<Content>
+struct GlassySidebarGroupItem: View {
+    @Binding var activeTab: SettingsTab
+    let tab: SettingsTab
 
     @State private var isHovering: Bool = false
     @State private var isActive: Bool = false
 
-    init(_ tab: SettingsTab<Content>, _ activeTab: Binding<SettingsTab<Content>>) {
+    init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>) {
         self._activeTab = activeTab
         self.tab = tab
     }

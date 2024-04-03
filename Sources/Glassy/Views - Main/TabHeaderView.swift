@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct TabHeaderView<Content: View>: View {
-    @Binding var activeTab: SettingsTab<Content>
+struct TabHeaderView: View {
+    @Binding var activeTab: SettingsTab
 
-    init(_ activeTab: Binding<SettingsTab<Content>>) {
+    init(_ activeTab: Binding<SettingsTab>) {
         self._activeTab = activeTab
     }
 

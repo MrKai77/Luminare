@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-struct ContentView<Content>: View where Content: View {
+struct ContentView: View {
     let sidebarWidth: CGFloat = 260
     let mainViewWidth: CGFloat = 390
     let previewViewWidth: CGFloat = 520
     let windowHeight: CGFloat = 600
 
-    @State var activeTab: SettingsTab<Content>
-    let groups: [SettingsTabGroup<Content>]
+    @State var activeTab: SettingsTab
+    let groups: [SettingsTabGroup]
 
-    init(_ groups: [SettingsTabGroup<Content>]) {
+    init(_ groups: [SettingsTabGroup]) {
         self.groups = groups
         self.activeTab = groups.first!.tabs.first!
     }
@@ -29,12 +29,11 @@ struct ContentView<Content>: View where Content: View {
 
                 Divider()
 
-                ZStack {
-                    VStack {
+                GeometryReader { _ in
+                    VStack(spacing: 0) {
                         TabHeaderView($activeTab)
-                        Spacer()
+                        self.activeTab.view
                     }
-                    self.activeTab.view()
                 }
                 .frame(width: mainViewWidth)
 
@@ -48,5 +47,7 @@ struct ContentView<Content>: View where Content: View {
         .ignoresSafeArea()
         .frame(height: windowHeight)
         .fixedSize()
+
+        .buttonStyle(GlassyButtonStyle())
     }
 }

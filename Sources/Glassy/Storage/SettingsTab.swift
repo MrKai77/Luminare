@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-public struct SettingsTab<Content>: Identifiable, Equatable {
-    public static func == (lhs: SettingsTab<Content>, rhs: SettingsTab<Content>) -> Bool {
+public struct SettingsTab: Identifiable, Equatable {
+    public static func == (lhs: SettingsTab, rhs: SettingsTab) -> Bool {
         rhs.id == lhs.id
     }
 
@@ -16,12 +16,12 @@ public struct SettingsTab<Content>: Identifiable, Equatable {
     
     public let title: String
     public let icon: Image
-    public let view: () -> Content
+    @ViewBuilder public let view: AnyView
 
-    public init(_ title: String, _ icon: Image, @ViewBuilder _ view: @escaping () -> Content) {
+    public init<Content: View>(_ title: String, _ icon: Image, @ViewBuilder _ view: @escaping () -> Content) {
         self.title = title
         self.icon = icon
-        self.view = view
+        self.view = AnyView(view())
     }
 
     @ViewBuilder func iconView() -> some View {
