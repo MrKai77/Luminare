@@ -8,14 +8,14 @@
 import SwiftUI
 
 // Thank you https://movingparts.io/variadic-views-in-swiftui
-struct DividedVStack<Content: View>: View {
+public struct DividedVStack<Content: View>: View {
     var content: Content
 
-    init(@ViewBuilder content: () -> Content) {
+    public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
-    var body: some View {
+    public var body: some View {
         _VariadicView.Tree(DividedVStackLayout()) {
             content
         }
@@ -25,6 +25,7 @@ struct DividedVStack<Content: View>: View {
 struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
+    let innerCornerRadius: CGFloat = 2
 
     @ViewBuilder
     func body(children: _VariadicView.Children) -> some View {
@@ -47,25 +48,25 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                         } else if child.id == first {
                             UnevenRoundedRectangle(
                                 topLeadingRadius: cornerRadius - innerPadding,
-                                bottomLeadingRadius: innerPadding,
-                                bottomTrailingRadius: innerPadding,
+                                bottomLeadingRadius: innerCornerRadius,
+                                bottomTrailingRadius: innerCornerRadius,
                                 topTrailingRadius: cornerRadius - innerPadding,
                                 style: .continuous
                             )
                         } else if child.id == last {
                             UnevenRoundedRectangle(
-                                topLeadingRadius: innerPadding,
+                                topLeadingRadius: innerCornerRadius,
                                 bottomLeadingRadius: cornerRadius - innerPadding,
                                 bottomTrailingRadius: cornerRadius - innerPadding,
-                                topTrailingRadius: innerPadding,
+                                topTrailingRadius: innerCornerRadius,
                                 style: .continuous
                             )
                         } else {
                             UnevenRoundedRectangle(
-                                topLeadingRadius: innerPadding,
-                                bottomLeadingRadius: innerPadding,
-                                bottomTrailingRadius: innerPadding,
-                                topTrailingRadius: innerPadding,
+                                topLeadingRadius: innerCornerRadius,
+                                bottomLeadingRadius: innerCornerRadius,
+                                bottomTrailingRadius: innerCornerRadius,
+                                topTrailingRadius: innerCornerRadius,
                                 style: .continuous
                             )
                         }

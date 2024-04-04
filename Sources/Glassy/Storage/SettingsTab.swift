@@ -18,10 +18,10 @@ public struct SettingsTab: Identifiable, Equatable {
     public let icon: Image
     @ViewBuilder public let view: AnyView
 
-    public init<Content: View>(_ title: String, _ icon: Image, @ViewBuilder _ view: @escaping () -> Content) {
+    public init<Content: View>(_ title: String, _ icon: Image, _ view: Content) {
         self.title = title
         self.icon = icon
-        self.view = AnyView(view())
+        self.view = AnyView(view)
     }
 
     @ViewBuilder func iconView() -> some View {
