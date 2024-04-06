@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint, V: _FormatSpecifiable {
 
     let elementHeight: CGFloat = 70
     let horizontalPadding: CGFloat = 12
@@ -16,6 +16,14 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     var totalRange: V.Stride {
         V.Stride(sliderRange.upperBound) - V.Stride(sliderRange.lowerBound)
     }
+
+    @State var isShowingTextBox: Bool = false
+
+    // Focus
+    enum FocusedField {
+        case textbox
+    }
+    @FocusState var focusedField: FocusedField?
 
     let title: String
     let description: String?
@@ -65,7 +73,20 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 self.stepperView()
             }
 
-            Slider(value: self.$value, in: self.sliderRange)
+            Slider(
+                value: Binding(
+                    get: {
+                        self.value
+                    },
+                    set: { newValue in
+                        withAnimation {
+                            self.value = newValue
+                            self.isShowingTextBox = false
+                        }
+                    }
+                ),
+                in: self.sliderRange
+            )
         }
         .padding(.horizontal, 12)
         .frame(height: elementHeight)
@@ -75,29 +96,49 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     func stepperView() -> some View {
         HStack {
             HStack {
-                TextField(
-                    .init(""),
-                    value: Binding(
-                        get: {
-                            self.value
-                        },
-                        set: {
-                            if lowerClamp && upperClamp {
-                                self.value = $0.clamped(to: sliderRange)
-                            } else if lowerClamp {
-                                self.value = max(self.sliderRange.lowerBound, $0)
-                            } else if upperClamp {
-                                self.value = min(self.sliderRange.upperBound, $0)
-                            } else {
-                                self.value = $0
+                if self.isShowingTextBox {
+                    TextField(
+                        .init(""),
+                        value: Binding(
+                            get: {
+                                self.value
+                            },
+                            set: {
+                                if lowerClamp && upperClamp {
+                                    self.value = $0.clamped(to: sliderRange)
+                                } else if lowerClamp {
+                                    self.value = max(self.sliderRange.lowerBound, $0)
+                                } else if upperClamp {
+                                    self.value = min(self.sliderRange.upperBound, $0)
+                                } else {
+                                    self.value = $0
+                                }
+                            }
+                        ),
+                        formatter: formatter,
+                        onCommit: {
+                            withAnimation(.easeOut(duration: 0.1)) {
+                                self.isShowingTextBox.toggle()
                             }
                         }
-                    ),
-                    formatter: formatter
-                )
-                .labelsHidden()
-                .textFieldStyle(.plain)
-                .padding(.trailing, -8)
+                    )
+                    .focused($focusedField, equals: .textbox)
+                    .labelsHidden()
+                    .textFieldStyle(.plain)
+                    .padding(.trailing, -8)
+                } else {
+                    Button {
+                        withAnimation(.easeOut(duration: 0.1)) {
+                            self.isShowingTextBox.toggle()
+                            self.focusedField = .textbox
+                        }
+                    } label: {
+                        Text("\(self.value, specifier: "%.2f")")
+                            .contentTransition(.numericText())
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.trailing, -4)
+                }
 
                 if let postfix = postscript {
                     Text(postfix)
@@ -110,54 +151,16 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     Capsule(style: .continuous)
                         .strokeBorder(.quaternary, lineWidth: 1)
 
-                    Capsule(style: .continuous)
-                        .foregroundStyle(.quinary.opacity(0.5))
+                    if self.isShowingTextBox {
+                        Capsule(style: .continuous)
+                            .foregroundStyle(.quinary)
+                    } else {
+                        Capsule(style: .continuous)
+                            .foregroundStyle(.quinary.opacity(0.5))
+                    }
                 }
             }
-//            .padding(4)
-//            .padding(.trailing, 12)
-//            .background {
-//                ZStack {
-//                    RoundedRectangle(cornerRadius: 6)
-//                        .foregroundStyle(.background)
-//                    RoundedRectangle(cornerRadius: 6)
-//                        .strokeBorder(
-//                            .tertiary.opacity(0.5),
-//                            lineWidth: 1
-//                        )
-//                }
-//            }
-//            .frame(minWidth: 20, maxWidth: 500)
-//            .overlay {
-//                HStack {
-//                    Spacer()
-//
-//                    Stepper(
-//                        .init(""),
-//                        value: Binding(
-//                            get: {
-//                                self.value
-//                            },
-//                            set: {
-//                                if lowerClamp && upperClamp {
-//                                    self.value = $0.clamped(to: sliderRange)
-//                                } else if lowerClamp {
-//                                    self.value = max(self.sliderRange.lowerBound, $0)
-//                                } else if upperClamp {
-//                                    self.value = min(self.sliderRange.upperBound, $0)
-//                                } else {
-//                                    self.value = $0
-//                                }
-//                            }
-//                        ),
-//                        step: step
-//                    )
-//                    .labelsHidden()
-//                }
-//                .padding(.horizontal, 1)
-//            }
             .fixedSize()
-//            .padding(.vertical, -10)
         }
     }
 }

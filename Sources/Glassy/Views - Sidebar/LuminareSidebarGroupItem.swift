@@ -60,7 +60,6 @@ struct SidebarButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(4)
-
             .background {
                 if configuration.isPressed{
                     Rectangle().foregroundStyle(.quaternary)
@@ -68,14 +67,11 @@ struct SidebarButtonStyle: ButtonStyle {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 }
             }
-
             .onHover { hover in
                 self.isHovering = hover
             }
             .animation(.easeOut(duration: 0.1), value: [self.isHovering, self.isActive, configuration.isPressed])
-
             .clipShape(.rect(cornerRadius: cornerRadius))
-
             .onChange(of: self.isActive) { _ in
                 print(self.isActive)
             }

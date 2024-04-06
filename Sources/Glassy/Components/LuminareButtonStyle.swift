@@ -17,7 +17,6 @@ public struct LuminareButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-
             .background {
                 if configuration.isPressed {
                     Rectangle().foregroundStyle(.quaternary)
@@ -27,12 +26,10 @@ public struct LuminareButtonStyle: ButtonStyle {
                     Rectangle().foregroundStyle(.quinary)
                 }
             }
-
             .onHover { hover in
                 self.isHovering = hover
             }
             .animation(.easeOut(duration: 0.1), value: [self.isHovering, configuration.isPressed])
-
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
     }
@@ -48,7 +45,6 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-
             .background {
                 if configuration.isPressed {
                     Rectangle().foregroundStyle(.red.opacity(0.4))
@@ -58,12 +54,10 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
                     Rectangle().foregroundStyle(.red.opacity(0.15))
                 }
             }
-
             .onHover { hover in
                 self.isHovering = hover
             }
             .animation(.easeOut(duration: 0.1), value: [self.isHovering, configuration.isPressed])
-
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
     }
