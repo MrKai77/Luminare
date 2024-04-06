@@ -9,7 +9,18 @@ import SwiftUI
 
 public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint, V: _FormatSpecifiable {
 
-    let elementHeight: CGFloat = 70
+    public enum ControlSize {
+        case regular
+        case compact
+
+        var height: CGFloat {
+            switch self {
+            case .regular: 70
+            case .compact: 34
+            }
+        }
+    }
+
     let horizontalPadding: CGFloat = 12
 
     let formatter: NumberFormatter
@@ -33,6 +44,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     var step: V.Stride
     let upperClamp: Bool
     let lowerClamp: Bool
+    let controlSize: LuminareValueAdjuster.ControlSize
 
     public init(
         _ title: String,
@@ -42,7 +54,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         postscript: String? = nil,
         step: V? = nil,
         lowerClamp: Bool = false,
-        upperClamp: Bool = false
+        upperClamp: Bool = false,
+        controlSize: LuminareValueAdjuster.ControlSize = .regular
     ) {
         self.title = title
         self.description = description
@@ -51,6 +64,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         self.postscript = postscript
         self.lowerClamp = lowerClamp
         self.upperClamp = upperClamp
+        self.controlSize = controlSize
 
         self.formatter = NumberFormatter()
         self.formatter.maximumFractionDigits = 2
@@ -65,31 +79,54 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
 
     public var body: some View {
         VStack {
-            HStack {
-                Text(self.title)
+            if controlSize == .regular {
+                HStack {
+                    Text(self.title)
 
-                Spacer()
+                    Spacer()
 
-                self.stepperView()
-            }
+                    self.stepperView()
+                }
 
-            Slider(
-                value: Binding(
-                    get: {
-                        self.value
-                    },
-                    set: { newValue in
-                        withAnimation {
-                            self.value = newValue
-                            self.isShowingTextBox = false
+                Slider(
+                    value: Binding(
+                        get: {
+                            self.value
+                        },
+                        set: { newValue in
+                            withAnimation {
+                                self.value = newValue
+                                self.isShowingTextBox = false
+                            }
                         }
-                    }
-                ),
-                in: self.sliderRange
-            )
+                    ),
+                    in: self.sliderRange
+                )
+            } else {
+                HStack(spacing: 12) {
+                    Text(self.title)
+
+                    Slider(
+                        value: Binding(
+                            get: {
+                                self.value
+                            },
+                            set: { newValue in
+                                withAnimation {
+                                    self.value = newValue
+                                    self.isShowingTextBox = false
+                                }
+                            }
+                        ),
+                        in: self.sliderRange
+                    )
+
+                    self.stepperView()
+                }
+            }
         }
-        .padding(.horizontal, 12)
-        .frame(height: elementHeight)
+        .padding(.horizontal, 8)
+        .frame(height: self.controlSize.height)
     }
 
     @ViewBuilder
