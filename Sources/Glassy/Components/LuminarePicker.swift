@@ -21,6 +21,7 @@ public struct LuminarePickerData<Content>: Identifiable where Content: View {
 }
 
 public struct LuminarePicker<Content>: View where Content: View {
+    @Environment(\.tintColor) var tintColor
 
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
@@ -46,20 +47,21 @@ public struct LuminarePicker<Content>: View where Content: View {
                         pickerButton(i: 0, j: j)
                     }
                 }
-                .frame(maxHeight: 150)
+                .frame(minHeight: 100, maxHeight: 150)
             } else {
                 VStack(spacing: 2) {
                     ForEach(0...rowsIndex, id: \.self) { i in
                         HStack(spacing: 2) {
                             ForEach(0...columnsIndex, id: \.self) { j in
                                 pickerButton(i: i, j: j)
+                                    .aspectRatio(1, contentMode: .fit)
                             }
                         }
                     }
                 }
+                .frame(minHeight: 150)
             }
         }
-        .frame(minHeight: 100)
     }
 
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
@@ -69,26 +71,28 @@ public struct LuminarePicker<Content>: View where Content: View {
 
                 // There are also trailing blank items in the grid, so check if it exists
                 if j < row.count {
-                    withAnimation(.easeInOut) {
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         self.selectedItem = row[j]
                     }
                 }
             } label: {
-                element.view()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ZStack {
+                    element.view()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(.quinary)
+                        .clipShape(.rect(cornerRadius: innerCornerRadius))
 
-                    .background {
-                        getShape(i: i, j: j)
-                            .foregroundStyle(.quinary)
-                            .overlay {
-                                getShape(i: i, j: j)
-                                    .strokeBorder(
-                                        .yellow,
-                                        lineWidth: isSelfActive(i: i, j: j) ? 2 : 0
-                                    )
-                                    .opacity(isSelfActive(i: i, j: j) ? 1 : 0.8)
-                            }
-                    }
+                    let isActive = isSelfActive(i: i, j: j)
+                    getShape(i: i, j: j)
+                        .foregroundStyle(isActive ? tintColor.opacity(0.15) : .clear)
+                        .overlay {
+                            getShape(i: i, j: j)
+                                .strokeBorder(
+                                    tintColor,
+                                    lineWidth: isActive ? 1.5 : 0
+                                )
+                        }
+                }
             }
             .buttonStyle(PlainButtonStyle())
         } else {

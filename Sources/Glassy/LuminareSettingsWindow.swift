@@ -23,7 +23,7 @@ public class LuminareSettingsWindow {
     public func show() {
         let view = NSHostingView(
             rootView: ContentView(self.tabs)
-                .tint(self.tint)
+                .environment(\.tintColor, .mint)
         )
         print(view.bounds)
 

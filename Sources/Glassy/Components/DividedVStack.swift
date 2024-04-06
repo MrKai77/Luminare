@@ -9,20 +9,37 @@ import SwiftUI
 
 // Thank you https://movingparts.io/variadic-views-in-swiftui
 public struct DividedVStack<Content: View>: View {
+    let spacing: CGFloat?
+    let applyMaskToItems: Bool
     var content: Content
 
-    public init(@ViewBuilder content: () -> Content) {
+    public init(spacing: CGFloat? = nil, applyMaskToItems: Bool = true, @ViewBuilder content: () -> Content) {
+        self.spacing = spacing
+        self.applyMaskToItems = applyMaskToItems
         self.content = content()
     }
 
     public var body: some View {
-        _VariadicView.Tree(DividedVStackLayout()) {
+        _VariadicView.Tree(
+            DividedVStackLayout(
+                spacing: self.spacing,
+                applyMaskToItems: applyMaskToItems
+            )
+        ) {
             content
         }
     }
 }
 
 struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
+    let spacing: CGFloat
+    let applyMaskToItems: Bool
+
+    init(spacing: CGFloat?, applyMaskToItems: Bool) {
+        self.spacing = spacing ?? self.innerPadding
+        self.applyMaskToItems = applyMaskToItems
+    }
+
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
@@ -32,45 +49,17 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
         let first = children.first?.id
         let last = children.last?.id
 
-        VStack(spacing: self.innerPadding) {
+        VStack(spacing: self.spacing) {
             ForEach(children) { child in
-                child
-                    .mask {
-                        if first == last {
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: cornerRadius - innerPadding,
-                                bottomLeadingRadius: cornerRadius - innerPadding,
-                                bottomTrailingRadius: cornerRadius - innerPadding,
-                                topTrailingRadius: cornerRadius - innerPadding,
-                                style: .continuous
-                            )
-                        } else if child.id == first {
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: cornerRadius - innerPadding,
-                                bottomLeadingRadius: innerCornerRadius,
-                                bottomTrailingRadius: innerCornerRadius,
-                                topTrailingRadius: cornerRadius - innerPadding,
-                                style: .continuous
-                            )
-                        } else if child.id == last {
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: innerCornerRadius,
-                                bottomLeadingRadius: cornerRadius - innerPadding,
-                                bottomTrailingRadius: cornerRadius - innerPadding,
-                                topTrailingRadius: innerCornerRadius,
-                                style: .continuous
-                            )
-                        } else {
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: innerCornerRadius,
-                                bottomLeadingRadius: innerCornerRadius,
-                                bottomTrailingRadius: innerCornerRadius,
-                                topTrailingRadius: innerCornerRadius,
-                                style: .continuous
-                            )
+                if applyMaskToItems {
+                    child
+                        .mask {
+                            getMask(first, last, child.id)
                         }
-                    }
-                    .padding(.horizontal, innerPadding) // already applied vertically with spacing
+                        .padding(.horizontal, innerPadding) // already applied vertically with spacing
+                } else {
+                    child
+                }
 
                 if child.id != last {
                     Divider()
@@ -78,5 +67,41 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
             }
         }
         .padding(.vertical, innerPadding)
+    }
+
+    func getMask(_ first: AnyHashable?, _ last: AnyHashable?, _ current: AnyHashable) -> some View {
+        if first == last {
+            UnevenRoundedRectangle(
+                topLeadingRadius: cornerRadius - innerPadding,
+                bottomLeadingRadius: cornerRadius - innerPadding,
+                bottomTrailingRadius: cornerRadius - innerPadding,
+                topTrailingRadius: cornerRadius - innerPadding,
+                style: .continuous
+            )
+        } else if current == first {
+            UnevenRoundedRectangle(
+                topLeadingRadius: cornerRadius - innerPadding,
+                bottomLeadingRadius: innerCornerRadius,
+                bottomTrailingRadius: innerCornerRadius,
+                topTrailingRadius: cornerRadius - innerPadding,
+                style: .continuous
+            )
+        } else if current == last {
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerCornerRadius,
+                bottomLeadingRadius: cornerRadius - innerPadding,
+                bottomTrailingRadius: cornerRadius - innerPadding,
+                topTrailingRadius: innerCornerRadius,
+                style: .continuous
+            )
+        } else {
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerCornerRadius,
+                bottomLeadingRadius: innerCornerRadius,
+                bottomTrailingRadius: innerCornerRadius,
+                topTrailingRadius: innerCornerRadius,
+                style: .continuous
+            )
+        }
     }
 }

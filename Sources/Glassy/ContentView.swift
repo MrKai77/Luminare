@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.tintColor) var tintColor
+
     let sidebarWidth: CGFloat = 260
     let mainViewWidth: CGFloat = 390
     let mainViewSectionOuterPadding: CGFloat = 12
@@ -30,16 +32,15 @@ struct ContentView: View {
 
                 Divider()
 
-                VStack(spacing: 0) {
+                DividedVStack(spacing: 0, applyMaskToItems: false) {
                     TabHeaderView($activeTab)
 
-                    VStack(spacing: 0) {
-                        self.activeTab.view
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            self.activeTab.view
+                        }
+                        .padding(mainViewSectionOuterPadding)
                     }
-                    .padding(mainViewSectionOuterPadding)
-
-                    Spacer()
-                        .frame(minHeight: 0)
                 }
                 .frame(width: mainViewWidth)
 
@@ -56,5 +57,7 @@ struct ContentView: View {
 
         .buttonStyle(LuminareButtonStyle())
         .toggleStyle(.switch)
+
+        .tint(self.tintColor)
     }
 }

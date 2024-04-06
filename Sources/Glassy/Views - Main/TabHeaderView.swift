@@ -29,15 +29,7 @@ struct TabHeaderView: View {
             .padding(.horizontal, 10)
 
             Spacer()
-
-            sectionDivider()
         }
-        .frame(height: 50 + 1) // one for the divider
-    }
-
-    @ViewBuilder func sectionDivider() -> some View {
-        Rectangle()
-            .frame(height: 1)
-            .foregroundStyle(.primary.opacity(0.1))
+        .frame(height: 50)
     }
 }
