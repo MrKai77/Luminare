@@ -7,36 +7,41 @@
 
 import SwiftUI
 
-public struct LuminarePickerData<Content>: Identifiable where Content: View {
-    let view: () -> Content
-    public let id: UUID = UUID()
+public struct LuminarePickerData: Identifiable, Equatable {
+    public var id: UUID = UUID()
 
-    public init(@ViewBuilder view: @escaping () -> Content) {
-        self.view = view
-    }
+    let text: String
+    let image: Image?
+    let subtitle: String?
 
-    static func == (lhs: LuminarePickerData<Content>, rhs: LuminarePickerData<Content>) -> Bool {
-        lhs.id == rhs.id
+    public init(text: String, image: Image? = nil, subtitle: String? = nil) {
+        self.image = image
+        self.text = text
+        self.subtitle = subtitle
     }
 }
 
-public struct LuminarePicker<Content>: View where Content: View {
+public struct LuminarePicker: View {
     @Environment(\.tintColor) var tintColor
 
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
 
-    let elements2D: [[LuminarePickerData<Content>]]
+    let elements2D: [[LuminarePickerData]]
     let rowsIndex: Int
     let columnsIndex: Int
-    @State var selectedItem: LuminarePickerData<Content>
+    @Binding var selectedItem: LuminarePickerData
 
-    public init(elements: [LuminarePickerData<Content>], columns: Int = 4) {
+    public init(
+        elements: [LuminarePickerData],
+        selection: Binding<LuminarePickerData>,
+        columns: Int = 4
+    ) {
         self.elements2D = elements.slice(size: columns)
         self.rowsIndex = self.elements2D.count - 1
         self.columnsIndex = columns - 1
-        self.selectedItem = elements[0]
+        self._selectedItem = selection
     }
 
     public var body: some View {
@@ -47,7 +52,7 @@ public struct LuminarePicker<Content>: View where Content: View {
                         pickerButton(i: 0, j: j)
                     }
                 }
-                .frame(height: 80)
+                .frame(minHeight: 34)
             } else {
                 VStack(spacing: 2) {
                     ForEach(0...rowsIndex, id: \.self) { i in
@@ -77,8 +82,20 @@ public struct LuminarePicker<Content>: View where Content: View {
                 }
             } label: {
                 ZStack {
-                    element.view()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    VStack {
+                        if let image = element.image {
+                            image
+                        }
+
+                        Text(element.text)
+
+                        if let subtitle = element.subtitle {
+                            Text(subtitle)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     let isActive = isSelfActive(i: i, j: j)
                     getShape(i: i, j: j)
@@ -101,7 +118,7 @@ public struct LuminarePicker<Content>: View where Content: View {
         }
     }
 
-    func getElement(i: Int, j: Int) -> LuminarePickerData<Content>? {
+    func getElement(i: Int, j: Int) -> LuminarePickerData? {
         let row = self.elements2D[i]
         guard j < row.count else { return nil }
         return self.elements2D[i][j]
