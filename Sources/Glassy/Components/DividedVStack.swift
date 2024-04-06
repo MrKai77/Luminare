@@ -62,7 +62,12 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                 }
 
                 if child.id != last {
-                    Divider()
+                    if applyMaskToItems {
+                        Divider()
+                            .padding(.horizontal, 1)
+                    } else {
+                        Divider()
+                    }
                 }
             }
         }

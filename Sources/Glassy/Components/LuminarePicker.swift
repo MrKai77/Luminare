@@ -47,7 +47,7 @@ public struct LuminarePicker<Content>: View where Content: View {
                         pickerButton(i: 0, j: j)
                     }
                 }
-                .frame(minHeight: 100, maxHeight: 150)
+                .frame(height: 80)
             } else {
                 VStack(spacing: 2) {
                     ForEach(0...rowsIndex, id: \.self) { i in
@@ -79,8 +79,6 @@ public struct LuminarePicker<Content>: View where Content: View {
                 ZStack {
                     element.view()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.quinary)
-                        .clipShape(.rect(cornerRadius: innerCornerRadius))
 
                     let isActive = isSelfActive(i: i, j: j)
                     getShape(i: i, j: j)
@@ -94,7 +92,6 @@ public struct LuminarePicker<Content>: View where Content: View {
                         }
                 }
             }
-            .buttonStyle(PlainButtonStyle())
         } else {
             getShape(i: i, j: j)
                 .strokeBorder(

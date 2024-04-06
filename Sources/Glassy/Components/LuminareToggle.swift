@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct LuminareToggle: View {
-    let elementMinHeight: CGFloat = 40
+    let elementMinHeight: CGFloat = 34
     let horizontalPadding: CGFloat = 12
 
     let title: String

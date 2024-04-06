@@ -29,31 +29,55 @@ struct LuminareSidebarGroupItem: View {
 
                 Spacer()
             }
-            .padding(5)
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(.quaternary, lineWidth: 1).opacity((self.isActive) ? 1 : 0)
-                    .background(.quinary.opacity((self.isHovering || self.isActive) ? 0.9 : 0))
-                    .clipShape(.rect(cornerRadius: 12))
-            }
-            .contentShape(Rectangle())
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(SidebarButtonStyle(isActive: $isActive))
+        .overlay {
+            if self.isActive {
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(.quaternary, lineWidth: 1)
+            }
+        }
         .onAppear {
             checkIfSelfIsActiveTab()
         }
         .onChange(of: self.activeTab) { _ in
             checkIfSelfIsActiveTab()
         }
-        .onHover { hovering in
-            self.isHovering = hovering
-        }
-        .fixedSize(horizontal: false, vertical: true)
     }
 
     func checkIfSelfIsActiveTab() {
         withAnimation(.easeOut(duration: 0.1)) {
             self.isActive = self.activeTab == self.tab
         }
+    }
+}
+
+struct SidebarButtonStyle: ButtonStyle {
+    let cornerRadius: CGFloat = 12
+    @State var isHovering: Bool = false
+    @Binding var isActive: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(4)
+
+            .background {
+                if configuration.isPressed{
+                    Rectangle().foregroundStyle(.quaternary)
+                } else if isHovering || self.isActive {
+                    Rectangle().foregroundStyle(.quaternary.opacity(0.7))
+                }
+            }
+
+            .onHover { hover in
+                self.isHovering = hover
+            }
+            .animation(.easeOut(duration: 0.1), value: [self.isHovering, self.isActive, configuration.isPressed])
+
+            .clipShape(.rect(cornerRadius: cornerRadius))
+
+            .onChange(of: self.isActive) { _ in
+                print(self.isActive)
+            }
     }
 }

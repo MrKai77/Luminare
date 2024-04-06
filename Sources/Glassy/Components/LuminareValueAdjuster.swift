@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
 
-    let elementHeight: CGFloat = 80
+    let elementHeight: CGFloat = 70
     let horizontalPadding: CGFloat = 12
 
     let formatter: NumberFormatter

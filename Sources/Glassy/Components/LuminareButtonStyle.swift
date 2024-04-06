@@ -9,15 +9,30 @@ import SwiftUI
 
 public struct LuminareButtonStyle: ButtonStyle {
     let innerCornerRadius: CGFloat = 2
-    let elementMinHeight: CGFloat = 40
+    let elementMinHeight: CGFloat = 34
+    @State var isHovering: Bool = false
 
     public init() {}
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.quinary)
-            .opacity(configuration.isPressed ? 0.8 : 1)
+
+            .background {
+                if configuration.isPressed {
+                    Rectangle().foregroundStyle(.quaternary)
+                } else if isHovering {
+                    Rectangle().foregroundStyle(.quaternary.opacity(0.7))
+                } else {
+                    Rectangle().foregroundStyle(.quinary)
+                }
+            }
+
+            .onHover { hover in
+                self.isHovering = hover
+            }
+            .animation(.easeOut(duration: 0.1), value: [self.isHovering, configuration.isPressed])
+
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
     }
@@ -25,15 +40,30 @@ public struct LuminareButtonStyle: ButtonStyle {
 
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
     let innerCornerRadius: CGFloat = 2
-    let elementMinHeight: CGFloat = 40
+    let elementMinHeight: CGFloat = 34
+    @State var isHovering: Bool = false
 
     public init() {}
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.red.opacity(0.15))
-            .opacity(configuration.isPressed ? 0.8 : 1)
+
+            .background {
+                if configuration.isPressed {
+                    Rectangle().foregroundStyle(.red.opacity(0.4))
+                } else if isHovering {
+                    Rectangle().foregroundStyle(.red.opacity(0.25))
+                } else {
+                    Rectangle().foregroundStyle(.red.opacity(0.15))
+                }
+            }
+
+            .onHover { hover in
+                self.isHovering = hover
+            }
+            .animation(.easeOut(duration: 0.1), value: [self.isHovering, configuration.isPressed])
+
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
     }
