@@ -1,7 +1,7 @@
 import XCTest
-@testable import Glassy
+@testable import Luminare
 
-final class GlassyTests: XCTestCase {
+final class LuminareTests: XCTestCase {
     func testExample() throws {
         // XCTest Documentation
         // https://developer.apple.com/documentation/xctest

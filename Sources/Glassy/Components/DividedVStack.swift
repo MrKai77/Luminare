@@ -35,7 +35,6 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
         VStack(spacing: self.innerPadding) {
             ForEach(children) { child in
                 child
-//                    .frame(minHeight: elementMinHeight)
                     .mask {
                         if first == last {
                             UnevenRoundedRectangle(

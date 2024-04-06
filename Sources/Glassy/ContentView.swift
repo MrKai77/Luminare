@@ -25,7 +25,7 @@ struct ContentView: View {
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 0) {
-                GlassySidebarView(groups, $activeTab)
+                LuminareSidebarView(groups, $activeTab)
                     .frame(width: sidebarWidth)
 
                 Divider()
@@ -54,7 +54,7 @@ struct ContentView: View {
         .frame(height: windowHeight)
         .fixedSize()
 
-        .buttonStyle(GlassyButtonStyle())
+        .buttonStyle(LuminareButtonStyle())
         .toggleStyle(.switch)
     }
 }

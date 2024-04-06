@@ -1,5 +1,5 @@
 //
-//  GlassySettingsWindow.swift
+//  LuminareSettingsWindow.swift
 //
 //
 //  Created by Kai Azim on 2024-04-01.
@@ -10,7 +10,7 @@
 
 import SwiftUI
 
-public class GlassySettingsWindow {
+public class LuminareSettingsWindow {
     var windowController: NSWindowController?
     var tabs: [SettingsTabGroup]
     var tint: Color

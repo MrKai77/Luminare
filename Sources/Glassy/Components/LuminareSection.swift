@@ -1,5 +1,5 @@
 //
-//  GlassySection.swift
+//  LuminareSection.swift
 //
 //
 //  Created by Kai Azim on 2024-04-01.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct GlassySection<Content: View>: View {
+public struct LuminareSection<Content: View>: View {
     let headerSpacing: CGFloat = 8
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4

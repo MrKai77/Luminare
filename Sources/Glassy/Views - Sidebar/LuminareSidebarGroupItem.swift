@@ -1,13 +1,13 @@
 //
-//  GlassySidebarGroupItem.swift
-//  
+//  LuminareSidebarGroupItem.swift
+//
 //
 //  Created by Kai Azim on 2024-04-01.
 //
 
 import SwiftUI
 
-struct GlassySidebarGroupItem: View {
+struct LuminareSidebarGroupItem: View {
     @Binding var activeTab: SettingsTab
     let tab: SettingsTab
 

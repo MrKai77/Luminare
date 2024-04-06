@@ -1,13 +1,13 @@
 //
-//  GlassyValueAdjuster.swift
-//  
+//  LuminareValueAdjuster.swift
+//
 //
 //  Created by Kai Azim on 2024-04-02.
 //
 
 import SwiftUI
 
-public struct GlassyValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
 
     let elementHeight: CGFloat = 80
     let horizontalPadding: CGFloat = 12

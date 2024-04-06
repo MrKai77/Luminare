@@ -1,5 +1,5 @@
 //
-//  GlassySidebarView.swift
+//  LuminareSidebarView.swift
 //
 //
 //  Created by Kai Azim on 2024-04-01.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct GlassySidebarView: View {
+struct LuminareSidebarView: View {
     let titlebarHeight: CGFloat = 50
     let groupSpacing: CGFloat = 24
     let itemPadding: CGFloat = 12
@@ -32,7 +32,7 @@ struct GlassySidebarView: View {
                     groupTitle(group)
 
                     ForEach(group.tabs) { tab in
-                        GlassySidebarGroupItem(tab, $activeTab)
+                        LuminareSidebarGroupItem(tab, $activeTab)
                     }
                 }
             }

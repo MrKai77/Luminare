@@ -1,13 +1,13 @@
 //
-//  GlassyToggle.swift
-//  
+//  LuminareToggle.swift
+//
 //
 //  Created by Kai Azim on 2024-04-02.
 //
 
 import SwiftUI
 
-public struct GlassyToggle: View {
+public struct LuminareToggle: View {
     let elementMinHeight: CGFloat = 40
     let horizontalPadding: CGFloat = 12
 
