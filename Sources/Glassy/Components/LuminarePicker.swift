@@ -7,20 +7,6 @@
 
 import SwiftUI
 
-public struct LuminarePickerData: Identifiable, Equatable {
-    public var id: UUID = UUID()
-
-    let text: String
-    let image: Image?
-    let subtitle: String?
-
-    public init(text: String, image: Image? = nil, subtitle: String? = nil) {
-        self.image = image
-        self.text = text
-        self.subtitle = subtitle
-    }
-}
-
 public struct LuminarePicker: View {
     @Environment(\.tintColor) var tintColor
 
@@ -28,14 +14,14 @@ public struct LuminarePicker: View {
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
 
-    let elements2D: [[LuminarePickerData]]
+    let elements2D: [[LuminarePicker.Data]]
     let rowsIndex: Int
     let columnsIndex: Int
-    @Binding var selectedItem: LuminarePickerData
+    @Binding var selectedItem: LuminarePicker.Data
 
     public init(
-        elements: [LuminarePickerData],
-        selection: Binding<LuminarePickerData>,
+        elements: [LuminarePicker.Data],
+        selection: Binding<LuminarePicker.Data>,
         columns: Int = 4
     ) {
         self.elements2D = elements.slice(size: columns)
@@ -44,9 +30,13 @@ public struct LuminarePicker: View {
         self._selectedItem = selection
     }
 
+    var isCompact: Bool {
+        rowsIndex == 0
+    }
+
     public var body: some View {
         Group {
-            if rowsIndex == 0 {
+            if isCompact {
                 HStack(spacing: 2) {
                     ForEach(0...columnsIndex, id: \.self) { j in
                         pickerButton(i: 0, j: j)
@@ -72,6 +62,8 @@ public struct LuminarePicker: View {
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
         if let element = self.getElement(i: i, j: j) {
             Button {
+                guard !element.areAllNil, element.selectable else { return }
+
                 let row = self.elements2D[i]
 
                 // There are also trailing blank items in the grid, so check if it exists
@@ -83,16 +75,40 @@ public struct LuminarePicker: View {
             } label: {
                 ZStack {
                     VStack {
-                        if let image = element.image {
-                            image
-                        }
+                        if element.areAllNil {
+                            Image(systemName: "lock")
+                        } else {
+                            Spacer()
 
-                        Text(element.text)
+                            // Double spacer leads to better visual organization
+                            if !isCompact {
+                                Spacer()
+                            }
 
-                        if let subtitle = element.subtitle {
-                            Text(subtitle)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            if let image = element.image {
+                                image
+
+                                Spacer()
+                            }
+
+                            if let text = element.text {
+                                Text(text)
+
+                                Spacer()
+                            }
+
+                            if let subtitle = element.subtitle {
+                                Text(subtitle)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                Spacer()
+                            }
+
+                            // Double spacer leads to better visual organization
+                            if !isCompact {
+                                Spacer()
+                            }
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -118,7 +134,7 @@ public struct LuminarePicker: View {
         }
     }
 
-    func getElement(i: Int, j: Int) -> LuminarePickerData? {
+    func getElement(i: Int, j: Int) -> LuminarePicker.Data? {
         let row = self.elements2D[i]
         guard j < row.count else { return nil }
         return self.elements2D[i][j]
@@ -165,6 +181,28 @@ public struct LuminarePicker: View {
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
+        }
+    }
+}
+
+extension LuminarePicker {
+    public struct Data: Identifiable, Equatable {
+        public var id: UUID = UUID()
+
+        let text: String?
+        let image: Image?
+        let subtitle: String?
+        let selectable: Bool
+
+        public init(text: String? = nil, image: Image? = nil, subtitle: String? = nil, selectable: Bool = true) {
+            self.image = image
+            self.text = text
+            self.subtitle = subtitle
+            self.selectable = selectable
+        }
+
+        public var areAllNil: Bool {
+            self.image == nil && self.text == nil && self.subtitle == nil
         }
     }
 }
