@@ -22,7 +22,7 @@ public class LuminareSettingsWindow {
     public func show() {
         let view = NSHostingView(
             rootView: ContentView(self.tabs)
-                .environment(\.tintColor, .mint)
+                .environment(\.tintColor, self.tint)
         )
         print(view.bounds)
 
@@ -40,6 +40,7 @@ public class LuminareSettingsWindow {
         window.contentView = view
         window.contentView?.wantsLayer =  true
 
+        // Makes the toolbar THICK
         window.toolbarStyle = .unified
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
@@ -48,6 +49,7 @@ public class LuminareSettingsWindow {
         customToolbar.showsBaselineSeparator = false
         window.toolbar = customToolbar
 
+        // Private API
         window.setBackgroundBlur(radius: 20)
 
         window.center()
