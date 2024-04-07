@@ -7,7 +7,6 @@
 
 // Titlebar height: 50px
 
-
 import SwiftUI
 
 public class LuminareSettingsWindow {
