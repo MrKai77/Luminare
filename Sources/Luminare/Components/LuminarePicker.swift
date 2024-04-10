@@ -19,15 +19,22 @@ public struct LuminarePicker: View {
     let columnsIndex: Int
     @Binding var selectedItem: LuminarePicker.Data
 
+    let roundTop: Bool
+    let roundBottom: Bool
+
     public init(
         elements: [LuminarePicker.Data],
         selection: Binding<LuminarePicker.Data>,
-        columns: Int = 4
+        columns: Int = 4,
+        roundTop: Bool = true,
+        roundBottom: Bool = true
     ) {
         self.elements2D = elements.slice(size: columns)
         self.rowsIndex = self.elements2D.count - 1
         self.columnsIndex = columns - 1
         self._selectedItem = selection
+        self.roundTop = roundTop
+        self.roundBottom = roundBottom
     }
 
     var isCompact: Bool {
@@ -146,28 +153,28 @@ public struct LuminarePicker: View {
     }
 
     func getShape(i: Int, j: Int) -> some InsettableShape {
-        if j == 0 && i == 0 {
+        if j == 0 && i == 0 && roundTop { // Top left
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: rowsIndex == 0 ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
-        } else if j == 0 && i == rowsIndex {
+        } else if j == 0 && i == rowsIndex && roundBottom { // Bottom left
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
-        } else if j == columnsIndex && i == 0 {
+        } else if j == columnsIndex && i == 0 && roundTop { // Top right
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: rowsIndex == 0 ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
-        } else if j == columnsIndex && i == rowsIndex {
+        } else if j == columnsIndex && i == rowsIndex && roundBottom { // Bottom right
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
