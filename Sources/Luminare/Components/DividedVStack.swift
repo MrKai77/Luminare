@@ -22,7 +22,7 @@ public struct DividedVStack<Content: View>: View {
     public var body: some View {
         _VariadicView.Tree(
             DividedVStackLayout(
-                spacing: self.spacing,
+                spacing: self.applyMaskToItems ? self.spacing : 0,
                 applyMaskToItems: applyMaskToItems
             )
         ) {

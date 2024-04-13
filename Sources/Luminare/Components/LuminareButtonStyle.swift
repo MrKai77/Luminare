@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct LuminareButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled: Bool
+
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
     @State var isHovering: Bool = false
@@ -18,9 +20,9 @@ public struct LuminareButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
-                if configuration.isPressed {
+                if configuration.isPressed && isEnabled {
                     Rectangle().foregroundStyle(.quaternary)
-                } else if isHovering {
+                } else if isHovering && isEnabled {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 } else {
                     Rectangle().foregroundStyle(.quinary)
@@ -36,6 +38,8 @@ public struct LuminareButtonStyle: ButtonStyle {
 }
 
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled: Bool
+
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
     @State var isHovering: Bool = false
@@ -46,9 +50,9 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
-                if configuration.isPressed {
+                if configuration.isPressed && isEnabled {
                     Rectangle().foregroundStyle(.red.opacity(0.4))
-                } else if isHovering {
+                } else if isHovering && isEnabled {
                     Rectangle().foregroundStyle(.red.opacity(0.25))
                 } else {
                     Rectangle().foregroundStyle(.red.opacity(0.15))
