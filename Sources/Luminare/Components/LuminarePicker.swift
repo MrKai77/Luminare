@@ -7,27 +7,29 @@
 
 import SwiftUI
 
-public struct LuminarePicker: View {
+public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
     @Environment(\.tintColor) var tintColor
 
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
 
-    let elements2D: [[LuminarePicker.Data]]
+    let elements2D: [[V]]
     let rowsIndex: Int
     let columnsIndex: Int
-    @Binding var selectedItem: LuminarePicker.Data
+    @Binding var selectedItem: V?
 
     let roundTop: Bool
     let roundBottom: Bool
+    let content: (V) -> Content
 
     public init(
-        elements: [LuminarePicker.Data],
-        selection: Binding<LuminarePicker.Data>,
+        elements: [V],
+        selection: Binding<V?>,
         columns: Int = 4,
         roundTop: Bool = true,
-        roundBottom: Bool = true
+        roundBottom: Bool = true,
+        content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
         self.rowsIndex = self.elements2D.count - 1
@@ -35,6 +37,7 @@ public struct LuminarePicker: View {
         self._selectedItem = selection
         self.roundTop = roundTop
         self.roundBottom = roundBottom
+        self.content = content
     }
 
     var isCompact: Bool {
@@ -56,7 +59,7 @@ public struct LuminarePicker: View {
                         HStack(spacing: 2) {
                             ForEach(0...columnsIndex, id: \.self) { j in
                                 pickerButton(i: i, j: j)
-                                    .aspectRatio(1, contentMode: .fit)
+//                                    .aspectRatio(1, contentMode: .fit)
                             }
                         }
                     }
@@ -69,7 +72,8 @@ public struct LuminarePicker: View {
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
         if let element = self.getElement(i: i, j: j) {
             Button {
-                guard !element.areAllNil, element.selectable else { return }
+                // TODO: FIX
+//                guard !element.areAllNil, element.selectable else { return }
 
                 let row = self.elements2D[i]
 
@@ -81,44 +85,8 @@ public struct LuminarePicker: View {
                 }
             } label: {
                 ZStack {
-                    VStack {
-                        if element.areAllNil {
-                            Image(systemName: "lock")
-                        } else {
-                            Spacer()
-
-                            // Double spacer leads to better visual organization
-                            if !isCompact {
-                                Spacer()
-                            }
-
-                            if let image = element.image {
-                                image
-
-                                Spacer()
-                            }
-
-                            if let text = element.text {
-                                Text(text)
-
-                                Spacer()
-                            }
-
-                            if let subtitle = element.subtitle {
-                                Text(subtitle)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                Spacer()
-                            }
-
-                            // Double spacer leads to better visual organization
-                            if !isCompact {
-                                Spacer()
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    self.content(element)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     let isActive = isSelfActive(i: i, j: j)
                     getShape(i: i, j: j)
@@ -141,7 +109,7 @@ public struct LuminarePicker: View {
         }
     }
 
-    func getElement(i: Int, j: Int) -> LuminarePicker.Data? {
+    func getElement(i: Int, j: Int) -> V? {
         let row = self.elements2D[i]
         guard j < row.count else { return nil }
         return self.elements2D[i][j]
@@ -158,13 +126,13 @@ public struct LuminarePicker: View {
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
+                topTrailingRadius: (columnsIndex == 0) ?  cornerRadius - innerPadding : innerCornerRadius
             )
         } else if j == 0 && i == rowsIndex && roundBottom { // Bottom left
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
-                bottomTrailingRadius: innerCornerRadius,
+                bottomTrailingRadius: (columnsIndex == 0) ?  cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
         } else if j == columnsIndex && i == 0 && roundTop { // Top right
@@ -188,28 +156,6 @@ public struct LuminarePicker: View {
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
-        }
-    }
-}
-
-extension LuminarePicker {
-    public struct Data: Identifiable, Equatable {
-        public var id: UUID = UUID()
-
-        let text: String?
-        let image: Image?
-        let subtitle: String?
-        let selectable: Bool
-
-        public init(text: String? = nil, image: Image? = nil, subtitle: String? = nil, selectable: Bool = true) {
-            self.image = image
-            self.text = text
-            self.subtitle = subtitle
-            self.selectable = selectable
-        }
-
-        public var areAllNil: Bool {
-            self.image == nil && self.text == nil && self.subtitle == nil
         }
     }
 }
