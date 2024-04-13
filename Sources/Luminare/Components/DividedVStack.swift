@@ -35,14 +35,12 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let spacing: CGFloat
     let applyMaskToItems: Bool
 
+    let innerPadding: CGFloat = 4
+
     init(spacing: CGFloat?, applyMaskToItems: Bool) {
         self.spacing = spacing ?? self.innerPadding
         self.applyMaskToItems = applyMaskToItems
     }
-
-    let cornerRadius: CGFloat = 12
-    let innerPadding: CGFloat = 4
-    let innerCornerRadius: CGFloat = 2
 
     @ViewBuilder
     func body(children: _VariadicView.Children) -> some View {
@@ -53,10 +51,12 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
             ForEach(children) { child in
                 if applyMaskToItems {
                     child
-                        .mask {
-                            getMask(first, last, child.id)
-                        }
-                        .padding(.horizontal, innerPadding) // already applied vertically with spacing
+                        .modifier(
+                            LuminareCroppedSectionItem(
+                                isFirstChild: child.id == first,
+                                isLastChild: child.id == last
+                            )
+                        )
                 } else {
                     child
                 }
@@ -73,9 +73,29 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
         }
         .padding(.vertical, innerPadding)
     }
+}
 
-    func getMask(_ first: AnyHashable?, _ last: AnyHashable?, _ current: AnyHashable) -> some View {
-        if first == last {
+public struct LuminareCroppedSectionItem: ViewModifier {
+    let cornerRadius: CGFloat = 12
+    let innerPadding: CGFloat = 4
+    let innerCornerRadius: CGFloat = 2
+
+    let isFirstChild: Bool
+    let isLastChild: Bool
+
+    public init(isFirstChild: Bool, isLastChild: Bool) {
+        self.isFirstChild = isFirstChild
+        self.isLastChild = isLastChild
+    }
+
+    public func body(content: Content) -> some View {
+        content
+            .mask(self.getMask())
+            .padding(.horizontal, innerPadding)
+    }
+
+    func getMask() -> some View {
+        if isFirstChild && isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: cornerRadius - innerPadding,
@@ -83,7 +103,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                 topTrailingRadius: cornerRadius - innerPadding,
                 style: .continuous
             )
-        } else if current == first {
+        } else if isFirstChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: innerCornerRadius,
@@ -91,7 +111,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                 topTrailingRadius: cornerRadius - innerPadding,
                 style: .continuous
             )
-        } else if current == last {
+        } else if isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,

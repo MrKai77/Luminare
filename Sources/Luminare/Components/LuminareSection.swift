@@ -14,10 +14,12 @@ public struct LuminareSection<Content: View>: View {
     let sectionSpacing: CGFloat = 16
 
     let header: String?
+    let disablePadding: Bool
     let content: () -> Content
 
-    public init(_ header: String? = nil, @ViewBuilder _ content: @escaping () -> Content) {
+    public init(_ header: String? = nil, disablePadding: Bool = false, @ViewBuilder _ content: @escaping () -> Content) {
         self.header = header
+        self.disablePadding = disablePadding
         self.content = content
     }
 
@@ -31,7 +33,7 @@ public struct LuminareSection<Content: View>: View {
                 .foregroundStyle(.secondary)
             }
 
-            DividedVStack {
+            DividedVStack(applyMaskToItems: !disablePadding) {
                 self.content()
             }
             .frame(maxWidth: .infinity)
