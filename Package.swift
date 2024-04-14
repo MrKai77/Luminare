@@ -14,22 +14,17 @@ let package = Package(
             name: "Luminare",
             targets: ["Luminare"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/siteline/swiftui-introspect", from: "1.1.0")
-    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "Luminare",
-            dependencies: [
-                .product(name: "SwiftUIIntrospect", package: "swiftui-introspect")
-            ]
+            name: "Luminare"
         ),
         .testTarget(
             name: "LuminareTests",
             dependencies: [
                 "Luminare"
-            ])
+            ]
+        )
     ]
 )

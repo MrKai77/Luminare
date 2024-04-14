@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftUIIntrospect
 
 public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V: Identifiable {
     @Environment(\.tintColor) var tintColor
@@ -29,6 +28,8 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         self._selection = selection
         self.addAction = addAction
         self.content = content
+
+
     }
 
     public var body: some View {
@@ -90,6 +91,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                 .onMove { indices, newOffset in
                     items.move(fromOffsets: indices, toOffset: newOffset)
                 }
+                .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
             }
@@ -97,25 +99,30 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             .scrollContentBackground(.hidden)
             .scrollDisabled(true)
             .listStyle(.plain)
-            .introspect(.list, on: .macOS(.v12, .v13, .v14)) { tableView in
-                tableView.selectionHighlightStyle = .none
-            }
             .padding(.horizontal, -10)
             .padding(.vertical, -4)
-            .onChange(of: self.selection) { _ in
-                if selection.isEmpty {
-                    self.firstItem = nil
-                    self.lastItem = nil
-                } else {
-                    self.firstItem = self.items.first(where: { selection.contains($0) })
-                    self.lastItem = self.items.last(where: { selection.contains($0) })
-                }
-            }
             .padding(.top, 2)
 
             // For selection outlines
             .padding(.horizontal, 1) // TODO: FIND OUT WHY THIS THING IS 1 PT OFF
             .padding(self.lineWidth / 2.0)
+
+            .onChange(of: self.selection) { _ in
+                self.processSelection()
+            }
+            .onAppear {
+                self.processSelection()
+            }
+        }
+    }
+
+    func processSelection() {
+        if selection.isEmpty {
+            self.firstItem = nil
+            self.lastItem = nil
+        } else {
+            self.firstItem = self.items.first(where: { selection.contains($0) })
+            self.lastItem = self.items.last(where: { selection.contains($0) })
         }
     }
 
@@ -252,5 +259,12 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             topTrailingRadius: cornerRadius
         )
         .strokeBorder(tintColor, lineWidth: lineWidth)
+    }
+}
+
+extension NSTableView {
+    open override func viewDidMoveToWindow() {
+        super.viewWillDraw()
+        selectionHighlightStyle = .none
     }
 }
