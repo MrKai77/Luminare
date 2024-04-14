@@ -20,6 +20,9 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
     @State private var firstItem: V?
     @State private var lastItem: V?
 
+    let cornerRadius: CGFloat = 2
+    let lineWidth: CGFloat = 1.5
+
     public init(_ header: String? = nil, items: Binding<[V]>, selection: Binding<Set<V>>, addAction: @escaping () -> Void, content: @escaping (V) -> Content) {
         self.header = header
         self._items = items
@@ -123,8 +126,8 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                  if item == self.lastItem && item == self.items.last {
                     UnevenRoundedRectangle(
                         topLeadingRadius: 0,
-                        bottomLeadingRadius: 11,
-                        bottomTrailingRadius: 11,
+                        bottomLeadingRadius: (12 + lineWidth / 2.0),
+                        bottomTrailingRadius: (12 + lineWidth / 2.0),
                         topTrailingRadius: 0
                     )
                     .foregroundColor(.black)
@@ -151,25 +154,25 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         VStack(spacing: 0) {
             ZStack {
                 UnevenRoundedRectangle(
-                    topLeadingRadius: 2,
+                    topLeadingRadius: cornerRadius,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
-                    topTrailingRadius: 2
+                    topTrailingRadius: cornerRadius
                 )
-                .strokeBorder(tintColor, lineWidth: 1.5)
+                .strokeBorder(tintColor, lineWidth: lineWidth)
 
                 VStack {
                     Color.clear
                     HStack {
                         Spacer()
-                            .frame(width: 1.5)
+                            .frame(width: lineWidth)
 
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
 
                         Spacer()
-                            .frame(width: 1.5)
+                            .frame(width: lineWidth)
                     }
                 }
             }
@@ -177,12 +180,12 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
 
             HStack {
                 Rectangle()
-                    .frame(width: 1.5)
+                    .frame(width: lineWidth)
 
                 Spacer()
 
                 Rectangle()
-                    .frame(width: 1.5)
+                    .frame(width: lineWidth)
             }
             .foregroundStyle(tintColor)
         }
@@ -192,35 +195,35 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         VStack(spacing: 0) {
             HStack {
                 Rectangle()
-                    .frame(width: 1.5)
+                    .frame(width: lineWidth)
 
                 Spacer()
 
                 Rectangle()
-                    .frame(width: 1.5)
+                    .frame(width: lineWidth)
             }
             .foregroundStyle(tintColor)
 
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
-                    bottomLeadingRadius: isBottomOfList ? 11 : 2,
-                    bottomTrailingRadius: isBottomOfList ? 11 : 2,
+                    bottomLeadingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
+                    bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
                     topTrailingRadius: 0
                 )
-                .strokeBorder(tintColor, lineWidth: 1.5)
+                .strokeBorder(tintColor, lineWidth: lineWidth)
 
                 VStack {
                     HStack {
                         Spacer()
-                            .frame(width: 1.5)
+                            .frame(width: lineWidth)
 
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
 
                         Spacer()
-                            .frame(width: 1.5)
+                            .frame(width: lineWidth)
                     }
                     Color.clear
                 }
@@ -232,23 +235,23 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
     func doubleLinePart() -> some View {
         HStack {
             Rectangle()
-                .frame(width: 1.5)
+                .frame(width: lineWidth)
 
             Spacer()
 
             Rectangle()
-                .frame(width: 1.5)
+                .frame(width: lineWidth)
         }
         .foregroundStyle(tintColor)
     }
 
     func singleSelectionPart(isBottomOfList: Bool) -> some View {
         UnevenRoundedRectangle(
-            topLeadingRadius: 2,
-            bottomLeadingRadius: isBottomOfList ? 11 : 2,
-            bottomTrailingRadius: isBottomOfList ? 11 : 2,
-            topTrailingRadius: 2
+            topLeadingRadius: cornerRadius,
+            bottomLeadingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
+            bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
+            topTrailingRadius: cornerRadius
         )
-        .strokeBorder(tintColor, lineWidth: 1.5)
+        .strokeBorder(tintColor, lineWidth: lineWidth)
     }
 }
