@@ -63,7 +63,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                         HStack(spacing: 2) {
                             ForEach(0...columnsIndex, id: \.self) { j in
                                 pickerButton(i: i, j: j)
-//                                    .aspectRatio(1, contentMode: .fit)
                             }
                         }
                     }
