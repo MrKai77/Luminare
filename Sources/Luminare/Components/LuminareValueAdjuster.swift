@@ -90,7 +90,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
 
                     Spacer()
 
-                    self.stepperView()
+                    self.labelView()
                 }
 
                 Slider(
@@ -126,7 +126,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                         in: self.sliderRange
                     )
 
-                    self.stepperView()
+                    self.labelView()
                 }
             }
         }
@@ -135,7 +135,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     }
 
     @ViewBuilder
-    func stepperView() -> some View {
+    func labelView() -> some View {
         HStack {
             HStack {
                 if self.isShowingTextBox {
