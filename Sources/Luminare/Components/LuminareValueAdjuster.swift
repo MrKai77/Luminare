@@ -46,6 +46,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     let lowerClamp: Bool
     let controlSize: LuminareValueAdjuster.ControlSize
 
+    let decimalPlaces: Int
+
     public init(
         _ title: String,
         description: String? = nil,
@@ -55,7 +57,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjuster.ControlSize = .regular
+        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        decimalPlaces: Int = 2
     ) {
         self.title = title
         self.description = description
@@ -66,8 +69,10 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         self.upperClamp = upperClamp
         self.controlSize = controlSize
 
+        self.decimalPlaces = decimalPlaces
+
         self.formatter = NumberFormatter()
-        self.formatter.maximumFractionDigits = 2
+        self.formatter.maximumFractionDigits = decimalPlaces
 
         if let step = step {
             self.step = V.Stride(step)
@@ -170,17 +175,18 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                             self.focusedField = .textbox
                         }
                     } label: {
-                        Text("\(self.value, specifier: "%.2f")")
+                        Text("\(self.value, specifier: "%.\(decimalPlaces)f")")
                             .contentTransition(.numericText())
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .padding(.trailing, -4)
+                    .padding(.trailing, -6)
                 }
 
                 if let postfix = postscript {
                     Text(postfix)
                 }
             }
+            .monospaced()
             .padding(4)
             .padding(.horizontal, 4)
             .background {
@@ -198,6 +204,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 }
             }
             .fixedSize()
+            .clipShape(Capsule(style: .continuous))
         }
     }
 }
