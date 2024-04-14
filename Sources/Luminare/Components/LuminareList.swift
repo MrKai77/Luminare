@@ -28,8 +28,6 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         self._selection = selection
         self.addAction = addAction
         self.content = content
-
-
     }
 
     public var body: some View {
@@ -63,30 +61,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
 
             List(selection: $selection) {
                 ForEach(items) { item in
-                    Color.clear
-                        .frame(height: 50)
-                        .overlay {
-                            content(item)
-                        }
-                        .tag(item)
-
-                        .background {
-                            ZStack {
-                                getItemSelectionBorder(item: item)
-                                getItemSelectionBackground(item: item)
-                            }
-                        }
-
-                        .overlay {
-                            if item != self.items.last {
-                                VStack {
-                                    Spacer()
-                                    Divider()
-                                }
-                                .padding(.leading, 1)
-                                .padding(.trailing, 0.5)
-                            }
-                        }
+                    LuminareListItem(items: $items, selection: $selection,  item: item, content: content, firstItem: $firstItem, lastItem: $lastItem)
                 }
                 .onMove { indices, newOffset in
                     items.move(fromOffsets: indices, toOffset: newOffset)
@@ -110,9 +85,6 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             .onChange(of: self.selection) { _ in
                 self.processSelection()
             }
-            .onAppear {
-                self.processSelection()
-            }
         }
     }
 
@@ -125,30 +97,112 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             self.lastItem = self.items.last(where: { selection.contains($0) })
         }
     }
+}
 
-    @ViewBuilder func getItemSelectionBackground(item: V) -> some View {
-        tintColor.opacity(self.selection.contains(item) ? 0.15 : 0)
-            .mask {
-                 if item == self.lastItem && item == self.items.last {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 0,
-                        bottomLeadingRadius: (12 + lineWidth / 2.0),
-                        bottomTrailingRadius: (12 + lineWidth / 2.0),
-                        topTrailingRadius: 0
-                    )
-                    .foregroundColor(.black)
-                 } else {
-                     Rectangle()
-                         .foregroundColor(.black)
-                 }
+struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: Identifiable {
+    @Environment(\.tintColor) var tintColor
+
+    let item: V
+    let content: (V) -> Content
+
+    @Binding var items: [V]
+    @Binding var selection: Set<V>
+
+    @Binding var firstItem: V?
+    @Binding var lastItem: V?
+
+    @State var isHovering: Bool = false
+
+    let cornerRadius: CGFloat = 2
+    let maxLineWidth: CGFloat = 1.5
+    @State var lineWidth: CGFloat = .zero
+
+    let maxTintOpacity: CGFloat = 0.15
+    @State var tintOpacity: CGFloat = .zero
+
+    init(items: Binding<[V]>, selection: Binding<Set<V>>, item: V, content: @escaping (V) -> Content, firstItem: Binding<V?>, lastItem: Binding<V?>) {
+        self._items = items
+        self._selection = selection
+        self.item = item
+        self.content = content
+        self._firstItem = firstItem
+        self._lastItem = lastItem
+    }
+
+    var body: some View {
+        Color.clear
+            .frame(height: 50)
+            .overlay {
+                content(item)
+            }
+            .tag(item)
+
+            .background {
+                ZStack {
+                    getItemBorder(item: item)
+                    getItemBackground(item: item)
+                }
+            }
+
+            .overlay {
+                if item != self.items.last {
+                    VStack {
+                        Spacer()
+                        Divider()
+                    }
+                    .padding(.leading, 1)
+                    .padding(.trailing, 0.5)
+                }
+            }
+
+            .onHover { hover in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    self.isHovering = hover
+                }
+            }
+
+            .onChange(of: self.selection) { _ in
+                DispatchQueue.main.async {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        self.tintOpacity = self.selection.contains(item) ? maxTintOpacity : .zero
+                        self.lineWidth = self.selection.contains(item) ? maxLineWidth : .zero
+                    }
+                }
             }
     }
 
-    @ViewBuilder func getItemSelectionBorder(item: V) -> some View {
+    @ViewBuilder func getItemBackground(item: V) -> some View {
+        Group {
+            tintColor
+                .opacity(tintOpacity)
+
+            if self.isHovering {
+                Rectangle()
+                    .foregroundStyle(.quaternary.opacity(0.7))
+                    .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
+            }
+        }
+        .mask {
+            if item == self.lastItem && item == self.items.last {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 0,
+                    bottomLeadingRadius: (12 + lineWidth / 2.0),
+                    bottomTrailingRadius: (12 + lineWidth / 2.0),
+                    topTrailingRadius: 0
+                )
+                .foregroundColor(.black)
+            } else {
+                Rectangle()
+                    .foregroundColor(.black)
+            }
+        }
+    }
+
+    @ViewBuilder func getItemBorder(item: V) -> some View {
         if item == self.firstItem && self.firstItem == self.lastItem {
             self.singleSelectionPart(isBottomOfList: item == self.items.last)
         } else if item == self.firstItem {
-            self.topSelectionPart()
+            self.firstItemPart()
         } else if item == self.lastItem {
             self.lastItemPart(isBottomOfList: item == self.items.last)
         } else if self.selection.contains(item) {
@@ -156,7 +210,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         }
     }
 
-    func topSelectionPart() -> some View {
+    func firstItemPart() -> some View {
         VStack(spacing: 0) {
             ZStack {
                 UnevenRoundedRectangle(
@@ -184,6 +238,8 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             }
             .compositingGroup()
 
+            // --- Bottom part ---
+
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
@@ -209,6 +265,8 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                     .frame(width: lineWidth)
             }
             .foregroundStyle(tintColor)
+
+            // --- Bottom part ---
 
             ZStack {
                 UnevenRoundedRectangle(
