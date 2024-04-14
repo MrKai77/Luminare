@@ -22,7 +22,13 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
     let cornerRadius: CGFloat = 2
     let lineWidth: CGFloat = 1.5
 
-    public init(_ header: String? = nil, items: Binding<[V]>, selection: Binding<Set<V>>, addAction: @escaping () -> Void, content: @escaping (V) -> Content) {
+    public init(
+        _ header: String? = nil,
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>,
+        addAction: @escaping () -> Void,
+        @ViewBuilder content: @escaping (V) -> Content
+    ) {
         self.header = header
         self._items = items
         self._selection = selection
@@ -61,7 +67,14 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
 
             List(selection: $selection) {
                 ForEach(items) { item in
-                    LuminareListItem(items: $items, selection: $selection,  item: item, content: content, firstItem: $firstItem, lastItem: $lastItem)
+                    LuminareListItem(
+                        items: $items,
+                        selection: $selection,
+                        item: item,
+                        content: content,
+                        firstItem: $firstItem,
+                        lastItem: $lastItem
+                    )
                 }
                 .onMove { indices, newOffset in
                     items.move(fromOffsets: indices, toOffset: newOffset)
@@ -120,7 +133,14 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
     let maxTintOpacity: CGFloat = 0.15
     @State var tintOpacity: CGFloat = .zero
 
-    init(items: Binding<[V]>, selection: Binding<Set<V>>, item: V, content: @escaping (V) -> Content, firstItem: Binding<V?>, lastItem: Binding<V?>) {
+    init(
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>,
+        item: V,
+        @ViewBuilder content: @escaping (V) -> Content,
+        firstItem: Binding<V?>,
+        lastItem: Binding<V?>
+    ) {
         self._items = items
         self._selection = selection
         self.item = item

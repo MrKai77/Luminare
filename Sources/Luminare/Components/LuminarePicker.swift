@@ -1,11 +1,15 @@
 //
 //  LuminarePicker.swift
-//  
+//
 //
 //  Created by Kai Azim on 2024-04-05.
 //
 
 import SwiftUI
+
+public protocol LuminarePickerData {
+    var selectable: Bool { get }
+}
 
 public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
     @Environment(\.tintColor) var tintColor
@@ -29,7 +33,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         columns: Int = 4,
         roundTop: Bool = true,
         roundBottom: Bool = true,
-        content: @escaping (V) -> Content
+        @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
         self.rowsIndex = self.elements2D.count - 1
@@ -72,8 +76,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
         if let element = self.getElement(i: i, j: j) {
             Button {
-                // TODO: FIX
-//                guard !element.areAllNil, element.selectable else { return }
+                if let element = element as? LuminarePickerData {
+                    guard element.selectable else { return }
+                }
 
                 let row = self.elements2D[i]
 
