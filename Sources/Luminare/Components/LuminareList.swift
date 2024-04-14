@@ -159,8 +159,8 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
 
             .background {
                 ZStack {
-                    getItemBorder(item: item)
-                    getItemBackground(item: item)
+                    getItemBorder()
+                    getItemBackground()
                 }
             }
 
@@ -191,7 +191,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
             }
     }
 
-    @ViewBuilder func getItemBackground(item: V) -> some View {
+    @ViewBuilder func getItemBackground() -> some View {
         Group {
             tintColor
                 .opacity(tintOpacity)
@@ -203,7 +203,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
             }
         }
         .mask {
-            if item == self.lastItem && item == self.items.last {
+            if item == self.items.last {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
                     bottomLeadingRadius: (12 + lineWidth / 2.0),
@@ -218,16 +218,39 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
         }
     }
 
-    @ViewBuilder func getItemBorder(item: V) -> some View {
-        if item == self.firstItem && self.firstItem == self.lastItem {
+    @ViewBuilder func getItemBorder() -> some View {
+        if self.isFirstInSelection() && self.isLastInSelection() {
             self.singleSelectionPart(isBottomOfList: item == self.items.last)
-        } else if item == self.firstItem {
+
+        } else if self.isFirstInSelection() {
             self.firstItemPart()
-        } else if item == self.lastItem {
+
+        } else if self.isLastInSelection() {
             self.lastItemPart(isBottomOfList: item == self.items.last)
+
         } else if self.selection.contains(item) {
             self.doubleLinePart()
         }
+    }
+
+    func isFirstInSelection() -> Bool {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex > 0,
+           !self.selection.contains(self.items[firstIndex - 1]) {
+            return true
+        }
+
+        return item == self.firstItem
+    }
+
+    func isLastInSelection() -> Bool {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex < self.items.count - 1,
+           !self.selection.contains(self.items[firstIndex + 1]) {
+            return true
+        }
+
+        return item == self.lastItem
     }
 
     func firstItemPart() -> some View {
