@@ -75,9 +75,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
         if let element = self.getElement(i: i, j: j) {
             Button {
-                if let element = element as? LuminarePickerData {
-                    guard element.selectable else { return }
-                }
+                guard !isDisabled(element) else { return }
 
                 let row = self.elements2D[i]
 
@@ -90,6 +88,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             } label: {
                 ZStack {
                     self.content(element)
+                        .foregroundStyle(isDisabled(element) ? .secondary : .primary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     let isActive = isSelfActive(i: i, j: j)
@@ -111,6 +110,13 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                     lineWidth: 1
                 )
         }
+    }
+
+    func isDisabled(_ element: V) -> Bool {
+        if let element = element as? LuminarePickerData {
+            return !element.selectable
+        }
+        return false
     }
 
     func getElement(i: Int, j: Int) -> V? {
