@@ -101,7 +101,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                 tableView.selectionHighlightStyle = .none
             }
             .padding(.horizontal, -10)
-            .padding(.vertical, -5)
+            .padding(.vertical, -4)
             .onChange(of: self.selection) { _ in
                 if selection.isEmpty {
                     self.firstItem = nil
@@ -115,8 +115,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
 
             // For selection outlines
             .padding(.horizontal, 1) // TODO: FIND OUT WHY THIS THING IS 1 PT OFF
-            .padding(0.75)
-            .padding(.vertical, 0.5)
+            .padding(self.lineWidth / 2.0)
         }
     }
 
