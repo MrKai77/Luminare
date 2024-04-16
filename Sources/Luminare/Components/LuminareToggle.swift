@@ -26,7 +26,7 @@ public struct LuminareToggle: View {
                 .labelsHidden()
                 .controlSize(.small)
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, horizontalPadding)
         .frame(minHeight: elementMinHeight)
     }
 }
