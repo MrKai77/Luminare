@@ -11,7 +11,6 @@ public struct LuminareSection<Content: View>: View {
     let headerSpacing: CGFloat = 8
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
-    let sectionSpacing: CGFloat = 16
 
     let header: String?
     let disablePadding: Bool
@@ -51,7 +50,6 @@ public struct LuminareSection<Content: View>: View {
                 )
                 .strokeBorder(.quaternary, lineWidth: 1)
             }
-            .padding(.bottom, sectionSpacing)
         }
     }
 }

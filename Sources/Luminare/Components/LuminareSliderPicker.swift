@@ -59,6 +59,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
         HStack {
             Text(self.label(self.selection))
                 .contentTransition(.numericText())
+                .multilineTextAlignment(.trailing)
 
                 .monospaced()
                 .padding(4)

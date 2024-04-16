@@ -15,6 +15,7 @@ struct ContentView: View {
     let mainViewSectionOuterPadding: CGFloat = 12
     let previewViewWidth: CGFloat = 520
     let windowHeight: CGFloat = 600
+    let sectionSpacing: CGFloat = 16
 
     @State var activeTab: SettingsTab
     let groups: [SettingsTabGroup]
@@ -36,7 +37,7 @@ struct ContentView: View {
                     TabHeaderView($activeTab)
 
                     ScrollView {
-                        VStack(spacing: 0) {
+                        VStack(spacing: sectionSpacing) {
                             self.activeTab.view
                         }
                         .padding(mainViewSectionOuterPadding)

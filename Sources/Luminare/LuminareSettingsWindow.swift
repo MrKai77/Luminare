@@ -10,6 +10,8 @@
 import SwiftUI
 
 public class LuminareSettingsWindow {
+    static let identifier = NSUserInterfaceItemIdentifier("LuminareSettingsWindow")
+
     var windowController: NSWindowController?
     var tabs: [SettingsTabGroup]
     var tint: Color
@@ -20,11 +22,15 @@ public class LuminareSettingsWindow {
     }
 
     public func show() {
+        if let windowController = windowController {
+            windowController.window?.orderFrontRegardless()
+            return
+        }
+
         let view = NSHostingView(
             rootView: ContentView(self.tabs)
                 .environment(\.tintColor, self.tint)
         )
-        print(view.bounds)
 
         let window = NSWindow(
             contentRect: view.bounds,
@@ -44,6 +50,7 @@ public class LuminareSettingsWindow {
         window.toolbarStyle = .unified
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
+        window.identifier = LuminareSettingsWindow.identifier
 
         let customToolbar = NSToolbar()
         customToolbar.showsBaselineSeparator = false

@@ -81,7 +81,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
                 // There are also trailing blank items in the grid, so check if it exists
                 if j < row.count {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    withAnimation(.smooth(duration: 0.3)) {
                         self.selectedItem = row[j]
                     }
                 }

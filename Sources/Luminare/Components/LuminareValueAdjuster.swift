@@ -177,6 +177,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     } label: {
                         Text("\(self.value, specifier: "%.\(decimalPlaces)f")")
                             .contentTransition(.numericText())
+                            .multilineTextAlignment(.trailing)
                     }
                     .buttonStyle(PlainButtonStyle())
                     .padding(.trailing, -6)
