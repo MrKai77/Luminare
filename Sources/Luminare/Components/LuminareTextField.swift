@@ -27,7 +27,16 @@ public struct LuminareTextField: View {
 
             .onAppear {
                 NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                    NSApp.keyWindow?.keyDown(with: event)
+                    if let window = NSApp.keyWindow, window as? LuminareModalNSWindow != nil {
+                        window.keyDown(with: event)
+
+                        // Fixed cmd+w to close window.
+                        // TODO: Find a better solution
+                        let wKey = 13
+                        if event.keyCode == wKey && event.modifierFlags.contains(.command) {
+                            return nil
+                        }
+                    }
                     return event
                 }
             }
