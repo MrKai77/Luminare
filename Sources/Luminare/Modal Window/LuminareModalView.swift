@@ -12,7 +12,6 @@ struct LuminareModalView<Content>: View where Content: View {
 
     let sectionSpacing: CGFloat = 16
 
-    @State var isShown = false
     let content: Content
     let modalWindow: LuminareModalWindow<Content>
 
@@ -56,15 +55,6 @@ struct LuminareModalView<Content>: View where Content: View {
         .buttonStyle(LuminareButtonStyle())
         .toggleStyle(.switch)
         .tint(tintColor)
-        .scaleEffect(self.isShown ? 1 : 0.5)
-        .opacity(self.isShown ? 1 : 0)
-        .onAppear {
-            DispatchQueue.main.async {
-                modalWindow.updateShadow(for: 0.5)
-                withAnimation(.smooth(duration: 0.3)) {
-                    self.isShown = true
-                }
-            }
-        }
+        .ignoresSafeArea()
     }
 }

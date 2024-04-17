@@ -10,6 +10,7 @@ import SwiftUI
 public struct ScreenView<Content>: View where Content: View {
 
     let screenContent: () -> Content
+    @State private var image: NSImage?
 
     public init(@ViewBuilder _ screenContent: @escaping () -> Content) {
         self.screenContent = screenContent
@@ -20,33 +21,26 @@ public struct ScreenView<Content>: View where Content: View {
             Group {
                 GeometryReader { geo in
                     Group {
-                        if let screen = NSScreen.main,
-                           let url = NSWorkspace.shared.desktopImageURL(for: screen) {
+                        if let image = self.image {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            ZStack {
+                                Color.black
 
-                            AsyncImage(
-                                url: url,
-                                scale: 1,
-                                transaction: .init(animation: .easeOut)
-                            ) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .transition(.opacity.animation(.easeIn))
-                                case .failure:
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                default:
-                                    EmptyView()
-                                }
+                                Image(systemName: "apple.logo")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(.white)
                             }
                         }
                     }
                     .frame(width: geo.size.width, height: geo.size.height)
                 }
                 .allowsHitTesting(false)
+                .task {
+                    await updateImage()
+                }
             }
             .overlay {
                 screenContent()
@@ -85,5 +79,41 @@ public struct ScreenView<Content>: View where Content: View {
             .padding(0.5)
         }
         .aspectRatio(16/10, contentMode: .fill)
+    }
+
+    func updateImage() async {
+        if let screen = NSScreen.main,
+           let url = NSWorkspace.shared.desktopImageURL(for: screen),
+           let image = NSImage.thumbnail(with: url, maxWidth: 300) {
+
+            withAnimation {
+                self.image = image
+            }
+        }
+    }
+}
+
+extension NSImage {
+    static func thumbnail(with url: URL, maxWidth: CGFloat) -> NSImage? {
+        guard let inputImage = NSImage(contentsOf: url) else { return nil }
+        let aspectRatio = inputImage.size.width / inputImage.size.height
+        let thumbSize = NSSize(
+            width: maxWidth,
+            height: maxWidth * aspectRatio
+        )
+
+        let outputImage = NSImage(size: thumbSize)
+        outputImage.lockFocus()
+        inputImage.draw(
+            in: NSRect(
+                origin: .zero,
+                size: .init(width: thumbSize.width, height: thumbSize.height)
+            ),
+            from: .zero,
+            operation: .sourceOver,
+            fraction: 1
+        )
+        outputImage.unlockFocus()
+        return outputImage
     }
 }

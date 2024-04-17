@@ -8,7 +8,7 @@
 import SwiftUI
 
 public class LuminareModalWindow<Content> where Content: View {
-    var windowController: NSWindowController?
+    var windowController: LuminareModalWindowController?
     var content: Content
     var tint: Color
 
@@ -23,12 +23,12 @@ public class LuminareModalWindow<Content> where Content: View {
             return
         }
 
-        let view = NSHostingViewSuppressingSafeArea(
+        let view = NSHostingView(
             rootView: LuminareModalView(self.content, self)
                 .environment(\.tintColor, self.tint)
         )
 
-        let window = LuminareModalNSWindow(
+        let window = NSWindow(
             contentRect: .zero,
             styleMask: [.titled, .fullSizeContentView],
             backing: .buffered,
@@ -46,11 +46,14 @@ public class LuminareModalWindow<Content> where Content: View {
 
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
+        window.animationBehavior = .documentWindow
 
         window.center()
         window.orderFrontRegardless()
 
-        self.windowController = .init(window: window)
+        self.windowController = .init(window: window, didCloseHandler: {
+            self.windowController = nil
+        })
     }
 
     func updateShadow(for duration: Double) {
