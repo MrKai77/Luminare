@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct LuminareToggle: View {
+    @Environment(\.tintColor) var tintColor
+
     let elementMinHeight: CGFloat = 34
     let horizontalPadding: CGFloat = 12
 
@@ -22,9 +24,7 @@ public struct LuminareToggle: View {
         HStack {
             Text(title)
             Spacer()
-            Toggle("", isOn: $value)
-                .labelsHidden()
-                .controlSize(.small)
+            ColorizedToggleButton(isOn: $value, color: .constant(NSColor(self.tintColor)))
         }
         .padding(.horizontal, horizontalPadding)
         .frame(minHeight: elementMinHeight)

@@ -18,21 +18,35 @@ public struct ScreenView<Content>: View where Content: View {
     public var body: some View {
         ZStack {
             Group {
-                if let screen = NSScreen.main,
-                   let url = NSWorkspace.shared.desktopImageURL(for: screen),
-                   let image = NSImage(contentsOf: url) {
+                GeometryReader { geo in
+                    Group {
+                        if let screen = NSScreen.main,
+                           let url = NSWorkspace.shared.desktopImageURL(for: screen) {
 
-                    GeometryReader { geo in
-                        Image(nsImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: geo.size.width, height: geo.size.height)
+                            AsyncImage(
+                                url: url,
+                                scale: 1,
+                                transaction: .init(animation: .easeOut)
+                            ) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .transition(.opacity.animation(.easeIn))
+                                case .failure:
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                default:
+                                    EmptyView()
+                                }
+                            }
+                        }
                     }
-                    .allowsHitTesting(false)
-                } else {
-                    Rectangle()
-                        .foregroundStyle(Color.accentColor)
+                    .frame(width: geo.size.width, height: geo.size.height)
                 }
+                .allowsHitTesting(false)
             }
             .overlay {
                 screenContent()
@@ -71,5 +85,27 @@ public struct ScreenView<Content>: View where Content: View {
             .padding(0.5)
         }
         .aspectRatio(16/10, contentMode: .fill)
+    }
+}
+
+extension NSImage {
+    func resize(w: Int, h: Int) -> NSImage {
+        var destSize = NSMakeSize(CGFloat(w), CGFloat(h))
+        var newImage = NSImage(size: destSize)
+        newImage.lockFocus()
+        self.draw(
+            in: NSMakeRect(0, 0, destSize.width, destSize.height),
+            from: NSMakeRect(
+                0,
+                0,
+                self.size.width,
+                self.size.height
+            ),
+            operation: NSCompositingOperation.sourceOver,
+            fraction: CGFloat(1)
+        )
+        newImage.unlockFocus()
+        newImage.size = destSize
+        return NSImage(data: newImage.tiffRepresentation!)!
     }
 }
