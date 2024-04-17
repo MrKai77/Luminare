@@ -14,6 +14,8 @@ public struct LuminareTextField: View {
     @Binding var text: String
     let placeHolder: String
 
+    @State var monitor: Any?
+
     public init(_ text: Binding<String>, placeHolder: String) {
         self._text = text
         self.placeHolder = placeHolder
@@ -26,7 +28,7 @@ public struct LuminareTextField: View {
             .textFieldStyle(.plain)
 
             .onAppear {
-                NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                self.monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
 
@@ -39,6 +41,9 @@ public struct LuminareTextField: View {
                     }
                     return event
                 }
+            }
+            .onDisappear {
+                NSEvent.removeMonitor(monitor)
             }
     }
 }

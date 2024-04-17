@@ -114,6 +114,7 @@ extension NSImage {
             fraction: 1
         )
         outputImage.unlockFocus()
+
         return outputImage
     }
 }
