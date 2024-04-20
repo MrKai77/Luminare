@@ -11,11 +11,13 @@ import SwiftUI
 public struct DividedVStack<Content: View>: View {
     let spacing: CGFloat?
     let applyMaskToItems: Bool
+    let showDividers: Bool
     var content: Content
 
-    public init(spacing: CGFloat? = nil, applyMaskToItems: Bool = true, @ViewBuilder content: () -> Content) {
+    public init(spacing: CGFloat? = nil, applyMaskToItems: Bool = true, showDividers: Bool = true, @ViewBuilder content: () -> Content) {
         self.spacing = spacing
         self.applyMaskToItems = applyMaskToItems
+        self.showDividers = showDividers
         self.content = content()
     }
 
@@ -23,7 +25,8 @@ public struct DividedVStack<Content: View>: View {
         _VariadicView.Tree(
             DividedVStackLayout(
                 spacing: self.applyMaskToItems ? self.spacing : 0,
-                applyMaskToItems: applyMaskToItems
+                applyMaskToItems: applyMaskToItems,
+                showDividers: showDividers
             )
         ) {
             content
@@ -34,12 +37,14 @@ public struct DividedVStack<Content: View>: View {
 struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let spacing: CGFloat
     let applyMaskToItems: Bool
+    let showDividers: Bool
 
     let innerPadding: CGFloat = 4
 
-    init(spacing: CGFloat?, applyMaskToItems: Bool) {
+    init(spacing: CGFloat?, applyMaskToItems: Bool, showDividers: Bool) {
         self.spacing = spacing ?? self.innerPadding
         self.applyMaskToItems = applyMaskToItems
+        self.showDividers = showDividers
     }
 
     @ViewBuilder
@@ -47,7 +52,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
         let first = children.first?.id
         let last = children.last?.id
 
-        VStack(spacing: self.spacing) {
+        VStack(spacing: self.showDividers ? self.spacing : self.spacing / 2) {
             ForEach(children) { child in
                 if applyMaskToItems {
                     child
@@ -61,13 +66,9 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                     child
                 }
 
-                if child.id != last {
-                    if applyMaskToItems {
-                        Divider()
-                            .padding(.horizontal, 1)
-                    } else {
-                        Divider()
-                    }
+                if showDividers && child.id != last {
+                    Divider()
+                        .padding(.horizontal, 1)
                 }
             }
         }

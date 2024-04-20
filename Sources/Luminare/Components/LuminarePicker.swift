@@ -21,7 +21,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     let elements2D: [[V]]
     let rowsIndex: Int
     let columnsIndex: Int
-    @Binding var selectedItem: V?
+    @Binding var selectedItem: V
 
     let roundTop: Bool
     let roundBottom: Bool
@@ -29,7 +29,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     public init(
         elements: [V],
-        selection: Binding<V?>,
+        selection: Binding<V>,
         columns: Int = 4,
         roundTop: Bool = true,
         roundBottom: Bool = true,
@@ -87,10 +87,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 }
             } label: {
                 ZStack {
-                    self.content(element)
-                        .foregroundStyle(isDisabled(element) ? .secondary : .primary)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
                     let isActive = isSelfActive(i: i, j: j)
                     getShape(i: i, j: j)
                         .foregroundStyle(isActive ? tintColor.opacity(0.15) : .clear)
@@ -101,6 +97,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                                     lineWidth: isActive ? 1.5 : 0
                                 )
                         }
+
+                    self.content(element)
+                        .foregroundStyle(isDisabled(element) ? .secondary : .primary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         } else {

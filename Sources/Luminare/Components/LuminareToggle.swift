@@ -24,7 +24,10 @@ public struct LuminareToggle: View {
         HStack {
             Text(title)
             Spacer()
-            ColorizedToggleButton(isOn: $value, color: .constant(NSColor(self.tintColor)))
+
+            Toggle("", isOn: $value)
+                .labelsHidden()
+                .controlSize(.small)
         }
         .padding(.horizontal, horizontalPadding)
         .frame(minHeight: elementMinHeight)

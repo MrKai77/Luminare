@@ -10,13 +10,14 @@
 import SwiftUI
 
 public class LuminareSettingsWindow {
+    static var identifier = NSUserInterfaceItemIdentifier("LuminareSettingsWindow")
     var windowController: NSWindowController?
     var tabs: [SettingsTabGroup]
-    var tint: Color
+    static var tint: Color = .accentColor
 
     public init(_ tabs: [SettingsTabGroup], tint: Color = .accentColor) {
         self.tabs = tabs
-        self.tint = tint
+        LuminareSettingsWindow.tint = tint
     }
 
     public func show() {
@@ -27,7 +28,7 @@ public class LuminareSettingsWindow {
 
         let view = NSHostingView(
             rootView: ContentView(self.tabs)
-                .environment(\.tintColor, self.tint)
+                .environment(\.tintColor, LuminareSettingsWindow.tint)
         )
 
         let window = NSWindow(
@@ -55,10 +56,22 @@ public class LuminareSettingsWindow {
 
         // Private API
         window.setBackgroundBlur(radius: 20)
+        self.swizzleWidgets()
+        window.identifier = LuminareSettingsWindow.identifier
 
         window.center()
         window.orderFrontRegardless()
 
         self.windowController = .init(window: window)
+    }
+
+    func swizzleWidgets() {
+        let original = Selector("updateLayer")
+        let swizzle = Selector("xxx_updateLayer")
+        if let widgetClass = NSClassFromString("NSWidgetView"),
+            let originalMethod = class_getInstanceMethod(widgetClass, original),
+            let swizzleMethod = class_getInstanceMethod(NSView.self, swizzle) {
+            method_exchangeImplementations(originalMethod, swizzleMethod)
+        }
     }
 }

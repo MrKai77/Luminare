@@ -14,11 +14,13 @@ public struct LuminareSection<Content: View>: View {
 
     let header: String?
     let disablePadding: Bool
+    let showDividers: Bool
     let content: () -> Content
 
-    public init(_ header: String? = nil, disablePadding: Bool = false, @ViewBuilder _ content: @escaping () -> Content) {
+    public init(_ header: String? = nil, disablePadding: Bool = false, showDividers: Bool = true, @ViewBuilder _ content: @escaping () -> Content) {
         self.header = header
         self.disablePadding = disablePadding
+        self.showDividers = showDividers
         self.content = content
     }
 
@@ -32,7 +34,7 @@ public struct LuminareSection<Content: View>: View {
                 .foregroundStyle(.secondary)
             }
 
-            DividedVStack(applyMaskToItems: !disablePadding) {
+            DividedVStack(applyMaskToItems: !disablePadding, showDividers: showDividers) {
                 self.content()
             }
             .frame(maxWidth: .infinity)
