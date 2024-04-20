@@ -72,8 +72,5 @@ struct SidebarButtonStyle: ButtonStyle {
             }
             .animation(.easeOut(duration: 0.1), value: [self.isHovering, self.isActive, configuration.isPressed])
             .clipShape(.rect(cornerRadius: cornerRadius))
-            .onChange(of: self.isActive) { _ in
-                print(self.isActive)
-            }
     }
 }

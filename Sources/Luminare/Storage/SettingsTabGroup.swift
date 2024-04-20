@@ -10,10 +10,10 @@ import SwiftUI
 public struct SettingsTabGroup: Identifiable {
     public var id: UUID = UUID()
 
-    public let title: String?
+    public let title: LocalizedStringKey?
     public let tabs: [SettingsTab]
 
-    public init(_ title: String, _ tabs: [SettingsTab]) {
+    public init(_ title: LocalizedStringKey, _ tabs: [SettingsTab]) {
         self.title = title
         self.tabs = tabs
     }

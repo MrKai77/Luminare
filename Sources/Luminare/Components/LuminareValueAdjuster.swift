@@ -40,7 +40,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     let description: String?
     @Binding var value: V
     let sliderRange: ClosedRange<V>
-    let postscript: String?
+    let suffix: String?
     var step: V.Stride
     let upperClamp: Bool
     let lowerClamp: Bool
@@ -48,23 +48,24 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
 
     let decimalPlaces: Int
 
+    // TODO: MAX DIGIT SPACING FOR LABEL
     public init(
         _ title: String,
         description: String? = nil,
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
-        postscript: String? = nil,
+        suffix: String? = nil,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
         controlSize: LuminareValueAdjuster.ControlSize = .regular,
-        decimalPlaces: Int = 2
+        decimalPlaces: Int = 0
     ) {
         self.title = title
         self.description = description
         self._value = value
         self.sliderRange = sliderRange
-        self.postscript = postscript
+        self.suffix = suffix
         self.lowerClamp = lowerClamp
         self.upperClamp = upperClamp
         self.controlSize = controlSize
@@ -111,22 +112,27 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 HStack(spacing: 12) {
                     Text(self.title)
 
-                    Slider(
-                        value: Binding(
-                            get: {
-                                self.value
-                            },
-                            set: { newValue in
-                                withAnimation {
-                                    self.value = newValue
-                                    self.isShowingTextBox = false
-                                }
-                            }
-                        ),
-                        in: self.sliderRange
-                    )
+                    Spacer(minLength: 0)
 
-                    self.labelView()
+                    HStack(spacing: 12) {
+                        Slider(
+                            value: Binding(
+                                get: {
+                                    self.value
+                                },
+                                set: { newValue in
+                                    withAnimation {
+                                        self.value = newValue
+                                        self.isShowingTextBox = false
+                                    }
+                                }
+                            ),
+                            in: self.sliderRange
+                        )
+
+                        self.labelView()
+                    }
+                    .frame(width: 270)
                 }
             }
         }
@@ -180,11 +186,11 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                             .multilineTextAlignment(.trailing)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .padding(.trailing, -6)
+                    .padding(.trailing, suffix == nil ? 0 : -6)
                 }
 
-                if let postfix = postscript {
-                    Text(postfix)
+                if let suffix = suffix {
+                    Text(suffix)
                 }
             }
             .monospaced()

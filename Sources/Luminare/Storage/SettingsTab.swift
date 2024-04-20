@@ -14,11 +14,11 @@ public struct SettingsTab: Identifiable, Equatable {
 
     public var id: UUID = UUID()
     
-    public let title: String
+    public let title: LocalizedStringKey
     public let icon: Image
     @ViewBuilder public let view: AnyView
 
-    public init<Content: View>(_ title: String, _ icon: Image, _ view: Content) {
+    public init<Content: View>(_ title: LocalizedStringKey, _ icon: Image, _ view: Content) {
         self.title = title
         self.icon = icon
         self.view = AnyView(view)

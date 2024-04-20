@@ -21,7 +21,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     let elements2D: [[V]]
     let rowsIndex: Int
     let columnsIndex: Int
+
     @Binding var selectedItem: V
+    @State var internalSelection: V
 
     let roundTop: Bool
     let roundBottom: Bool
@@ -38,10 +40,12 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self.elements2D = elements.slice(size: columns)
         self.rowsIndex = self.elements2D.count - 1
         self.columnsIndex = columns - 1
-        self._selectedItem = selection
         self.roundTop = roundTop
         self.roundBottom = roundBottom
         self.content = content
+
+        self._selectedItem = selection
+        self._internalSelection = State(initialValue: selection.wrappedValue)
     }
 
     var isCompact: Bool {
@@ -70,6 +74,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 .frame(minHeight: 150)
             }
         }
+        .onChange(of: self.internalSelection) { _ in
+            self.selectedItem = self.internalSelection
+        }
     }
 
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
@@ -82,7 +89,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 // There are also trailing blank items in the grid, so check if it exists
                 if j < row.count {
                     withAnimation(.smooth(duration: 0.3)) {
-                        self.selectedItem = row[j]
+                        self.internalSelection = row[j]
                     }
                 }
             } label: {
@@ -127,7 +134,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     func isSelfActive(i: Int, j: Int) -> Bool {
         guard let element = getElement(i: i, j: j) else { return false }
-        return self.selectedItem == element
+        return self.internalSelection == element
     }
 
     func getShape(i: Int, j: Int) -> some InsettableShape {

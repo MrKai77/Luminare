@@ -56,7 +56,7 @@ public class LuminareSettingsWindow {
 
         // Private API
         window.setBackgroundBlur(radius: 20)
-        self.swizzleWidgets()
+//        self.swizzleWidgets()
         window.identifier = LuminareSettingsWindow.identifier
 
         window.center()

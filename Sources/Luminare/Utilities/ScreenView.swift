@@ -43,7 +43,10 @@ public struct ScreenView<Content>: View where Content: View {
                 }
             }
             .overlay {
-                screenContent()
+                if self.image != nil {
+                    screenContent()
+                        .padding(5)
+                }
             }
             .clipShape(UnevenRoundedRectangle(
                 topLeadingRadius: 12,

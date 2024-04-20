@@ -25,7 +25,7 @@ public struct LuminareToggle: View {
             Text(title)
             Spacer()
 
-            Toggle("", isOn: $value)
+            Toggle("", isOn: $value.animation(.smooth(duration: 0.3)))
                 .labelsHidden()
                 .controlSize(.small)
         }

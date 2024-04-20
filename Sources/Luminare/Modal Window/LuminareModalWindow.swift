@@ -7,6 +7,26 @@
 
 import SwiftUI
 
+public struct DismissModalAction {
+    typealias Action = () -> Void
+    let action: Action
+
+    public func callAsFunction() {
+        action()
+    }
+}
+
+public extension EnvironmentValues {
+    var dismissModal: DismissModalAction {
+        get { self[DismissModalActionKey.self] }
+        set { self[DismissModalActionKey.self] = newValue }
+    }
+}
+
+public struct DismissModalActionKey: EnvironmentKey {
+    public static var defaultValue: DismissModalAction = .init(action: {})
+}
+
 public class LuminareModalWindow<Content> where Content: View {
     var windowController: LuminareModalWindowController?
     var content: Content
@@ -23,9 +43,21 @@ public class LuminareModalWindow<Content> where Content: View {
             return
         }
 
+        let dismissModal: () -> Void = {
+            if let window = self.windowController?.window {
+                NSAnimationContext.runAnimationGroup({ context -> Void in
+                    context.duration = 0.25
+                    window.animator().alphaValue = 0
+                }, completionHandler: {
+                    window.close()
+                })
+            }
+        }
+
         let view = NSHostingView(
             rootView: LuminareModalView(self.content, self)
                 .environment(\.tintColor, self.tint)
+                .environment(\.dismissModal, .init(action: dismissModal))
         )
 
         let window = NSWindow(
@@ -40,7 +72,6 @@ public class LuminareModalWindow<Content> where Content: View {
         window.contentView?.wantsLayer = true
 
         window.ignoresMouseEvents = false
-        window.isMovableByWindowBackground = true
         window.isOpaque = false
         window.hasShadow = true
 
