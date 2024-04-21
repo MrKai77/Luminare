@@ -27,7 +27,17 @@ class LuminareModalWindowController: NSWindowController {
     }
 
     override func close() {
-        super.close()
-        didCloseHandler()
+        if let window = self.window {
+            NSAnimationContext.runAnimationGroup({ context -> Void in
+                context.duration = 0.1
+                window.animator().alphaValue = 0
+            }, completionHandler: {
+                super.close()
+                self.didCloseHandler()
+            })
+        } else {
+            super.close()
+            self.didCloseHandler()
+        }
     }
 }

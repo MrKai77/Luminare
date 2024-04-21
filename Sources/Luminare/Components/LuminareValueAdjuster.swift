@@ -39,6 +39,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     let title: String
     let description: String?
     @Binding var value: V
+    @State var internalValue: V
     let sliderRange: ClosedRange<V>
     let suffix: String?
     var step: V.Stride
@@ -64,6 +65,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         self.title = title
         self.description = description
         self._value = value
+        self._internalValue = State(initialValue: value.wrappedValue)
         self.sliderRange = sliderRange
         self.suffix = suffix
         self.lowerClamp = lowerClamp
@@ -97,11 +99,11 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 Slider(
                     value: Binding(
                         get: {
-                            self.value
+                            self.internalValue
                         },
                         set: { newValue in
                             withAnimation {
-                                self.value = newValue
+                                self.internalValue = newValue
                                 self.isShowingTextBox = false
                             }
                         }
@@ -138,6 +140,9 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         }
         .padding(.horizontal, 8)
         .frame(height: self.controlSize.height)
+        .onChange(of: self.internalValue) { _ in
+            self.value = self.internalValue
+        }
     }
 
     @ViewBuilder
@@ -149,17 +154,17 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                         .init(""),
                         value: Binding(
                             get: {
-                                self.value
+                                self.internalValue
                             },
                             set: {
                                 if lowerClamp && upperClamp {
-                                    self.value = $0.clamped(to: sliderRange)
+                                    self.internalValue = $0.clamped(to: sliderRange)
                                 } else if lowerClamp {
-                                    self.value = max(self.sliderRange.lowerBound, $0)
+                                    self.internalValue = max(self.sliderRange.lowerBound, $0)
                                 } else if upperClamp {
-                                    self.value = min(self.sliderRange.upperBound, $0)
+                                    self.internalValue = min(self.sliderRange.upperBound, $0)
                                 } else {
-                                    self.value = $0
+                                    self.internalValue = $0
                                 }
                             }
                         ),
@@ -181,7 +186,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                             self.focusedField = .textbox
                         }
                     } label: {
-                        Text("\(self.value, specifier: "%.\(decimalPlaces)f")")
+                        Text("\(self.internalValue, specifier: "%.\(decimalPlaces)f")")
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)
                     }

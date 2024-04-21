@@ -15,12 +15,14 @@ public struct LuminareSection<Content: View>: View {
     let header: String?
     let disablePadding: Bool
     let showDividers: Bool
+    let noBorder: Bool
     let content: () -> Content
 
-    public init(_ header: String? = nil, disablePadding: Bool = false, showDividers: Bool = true, @ViewBuilder _ content: @escaping () -> Content) {
+    public init(_ header: String? = nil, disablePadding: Bool = false, showDividers: Bool = true, noBorder: Bool = false, @ViewBuilder _ content: @escaping () -> Content) {
         self.header = header
         self.disablePadding = disablePadding
         self.showDividers = showDividers
+        self.noBorder = noBorder
         self.content = content
     }
 
@@ -34,23 +36,28 @@ public struct LuminareSection<Content: View>: View {
                 .foregroundStyle(.secondary)
             }
 
-            DividedVStack(applyMaskToItems: !disablePadding, showDividers: showDividers) {
+
+            if noBorder {
                 self.content()
-            }
-            .frame(maxWidth: .infinity)
-            .background(.quinary)
-            .clipShape(
-                .rect(
-                    cornerRadius: self.cornerRadius,
-                    style: .continuous
+            } else {
+                DividedVStack(applyMaskToItems: !disablePadding, showDividers: showDividers) {
+                    self.content()
+                }
+                .frame(maxWidth: .infinity)
+                .background(.quinary)
+                .clipShape(
+                    .rect(
+                        cornerRadius: self.cornerRadius,
+                        style: .continuous
+                    )
                 )
-            )
-            .overlay {
-                RoundedRectangle(
-                    cornerRadius: self.cornerRadius,
-                    style: .continuous
-                )
-                .strokeBorder(.quaternary, lineWidth: 1)
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: self.cornerRadius,
+                        style: .continuous
+                    )
+                    .strokeBorder(.quaternary, lineWidth: 1)
+                }
             }
         }
     }

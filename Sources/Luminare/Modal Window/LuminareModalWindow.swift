@@ -32,8 +32,8 @@ public class LuminareModalWindow<Content> where Content: View {
     var content: Content
     var tint: Color
 
-    public init(tint: Color = .accentColor, _ content: Content) {
-        self.tint = tint
+    public init(tint: Color? = nil, _ content: Content) {
+        self.tint = tint ?? LuminareSettingsWindow.tint
         self.content = content
     }
 
@@ -44,14 +44,7 @@ public class LuminareModalWindow<Content> where Content: View {
         }
 
         let dismissModal: () -> Void = {
-            if let window = self.windowController?.window {
-                NSAnimationContext.runAnimationGroup({ context -> Void in
-                    context.duration = 0.25
-                    window.animator().alphaValue = 0
-                }, completionHandler: {
-                    window.close()
-                })
-            }
+            self.windowController?.close()
         }
 
         let view = NSHostingView(
@@ -72,6 +65,7 @@ public class LuminareModalWindow<Content> where Content: View {
         window.contentView?.wantsLayer = true
 
         window.ignoresMouseEvents = false
+//        window.becomeFirstResponder()
         window.isOpaque = false
         window.hasShadow = true
 

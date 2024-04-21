@@ -14,7 +14,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
     @Binding var items: [V]
     @Binding var selection: Set<V>
     let addAction: () -> Void
-    let content: (V) -> Content
+    let content: (Binding<V>) -> Content
 
     @State private var firstItem: V?
     @State private var lastItem: V?
@@ -27,7 +27,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
         addAction: @escaping () -> Void,
-        @ViewBuilder content: @escaping (V) -> Content
+        @ViewBuilder content: @escaping (Binding<V>) -> Content
     ) {
         self.header = header
         self._items = items
@@ -66,7 +66,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             .padding(.bottom, 4)
 
             List(selection: $selection) {
-                ForEach(items) { item in
+                ForEach($items) { item in
                     LuminareListItem(
                         items: $items,
                         selection: $selection,
@@ -115,8 +115,8 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
 struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: Identifiable {
     @Environment(\.tintColor) var tintColor
 
-    let item: V
-    let content: (V) -> Content
+    @Binding var item: V
+    let content: (Binding<V>) -> Content
 
     @Binding var items: [V]
     @Binding var selection: Set<V>
@@ -136,14 +136,14 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
     init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
-        item: V,
-        @ViewBuilder content: @escaping (V) -> Content,
+        item: Binding<V>,
+        @ViewBuilder content: @escaping (Binding<V>) -> Content,
         firstItem: Binding<V?>,
         lastItem: Binding<V?>
     ) {
         self._items = items
         self._selection = selection
-        self.item = item
+        self._item = item
         self.content = content
         self._firstItem = firstItem
         self._lastItem = lastItem
@@ -153,7 +153,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
         Color.clear
             .frame(height: 50)
             .overlay {
-                content(item)
+                content($item)
             }
             .tag(item)
 
