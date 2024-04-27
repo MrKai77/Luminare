@@ -65,7 +65,6 @@ public class LuminareModalWindow<Content> where Content: View {
         window.contentView?.wantsLayer = true
 
         window.ignoresMouseEvents = false
-//        window.becomeFirstResponder()
         window.isOpaque = false
         window.hasShadow = true
 

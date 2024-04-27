@@ -57,7 +57,6 @@ struct ContentView: View {
         .fixedSize()
 
         .buttonStyle(LuminareButtonStyle())
-        .toggleStyle(.switch)
 
         .tint(self.tintColor)
     }

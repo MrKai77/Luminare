@@ -76,6 +76,8 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     }
 }
 
+// TODO: FIX 3 vs 4 pt padding
+
 public struct LuminareCroppedSectionItem: ViewModifier {
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4

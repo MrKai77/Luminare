@@ -23,6 +23,8 @@ public class LuminareSettingsWindow {
     public func show() {
         if let windowController = windowController {
             windowController.window?.orderFrontRegardless()
+            windowController.window?.center()
+            NSApp.activate(ignoringOtherApps: true)
             return
         }
 
@@ -65,13 +67,13 @@ public class LuminareSettingsWindow {
         self.windowController = .init(window: window)
     }
 
-    func swizzleWidgets() {
-        let original = Selector("updateLayer")
-        let swizzle = Selector("xxx_updateLayer")
-        if let widgetClass = NSClassFromString("NSWidgetView"),
-            let originalMethod = class_getInstanceMethod(widgetClass, original),
-            let swizzleMethod = class_getInstanceMethod(NSView.self, swizzle) {
-            method_exchangeImplementations(originalMethod, swizzleMethod)
-        }
-    }
+//    func swizzleWidgets() {
+//        let original = Selector("updateLayer")
+//        let swizzle = Selector("xxx_updateLayer")
+//        if let widgetClass = NSClassFromString("NSMenu"), // NSWidgetView
+//            let originalMethod = class_getInstanceMethod(widgetClass, original),
+//            let swizzleMethod = class_getInstanceMethod(NSView.self, swizzle) {
+//            method_exchangeImplementations(originalMethod, swizzleMethod)
+//        }
+//    }
 }

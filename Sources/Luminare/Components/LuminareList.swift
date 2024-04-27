@@ -112,6 +112,17 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
     }
 }
 
+public struct HoveringOverLuminareListItem: EnvironmentKey {
+    public static var defaultValue: Bool = false
+}
+
+public extension EnvironmentValues {
+    var hoveringOverLuminareListItem: Bool {
+        get { return self[HoveringOverLuminareListItem.self] }
+        set { self[HoveringOverLuminareListItem.self] = newValue }
+    }
+}
+
 struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: Identifiable {
     @Environment(\.tintColor) var tintColor
 
@@ -154,6 +165,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
             .frame(height: 50)
             .overlay {
                 content($item)
+                    .environment(\.hoveringOverLuminareListItem, isHovering)
             }
             .tag(item)
 
@@ -177,15 +189,15 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
 
             .onHover { hover in
                 withAnimation(.easeOut(duration: 0.1)) {
-                    self.isHovering = hover
+                    isHovering = hover
                 }
             }
 
             .onChange(of: self.selection) { _ in
                 DispatchQueue.main.async {
                     withAnimation(.easeOut(duration: 0.2)) {
-                        self.tintOpacity = self.selection.contains(item) ? maxTintOpacity : .zero
-                        self.lineWidth = self.selection.contains(item) ? maxLineWidth : .zero
+                        tintOpacity = self.selection.contains(item) ? maxTintOpacity : .zero
+                        lineWidth = self.selection.contains(item) ? maxLineWidth : .zero
                     }
                 }
             }

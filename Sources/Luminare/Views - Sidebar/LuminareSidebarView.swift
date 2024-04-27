@@ -11,7 +11,7 @@ struct LuminareSidebarView: View {
     let titlebarHeight: CGFloat = 50
     let groupSpacing: CGFloat = 24
     let itemPadding: CGFloat = 12
-    let groupTitlePadding: CGFloat = 8
+    let groupTitlePadding: CGFloat = 4
     let itemSpacing: CGFloat = 4
 
     @Binding var activeTab: SettingsTab

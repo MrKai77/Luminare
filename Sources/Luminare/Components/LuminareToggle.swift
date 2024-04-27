@@ -28,6 +28,7 @@ public struct LuminareToggle: View {
             Toggle("", isOn: $value.animation(.smooth(duration: 0.3)))
                 .labelsHidden()
                 .controlSize(.small)
+                .toggleStyle(.switch)
         }
         .padding(.horizontal, horizontalPadding)
         .frame(minHeight: elementMinHeight)
