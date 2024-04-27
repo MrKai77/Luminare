@@ -33,15 +33,17 @@ struct ContentView: View {
 
                 Divider()
 
-                DividedVStack(spacing: 0, applyMaskToItems: false) {
+                VStack(spacing: 0) {
                     TabHeaderView($activeTab)
+                    Divider()
 
-                    ScrollView {
+                    ScrollView(.vertical) {
                         VStack(spacing: sectionSpacing) {
                             self.activeTab.view
                         }
                         .padding(mainViewSectionOuterPadding)
                     }
+                    .clipped()
                 }
                 .frame(width: mainViewWidth)
 

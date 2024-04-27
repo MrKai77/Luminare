@@ -51,6 +51,7 @@ public struct LuminareSection<Content: View>: View {
                         style: .continuous
                     )
                 )
+
                 .overlay {
                     RoundedRectangle(
                         cornerRadius: self.cornerRadius,

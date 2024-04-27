@@ -54,17 +54,23 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
 
         VStack(spacing: self.showDividers ? self.spacing : self.spacing / 2) {
             ForEach(children) { child in
-                if applyMaskToItems {
-                    child
-                        .modifier(
-                            LuminareCroppedSectionItem(
-                                isFirstChild: child.id == first,
-                                isLastChild: child.id == last
+                Group {
+                    if applyMaskToItems {
+                        child
+                            .modifier(
+                                LuminareCroppedSectionItem(
+                                    isFirstChild: child.id == first,
+                                    isLastChild: child.id == last
+                                )
                             )
-                        )
-                } else {
-                    child
+                    } else {
+                        child
+                    }
                 }
+                // Fixes padding on borders
+                .padding(.top, child.id == first ? 1 : 0)
+                .padding(.bottom, child.id == last ? 1 : 0)
+                .padding(.horizontal, 1)
 
                 if showDividers && child.id != last {
                     Divider()

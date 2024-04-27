@@ -58,6 +58,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                 .disabled(self.selection.isEmpty)
             }
             .modifier(
+                // Needed since disablePadding is disabled
                 LuminareCroppedSectionItem(
                     isFirstChild: true,
                     isLastChild: false
@@ -182,8 +183,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                         Spacer()
                         Divider()
                     }
-                    .padding(.leading, 1)
-                    .padding(.trailing, 0.5)
+                    .padding(.trailing, -0.5)
                 }
             }
 
