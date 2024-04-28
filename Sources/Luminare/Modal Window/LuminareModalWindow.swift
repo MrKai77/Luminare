@@ -9,17 +9,17 @@
 import SwiftUI
 
 struct FloatingPanelKey: EnvironmentKey {
-    static let defaultValue: NSPanel? = nil
+    static let defaultValue: NSWindow? = nil
 }
 
 extension EnvironmentValues {
-  var floatingPanel: NSPanel? {
+  var floatingPanel: NSWindow? {
     get { self[FloatingPanelKey.self] }
     set { self[FloatingPanelKey.self] = newValue }
   }
 }
 
-class LuminareModal<Content>: NSPanel where Content: View {
+class LuminareModal<Content>: NSWindow where Content: View {
     @Binding var isPresented: Bool
 
     init(
@@ -42,6 +42,7 @@ class LuminareModal<Content>: NSPanel where Content: View {
         )
 
         collectionBehavior.insert(.fullScreenAuxiliary)
+        level = .floating
 
         backgroundColor = .clear
         contentView = view
@@ -80,15 +81,6 @@ class LuminareModal<Content>: NSPanel where Content: View {
         })
 
         self.isPresented = false
-    }
-
-    // Make sure the panel can be focused
-    override var canBecomeKey: Bool {
-        return true
-    }
-
-    override var canBecomeMain: Bool {
-        return true
     }
 }
 

@@ -11,6 +11,7 @@ struct LuminareModalView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
 
     let sectionSpacing: CGFloat = 16
+    let outerPadding: CGFloat = 16
 
     let content: Content
     let modalWindow: LuminareModal<Content>
@@ -25,7 +26,7 @@ struct LuminareModalView<Content>: View where Content: View {
             VStack(spacing: self.sectionSpacing) {
                 self.content
             }
-            .padding(16)
+            .padding(outerPadding)
             .frame(width: 400)
             .fixedSize()
             .background {
@@ -34,11 +35,24 @@ struct LuminareModalView<Content>: View where Content: View {
                     blendingMode: .behindWindow
                 )
                 .overlay {
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                    // The bottom has a smaller corner radius because a compact button will be used there
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 12 + outerPadding,
+                        bottomLeadingRadius: 8 + outerPadding,
+                        bottomTrailingRadius: 8 + outerPadding,
+                        topTrailingRadius: 12 + outerPadding
+                    )
+                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                 }
             }
-            .clipShape(.rect(cornerRadius: 28, style: .continuous))
+            .clipShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 12 + outerPadding,
+                    bottomLeadingRadius: 8 + outerPadding,
+                    bottomTrailingRadius: 8 + outerPadding,
+                    topTrailingRadius: 12 + outerPadding
+                )
+            )
 
             .background {
                 GeometryReader { proxy in

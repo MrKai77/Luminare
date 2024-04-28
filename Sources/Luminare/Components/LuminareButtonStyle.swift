@@ -81,6 +81,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     let elementExtraMinHeight: CGFloat = 25
     let extraCompact: Bool
     @State var isHovering: Bool = false
+
     let cornerRadius: CGFloat = 8
 
     public init(extraCompact: Bool = false) {
@@ -102,7 +103,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             }
             .background {
                 RoundedRectangle(
-                    cornerRadius: self.cornerRadius,
+                    cornerRadius: cornerRadius,
                     style: .continuous
                 )
                 .strokeBorder(.quaternary, lineWidth: 1)
