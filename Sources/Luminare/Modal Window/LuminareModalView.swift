@@ -13,9 +13,9 @@ struct LuminareModalView<Content>: View where Content: View {
     let sectionSpacing: CGFloat = 16
 
     let content: Content
-    let modalWindow: LuminareModalWindow<Content>
+    let modalWindow: LuminareModal<Content>
 
-    init(_ content: Content, _ modalWindow: LuminareModalWindow<Content>) {
+    init(_ content: Content, _ modalWindow: LuminareModal<Content>) {
         self.content = content
         self.modalWindow = modalWindow
     }
