@@ -87,7 +87,7 @@ public struct ScreenView<Content>: View where Content: View {
     func updateImage() async {
         if let screen = NSScreen.main,
            let url = NSWorkspace.shared.desktopImageURL(for: screen),
-           let image = NSImage.thumbnail(with: url, maxWidth: 300) {
+           let image = NSImage.thumbnail(with: url, width: 300) {
 
             withAnimation {
                 self.image = image
@@ -97,12 +97,12 @@ public struct ScreenView<Content>: View where Content: View {
 }
 
 extension NSImage {
-    static func thumbnail(with url: URL, maxWidth: CGFloat) -> NSImage? {
+    static func thumbnail(with url: URL, width: CGFloat) -> NSImage? {
         guard let inputImage = NSImage(contentsOf: url) else { return nil }
         let aspectRatio = inputImage.size.width / inputImage.size.height
         let thumbSize = NSSize(
-            width: maxWidth,
-            height: maxWidth * aspectRatio
+            width: width,
+            height: width * aspectRatio
         )
 
         let outputImage = NSImage(size: thumbSize)

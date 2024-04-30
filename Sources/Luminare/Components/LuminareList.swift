@@ -379,6 +379,5 @@ extension NSTableView {
     open override func viewDidMoveToWindow() {
         super.viewWillDraw()
         selectionHighlightStyle = .none
-        draggingDestinationFeedbackStyle = .gap
     }
 }
