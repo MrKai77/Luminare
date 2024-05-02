@@ -87,7 +87,7 @@ public struct ScreenView<Content>: View where Content: View {
     func updateImage() async {
         if let screen = NSScreen.main,
            let url = NSWorkspace.shared.desktopImageURL(for: screen),
-           let image = NSImage.thumbnail(with: url, width: 300) {
+           let image = NSImage.resize(url: url, width: 300) {
 
             withAnimation {
                 self.image = image
@@ -97,27 +97,37 @@ public struct ScreenView<Content>: View where Content: View {
 }
 
 extension NSImage {
-    static func thumbnail(with url: URL, width: CGFloat) -> NSImage? {
+    static func resize(url: URL, width: CGFloat) -> NSImage? {
         guard let inputImage = NSImage(contentsOf: url) else { return nil }
-        let aspectRatio = inputImage.size.width / inputImage.size.height
-        let thumbSize = NSSize(
+
+        let aspectRatio = inputImage.size.height / inputImage.size.width
+        let targetSize = NSSize(
             width: width,
             height: width * aspectRatio
         )
 
-        let outputImage = NSImage(size: thumbSize)
-        outputImage.lockFocus()
-        inputImage.draw(
-            in: NSRect(
-                origin: .zero,
-                size: .init(width: thumbSize.width, height: thumbSize.height)
-            ),
-            from: .zero,
-            operation: .sourceOver,
-            fraction: 1
+        let frame = NSRect(
+            x: 0,
+            y: 0,
+            width: targetSize.width,
+            height: targetSize.height
         )
-        outputImage.unlockFocus()
 
-        return outputImage
+        guard let representation = inputImage.bestRepresentation(
+            for: frame,
+            context: nil,
+            hints: nil
+        ) else {
+            return nil
+        }
+
+        let image = NSImage(
+            size: targetSize,
+            flipped: false
+        ) { _ -> Bool in
+            return representation.draw(in: frame)
+        }
+
+        return image
     }
 }
