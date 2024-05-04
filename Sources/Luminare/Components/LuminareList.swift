@@ -65,6 +65,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                 )
             )
             .padding(.bottom, 4)
+            .padding([.top, .horizontal], 1) // Since padding is disabled in the section
 
             List(selection: $selection) {
                 ForEach($items) { item in
@@ -89,12 +90,11 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             .scrollDisabled(true)
             .listStyle(.plain)
             .padding(.horizontal, -10)
-            .padding(.vertical, -4)
-            .padding(.top, 2)
+            .padding(.bottom, -4)
 
             // For selection outlines
-            .padding(.horizontal, 1) // TODO: FIND OUT WHY THIS THING IS 1 PT OFF
-            .padding(self.lineWidth / 2.0)
+            .padding(.horizontal, 1)
+            .padding(.leading, 1)
 
             .onChange(of: self.selection) { _ in
                 self.processSelection()
@@ -175,6 +175,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                     getItemBorder()
                     getItemBackground()
                 }
+                .padding(.bottom, item != self.items.last ? 1 : 0) // To compensate for the divider
             }
 
             .overlay {

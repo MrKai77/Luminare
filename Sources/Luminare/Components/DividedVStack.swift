@@ -63,14 +63,13 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                                     isLastChild: child.id == last
                                 )
                             )
+                            .padding(.top, child.id == first ? 1 : 0)
+                            .padding(.bottom, child.id == last ? 1 : 0)
+                            .padding(.horizontal, 1)
                     } else {
                         child
                     }
                 }
-                // Fixes padding on borders
-                .padding(.top, child.id == first ? 1 : 0)
-                .padding(.bottom, child.id == last ? 1 : 0)
-                .padding(.horizontal, 1)
 
                 if showDividers && child.id != last {
                     Divider()
