@@ -16,10 +16,12 @@ struct LuminareSidebarView: View {
 
     @Binding var activeTab: SettingsTab
     let groups: [SettingsTabGroup]
+    let didTabChange: (SettingsTab) -> Void
 
-    init(_ groups: [SettingsTabGroup], _ activeTab: Binding<SettingsTab>) {
+    init(_ groups: [SettingsTabGroup], _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> Void) {
         self._activeTab = activeTab
         self.groups = groups
+        self.didTabChange = didTabChange
     }
 
     var body: some View {
@@ -32,7 +34,7 @@ struct LuminareSidebarView: View {
                     groupTitle(group)
 
                     ForEach(group.tabs) { tab in
-                        LuminareSidebarGroupItem(tab, $activeTab)
+                        LuminareSidebarGroupItem(tab, $activeTab, didTabChange: didTabChange)
                     }
                 }
             }

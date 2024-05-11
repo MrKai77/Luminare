@@ -13,15 +13,18 @@ struct LuminareSidebarGroupItem: View {
 
     @State private var isHovering: Bool = false
     @State private var isActive: Bool = false
+    let didTabChange: (SettingsTab) -> Void
 
-    init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>) {
+    init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> Void) {
         self._activeTab = activeTab
         self.tab = tab
+        self.didTabChange = didTabChange
     }
 
     var body: some View {
         Button {
-            activeTab = self.tab
+            activeTab = tab
+            didTabChange(tab)
         } label: {
             HStack {
                 self.tab.iconView()

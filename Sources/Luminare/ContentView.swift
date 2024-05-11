@@ -19,16 +19,18 @@ struct ContentView: View {
 
     @State var activeTab: SettingsTab
     let groups: [SettingsTabGroup]
+    let didTabChange: (SettingsTab) -> Void
 
-    init(_ groups: [SettingsTabGroup]) {
+    init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> Void) {
         self.groups = groups
         self.activeTab = groups.first!.tabs.first!
+        self.didTabChange = didTabChange
     }
 
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 0) {
-                LuminareSidebarView(groups, $activeTab)
+                LuminareSidebarView(groups, $activeTab, didTabChange: didTabChange)
                     .frame(width: sidebarWidth)
 
                 Divider()

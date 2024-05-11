@@ -4,10 +4,10 @@
 //
 //  Created by Kai Azim on 2024-04-02.
 //
+// Thank you https://movingparts.io/variadic-views-in-swiftui
 
 import SwiftUI
 
-// Thank you https://movingparts.io/variadic-views-in-swiftui
 public struct DividedVStack<Content: View>: View {
     let spacing: CGFloat?
     let applyMaskToItems: Bool

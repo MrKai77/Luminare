@@ -14,10 +14,18 @@ public class LuminareSettingsWindow {
     var windowController: NSWindowController?
     var tabs: [SettingsTabGroup]
     static var tint: Color = .accentColor
+    
+    private let didTabChange: (SettingsTab) -> Void
+    private var previewView: NSView?
 
-    public init(_ tabs: [SettingsTabGroup], tint: Color = .accentColor) {
+    public init(
+        _ tabs: [SettingsTabGroup],
+        tint: Color = .accentColor,
+        didTabChange: @escaping (SettingsTab) -> Void
+    ) {
         self.tabs = tabs
         LuminareSettingsWindow.tint = tint
+        self.didTabChange = didTabChange
     }
 
     public func show() {
@@ -29,25 +37,20 @@ public class LuminareSettingsWindow {
         }
 
         let view = NSHostingView(
-            rootView: ContentView(self.tabs)
+            rootView: ContentView(self.tabs, didTabChange: didTabChange)
                 .environment(\.tintColor, LuminareSettingsWindow.tint)
         )
 
         let window = NSWindow(
             contentRect: view.bounds,
-            styleMask: [
-                .closable,
-                .titled,
-                .fullSizeContentView
-            ],
+            styleMask: [.closable, .titled, .fullSizeContentView],
             backing: .buffered,
-            defer: false
+            defer: false // If true, background blur will break
         )
 
         window.contentView = view
         window.contentView?.wantsLayer =  true
 
-        // Makes the toolbar THICK
         window.toolbarStyle = .unified
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
@@ -65,6 +68,27 @@ public class LuminareSettingsWindow {
         window.orderFrontRegardless()
 
         self.windowController = .init(window: window)
+    }
+
+    public func setPreviewView<Content: View>(_ view: Content) {
+        if let previewView = previewView {
+            NSAnimationContext.runAnimationGroup({ ctx in
+                ctx.duration = 0.1
+                previewView.animator().alphaValue = 0
+            }, completionHandler: {
+                previewView.removeFromSuperview()
+            })
+        }
+
+        let windowSize = windowController?.window?.frame.size ?? .zero
+
+        let view = NSHostingView(rootView: AnyView(view.ignoresSafeArea()))
+        view.setFrameSize(NSSize(width: 520, height: 650))
+        view.setFrameOrigin(NSPoint(x: windowSize.width - 520, y: 0))
+
+        windowController?.window?.contentView?.addSubview(view)
+
+        self.previewView = view
     }
 
 //    func swizzleWidgets() {
