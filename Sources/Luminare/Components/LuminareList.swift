@@ -64,8 +64,8 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                     isLastChild: false
                 )
             )
-            .padding(.bottom, 4)
-            .padding([.top, .horizontal], 1) // Since padding is disabled in the section
+            .padding(.bottom, 4) // Since padding is disabled in the section, add spacing
+            .padding([.top, .horizontal], 1) // Since padding is disabled in the section, add outer padding
 
             List(selection: $selection) {
                 ForEach($items) { item in
@@ -90,7 +90,6 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             .scrollDisabled(true)
             .listStyle(.plain)
             .padding(.horizontal, -10)
-            .padding(.bottom, -4)
 
             // For selection outlines
             .padding(.horizontal, 1)
@@ -170,6 +169,12 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
             }
             .tag(item)
 
+            .onHover { hover in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    isHovering = hover
+                }
+            }
+
             .background {
                 ZStack {
                     getItemBorder()
@@ -185,12 +190,6 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                         Divider()
                     }
                     .padding(.trailing, -0.5)
-                }
-            }
-
-            .onHover { hover in
-                withAnimation(.easeOut(duration: 0.1)) {
-                    isHovering = hover
                 }
             }
 
