@@ -64,7 +64,7 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
                     isLastChild: false
                 )
             )
-            .padding(.bottom, 4) // Since padding is disabled in the section, add spacing
+            .padding(.bottom, 8) // Since padding is disabled in the section, add spacing
             .padding([.top, .horizontal], 1) // Since padding is disabled in the section, add outer padding
 
             List(selection: $selection) {
