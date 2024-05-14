@@ -45,6 +45,7 @@ struct ContentView: View {
                         }
                         .padding(mainViewSectionOuterPadding)
                     }
+                    .scrollIndicators(.never)
                     .clipped()
                 }
                 .frame(width: mainViewWidth)

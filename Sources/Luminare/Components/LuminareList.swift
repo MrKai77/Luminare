@@ -180,7 +180,6 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                     getItemBorder()
                     getItemBackground()
                 }
-                .padding(.bottom, item != self.items.last ? 1 : 0) // To compensate for the divider
             }
 
             .overlay {

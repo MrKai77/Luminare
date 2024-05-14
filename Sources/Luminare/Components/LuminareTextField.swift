@@ -13,12 +13,14 @@ public struct LuminareTextField: View {
 
     @Binding var text: String
     let placeHolder: String
+    let onSubmit: (() -> Void)?
 
     @State var monitor: Any?
 
-    public init(_ text: Binding<String>, placeHolder: String) {
+    public init(_ text: Binding<String>, placeHolder: String, onSubmit: (() -> Void)? = nil) {
         self._text = text
         self.placeHolder = placeHolder
+        self.onSubmit = onSubmit
     }
 
     public var body: some View {
@@ -26,6 +28,11 @@ public struct LuminareTextField: View {
             .padding(.horizontal, horizontalPadding)
             .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
+            .onSubmit {
+                if let onSubmit = onSubmit {
+                    onSubmit()
+                }
+            }
 
             .onAppear {
                 self.monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
