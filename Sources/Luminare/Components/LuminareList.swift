@@ -204,7 +204,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
 
     @ViewBuilder func getItemBackground() -> some View {
         Group {
-            tintColor
+            tintColor()
                 .opacity(tintOpacity)
 
             if self.isHovering {
@@ -273,7 +273,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                     bottomTrailingRadius: 0,
                     topTrailingRadius: cornerRadius
                 )
-                .strokeBorder(tintColor, lineWidth: lineWidth)
+                .strokeBorder(tintColor(), lineWidth: lineWidth)
 
                 VStack {
                     Color.clear
@@ -303,7 +303,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                 Rectangle()
                     .frame(width: lineWidth)
             }
-            .foregroundStyle(tintColor)
+            .foregroundStyle(tintColor())
         }
     }
 
@@ -318,7 +318,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                 Rectangle()
                     .frame(width: lineWidth)
             }
-            .foregroundStyle(tintColor)
+            .foregroundStyle(tintColor())
 
             // --- Bottom part ---
 
@@ -329,7 +329,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                     bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
                     topTrailingRadius: 0
                 )
-                .strokeBorder(tintColor, lineWidth: lineWidth)
+                .strokeBorder(tintColor(), lineWidth: lineWidth)
 
                 VStack {
                     HStack {
@@ -360,7 +360,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
             Rectangle()
                 .frame(width: lineWidth)
         }
-        .foregroundStyle(tintColor)
+        .foregroundStyle(tintColor())
     }
 
     func singleSelectionPart(isBottomOfList: Bool) -> some View {
@@ -370,7 +370,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
             bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
             topTrailingRadius: cornerRadius
         )
-        .strokeBorder(tintColor, lineWidth: lineWidth)
+        .strokeBorder(tintColor(), lineWidth: lineWidth)
     }
 }
 

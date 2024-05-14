@@ -63,6 +63,6 @@ struct ContentView: View {
 
         .buttonStyle(LuminareButtonStyle())
 
-        .tint(self.tintColor)
+        .tint(tintColor())
     }
 }

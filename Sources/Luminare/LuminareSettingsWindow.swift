@@ -13,14 +13,14 @@ public class LuminareSettingsWindow {
     static var identifier = NSUserInterfaceItemIdentifier("LuminareSettingsWindow")
     var windowController: NSWindowController?
     var tabs: [SettingsTabGroup]
-    static var tint: Color = .accentColor
-    
+    static var tint: () -> Color = { .accentColor }
+
     private let didTabChange: (SettingsTab) -> Void
     private var previewView: NSView?
 
     public init(
         _ tabs: [SettingsTabGroup],
-        tint: Color = .accentColor,
+        tint: @escaping () -> Color = { .accentColor },
         didTabChange: @escaping (SettingsTab) -> Void
     ) {
         self.tabs = tabs

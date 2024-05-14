@@ -96,11 +96,11 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 ZStack {
                     let isActive = isSelfActive(i: i, j: j)
                     getShape(i: i, j: j)
-                        .foregroundStyle(isActive ? tintColor.opacity(0.15) : .clear)
+                        .foregroundStyle(isActive ? tintColor().opacity(0.15) : .clear)
                         .overlay {
                             getShape(i: i, j: j)
                                 .strokeBorder(
-                                    tintColor,
+                                    tintColor(),
                                     lineWidth: isActive ? 1.5 : 0
                                 )
                         }

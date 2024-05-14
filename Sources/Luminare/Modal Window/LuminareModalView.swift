@@ -67,7 +67,7 @@ struct LuminareModalView<Content>: View where Content: View {
             Spacer()
         }
         .buttonStyle(LuminareButtonStyle())
-        .tint(tintColor)
+        .tint(tintColor())
         .ignoresSafeArea()
     }
 }
