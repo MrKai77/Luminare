@@ -39,14 +39,15 @@ struct ColorSaturationBrightnessView: View {
                 endPoint: .bottom
             )
 
-            Circle()
-                .frame(width: circleSize, height: circleSize)
-                .foregroundColor(selectedColor)
-                .background {
-                    Circle()
-                        .stroke(.white, lineWidth: 6)
-                }
-                .shadow(radius: 3)
+//            Circle()
+//                .frame(width: circleSize, height: circleSize)
+//                .foregroundColor(selectedColor)
+//                .background {
+//                    Circle()
+//                        .stroke(.white, lineWidth: 6)
+//                }
+//                .shadow(radius: 3)
+            ColorPickerCircle(selectedColor: $selectedColor, isDragging: $isDragging, circleSize: circleSize)
                 .offset(
                     x: circlePosition.x - viewSize / 2,
                     y: circlePosition.y - viewSize / 2
@@ -93,7 +94,7 @@ struct ColorSaturationBrightnessView: View {
             selectedColor = Color(
                 hue: Double(originalHue),
                 saturation: Double(saturation),
-                brightness: Double(brightness)
+                brightness: Double(max(0.0001, brightness))
             )
         }
 
@@ -117,5 +118,37 @@ struct ColorSaturationBrightnessView: View {
                 y: (1 - CGFloat(hsb.brightness)) * viewSize
             )
         }
+    }
+}
+
+
+struct ColorPickerCircle: View {
+    @Binding var selectedColor: Color
+    @Binding var isDragging: Bool
+
+    @State private var isHovering: Bool = false
+    private let circleSize: CGFloat
+
+    init(selectedColor: Binding<Color>, isDragging: Binding<Bool>, circleSize: CGFloat) {
+        self._selectedColor = selectedColor
+        self._isDragging = isDragging
+        self.circleSize = circleSize
+    }
+
+    var body: some View {
+        Circle()
+            .frame(width: circleSize, height: circleSize)
+            .foregroundColor(selectedColor)
+            .background {
+                Circle()
+                    .stroke(.white, lineWidth: 6)
+            }
+            .shadow(radius: 3)
+
+            .scaleEffect((isHovering && !isDragging) ? 1.25 : 1.0)
+            .onHover { hovering in
+                isHovering = hovering
+            }
+            .animation(.smooth(duration: 0.2), value: [isHovering, isDragging])
     }
 }
