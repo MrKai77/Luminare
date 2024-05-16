@@ -105,7 +105,7 @@ struct ColorPickerPopover: View {
             }
             .padding(4)
 
-            .background(.quinary)
+            .background(.quinary.opacity(0.5))
             .clipShape(
                 UnevenRoundedRectangle(
                     topLeadingRadius: 16,
@@ -121,8 +121,9 @@ struct ColorPickerPopover: View {
                     bottomTrailingRadius: 12,
                     topTrailingRadius: 16
                 )
-                .strokeBorder(.quinary, lineWidth: 1)
+                .strokeBorder(.quinary.opacity(0.5), lineWidth: 1)
             }
+
             // RGB input fields
             /// this needs to be changed to more support the img
             /// this would be edited above, as this is defined
@@ -242,6 +243,7 @@ struct ColorPickerPopover: View {
         }
 
         lastChangeSource = changeSource
+
         if changeSource == .colorSpectrum {
             updateRGBComponents()
         }
@@ -249,12 +251,20 @@ struct ColorPickerPopover: View {
 
     // Update the color from RGB components
     private func updateColorFromRGB() -> Color {
-        Color(red: redComponent / 255.0, green: greenComponent / 255.0, blue: blueComponent / 255.0)
+        Color(
+            red: redComponent / 255.0,
+            green: greenComponent / 255.0,
+            blue: blueComponent / 255.0
+        )
     }
 
     // Create a color from the spectrum based on a percentage
     private func colorFromSpectrum(percentage: Double) -> Color {
-        Color(hue: 0.01 + (percentage * 0.98), saturation: 1, brightness: 1)
+        Color(
+            hue: 0.01 + (percentage * 0.98),
+            saturation: color.toHSB().saturation,
+            brightness: color.toHSB().brightness
+        )
     }
 
     // Update RGB components from the current color
@@ -300,23 +310,22 @@ struct RGBInputField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(label).fontWeight(.light)
-            ZStack {
-                VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
-                    .cornerRadius(6)
-                    .frame(height: 30)
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.gray, lineWidth: 0.5))
-                /// we may want to pick a diff color
-                    .background(Color.white.opacity(0.10))  // 10% transparent white background
-                HStack {
-                    Spacer().frame(width: 15)
+            Text(label)
+
+            Color.clear
+                .frame(height: 34)
+                .overlay {
                     TextField("", value: $value, formatter: NumberFormatter())
                         .textFieldStyle(PlainTextFieldStyle())
-                        .frame(height: 30)
+                        .padding(8)
                 }
-            }
+                .background(.quinary.opacity(0.5))
+                .clipShape(.rect(cornerRadius: 8))
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(.quinary.opacity(0.5), lineWidth: 1)
+                }
         }
-        .padding(.horizontal, 8)
     }
 }
 
@@ -337,19 +346,22 @@ struct ColorLightnessView: View {
 
     var body: some View {
         ZStack {
-            selectedColor
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            LinearGradient(
-                gradient: Gradient(colors: [.clear, .black]),
-                startPoint: .top,
-                endPoint: .bottom
+            Color(
+                hue: originalHue,
+                saturation: originalSaturation,
+                brightness: 1
             )
 
             LinearGradient(
                 gradient: Gradient(colors: [.white.opacity(0), .white]),
-                startPoint: .leading,
-                endPoint: .trailing
+                startPoint: .trailing,
+                endPoint: .leading
+            )
+
+            LinearGradient(
+                gradient: Gradient(colors: [.black.opacity(0), .black]),
+                startPoint: .top,
+                endPoint: .bottom
             )
 
             Circle()
@@ -408,9 +420,10 @@ struct ColorLightnessView: View {
         // Only adjust brightness if dragging, to avoid overwriting with white or black
         if isDragging {
             let brightness = 1 - (adjustedY / viewSize)
+            let saturation = (adjustedX / viewSize)
             selectedColor = Color(
-                hue: Double(originalHue), 
-                saturation: Double(originalSaturation),
+                hue: Double(originalHue),
+                saturation: Double(saturation),
                 brightness: Double(brightness)
             )
         }
