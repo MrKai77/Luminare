@@ -29,7 +29,6 @@ public struct LuminareColorPicker: View {
                 onSubmit: {
                     if let newColor = Color(hex: text) {
                         text = newColor.toHex()
-                        currentColor = newColor
                         withAnimation(.smooth(duration: 0.3)) {
                             color = newColor
                         }
@@ -53,6 +52,9 @@ public struct LuminareColorPicker: View {
             .popover(isPresented: $showColorPicker) {
                 ColorPickerPopover(color: $color, hexColor: $text, showColorPicker: $showColorPicker)
             }
+        }
+        .onChange(of: color) { _ in
+            currentColor = color
         }
     }
 }
@@ -102,8 +104,25 @@ struct ColorPickerPopover: View {
                     )
             }
             .padding(4)
-            .modifier(LuminareBordered())
 
+            .background(.quinary)
+            .clipShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 16,
+                    bottomLeadingRadius: 12,
+                    bottomTrailingRadius: 12,
+                    topTrailingRadius: 16
+                )
+            )
+            .background {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 16,
+                    bottomLeadingRadius: 12,
+                    bottomTrailingRadius: 12,
+                    topTrailingRadius: 16
+                )
+                .strokeBorder(.quinary, lineWidth: 1)
+            }
             // RGB input fields
             /// this needs to be changed to more support the img
             /// this would be edited above, as this is defined
@@ -111,7 +130,7 @@ struct ColorPickerPopover: View {
             RGBInputFields
         }
         .padding(8)
-        .onAppear(perform: initializeComponents)
+        .onAppear(perform: updateRGBComponents)
         .onChange(of: color, perform: updateComponents)
     }
 
@@ -133,9 +152,9 @@ struct ColorPickerPopover: View {
                             let clampedX = max(0, min(value.location.x, geometry.size.width))
                             selectionPosition = clampedX
                             let percentage = selectionPosition / geometry.size.width
-                            setColor(
-                                colorFromSpectrum(percentage: Double(percentage)), changeSource: .colorSpectrum)
-                        }))
+                            setColor(colorFromSpectrum(percentage: Double(percentage)), changeSource: .colorSpectrum)
+                        })
+                    )
 
                 RoundedRectangle(
                     cornerRadius: handleCornerRadius(at: selectionPosition, within: geometry.size.width),
@@ -149,7 +168,9 @@ struct ColorPickerPopover: View {
                     x: handleOffset(
                         at: selectionPosition,
                         handleWidth: handleWidth(at: selectionPosition, within: geometry.size.width),
-                        within: geometry.size.width), y: 0
+                        within: geometry.size.width
+                    ),
+                    y: 0
                 )
                 .foregroundColor(.white)
                 .shadow(radius: 3)
@@ -197,12 +218,18 @@ struct ColorPickerPopover: View {
     private var RGBInputFields: some View {
         HStack(spacing: 8) {
             RGBInputField(label: "Red", value: $redComponent)
-                .onChange(of: redComponent) { _ in setColor(updateColorFromRGB(), changeSource: .rgbInput) }
-            RGBInputField(label: "Green", value: $greenComponent)
-                .onChange(of: greenComponent) { _ in setColor(updateColorFromRGB(), changeSource: .rgbInput)
+                .onChange(of: redComponent) { _ in
+                    setColor(updateColorFromRGB(), changeSource: .rgbInput)
                 }
+
+            RGBInputField(label: "Green", value: $greenComponent)
+                .onChange(of: greenComponent) { _ in 
+                    setColor(updateColorFromRGB(), changeSource: .rgbInput)
+                }
+
             RGBInputField(label: "Blue", value: $blueComponent)
-                .onChange(of: blueComponent) { _ in setColor(updateColorFromRGB(), changeSource: .rgbInput)
+                .onChange(of: blueComponent) { _ in 
+                    setColor(updateColorFromRGB(), changeSource: .rgbInput)
                 }
         }
         .padding(.top)
@@ -210,10 +237,13 @@ struct ColorPickerPopover: View {
 
     // Set the color based on the source of change
     private func setColor(_ newColor: Color, changeSource: ChangeSource) {
-        color = newColor
+        withAnimation(.smooth(duration: 0.2)) {
+            color = newColor
+        }
+
         lastChangeSource = changeSource
         if changeSource == .colorSpectrum {
-            updateRGBComponentsFromColor()
+            updateRGBComponents()
         }
     }
 
@@ -228,15 +258,7 @@ struct ColorPickerPopover: View {
     }
 
     // Update RGB components from the current color
-    private func updateRGBComponentsFromColor() {
-        let rgb = color.toRGB()
-        redComponent = rgb.red
-        greenComponent = rgb.green
-        blueComponent = rgb.blue
-    }
-
-    // Initialize RGB components from the current color
-    private func initializeComponents() {
+    private func updateRGBComponents() {
         let rgb = color.toRGB()
         redComponent = rgb.red
         greenComponent = rgb.green
@@ -311,6 +333,7 @@ struct ColorLightnessView: View {
     @State private var isDragging: Bool = false
 
     private let viewSize: CGFloat = 276
+    private let circleSize: CGFloat = 12
 
     var body: some View {
         ZStack {
@@ -330,8 +353,12 @@ struct ColorLightnessView: View {
             )
 
             Circle()
-                .frame(width: 20, height: 20)
-                .foregroundColor(.white)
+                .frame(width: circleSize, height: circleSize)
+                .foregroundColor(selectedColor)
+                .background {
+                    Circle()
+                        .stroke(.white, lineWidth: 6)
+                }
                 .shadow(radius: 3)
                 .offset(
                     x: circlePosition.x - viewSize / 2,
