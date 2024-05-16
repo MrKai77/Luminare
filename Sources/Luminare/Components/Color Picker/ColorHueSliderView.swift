@@ -87,11 +87,12 @@ struct ColorHueSliderView: View {
 
     // Create a color from the spectrum based on a percentage
     private func colorFromSpectrum(percentage: Double) -> Color {
-        let currentColorHSB = selectedColor.toHSB()
+        let hsb = selectedColor.toHSB()
+
         return Color(
             hue: 0.01 + (percentage * 0.99),
-            saturation: max(currentColorHSB.saturation, 0.01),
-            brightness: max(currentColorHSB.brightness, 0.01)
+            saturation: max(0.0001, hsb.saturation),
+            brightness: hsb.brightness
         )
     }
 

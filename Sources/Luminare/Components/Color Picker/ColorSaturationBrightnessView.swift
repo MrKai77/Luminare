@@ -23,7 +23,7 @@ struct ColorSaturationBrightnessView: View {
         ZStack {
             Color(
                 hue: originalHue,
-                saturation: originalSaturation,
+                saturation: 1,
                 brightness: 1
             )
 
@@ -56,11 +56,11 @@ struct ColorSaturationBrightnessView: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     isDragging = true
-                    updateCirclePosition(value.location)
+                    updateColor(value.location)
                 }
                 .onEnded { value in
                     isDragging = false
-                    updateCirclePosition(value.location)
+                    updateColor(value.location)
                 }
         )
         .frame(width: viewSize, height: viewSize)
@@ -69,26 +69,22 @@ struct ColorSaturationBrightnessView: View {
             let hsb = selectedColor.toHSB()
             originalHue = hsb.hue
             originalSaturation = hsb.saturation
-            initializeCirclePosition()
+            updateCirclePosition()
         }
         .onChange(of: selectedColor) { _ in
             if !isDragging {
                 let hsb = selectedColor.toHSB()
                 originalHue = hsb.hue
                 originalSaturation = hsb.saturation
-                initializeCirclePosition()
+                updateCirclePosition()
             }
         }
     }
 
     // Update the position of the circle based on user interaction
-    private func updateCirclePosition(_ location: CGPoint) {
+    private func updateColor(_ location: CGPoint) {
         let adjustedX = max(0, min(location.x, viewSize))
         let adjustedY = max(0, min(location.y, viewSize))
-
-        withAnimation(.smooth(duration: 0.2)) {
-            circlePosition = CGPoint(x: adjustedX, y: adjustedY)
-        }
 
         // Only adjust brightness if dragging, to avoid overwriting with white or black
         if isDragging {
@@ -100,14 +96,26 @@ struct ColorSaturationBrightnessView: View {
                 brightness: Double(brightness)
             )
         }
+
+        withAnimation(.smooth(duration: 0.2)) {
+            updateCirclePosition()
+        }
     }
 
     // Initialize the position of the circle based on the current color
-    private func initializeCirclePosition() {
+    private func updateCirclePosition() {
         let hsb = selectedColor.toHSB()
-        circlePosition = CGPoint(
-            x: CGFloat(hsb.saturation) * viewSize,
-            y: (1 - CGFloat(hsb.brightness)) * viewSize
-        )
+
+        if hsb.saturation <= 0.0001 {
+            circlePosition = CGPoint(
+                x: .zero,
+                y: (1 - CGFloat(hsb.brightness)) * viewSize
+            )
+        } else {
+            circlePosition = CGPoint(
+                x: CGFloat(hsb.saturation) * viewSize,
+                y: (1 - CGFloat(hsb.brightness)) * viewSize
+            )
+        }
     }
 }
