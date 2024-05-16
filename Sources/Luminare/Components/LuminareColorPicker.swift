@@ -50,7 +50,7 @@ public struct LuminareColorPicker: View {
             }
             .buttonStyle(PlainButtonStyle())
             .popover(isPresented: $showColorPicker) {
-                ColorPickerPopover(color: $color, hexColor: $text, showColorPicker: $showColorPicker)
+                ColorPickerPopover(color: $color, hexColor: $text)
             }
         }
         .onChange(of: color) { _ in
@@ -65,15 +65,10 @@ public struct LuminareColorPicker: View {
 struct ColorPickerPopover: View {
     @Binding var color: Color
     @Binding var hexColor: String
-    @Binding var showColorPicker: Bool
-    @State private var selectionPosition: CGFloat = 0
     @State private var redComponent: Double = 0
     @State private var greenComponent: Double = 0
     @State private var blueComponent: Double = 0
     @State private var lastChangeSource: ChangeSource = .none
-
-    // Gradient for the color spectrum slider
-    private let colorSpectrumGradient = ColorUtils.generateSpectrumGradient()
 
     // Main view containing all components of the color picker
     var body: some View {
@@ -93,7 +88,7 @@ struct ColorPickerPopover: View {
                 // Color spectrum slider
                 /// this vied needs to be finalised
                 /// currently it does not really look like the img
-                colorSpectrumSlider
+                ColorSpectrumSliderView(selectedColor: $color, lastChangeSource: $lastChangeSource)
                     .clipShape(
                         UnevenRoundedRectangle(
                             topLeadingRadius: 2,
@@ -131,88 +126,12 @@ struct ColorPickerPopover: View {
             RGBInputFields
         }
         .padding(8)
-        .onAppear(perform: updateRGBComponents)
-        .onChange(of: color, perform: updateComponents)
-    }
-
-    // View for the color spectrum slider
-    private var colorSpectrumSlider: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: colorSpectrumGradient,
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(maxHeight: .infinity)
-                    .gesture(
-                        DragGesture(minimumDistance: 0).onChanged({ value in
-                            let clampedX = max(0, min(value.location.x, geometry.size.width))
-                            selectionPosition = clampedX
-                            let percentage = selectionPosition / geometry.size.width
-                            setColor(colorFromSpectrum(percentage: Double(percentage)), changeSource: .colorSpectrum)
-                        })
-                    )
-
-                RoundedRectangle(
-                    cornerRadius: handleCornerRadius(at: selectionPosition, within: geometry.size.width),
-                    style: .continuous
-                )
-                .frame(
-                    width: handleWidth(at: selectionPosition, within: geometry.size.width),
-                    height: 12
-                )
-                .offset(
-                    x: handleOffset(
-                        at: selectionPosition,
-                        handleWidth: handleWidth(at: selectionPosition, within: geometry.size.width),
-                        within: geometry.size.width
-                    ),
-                    y: 0
-                )
-                .foregroundColor(.white)
-                .shadow(radius: 3)
-            }
-            .onAppear {
-                let huePercentage = color.toHSB().hue
-                selectionPosition = huePercentage * geometry.size.width
-            }
+        .onAppear {
+            updateComponents(newValue: color)
         }
-        .frame(height: 16)
-    }
-
-    // Calculate the width of the handle based on its position
-    private func handleWidth(
-        at position: CGFloat,
-        within totalWidth: CGFloat
-    ) -> CGFloat {
-        let edgeDistance = min(position, totalWidth - position)
-        let edgeFactor = 1 - max(0, min(edgeDistance / 10, 1))
-        return max(5, min(10, 5 + (5 * edgeFactor)))
-    }
-
-    // Calculate the corner radius of the handle based on its position
-    private func handleCornerRadius(
-        at position: CGFloat,
-        within totalWidth: CGFloat
-    ) -> CGFloat {
-        let edgeDistance = min(position, totalWidth - position)
-        let edgeFactor = max(0, min(edgeDistance / 5, 1))
-        return max(2, 15 * edgeFactor)
-    }
-
-    // Calculate the offset of the handle to keep it within the slider bounds
-    private func handleOffset(
-        at position: CGFloat,
-        handleWidth: CGFloat,
-        within totalWidth: CGFloat
-    ) -> CGFloat {
-        let halfWidth = handleWidth / 2
-        let adjustedPosition = min(max(position, halfWidth), totalWidth - halfWidth)
-        return adjustedPosition - halfWidth
+        .onChange(of: color) { _ in
+            updateComponents(newValue: color)
+        }
     }
 
     // View for RGB input fields
@@ -220,33 +139,29 @@ struct ColorPickerPopover: View {
         HStack(spacing: 8) {
             RGBInputField(label: "Red", value: $redComponent)
                 .onChange(of: redComponent) { _ in
-                    setColor(updateColorFromRGB(), changeSource: .rgbInput)
+                    setColor(updateColorFromRGB())
                 }
 
             RGBInputField(label: "Green", value: $greenComponent)
                 .onChange(of: greenComponent) { _ in 
-                    setColor(updateColorFromRGB(), changeSource: .rgbInput)
+                    setColor(updateColorFromRGB())
                 }
 
             RGBInputField(label: "Blue", value: $blueComponent)
                 .onChange(of: blueComponent) { _ in 
-                    setColor(updateColorFromRGB(), changeSource: .rgbInput)
+                    setColor(updateColorFromRGB())
                 }
         }
         .padding(.top)
     }
 
     // Set the color based on the source of change
-    private func setColor(_ newColor: Color, changeSource: ChangeSource) {
+    private func setColor(_ newColor: Color) {
         withAnimation(.smooth(duration: 0.2)) {
             color = newColor
         }
 
-        lastChangeSource = changeSource
-
-        if changeSource == .colorSpectrum {
-            updateRGBComponents()
-        }
+        lastChangeSource = .rgbInput
     }
 
     // Update the color from RGB components
@@ -256,23 +171,6 @@ struct ColorPickerPopover: View {
             green: greenComponent / 255.0,
             blue: blueComponent / 255.0
         )
-    }
-
-    // Create a color from the spectrum based on a percentage
-    private func colorFromSpectrum(percentage: Double) -> Color {
-        Color(
-            hue: 0.01 + (percentage * 0.98),
-            saturation: color.toHSB().saturation,
-            brightness: color.toHSB().brightness
-        )
-    }
-
-    // Update RGB components from the current color
-    private func updateRGBComponents() {
-        let rgb = color.toRGB()
-        redComponent = rgb.red
-        greenComponent = rgb.green
-        blueComponent = rgb.blue
     }
 
     // Update components when the color changes
@@ -326,6 +224,117 @@ struct RGBInputField: View {
                         .strokeBorder(.quinary.opacity(0.5), lineWidth: 1)
                 }
         }
+    }
+}
+
+struct ColorSpectrumSliderView: View {
+    @Binding var selectedColor: Color
+    @Binding var lastChangeSource: ChangeSource
+    @State private var selectionPosition: CGFloat = 0
+    @State private var selectionOffset: CGFloat = 0
+
+    // Gradient for the color spectrum slider
+    private let colorSpectrumGradient = ColorUtils.generateSpectrumGradient()
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            gradient: colorSpectrumGradient,
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(maxHeight: .infinity)
+                    .gesture(
+                        DragGesture(minimumDistance: 0).onChanged({ value in
+                            let clampedX = max(0, min(value.location.x, geometry.size.width))
+                            selectionPosition = clampedX
+                            let percentage = selectionPosition / geometry.size.width
+                            setColor(colorFromSpectrum(percentage: Double(percentage)))
+                        })
+                    )
+
+                RoundedRectangle(
+                    cornerRadius: handleCornerRadius(at: selectionPosition, within: geometry.size.width),
+                    style: .continuous
+                )
+                .frame(
+                    width: handleWidth(at: selectionPosition, within: geometry.size.width),
+                    height: 12
+                )
+                .offset(
+                    x: selectionOffset,
+                    y: 0
+                )
+                .foregroundColor(.white)
+                .shadow(radius: 3)
+                .onChange(of: selectionPosition) { _ in
+                    withAnimation(.smooth(duration: 0.2)) {
+                        selectionOffset = calculateOffset(
+                            handleWidth: handleWidth(at: selectionPosition, within: geometry.size.width),
+                            within: geometry.size.width
+                        )
+                    }
+                }
+            }
+            .onAppear {
+                let huePercentage = selectedColor.toHSB().hue
+                selectionPosition = huePercentage * geometry.size.width
+            }
+        }
+        .frame(height: 16)
+    }
+
+    // Set the color based on the source of change
+    private func setColor(_ newColor: Color) {
+        withAnimation(.smooth(duration: 0.2)) {
+            selectedColor = newColor
+        }
+
+        lastChangeSource = .colorSpectrum
+    }
+
+    // Create a color from the spectrum based on a percentage
+    private func colorFromSpectrum(percentage: Double) -> Color {
+        let currentColorHSB = selectedColor.toHSB()
+        return Color(
+            hue: 0.01 + (percentage * 0.98),
+            saturation: currentColorHSB.saturation,
+            brightness: currentColorHSB.brightness
+        )
+    }
+
+    // Calculate the offset of the handle to keep it within the slider bounds
+    private func calculateOffset(
+        handleWidth: CGFloat,
+        within totalWidth: CGFloat
+    ) -> CGFloat {
+        let halfWidth = handleWidth / 2
+        let adjustedPosition = min(max(selectionPosition, halfWidth), totalWidth - halfWidth)
+        return adjustedPosition - halfWidth
+    }
+
+    // Calculate the width of the handle based on its position
+    private func handleWidth(
+        at position: CGFloat,
+        within totalWidth: CGFloat
+    ) -> CGFloat {
+        let edgeDistance = min(position, totalWidth - position)
+        let edgeFactor = 1 - max(0, min(edgeDistance / 10, 1))
+        return max(5, min(10, 5 + (5 * edgeFactor)))
+    }
+
+    // Calculate the corner radius of the handle based on its position
+    private func handleCornerRadius(
+        at position: CGFloat,
+        within totalWidth: CGFloat
+    ) -> CGFloat {
+        let edgeDistance = min(position, totalWidth - position)
+        let edgeFactor = max(0, min(edgeDistance / 5, 1))
+        return max(2, 15 * edgeFactor)
     }
 }
 
