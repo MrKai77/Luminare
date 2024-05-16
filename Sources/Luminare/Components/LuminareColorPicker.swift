@@ -75,26 +75,34 @@ struct ColorPickerPopover: View {
 
     // Main view containing all components of the color picker
     var body: some View {
-        VStack(spacing: 0) {
-            // Lightness adjustment view
-            ColorLightnessView(selectedColor: $color, lastChangeSource: $lastChangeSource)
-                .padding(.top, 14)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 4)
-                .background(VisualEffectView(material: .hudWindow, blendingMode: .behindWindow))
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: 2, bottomTrailingRadius: 2, topTrailingRadius: 12))
-                .background(Color.clear)
-                .shadow(radius: 4)
+        VStack(spacing: 12) {
+            VStack(spacing: 2) {
+                // Lightness adjustment view
+                ColorLightnessView(selectedColor: $color, lastChangeSource: $lastChangeSource)
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 12,
+                            bottomLeadingRadius: 2,
+                            bottomTrailingRadius: 2,
+                            topTrailingRadius: 12
+                        )
+                    )
 
-            // Color spectrum slider
-            /// this vied needs to be finalised
-            /// currently it does not really look like the img
-            colorSpectrumSlider
-                .background(VisualEffectView(material: .hudWindow, blendingMode: .behindWindow))
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 2, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 2))
-                .padding(.horizontal, 18)
-                .background(Color.clear)
-                .shadow(radius: 2)
+                // Color spectrum slider
+                /// this vied needs to be finalised
+                /// currently it does not really look like the img
+                colorSpectrumSlider
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 2,
+                            bottomLeadingRadius: 8,
+                            bottomTrailingRadius: 8,
+                            topTrailingRadius: 2
+                        )
+                    )
+            }
+            .padding(4)
+            .modifier(LuminareBordered())
 
             // RGB input fields
             /// this needs to be changed to more support the img
@@ -102,10 +110,9 @@ struct ColorPickerPopover: View {
             /// outside of the scope
             RGBInputFields
         }
-        .frame(width: 300, height: 388)
+        .padding(8)
         .onAppear(perform: initializeComponents)
         .onChange(of: color, perform: updateComponents)
-        .background(VisualEffectView(material: .hudWindow, blendingMode: .behindWindow))
     }
 
     // View for the color spectrum slider
@@ -115,17 +122,12 @@ struct ColorPickerPopover: View {
                 Rectangle()
                     .fill(
                         LinearGradient(
-                            gradient: colorSpectrumGradient, startPoint: .leading, endPoint: .trailing)
-                    )
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 2,
-                            bottomLeadingRadius: 12,
-                            bottomTrailingRadius: 12,
-                            topTrailingRadius: 2
+                            gradient: colorSpectrumGradient,
+                            startPoint: .leading,
+                            endPoint: .trailing
                         )
                     )
-                    .frame(height: 20)
+                    .frame(maxHeight: .infinity)
                     .gesture(
                         DragGesture(minimumDistance: 0).onChanged({ value in
                             let clampedX = max(0, min(value.location.x, geometry.size.width))
@@ -139,8 +141,10 @@ struct ColorPickerPopover: View {
                     cornerRadius: handleCornerRadius(at: selectionPosition, within: geometry.size.width),
                     style: .continuous
                 )
-
-                .frame(width: handleWidth(at: selectionPosition, within: geometry.size.width), height: 13)  // Fixed height
+                .frame(
+                    width: handleWidth(at: selectionPosition, within: geometry.size.width),
+                    height: 12
+                )
                 .offset(
                     x: handleOffset(
                         at: selectionPosition,
@@ -155,28 +159,35 @@ struct ColorPickerPopover: View {
                 selectionPosition = huePercentage * geometry.size.width
             }
         }
-        .frame(height: 30)
-        .padding(.horizontal)
+        .frame(height: 16)
     }
 
     // Calculate the width of the handle based on its position
-    private func handleWidth(at position: CGFloat, within totalWidth: CGFloat) -> CGFloat {
+    private func handleWidth(
+        at position: CGFloat,
+        within totalWidth: CGFloat
+    ) -> CGFloat {
         let edgeDistance = min(position, totalWidth - position)
         let edgeFactor = 1 - max(0, min(edgeDistance / 10, 1))
         return max(5, min(10, 5 + (5 * edgeFactor)))
     }
 
     // Calculate the corner radius of the handle based on its position
-    private func handleCornerRadius(at position: CGFloat, within totalWidth: CGFloat) -> CGFloat {
+    private func handleCornerRadius(
+        at position: CGFloat,
+        within totalWidth: CGFloat
+    ) -> CGFloat {
         let edgeDistance = min(position, totalWidth - position)
         let edgeFactor = max(0, min(edgeDistance / 5, 1))
         return max(2, 15 * edgeFactor)
     }
 
     // Calculate the offset of the handle to keep it within the slider bounds
-    private func handleOffset(at position: CGFloat, handleWidth: CGFloat, within totalWidth: CGFloat)
-    -> CGFloat
-    {
+    private func handleOffset(
+        at position: CGFloat,
+        handleWidth: CGFloat,
+        within totalWidth: CGFloat
+    ) -> CGFloat {
         let halfWidth = handleWidth / 2
         let adjustedPosition = min(max(position, halfWidth), totalWidth - halfWidth)
         return adjustedPosition - halfWidth
@@ -243,17 +254,11 @@ struct ColorPickerPopover: View {
 }
 
 struct ColorUtils {
-    private static var cachedSpectrumGradient: Gradient?
-
     static func generateSpectrumGradient() -> Gradient {
-        if let cachedGradient = cachedSpectrumGradient {
-            return cachedGradient
-        }
         let hueValues = stride(from: 0.0, through: 1.0, by: 0.01).map {
             Color(hue: $0, saturation: 1, brightness: 1)
         }
         let gradient = Gradient(colors: hueValues)
-        cachedSpectrumGradient = gradient
         return gradient
     }
 }
@@ -305,58 +310,52 @@ struct ColorLightnessView: View {
     @State private var originalSaturation: CGFloat = 0
     @State private var isDragging: Bool = false
 
-    private let viewWidth: CGFloat = 238
-    private let viewHeight: CGFloat = 220
+    private let viewSize: CGFloat = 276
 
     var body: some View {
-        VStack {
-            ZStack {
-                GeometryReader { geometry in
-                    ZStack {
-                        selectedColor
-                            .frame(width: geometry.size.width, height: geometry.size.height)
+        ZStack {
+            selectedColor
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                        LinearGradient(
-                            gradient: Gradient(colors: [.clear, .black]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
+            LinearGradient(
+                gradient: Gradient(colors: [.clear, .black]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
 
-                        LinearGradient(
-                            gradient: Gradient(colors: [.white.opacity(0), .white]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+            LinearGradient(
+                gradient: Gradient(colors: [.white.opacity(0), .white]),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
 
-                        Circle()
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(.white)
-                            .shadow(radius: 3)
-                            .offset(
-                                x: circlePosition.x - geometry.size.width / 2,
-                                y: circlePosition.y - geometry.size.height / 2
-                            )
-                    }
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                isDragging = true
-                                updateCirclePosition(value.location, in: geometry.size)
-                            }
-                            .onEnded { value in
-                                isDragging = false
-                                updateCirclePosition(value.location, in: geometry.size)
-                            }
-                    )
-                }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    let tapLocation = CGPoint(x: viewWidth / 2, y: viewHeight / 2)
-                    updateCirclePosition(tapLocation, in: CGSize(width: viewWidth, height: viewHeight))
-                }
-            }
+            Circle()
+                .frame(width: 20, height: 20)
+                .foregroundColor(.white)
+                .shadow(radius: 3)
+                .offset(
+                    x: circlePosition.x - viewSize / 2,
+                    y: circlePosition.y - viewSize / 2
+                )
         }
-        .frame(width: viewWidth, height: viewHeight)
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    isDragging = true
+                    updateCirclePosition(value.location)
+                }
+                .onEnded { value in
+                    isDragging = false
+                    updateCirclePosition(value.location)
+                }
+        )
+        .onTapGesture {
+            let tapLocation = CGPoint(x: viewSize / 2, y: viewSize / 2)
+            updateCirclePosition(tapLocation)
+        }
+        .contentShape(Rectangle())
+        .frame(width: viewSize, height: viewSize)
+
         .onAppear {
             initializeCirclePosition()
         }
@@ -371,16 +370,22 @@ struct ColorLightnessView: View {
     }
 
     // Update the position of the circle based on user interaction
-    private func updateCirclePosition(_ location: CGPoint, in size: CGSize) {
-        let adjustedX = max(0, min(location.x, size.width))
-        let adjustedY = max(0, min(location.y, size.height))
-        circlePosition = CGPoint(x: adjustedX, y: adjustedY)
+    private func updateCirclePosition(_ location: CGPoint) {
+        let adjustedX = max(0, min(location.x, viewSize))
+        let adjustedY = max(0, min(location.y, viewSize))
+
+        withAnimation(.smooth(duration: 0.2)) {
+            circlePosition = CGPoint(x: adjustedX, y: adjustedY)
+        }
+
         // Only adjust brightness if dragging, to avoid overwriting with white or black
         if isDragging {
-            let brightness = 1 - (adjustedY / size.height)
+            let brightness = 1 - (adjustedY / viewSize)
             selectedColor = Color(
-                hue: Double(originalHue), saturation: Double(originalSaturation),
-                brightness: Double(brightness))
+                hue: Double(originalHue), 
+                saturation: Double(originalSaturation),
+                brightness: Double(brightness)
+            )
         }
     }
 
@@ -388,8 +393,8 @@ struct ColorLightnessView: View {
     private func initializeCirclePosition() {
         let hsb = selectedColor.toHSB()
         circlePosition = CGPoint(
-            x: CGFloat(hsb.saturation) * viewWidth,
-            y: (1 - CGFloat(hsb.brightness)) * viewHeight
+            x: CGFloat(hsb.saturation) * viewSize,
+            y: (1 - CGFloat(hsb.brightness)) * viewSize
         )
     }
 }
