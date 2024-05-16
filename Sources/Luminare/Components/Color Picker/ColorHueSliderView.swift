@@ -9,59 +9,70 @@ import SwiftUI
 
 struct ColorHueSliderView: View {
     @Binding var selectedColor: Color
-    @State private var selectionPosition: CGFloat = 0
+    @State private var selectionPosition: CGFloat
     @State private var selectionOffset: CGFloat = 0
 
     // Gradient for the color spectrum slider
-    private let colorSpectrumGradient = ColorUtils.generateSpectrumGradient()
+    private let colorSpectrumGradient = Gradient(
+        colors: stride(from: 0.0, through: 1.0, by: 0.01)
+            .map {
+                Color(hue: $0, saturation: 1, brightness: 1)
+            }
+    )
+    private let viewSize: CGFloat = 276
+
+    init(selectedColor: Binding<Color>) {
+        self._selectedColor = selectedColor
+
+        let huePercentage = selectedColor.wrappedValue.toHSB().hue
+        self._selectionPosition = State(initialValue: huePercentage * viewSize)
+        self._selectionOffset = State(initialValue: calculateOffset(
+            handleWidth: handleWidth(at: selectionPosition, within: viewSize),
+            within: viewSize
+        ))
+    }
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: colorSpectrumGradient,
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+        ZStack(alignment: .leading) {
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        gradient: colorSpectrumGradient,
+                        startPoint: .leading,
+                        endPoint: .trailing
                     )
-                    .frame(maxHeight: .infinity)
-                    .gesture(
-                        DragGesture(minimumDistance: 0).onChanged({ value in
-                            let clampedX = max(0, min(value.location.x, geometry.size.width))
-                            selectionPosition = clampedX
-                            let percentage = selectionPosition / geometry.size.width
-                            setColor(colorFromSpectrum(percentage: Double(percentage)))
-                        })
-                    )
+                )
+                .frame(maxHeight: .infinity)
+                .gesture(
+                    DragGesture(minimumDistance: 0).onChanged({ value in
+                        let clampedX = max(0, min(value.location.x, viewSize))
+                        selectionPosition = clampedX
+                        let percentage = selectionPosition / viewSize
+                        setColor(colorFromSpectrum(percentage: Double(percentage)))
+                    })
+                )
 
-                RoundedRectangle(
-                    cornerRadius: handleCornerRadius(at: selectionPosition, within: geometry.size.width),
-                    style: .continuous
-                )
-                .frame(
-                    width: handleWidth(at: selectionPosition, within: geometry.size.width),
-                    height: 12
-                )
-                .offset(
-                    x: selectionOffset,
-                    y: 0
-                )
-                .foregroundColor(.white)
-                .shadow(radius: 3)
-                .onChange(of: selectionPosition) { _ in
-                    withAnimation(.smooth(duration: 0.2)) {
-                        selectionOffset = calculateOffset(
-                            handleWidth: handleWidth(at: selectionPosition, within: geometry.size.width),
-                            within: geometry.size.width
-                        )
-                    }
+            RoundedRectangle(
+                cornerRadius: handleCornerRadius(at: selectionPosition, within: viewSize),
+                style: .continuous
+            )
+            .frame(
+                width: handleWidth(at: selectionPosition, within: viewSize),
+                height: 12
+            )
+            .offset(
+                x: selectionOffset,
+                y: 0
+            )
+            .foregroundColor(.white)
+            .shadow(radius: 3)
+            .onChange(of: selectionPosition) { _ in
+                withAnimation(.smooth(duration: 0.2)) {
+                    selectionOffset = calculateOffset(
+                        handleWidth: handleWidth(at: selectionPosition, within: viewSize),
+                        within: viewSize
+                    )
                 }
-            }
-            .onAppear {
-                let huePercentage = selectedColor.toHSB().hue
-                selectionPosition = huePercentage * geometry.size.width
             }
         }
         .frame(height: 16)
@@ -78,9 +89,9 @@ struct ColorHueSliderView: View {
     private func colorFromSpectrum(percentage: Double) -> Color {
         let currentColorHSB = selectedColor.toHSB()
         return Color(
-            hue: 0.01 + (percentage * 0.98),
-            saturation: currentColorHSB.saturation,
-            brightness: currentColorHSB.brightness
+            hue: 0.01 + (percentage * 0.99),
+            saturation: max(currentColorHSB.saturation, 0.01),
+            brightness: max(currentColorHSB.brightness, 0.01)
         )
     }
 

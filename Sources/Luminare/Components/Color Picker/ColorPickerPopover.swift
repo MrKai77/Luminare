@@ -97,7 +97,6 @@ struct ColorPickerPopover: View {
                     setColor(updateColorFromRGB())
                 }
         }
-        .padding(.top)
     }
 
     // Set the color based on the source of change

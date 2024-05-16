@@ -58,13 +58,3 @@ public struct LuminareColorPicker: View {
         }
     }
 }
-
-struct ColorUtils {
-    static func generateSpectrumGradient() -> Gradient {
-        let hueValues = stride(from: 0.0, through: 1.0, by: 0.01).map {
-            Color(hue: $0, saturation: 1, brightness: 1)
-        }
-        let gradient = Gradient(colors: hueValues)
-        return gradient
-    }
-}
