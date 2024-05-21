@@ -198,25 +198,26 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     Text(suffix)
                 }
             }
+            .frame(maxWidth: 150)
             .monospaced()
             .padding(4)
             .padding(.horizontal, 4)
             .background {
                 ZStack {
-                    Capsule(style: .continuous)
+                    Capsule()
                         .strokeBorder(.quaternary, lineWidth: 1)
 
                     if self.isShowingTextBox {
-                        Capsule(style: .continuous)
+                        Capsule()
                             .foregroundStyle(.quinary)
                     } else {
-                        Capsule(style: .continuous)
+                        Capsule()
                             .foregroundStyle(.quinary.opacity(0.5))
                     }
                 }
             }
             .fixedSize()
-            .clipShape(Capsule(style: .continuous))
+            .clipShape(.capsule)
         }
     }
 }

@@ -37,9 +37,9 @@ public struct SettingsTab: Identifiable, Equatable {
             .padding(10)
             .fixedSize()
             .background(.quinary)
-            .clipShape(.rect(cornerRadius: 8, style: .continuous))
+            .clipShape(.rect(cornerRadius: 8))
             .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 8)
                     .strokeBorder(.quaternary, lineWidth: 1)
             }
     }

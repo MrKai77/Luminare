@@ -110,32 +110,28 @@ public struct LuminareCroppedSectionItem: ViewModifier {
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: cornerRadius - innerPadding,
-                style: .continuous
+                topTrailingRadius: cornerRadius - innerPadding
             )
         } else if isFirstChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: cornerRadius - innerPadding,
-                style: .continuous
+                topTrailingRadius: cornerRadius - innerPadding
             )
         } else if isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: innerCornerRadius,
-                style: .continuous
+                topTrailingRadius: innerCornerRadius
             )
         } else {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: innerCornerRadius,
-                style: .continuous
+                topTrailingRadius: innerCornerRadius
             )
         }
     }

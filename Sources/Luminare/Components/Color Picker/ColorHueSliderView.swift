@@ -52,10 +52,7 @@ struct ColorHueSliderView: View {
                     })
                 )
 
-            RoundedRectangle(
-                cornerRadius: handleCornerRadius(at: selectionPosition, within: viewSize),
-                style: .continuous
-            )
+            RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition, within: viewSize))
             .frame(
                 width: handleWidth(at: selectionPosition, within: viewSize),
                 height: 12

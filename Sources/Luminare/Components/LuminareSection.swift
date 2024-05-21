@@ -45,19 +45,11 @@ public struct LuminareSection<Content: View>: View {
                 }
                 .frame(maxWidth: .infinity)
                 .background(.quinary)
-                .clipShape(
-                    .rect(
-                        cornerRadius: self.cornerRadius,
-                        style: .continuous
-                    )
-                )
+                .clipShape(.rect(cornerRadius: self.cornerRadius))
 
                 .overlay {
-                    RoundedRectangle(
-                        cornerRadius: self.cornerRadius,
-                        style: .continuous
-                    )
-                    .strokeBorder(.quaternary, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: self.cornerRadius)
+                        .strokeBorder(.quaternary, lineWidth: 1)
                 }
             }
         }

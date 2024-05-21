@@ -102,11 +102,8 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
                 }
             }
             .background {
-                RoundedRectangle(
-                    cornerRadius: cornerRadius,
-                    style: .continuous
-                )
-                .strokeBorder(.quaternary, lineWidth: 1)
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.quaternary, lineWidth: 1)
             }
             .fixedSize(
                 horizontal: extraCompact,
@@ -143,11 +140,8 @@ public struct LuminareBordered: ViewModifier {
             }
             .clipShape(.rect(cornerRadius: cornerRadius))
             .background {
-                RoundedRectangle(
-                    cornerRadius: self.cornerRadius,
-                    style: .continuous
-                )
-                .strokeBorder(.quaternary, lineWidth: 1)
+                RoundedRectangle(cornerRadius: self.cornerRadius)
+                    .strokeBorder(.quaternary, lineWidth: 1)
             }
     }
 }

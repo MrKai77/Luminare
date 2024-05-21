@@ -71,15 +71,15 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
                 .padding(.horizontal, 4)
                 .background {
                     ZStack {
-                        Capsule(style: .continuous)
+                        Capsule()
                             .strokeBorder(.quaternary, lineWidth: 1)
 
-                        Capsule(style: .continuous)
+                        Capsule()
                             .foregroundStyle(.quinary.opacity(0.5))
                     }
                 }
                 .fixedSize()
-                .clipShape(Capsule(style: .continuous))
+                .clipShape(.capsule)
         }
     }
 }
