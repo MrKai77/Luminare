@@ -82,6 +82,15 @@ class LuminareModal<Content>: NSWindow where Content: View {
 
         self.isPresented = false
     }
+
+    override func keyDown(with event: NSEvent) {
+        let wKey = 13
+        if event.keyCode == wKey && event.modifierFlags.contains(.command) {
+            close()
+        }
+
+        super.keyDown(with: event)
+    }
 }
 
 struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
@@ -114,13 +123,15 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     }
 
     func present() {
-        panel = LuminareModal(
-            view: view,
-            isPresented: $isPresented
-        )
+        DispatchQueue.main.async {
+            self.panel = LuminareModal(
+                view: view,
+                isPresented: $isPresented
+            )
 
-        panel?.orderFrontRegardless()
-        panel?.makeKey()
+            self.panel?.orderFrontRegardless()
+            self.panel?.makeKey()
+        }
     }
 
     func close() {

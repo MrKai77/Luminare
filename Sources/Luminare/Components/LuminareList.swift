@@ -7,18 +7,20 @@
 
 import SwiftUI
 
-public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V: Identifiable {
+public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, ContentB: View, V: Hashable, V: Identifiable {
     @Environment(\.tintColor) var tintColor
 
     let header: String?
     @Binding var items: [V]
     @Binding var selection: Set<V>
     let addAction: () -> Void
-    let content: (Binding<V>) -> Content
+    let content: (Binding<V>) -> ContentA
+    let emptyView: () -> ContentB
 
     @State private var firstItem: V?
     @State private var lastItem: V?
 
+    @State var canRefreshSelection: Bool = true
     let cornerRadius: CGFloat = 2
     let lineWidth: CGFloat = 1.5
 
@@ -27,13 +29,15 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
         addAction: @escaping () -> Void,
-        @ViewBuilder content: @escaping (Binding<V>) -> Content
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder emptyView: @escaping () -> ContentB
     ) {
         self.header = header
         self._items = items
         self._selection = selection
         self.addAction = addAction
         self.content = content
+        self.emptyView = emptyView
     }
 
     public var body: some View {
@@ -47,11 +51,16 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
 
                 Button("Remove") {
                     if !self.selection.isEmpty {
+                        canRefreshSelection = false
                         withAnimation(.smooth(duration: 0.25)) {
                             self.items.removeAll(where: { selection.contains($0) })
                         }
 
                         self.selection = []
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            self.canRefreshSelection = true
+                        }
                     }
                 }
                 .buttonStyle(LuminareDestructiveButtonStyle())
@@ -67,36 +76,42 @@ public struct LuminareList<Content, V>: View where Content: View, V: Hashable, V
             .padding(.bottom, 8) // Since padding is disabled in the section, add spacing
             .padding([.top, .horizontal], 1) // Since padding is disabled in the section, add outer padding
 
-            List(selection: $selection) {
-                ForEach($items) { item in
-                    LuminareListItem(
-                        items: $items,
-                        selection: $selection,
-                        item: item,
-                        content: content,
-                        firstItem: $firstItem,
-                        lastItem: $lastItem
-                    )
+            if items.isEmpty {
+                emptyView()
+                    .frame(minHeight: 50)
+            } else {
+                List(selection: $selection) {
+                    ForEach($items) { item in
+                        LuminareListItem(
+                            items: $items,
+                            selection: $selection,
+                            item: item,
+                            content: content,
+                            firstItem: $firstItem,
+                            lastItem: $lastItem,
+                            canRefreshSelection: $canRefreshSelection
+                        )
+                    }
+                    .onMove { indices, newOffset in
+                        items.move(fromOffsets: indices, toOffset: newOffset)
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
                 }
-                .onMove { indices, newOffset in
-                    items.move(fromOffsets: indices, toOffset: newOffset)
+                .frame(height: CGFloat(self.items.count * 50))
+                .scrollContentBackground(.hidden)
+                .scrollDisabled(true)
+                .listStyle(.plain)
+                .padding(.horizontal, -10)
+
+                // For selection outlines
+                .padding(.horizontal, 1)
+                .padding(.leading, 1)
+
+                .onChange(of: self.selection) { _ in
+                    self.processSelection()
                 }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
-            }
-            .frame(height: CGFloat(self.items.count * 50))
-            .scrollContentBackground(.hidden)
-            .scrollDisabled(true)
-            .listStyle(.plain)
-            .padding(.horizontal, -10)
-
-            // For selection outlines
-            .padding(.horizontal, 1)
-            .padding(.leading, 1)
-
-            .onChange(of: self.selection) { _ in
-                self.processSelection()
             }
         }
     }
@@ -134,6 +149,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
 
     @Binding var firstItem: V?
     @Binding var lastItem: V?
+    @Binding var canRefreshSelection: Bool
 
     @State var isHovering: Bool = false
 
@@ -150,7 +166,8 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
         item: Binding<V>,
         @ViewBuilder content: @escaping (Binding<V>) -> Content,
         firstItem: Binding<V?>,
-        lastItem: Binding<V?>
+        lastItem: Binding<V?>,
+        canRefreshSelection: Binding<Bool>
     ) {
         self._items = items
         self._selection = selection
@@ -158,6 +175,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
         self.content = content
         self._firstItem = firstItem
         self._lastItem = lastItem
+        self._canRefreshSelection = canRefreshSelection
     }
 
     var body: some View {
@@ -191,12 +209,12 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                     .padding(.trailing, -0.5)
                 }
             }
-
             .onChange(of: self.selection) { _ in
+                guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
                     withAnimation(.easeOut(duration: 0.2)) {
-                        tintOpacity = self.selection.contains(item) ? maxTintOpacity : .zero
-                        lineWidth = self.selection.contains(item) ? maxLineWidth : .zero
+                        tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
+                        lineWidth = selection.contains(item) ? maxLineWidth : .zero
                     }
                 }
             }

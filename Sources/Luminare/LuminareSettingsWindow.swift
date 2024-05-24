@@ -11,8 +11,8 @@ import SwiftUI
 
 public class LuminareSettingsWindow {
     static var identifier = NSUserInterfaceItemIdentifier("LuminareSettingsWindow")
-    var windowController: NSWindowController?
-    var tabs: [SettingsTabGroup]
+    public var windowController: NSWindowController?
+    public var tabs: [SettingsTabGroup]
     static var tint: () -> Color = { .accentColor }
 
     private let didTabChange: (SettingsTab) -> Void
