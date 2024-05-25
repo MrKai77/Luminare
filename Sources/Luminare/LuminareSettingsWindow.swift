@@ -83,7 +83,7 @@ public class LuminareSettingsWindow {
         let windowSize = windowController?.window?.frame.size ?? .zero
 
         let view = NSHostingView(rootView: AnyView(view.ignoresSafeArea()))
-        view.setFrameSize(NSSize(width: 520, height: 650))
+        view.setFrameSize(NSSize(width: 520, height: windowSize.height))
         view.setFrameOrigin(NSPoint(x: windowSize.width - 520, y: 0))
 
         windowController?.window?.contentView?.addSubview(view)

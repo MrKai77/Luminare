@@ -14,7 +14,6 @@ struct ContentView: View {
     let mainViewWidth: CGFloat = 390
     let mainViewSectionOuterPadding: CGFloat = 12
     let previewViewWidth: CGFloat = 520
-    let windowHeight: CGFloat = 600
     let sectionSpacing: CGFloat = 16
 
     @State var activeTab: SettingsTab
@@ -58,8 +57,6 @@ struct ContentView: View {
                 .frame(width: previewViewWidth)
         }
         .ignoresSafeArea()
-        .frame(height: windowHeight)
-        .fixedSize()
 
         .buttonStyle(LuminareButtonStyle())
 

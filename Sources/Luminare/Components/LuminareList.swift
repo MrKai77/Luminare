@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, ContentB: View, V: Hashable, V: Identifiable {
+public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     @Environment(\.tintColor) var tintColor
 
     let header: String?
@@ -19,6 +19,7 @@ public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, Co
 
     @State private var firstItem: V?
     @State private var lastItem: V?
+    let id: KeyPath<V, ID>
 
     @State var canRefreshSelection: Bool = true
     let cornerRadius: CGFloat = 2
@@ -30,7 +31,8 @@ public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, Co
         selection: Binding<Set<V>>,
         addAction: @escaping () -> Void,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
-        @ViewBuilder emptyView: @escaping () -> ContentB
+        @ViewBuilder emptyView: @escaping () -> ContentB,
+        id: KeyPath<V, ID>
     ) {
         self.header = header
         self._items = items
@@ -38,6 +40,7 @@ public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, Co
         self.addAction = addAction
         self.content = content
         self.emptyView = emptyView
+        self.id = id
     }
 
     public var body: some View {
@@ -81,7 +84,7 @@ public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, Co
                     .frame(minHeight: 50)
             } else {
                 List(selection: $selection) {
-                    ForEach($items) { item in
+                    ForEach($items, id: id) { item in
                         LuminareListItem(
                             items: $items,
                             selection: $selection,
@@ -92,22 +95,26 @@ public struct LuminareList<ContentA, ContentB, V>: View where ContentA: View, Co
                             canRefreshSelection: $canRefreshSelection
                         )
                     }
+                    // TODO: Fix bug when sliding to delete item then quickly selecting another new item
+//                    .onDelete { offset in
+//                        withAnimation(.smooth(duration: 0.25)) {
+//                            items.remove(atOffsets: offset)
+//                        }
+//                    }
                     .onMove { indices, newOffset in
-                        items.move(fromOffsets: indices, toOffset: newOffset)
+                        withAnimation(.smooth(duration: 0.25)) {
+                            items.move(fromOffsets: indices, toOffset: newOffset)
+                        }
                     }
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
+                    .padding(.horizontal, -10)
                 }
                 .frame(height: CGFloat(self.items.count * 50))
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(true)
                 .listStyle(.plain)
-                .padding(.horizontal, -10)
-
-                // For selection outlines
-                .padding(.horizontal, 1)
-                .padding(.leading, 1)
 
                 .onChange(of: self.selection) { _ in
                     self.processSelection()
@@ -138,7 +145,7 @@ public extension EnvironmentValues {
     }
 }
 
-struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: Identifiable {
+struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     @Environment(\.tintColor) var tintColor
 
     @Binding var item: V
@@ -198,6 +205,8 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                     getItemBorder()
                     getItemBackground()
                 }
+                .padding(.horizontal, 1)
+                .padding(.leading, 1)
             }
 
             .overlay {
@@ -229,20 +238,6 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable, V: I
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
                     .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
-            }
-        }
-        .mask {
-            if item == self.items.last {
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 0,
-                    bottomLeadingRadius: (12 + lineWidth / 2.0),
-                    bottomTrailingRadius: (12 + lineWidth / 2.0),
-                    topTrailingRadius: 0
-                )
-                .foregroundColor(.black)
-            } else {
-                Rectangle()
-                    .foregroundColor(.black)
             }
         }
     }
