@@ -138,7 +138,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 }
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 12)
         .frame(height: self.controlSize.height)
         .onChange(of: self.internalValue) { _ in
             self.value = self.internalValue

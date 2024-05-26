@@ -52,7 +52,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
                 step: 1
             )
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 12)
         .frame(height: height)
         .onChange(of: self.internalSelection) { _ in
             self.selection = self.internalSelection
