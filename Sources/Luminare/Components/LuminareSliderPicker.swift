@@ -19,6 +19,8 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
 
     let label: (V) -> String
 
+    let horizontalPadding: CGFloat = 8
+
     public init(_ title: String, _ options: [V], selection: Binding<V>, label: @escaping (V) -> String) {
         self.title = title
         self.options = options
@@ -52,7 +54,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
                 step: 1
             )
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, horizontalPadding)
         .frame(height: height)
         .onChange(of: self.internalSelection) { _ in
             self.selection = self.internalSelection

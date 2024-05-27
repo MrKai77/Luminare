@@ -11,7 +11,7 @@ public struct LuminareToggle: View {
     @Environment(\.tintColor) var tintColor
 
     let elementMinHeight: CGFloat = 34
-    let horizontalPadding: CGFloat = 12
+    let horizontalPadding: CGFloat = 8
 
     let title: String
     @Binding var value: Bool

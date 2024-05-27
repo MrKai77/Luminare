@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct LuminareTextField: View {
     let elementMinHeight: CGFloat = 34
-    let horizontalPadding: CGFloat = 12
+    let horizontalPadding: CGFloat = 8
 
     @Binding var text: String
     let placeHolder: String

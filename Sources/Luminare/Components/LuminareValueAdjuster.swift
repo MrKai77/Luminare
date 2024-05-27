@@ -21,7 +21,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         }
     }
 
-    let horizontalPadding: CGFloat = 12
+    let horizontalPadding: CGFloat = 8
 
     let formatter: NumberFormatter
     var totalRange: V.Stride {
@@ -138,7 +138,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 }
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, horizontalPadding)
         .frame(height: self.controlSize.height)
         .onChange(of: self.internalValue) { _ in
             self.value = self.internalValue
