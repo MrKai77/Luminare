@@ -36,12 +36,11 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     }
     @FocusState var focusedField: FocusedField?
 
-    let title: String
-    let description: String?
+    let title: LocalizedStringKey
     @Binding var value: V
     @State var internalValue: V
     let sliderRange: ClosedRange<V>
-    let suffix: String?
+    let suffix: LocalizedStringKey?
     var step: V.Stride
     let upperClamp: Bool
     let lowerClamp: Bool
@@ -51,11 +50,10 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
 
     // TODO: MAX DIGIT SPACING FOR LABEL
     public init(
-        _ title: String,
-        description: String? = nil,
+        _ title: LocalizedStringKey,
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
-        suffix: String? = nil,
+        suffix: LocalizedStringKey? = nil,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
@@ -63,7 +61,6 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         decimalPlaces: Int = 0
     ) {
         self.title = title
-        self.description = description
         self._value = value
         self._internalValue = State(initialValue: value.wrappedValue)
         self.sliderRange = sliderRange

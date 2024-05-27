@@ -11,17 +11,17 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
 
     let height: CGFloat = 70
 
-    let title: String
+    let title: LocalizedStringKey
 
     let options: [V]
     @Binding var selection: V
     @State var internalSelection: V
 
-    let label: (V) -> String
+    let label: (V) -> LocalizedStringKey
 
     let horizontalPadding: CGFloat = 8
 
-    public init(_ title: String, _ options: [V], selection: Binding<V>, label: @escaping (V) -> String) {
+    public init(_ title: LocalizedStringKey, _ options: [V], selection: Binding<V>, label: @escaping (V) -> LocalizedStringKey) {
         self.title = title
         self.options = options
         self._selection = selection

@@ -13,10 +13,10 @@ public struct LuminareToggle: View {
     let elementMinHeight: CGFloat = 34
     let horizontalPadding: CGFloat = 8
 
-    let title: String
+    let title: LocalizedStringKey
     @Binding var value: Bool
 
-    public init(_ title: String, isOn value: Binding<Bool>) {
+    public init(_ title: LocalizedStringKey, isOn value: Binding<Bool>) {
         self.title = title
         self._value = value
     }

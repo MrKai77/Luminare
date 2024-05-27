@@ -10,7 +10,7 @@ import SwiftUI
 public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     @Environment(\.tintColor) var tintColor
 
-    let header: String?
+    let header: LocalizedStringKey?
     @Binding var items: [V]
     @Binding var selection: Set<V>
     let addAction: () -> Void
@@ -26,7 +26,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     let lineWidth: CGFloat = 1.5
 
     public init(
-        _ header: String? = nil,
+        _ header: LocalizedStringKey? = nil,
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
         addAction: @escaping () -> Void,

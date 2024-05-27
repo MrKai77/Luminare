@@ -11,7 +11,7 @@ import SwiftUI
 /// this also neeeds to be adjusted to
 /// look like the given image
 struct RGBInputField: View {
-    var label: String
+    var label: LocalizedStringKey
     @Binding var value: Double
 
     var body: some View {

@@ -12,13 +12,13 @@ public struct LuminareSection<Content: View>: View {
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
 
-    let header: String?
+    let header: LocalizedStringKey?
     let disablePadding: Bool
     let showDividers: Bool
     let noBorder: Bool
     let content: () -> Content
 
-    public init(_ header: String? = nil, disablePadding: Bool = false, showDividers: Bool = true, noBorder: Bool = false, @ViewBuilder _ content: @escaping () -> Content) {
+    public init(_ header: LocalizedStringKey? = nil, disablePadding: Bool = false, showDividers: Bool = true, noBorder: Bool = false, @ViewBuilder _ content: @escaping () -> Content) {
         self.header = header
         self.disablePadding = disablePadding
         self.showDividers = showDividers

@@ -12,12 +12,12 @@ public struct LuminareTextField: View {
     let horizontalPadding: CGFloat = 8
 
     @Binding var text: String
-    let placeHolder: String
+    let placeHolder: LocalizedStringKey
     let onSubmit: (() -> Void)?
 
     @State var monitor: Any?
 
-    public init(_ text: Binding<String>, placeHolder: String, onSubmit: (() -> Void)? = nil) {
+    public init(_ text: Binding<String>, placeHolder: LocalizedStringKey, onSubmit: (() -> Void)? = nil) {
         self._text = text
         self.placeHolder = placeHolder
         self.onSubmit = onSubmit
