@@ -40,12 +40,15 @@ public class LuminareSettingsWindow {
     }
 
     public func show() {
-        if let windowController = windowController {
-            windowController.window?.orderFrontRegardless()
-            windowController.window?.center()
-            NSApp.activate(ignoringOtherApps: true)
-            return
-        }
+        guard let controller = windowController else { return }
+
+        controller.window?.center()
+        controller.window?.orderFrontRegardless()
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    public func initializeWindow() {
+        guard windowController?.window == nil else { return }
 
         let view = NSHostingView(
             rootView: ContentView(self.tabs, didTabChange: didTabChange)
@@ -76,13 +79,20 @@ public class LuminareSettingsWindow {
         window.identifier = LuminareSettingsWindow.identifier
 
         window.center()
-        window.orderFrontRegardless()
 
         self.windowController = .init(window: window)
     }
 
-    public func addPreview<Content: View>(content: Content, identifier: String = "") {
-        guard let window = self.windowController?.window else {
+    public func deinitWindow() {
+        self.windowController?.window?.close()
+        self.windowController = nil
+    }
+
+    public func addPreview<Content: View>(content: Content, identifier: String, fullSize: Bool = false) {
+        guard
+            let window = self.windowController?.window,
+            let bounds = self.previewBounds
+        else {
             return
         }
 
@@ -95,12 +105,15 @@ public class LuminareSettingsWindow {
 
         panel.hasShadow = false
         panel.backgroundColor = .clear
-        panel.contentView = NSHostingView(rootView: content)
+        if fullSize {
+            panel.contentView = NSHostingView(rootView: content.frame(width: bounds.width, height: bounds.height))
+        } else {
+            panel.contentView = NSHostingView(rootView: content)
+        }
         panel.alphaValue = 0
         panel.identifier = .init("LuminareSettingsPreview\(identifier)")
 
         let windowFrame = window.frame
-        let bounds = self.previewBounds ?? .zero
 
         let panelSize = panel.frame.size
         let newSize = CGSize(
@@ -130,7 +143,7 @@ public class LuminareSettingsWindow {
         
         for window in windows {
             NSAnimationContext.runAnimationGroup({ ctx in
-                ctx.duration = 0.2
+                ctx.duration = 0.3
                 window.animator().alphaValue = 1
             })
         }
