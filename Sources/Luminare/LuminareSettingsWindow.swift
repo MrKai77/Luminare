@@ -90,12 +90,26 @@ public class LuminareSettingsWindow {
 
             let windowFrame = window.frame
             let previewWidth: CGFloat = 520
-            let origin = CGPoint(
+            let bounds = CGRect(
                 x: windowFrame.maxX - previewWidth,
-                y: windowFrame.minY
+                y: windowFrame.minY,
+                width: previewWidth,
+                height: windowFrame.height
             )
 
-            panel.setFrameOrigin(origin)
+            let panelSize = panel.frame.size
+            let newSize = CGSize(
+                width: min(previewWidth, panelSize.width),
+                height: min(previewWidth, panelSize.height)
+            )
+            let newOrigin = CGPoint(
+                x: bounds.midX - newSize.width / 2,
+                y: bounds.midY - newSize.height / 2
+            )
+            panel.setFrame(
+                .init(origin: newOrigin, size: newSize),
+                display: false
+            )
             window.addChildWindow(panel, ordered: .above)
 
             NSAnimationContext.runAnimationGroup { context in
