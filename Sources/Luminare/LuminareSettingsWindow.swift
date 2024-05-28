@@ -17,6 +17,18 @@ public class LuminareSettingsWindow {
 
     private let didTabChange: (SettingsTab) -> Void
 
+    public var previewBounds: NSRect? {
+        guard let window = windowController?.window else { return nil }
+        let previewWidth: CGFloat = 520
+
+        return .init(
+            x: window.frame.maxX - previewWidth,
+            y: window.frame.minY,
+            width: previewWidth,
+            height: window.frame.height
+        )
+    }
+
     public init(
         _ tabs: [SettingsTabGroup],
         tint: @escaping () -> Color = { .accentColor },
@@ -89,18 +101,12 @@ public class LuminareSettingsWindow {
             panel.identifier = .init("LuminareSettingsPreview\(identifier)")
 
             let windowFrame = window.frame
-            let previewWidth: CGFloat = 520
-            let bounds = CGRect(
-                x: windowFrame.maxX - previewWidth,
-                y: windowFrame.minY,
-                width: previewWidth,
-                height: windowFrame.height
-            )
+            let bounds = self.previewBounds ?? .zero
 
             let panelSize = panel.frame.size
             let newSize = CGSize(
-                width: min(previewWidth, panelSize.width),
-                height: min(previewWidth, panelSize.height)
+                width: min(bounds.width, panelSize.width),
+                height: min(bounds.height, panelSize.height)
             )
             let newOrigin = CGPoint(
                 x: bounds.midX - newSize.width / 2,
@@ -113,7 +119,7 @@ public class LuminareSettingsWindow {
             window.addChildWindow(panel, ordered: .above)
 
             NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.15
+                context.duration = 0.2
                 panel.animator().alphaValue = 1
             }
         }
@@ -122,7 +128,7 @@ public class LuminareSettingsWindow {
     public func removePreview(identifier: String) {
         guard
             let windows = windowController?.window?.childWindows?.compactMap({
-                $0.identifier?.rawValue == "LuminareSettingsPreview\(identifier)" ? $0 : nil
+                $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
             }),
             !windows.isEmpty
         else {
@@ -133,7 +139,7 @@ public class LuminareSettingsWindow {
 
         for window in windows {
             NSAnimationContext.runAnimationGroup({ ctx in
-                ctx.duration = 0.1
+                ctx.duration = 0.2
                 window.animator().alphaValue = 0
             }, completionHandler: {
                 window.close()
