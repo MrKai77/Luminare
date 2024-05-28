@@ -82,50 +82,61 @@ public class LuminareSettingsWindow {
     }
 
     public func addPreview<Content: View>(content: Content, identifier: String = "") {
-        DispatchQueue.main.async {
-            guard let window = self.windowController?.window else {
-                return
-            }
+        guard let window = self.windowController?.window else {
+            return
+        }
 
-            let panel = NSPanel(
-                contentRect: .zero,
-                styleMask: [.borderless, .nonactivatingPanel],
-                backing: .buffered,
-                defer: true
-            )
+        let panel = NSPanel(
+            contentRect: .zero,
+            styleMask: [.borderless, .nonactivatingPanel],
+            backing: .buffered,
+            defer: true
+        )
 
-            panel.hasShadow = false
-            panel.backgroundColor = .clear
-            panel.contentView = NSHostingView(rootView: content)
-            panel.alphaValue = 0
-            panel.identifier = .init("LuminareSettingsPreview\(identifier)")
+        panel.hasShadow = false
+        panel.backgroundColor = .clear
+        panel.contentView = NSHostingView(rootView: content)
+        panel.alphaValue = 0
+        panel.identifier = .init("LuminareSettingsPreview\(identifier)")
 
-            let windowFrame = window.frame
-            let bounds = self.previewBounds ?? .zero
+        let windowFrame = window.frame
+        let bounds = self.previewBounds ?? .zero
 
-            let panelSize = panel.frame.size
-            let newSize = CGSize(
-                width: min(bounds.width, panelSize.width),
-                height: min(bounds.height, panelSize.height)
-            )
-            let newOrigin = CGPoint(
-                x: bounds.midX - newSize.width / 2,
-                y: bounds.midY - newSize.height / 2
-            )
-            panel.setFrame(
-                .init(origin: newOrigin, size: newSize),
-                display: false
-            )
-            window.addChildWindow(panel, ordered: .above)
+        let panelSize = panel.frame.size
+        let newSize = CGSize(
+            width: min(bounds.width, panelSize.width),
+            height: min(bounds.height, panelSize.height)
+        )
+        let newOrigin = CGPoint(
+            x: bounds.midX - newSize.width / 2,
+            y: bounds.midY - newSize.height / 2
+        )
+        panel.setFrame(
+            .init(origin: newOrigin, size: newSize),
+            display: false
+        )
+        window.addChildWindow(panel, ordered: .above)
+    }
 
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.2
-                panel.animator().alphaValue = 1
-            }
+    public func showPreview(identifier: String) {
+        guard
+            let windows = windowController?.window?.childWindows?.compactMap({
+                $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
+            }),
+            !windows.isEmpty
+        else {
+            return
+        }
+        
+        for window in windows {
+            NSAnimationContext.runAnimationGroup({ ctx in
+                ctx.duration = 0.2
+                window.animator().alphaValue = 1
+            })
         }
     }
 
-    public func removePreview(identifier: String) {
+    public func hidePreview(identifier: String) {
         guard
             let windows = windowController?.window?.childWindows?.compactMap({
                 $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
@@ -135,28 +146,12 @@ public class LuminareSettingsWindow {
             return
         }
 
-        print(windows)
-
         for window in windows {
             NSAnimationContext.runAnimationGroup({ ctx in
                 ctx.duration = 0.2
                 window.animator().alphaValue = 0
-            }, completionHandler: {
-                window.close()
             })
         }
-    }
-
-    public var previewViews: [String] {
-        let windows = windowController?.window?.childWindows?.compactMap({
-            $0.identifier?.rawValue.contains("LuminareSettingsPreview") ?? false ? $0 : nil
-        }) ?? []
-
-        let result: [String] = windows.compactMap {
-            $0.identifier?.rawValue.replacingOccurrences(of: "LuminareSettingsPreview", with: "")
-        }
-
-        return result
     }
 
 //    func swizzleWidgets() {
