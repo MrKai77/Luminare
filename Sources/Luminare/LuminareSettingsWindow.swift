@@ -16,7 +16,6 @@ public class LuminareSettingsWindow {
     static var tint: () -> Color = { .accentColor }
 
     private let didTabChange: (SettingsTab) -> Void
-    private var previewView: NSView?
 
     public init(
         _ tabs: [SettingsTabGroup],
@@ -70,25 +69,74 @@ public class LuminareSettingsWindow {
         self.windowController = .init(window: window)
     }
 
-    public func setPreviewView<Content: View>(_ view: Content) {
-        if let previewView = previewView {
-            NSAnimationContext.runAnimationGroup({ ctx in
-                ctx.duration = 0.1
-                previewView.animator().alphaValue = 0
-            }, completionHandler: {
-                previewView.removeFromSuperview()
-            })
+    public func addPreview<Content: View>(content: Content, identifier: String = "") {
+        DispatchQueue.main.async {
+            guard let window = self.windowController?.window else {
+                return
+            }
+
+            let panel = NSPanel(
+                contentRect: .zero,
+                styleMask: [.borderless, .nonactivatingPanel],
+                backing: .buffered,
+                defer: true
+            )
+
+            panel.hasShadow = false
+            panel.backgroundColor = .clear
+            panel.contentView = NSHostingView(rootView: content)
+            panel.alphaValue = 0
+            panel.identifier = .init("LuminareSettingsPreview\(identifier)")
+
+            let windowFrame = window.frame
+            let previewWidth: CGFloat = 520
+            let origin = CGPoint(
+                x: windowFrame.maxX - previewWidth,
+                y: windowFrame.minY
+            )
+
+            panel.setFrameOrigin(origin)
+            window.addChildWindow(panel, ordered: .above)
+
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.15
+                panel.animator().alphaValue = 1
+            }
+        }
+    }
+
+    public func removePreview(identifier: String) {
+        guard
+            let windows = windowController?.window?.childWindows?.compactMap({
+                $0.identifier?.rawValue == "LuminareSettingsPreview\(identifier)" ? $0 : nil
+            }),
+            !windows.isEmpty
+        else {
+            return
         }
 
-        let windowSize = windowController?.window?.frame.size ?? .zero
+        print(windows)
 
-        let view = NSHostingView(rootView: AnyView(view.ignoresSafeArea()))
-        view.setFrameSize(NSSize(width: 520, height: windowSize.height))
-        view.setFrameOrigin(NSPoint(x: windowSize.width - 520, y: 0))
+        for window in windows {
+            NSAnimationContext.runAnimationGroup({ ctx in
+                ctx.duration = 0.1
+                window.animator().alphaValue = 0
+            }, completionHandler: {
+                window.close()
+            })
+        }
+    }
 
-        windowController?.window?.contentView?.addSubview(view)
+    public var previewViews: [String] {
+        let windows = windowController?.window?.childWindows?.compactMap({
+            $0.identifier?.rawValue.contains("LuminareSettingsPreview") ?? false ? $0 : nil
+        }) ?? []
 
-        self.previewView = view
+        let result: [String] = windows.compactMap {
+            $0.identifier?.rawValue.replacingOccurrences(of: "LuminareSettingsPreview", with: "")
+        }
+
+        return result
     }
 
 //    func swizzleWidgets() {
