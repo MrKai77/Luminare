@@ -8,8 +8,6 @@
 import SwiftUI
 
 // Custom input field for RGB values
-/// this also neeeds to be adjusted to
-/// look like the given image
 struct RGBInputField: View {
     var label: LocalizedStringKey
     @Binding var value: Double

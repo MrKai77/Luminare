@@ -31,8 +31,6 @@ struct ColorPickerPopover: View {
                     )
 
                 // Color spectrum slider
-                /// this vied needs to be finalised
-                /// currently it does not really look like the img
                 ColorHueSliderView(selectedColor: $color)
                     .clipShape(
                         UnevenRoundedRectangle(
@@ -65,9 +63,6 @@ struct ColorPickerPopover: View {
             }
 
             // RGB input fields
-            /// this needs to be changed to more support the img
-            /// this would be edited above, as this is defined
-            /// outside of the scope
             RGBInputFields
         }
         .padding(8)

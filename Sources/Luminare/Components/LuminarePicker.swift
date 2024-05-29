@@ -23,7 +23,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     let columnsIndex: Int
 
     @Binding var selectedItem: V
-    @State var internalSelection: V
 
     let roundTop: Bool
     let roundBottom: Bool
@@ -43,9 +42,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self.roundTop = roundTop
         self.roundBottom = roundBottom
         self.content = content
-
         self._selectedItem = selection
-        self._internalSelection = State(initialValue: selection.wrappedValue)
     }
 
     var isCompact: Bool {
@@ -74,27 +71,19 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 .frame(minHeight: 150)
             }
         }
-        .onChange(of: self.internalSelection) { _ in
-            self.selectedItem = self.internalSelection
+        .onChange(of: selectedItem) { newValue in
+            selectedItem = newValue
         }
     }
 
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
-        if let element = self.getElement(i: i, j: j) {
+        if let element = getElement(i: i, j: j) {
             Button {
                 guard !isDisabled(element) else { return }
-
-                let row = self.elements2D[i]
-
-                // There are also trailing blank items in the grid, so check if it exists
-                if j < row.count {
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.internalSelection = row[j]
-                    }
-                }
+                selectedItem = element
             } label: {
                 ZStack {
-                    let isActive = isSelfActive(i: i, j: j)
+                    let isActive = selectedItem == element
                     getShape(i: i, j: j)
                         .foregroundStyle(isActive ? tintColor().opacity(0.15) : .clear)
                         .overlay {
@@ -105,82 +94,45 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                                 )
                         }
 
-                    self.content(element)
+                    content(element)
                         .foregroundStyle(isDisabled(element) ? .secondary : .primary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         } else {
             getShape(i: i, j: j)
-                .strokeBorder(
-                    .quaternary,
-                    lineWidth: 1
-                )
+                .strokeBorder(.quaternary, lineWidth: 1)
         }
     }
 
     func isDisabled(_ element: V) -> Bool {
-        if let element = element as? LuminarePickerData {
-            return !element.selectable
-        }
-        return false
+        (element as? LuminarePickerData)?.selectable == false
     }
 
     func getElement(i: Int, j: Int) -> V? {
-        let row = self.elements2D[i]
-        guard j < row.count else { return nil }
-        return self.elements2D[i][j]
-    }
-
-    func isSelfActive(i: Int, j: Int) -> Bool {
-        guard let element = getElement(i: i, j: j) else { return false }
-        return self.internalSelection == element
+        guard j < elements2D[i].count else { return nil }
+        return elements2D[i][j]
     }
 
     func getShape(i: Int, j: Int) -> some InsettableShape {
-        if j == 0 && i == 0 && roundTop { // Top left
-            UnevenRoundedRectangle(
-                topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: (columnsIndex == 0) ?  cornerRadius - innerPadding : innerCornerRadius
-            )
-        } else if j == 0 && i == rowsIndex && roundBottom { // Bottom left
-            UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: cornerRadius - innerPadding,
-                bottomTrailingRadius: (columnsIndex == 0) ?  cornerRadius - innerPadding : innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
-            )
-        } else if j == columnsIndex && i == 0 && roundTop { // Top right
-            UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
-                topTrailingRadius: cornerRadius - innerPadding
-            )
-        } else if j == columnsIndex && i == rowsIndex && roundBottom { // Bottom right
-            UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: innerCornerRadius
-            )
-        } else {
-            UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
-            )
-        }
+        let topLeading = (i == 0 && j == 0 && roundTop) || (i == 0 && j == columnsIndex && roundTop) ? cornerRadius - innerPadding : innerCornerRadius
+        let bottomLeading = (i == rowsIndex && j == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius
+        let bottomTrailing = (i == rowsIndex && j == columnsIndex && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius
+        let topTrailing = (i == 0 && j == columnsIndex && roundTop) ? cornerRadius - innerPadding : innerCornerRadius
+
+        return UnevenRoundedRectangle(
+            topLeadingRadius: topLeading,
+            bottomLeadingRadius: bottomLeading,
+            bottomTrailingRadius: bottomTrailing,
+            topTrailingRadius: topTrailing
+        )
     }
 }
 
 extension Array {
-   func slice(size: Int) -> [[Element]] {
-       (0..<(count / size + (count % size == 0 ? 0 : 1))).map{
-           Array(self[($0 * size)..<(Swift.min($0 * size + size, count))])
-       }
-   }
+    func slice(size: Int) -> [[Element]] {
+        (0..<(count / size + (count % size == 0 ? 0 : 1))).map {
+            Array(self[($0 * size)..<(Swift.min($0 * size + size, count))])
+        }
+    }
 }

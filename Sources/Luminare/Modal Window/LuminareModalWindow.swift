@@ -13,59 +13,42 @@ struct FloatingPanelKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-  var floatingPanel: NSWindow? {
-    get { self[FloatingPanelKey.self] }
-    set { self[FloatingPanelKey.self] = newValue }
-  }
+    var floatingPanel: NSWindow? {
+        get { self[FloatingPanelKey.self] }
+        set { self[FloatingPanelKey.self] = newValue }
+    }
 }
 
 class LuminareModal<Content>: NSWindow where Content: View {
     @Binding var isPresented: Bool
 
-    init(
-        view: () -> Content,
-        isPresented: Binding<Bool>
-    ) {
+    init(view: () -> Content, isPresented: Binding<Bool>) {
         self._isPresented = isPresented
+        super.init(contentRect: .zero, styleMask: [.titled, .fullSizeContentView], backing: .buffered, defer: false)
 
-        super.init(
-            contentRect: .zero,
-            styleMask: [.titled, .fullSizeContentView],
-            backing: .buffered,
-            defer: false
-        )
-
-        let view = NSHostingView(
-            rootView: LuminareModalView(view(), self)
-                .environment(\.floatingPanel, self)
-                .environment(\.tintColor, LuminareSettingsWindow.tint)
-        )
+        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self)
+            .environment(\.floatingPanel, self)
+            .environment(\.tintColor, LuminareSettingsWindow.tint))
 
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
-
         backgroundColor = .clear
-        contentView = view
+        contentView = hostingView
         contentView?.wantsLayer = true
-
         ignoresMouseEvents = false
         isOpaque = false
         hasShadow = true
-
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         animationBehavior = .documentWindow
-
         center()
     }
 
     func updateShadow(for duration: Double) {
         guard isPresented else { return }
-
-        let frameRate: Double = 60
-        let interval = 1 / frameRate
-
-        for i in 0...Int(duration * Double(frameRate)) {
+        let updatesCount = Int(duration * 60)
+        let interval = duration / Double(updatesCount)
+        for i in 0...updatesCount {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * interval) {
                 self.invalidateShadow()
             }
@@ -73,48 +56,33 @@ class LuminareModal<Content>: NSWindow where Content: View {
     }
 
     override func close() {
-        NSAnimationContext.runAnimationGroup({ context -> Void in
+        NSAnimationContext.runAnimationGroup({ context in
             context.duration = 0.15
             self.animator().alphaValue = 0
         }, completionHandler: {
             super.close()
         })
-
         self.isPresented = false
     }
 
     override func keyDown(with event: NSEvent) {
-        let wKey = 13
-        if event.keyCode == wKey && event.modifierFlags.contains(.command) {
+        if event.keyCode == 13 && event.modifierFlags.contains(.command) {
             close()
+        } else {
+            super.keyDown(with: event)
         }
-
-        super.keyDown(with: event)
     }
 }
 
 struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
     @Binding var isPresented: Bool
     @ViewBuilder let view: () -> PanelContent
-    @State var panel: LuminareModal<PanelContent>?
-
-    init(isPresented: Binding<Bool>, view: @escaping () -> PanelContent) {
-        self._isPresented = isPresented
-        self.view = view
-    }
+    @State private var panel: LuminareModal<PanelContent>?
 
     func body(content: Content) -> some View {
         content
-            .onAppear {
-                if isPresented {
-                    present()
-                }
-            }
-            .onDisappear {
-                close()
-            }
-            .onChange(of: isPresented) { _ in
-                if isPresented {
+            .onChange(of: isPresented) { newValue in
+                if newValue {
                     present()
                 } else {
                     close()
@@ -122,19 +90,16 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
             }
     }
 
-    func present() {
+    private func present() {
+        guard panel == nil else { return }
         DispatchQueue.main.async {
-            self.panel = LuminareModal(
-                view: view,
-                isPresented: $isPresented
-            )
-
+            self.panel = LuminareModal(view: view, isPresented: $isPresented)
             self.panel?.orderFrontRegardless()
             self.panel?.makeKey()
         }
     }
 
-    func close() {
+    private func close() {
         panel?.close()
         panel = nil
     }

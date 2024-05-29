@@ -10,14 +10,11 @@ import SwiftUI
 public struct LuminareColorPicker: View {
     @Binding var currentColor: Color
 
-    @State private var color: Color
     @State private var text: String
-
     @State private var showColorPicker = false
 
     public init(color: Binding<Color>) {
         self._currentColor = color
-        self._color = State(initialValue: color.wrappedValue)
         self._text = State(initialValue: color.wrappedValue.toHex())
     }
 
@@ -28,12 +25,10 @@ public struct LuminareColorPicker: View {
                 placeHolder: "Hex Color",
                 onSubmit: {
                     if let newColor = Color(hex: text) {
+                        currentColor = newColor
                         text = newColor.toHex()
-                        withAnimation(.smooth(duration: 0.3)) {
-                            color = newColor
-                        }
                     } else {
-                        text = color.toHex()    // revert to last color
+                        text = currentColor.toHex() // revert to last valid color
                     }
                 }
             )
@@ -43,18 +38,15 @@ public struct LuminareColorPicker: View {
                 showColorPicker.toggle()
             } label: {
                 RoundedRectangle(cornerRadius: 4)
-                    .foregroundStyle(self.color)
+                    .foregroundStyle(currentColor)
                     .frame(width: 26, height: 26)
                     .padding(4)
                     .modifier(LuminareBordered())
             }
             .buttonStyle(PlainButtonStyle())
             .popover(isPresented: $showColorPicker) {
-                ColorPickerPopover(color: $color, hexColor: $text)
+                ColorPickerPopover(color: $currentColor, hexColor: $text)
             }
-        }
-        .onChange(of: color) { _ in
-            currentColor = color
         }
     }
 }

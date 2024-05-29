@@ -20,6 +20,7 @@ public struct LuminareToggle: View {
         self.title = title
         self._value = value
     }
+
     public var body: some View {
         HStack {
             Text(title)
