@@ -10,7 +10,7 @@ import SwiftUI
 public struct ScreenView<Content>: View where Content: View {
     let screenContent: () -> Content
     @State private var image: NSImage?
-    private let unevenRoundedRectangle = UnevenRoundedRectangle(
+    private let screenShape = UnevenRoundedRectangle(
         topLeadingRadius: 12,
         bottomLeadingRadius: 0,
         bottomTrailingRadius: 0,
@@ -52,16 +52,16 @@ public struct ScreenView<Content>: View where Content: View {
                         .padding(5)
                 }
             }
-            .clipShape(unevenRoundedRectangle)
+            .clipShape(screenShape)
 
-            unevenRoundedRectangle
+            screenShape
                 .stroke(.gray, lineWidth: 2)
 
-            unevenRoundedRectangle
+            screenShape
                 .inset(by: 2.5)
                 .stroke(.black, lineWidth: 5)
 
-            unevenRoundedRectangle
+            screenShape
                 .inset(by: 3)
                 .stroke(.gray.opacity(0.2), lineWidth: 1)
         }
@@ -69,9 +69,13 @@ public struct ScreenView<Content>: View where Content: View {
     }
 
     func updateImage() async {
-        guard let screen = NSScreen.main,
-              let url = NSWorkspace.shared.desktopImageURL(for: screen),
-              self.image == nil || self.image!.isValid == false else { return }
+        guard 
+            let screen = NSScreen.main,
+            let url = NSWorkspace.shared.desktopImageURL(for: screen),
+            self.image == nil || self.image!.isValid == false
+        else {
+            return
+        }
 
         if let newImage = NSImage.resize(url, width: 300) {
             withAnimation {
@@ -85,11 +89,19 @@ extension NSImage {
     static func resize(_ url: URL, width: CGFloat) -> NSImage? {
         guard let inputImage = NSImage(contentsOf: url) else { return nil }
         let aspectRatio = inputImage.size.width / inputImage.size.height
-        let thumbSize = NSSize(width: width, height: width / aspectRatio)
+        let thumbSize = NSSize(
+            width: width,
+            height: width / aspectRatio
+        )
 
         let outputImage = NSImage(size: thumbSize)
         outputImage.lockFocus()
-        inputImage.draw(in: NSRect(origin: .zero, size: thumbSize), from: .zero, operation: .sourceOver, fraction: 1)
+        inputImage.draw(
+            in: NSRect(origin: .zero, size: thumbSize),
+            from: .zero,
+            operation: .sourceOver,
+            fraction: 1
+        )
         outputImage.unlockFocus()
 
         return outputImage

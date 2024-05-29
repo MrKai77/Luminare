@@ -19,10 +19,10 @@ public struct LuminareButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(backgroundForState(isPressed: configuration.isPressed))
-            .onHover { self.isHovering = $0 }
+            .onHover { isHovering = $0 }
             .animation(.easeOut(duration: 0.1), value: isHovering)
             .frame(minHeight: elementMinHeight)
-            .clipShape(RoundedRectangle(cornerRadius: innerCornerRadius))
+            .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
     }
 
@@ -51,10 +51,10 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(destructiveBackgroundForState(isPressed: configuration.isPressed))
-            .onHover { self.isHovering = $0 }
+            .onHover { isHovering = $0 }
             .animation(.easeOut(duration: 0.1), value: isHovering)
             .frame(minHeight: elementMinHeight)
-            .clipShape(RoundedRectangle(cornerRadius: innerCornerRadius))
+            .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
     }
 
@@ -130,7 +130,7 @@ public struct LuminareBordered: ViewModifier {
                     Rectangle().foregroundStyle(.quinary)
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .background {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary, lineWidth: 1)

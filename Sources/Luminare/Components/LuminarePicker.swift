@@ -115,24 +115,50 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     }
 
     func getShape(i: Int, j: Int) -> some InsettableShape {
-        let topLeading = (i == 0 && j == 0 && roundTop) || (i == 0 && j == columnsIndex && roundTop) ? cornerRadius - innerPadding : innerCornerRadius
-        let bottomLeading = (i == rowsIndex && j == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius
-        let bottomTrailing = (i == rowsIndex && j == columnsIndex && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius
-        let topTrailing = (i == 0 && j == columnsIndex && roundTop) ? cornerRadius - innerPadding : innerCornerRadius
-
-        return UnevenRoundedRectangle(
-            topLeadingRadius: topLeading,
-            bottomLeadingRadius: bottomLeading,
-            bottomTrailingRadius: bottomTrailing,
-            topTrailingRadius: topTrailing
-        )
+        if j == 0 && i == 0 && roundTop { // Top left
+            UnevenRoundedRectangle(
+                topLeadingRadius: cornerRadius - innerPadding,
+                bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomTrailingRadius: innerCornerRadius,
+                topTrailingRadius: (columnsIndex == 0) ?  cornerRadius - innerPadding : innerCornerRadius
+            )
+        } else if j == 0 && i == rowsIndex && roundBottom { // Bottom left
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerCornerRadius,
+                bottomLeadingRadius: cornerRadius - innerPadding,
+                bottomTrailingRadius: (columnsIndex == 0) ?  cornerRadius - innerPadding : innerCornerRadius,
+                topTrailingRadius: innerCornerRadius
+            )
+        } else if j == columnsIndex && i == 0 && roundTop { // Top right
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerCornerRadius,
+                bottomLeadingRadius: innerCornerRadius,
+                bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                topTrailingRadius: cornerRadius - innerPadding
+            )
+        } else if j == columnsIndex && i == rowsIndex && roundBottom { // Bottom right
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerCornerRadius,
+                bottomLeadingRadius: innerCornerRadius,
+                bottomTrailingRadius: cornerRadius - innerPadding,
+                topTrailingRadius: innerCornerRadius
+            )
+        } else {
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerCornerRadius,
+                bottomLeadingRadius: innerCornerRadius,
+                bottomTrailingRadius: innerCornerRadius,
+                topTrailingRadius: innerCornerRadius
+            )
+        }
     }
 }
 
 extension Array {
     func slice(size: Int) -> [[Element]] {
-        (0..<(count / size + (count % size == 0 ? 0 : 1))).map {
-            Array(self[($0 * size)..<(Swift.min($0 * size + size, count))])
-        }
+        (0..<(count / size + (count % size == 0 ? 0 : 1)))
+            .map {
+                Array(self[($0 * size)..<(Swift.min($0 * size + size, count))])
+            }
     }
 }

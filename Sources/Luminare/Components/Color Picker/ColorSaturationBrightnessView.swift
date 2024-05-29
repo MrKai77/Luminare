@@ -39,14 +39,6 @@ struct ColorSaturationBrightnessView: View {
                 endPoint: .bottom
             )
 
-//            Circle()
-//                .frame(width: circleSize, height: circleSize)
-//                .foregroundColor(selectedColor)
-//                .background {
-//                    Circle()
-//                        .stroke(.white, lineWidth: 6)
-//                }
-//                .shadow(radius: 3)
             ColorPickerCircle(selectedColor: $selectedColor, isDragging: $isDragging, circleSize: circleSize)
                 .offset(
                     x: circlePosition.x - viewSize / 2,

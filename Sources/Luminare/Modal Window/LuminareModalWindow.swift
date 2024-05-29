@@ -22,9 +22,17 @@ extension EnvironmentValues {
 class LuminareModal<Content>: NSWindow where Content: View {
     @Binding var isPresented: Bool
 
-    init(view: () -> Content, isPresented: Binding<Bool>) {
+    init(
+        view: () -> Content,
+        isPresented: Binding<Bool>
+    ) {
         self._isPresented = isPresented
-        super.init(contentRect: .zero, styleMask: [.titled, .fullSizeContentView], backing: .buffered, defer: false)
+        super.init(
+            contentRect: .zero,
+            styleMask: [.titled, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
 
         let hostingView = NSHostingView(rootView: LuminareModalView(view(), self)
             .environment(\.floatingPanel, self)
@@ -46,8 +54,11 @@ class LuminareModal<Content>: NSWindow where Content: View {
 
     func updateShadow(for duration: Double) {
         guard isPresented else { return }
-        let updatesCount = Int(duration * 60)
+
+        let frameRate: Double = 60
+        let updatesCount = Int(duration * frameRate)
         let interval = duration / Double(updatesCount)
+
         for i in 0...updatesCount {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * interval) {
                 self.invalidateShadow()
@@ -66,11 +77,12 @@ class LuminareModal<Content>: NSWindow where Content: View {
     }
 
     override func keyDown(with event: NSEvent) {
-        if event.keyCode == 13 && event.modifierFlags.contains(.command) {
+        let wKey = 13
+        if event.keyCode == wKey && event.modifierFlags.contains(.command) {
             close()
-        } else {
-            super.keyDown(with: event)
+            return
         }
+        super.keyDown(with: event)
     }
 }
 
@@ -87,6 +99,10 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
                 } else {
                     close()
                 }
+            }
+            .onDisappear {
+                isPresented = false
+                close()
             }
     }
 

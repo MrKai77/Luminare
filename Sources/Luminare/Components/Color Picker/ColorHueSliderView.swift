@@ -14,9 +14,10 @@ struct ColorHueSliderView: View {
 
     // Gradient for the color spectrum slider
     private let colorSpectrumGradient = Gradient(
-        colors: stride(from: 0.0, through: 1.0, by: 0.01).map {
-            Color(hue: $0, saturation: 1, brightness: 1)
-        }
+        colors: stride(from: 0.0, through: 1.0, by: 0.01)
+            .map {
+                Color(hue: $0, saturation: 1, brightness: 1)
+            }
     )
     private let viewSize: CGFloat = 276
 
@@ -30,10 +31,17 @@ struct ColorHueSliderView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             Rectangle()
-                .fill(LinearGradient(gradient: colorSpectrumGradient, startPoint: .leading, endPoint: .trailing))
+                .fill(
+                    LinearGradient(
+                        gradient: colorSpectrumGradient,
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
                 .frame(maxHeight: .infinity)
                 .gesture(
-                    DragGesture(minimumDistance: 0).onChanged(handleDragChange)
+                    DragGesture(minimumDistance: 0)
+                        .onChanged(handleDragChange)
                 )
 
             RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition))
