@@ -88,9 +88,13 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(compactBackgroundForState(isPressed: configuration.isPressed))
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.quaternary, lineWidth: 1)
+            }
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-            .onHover { self.isHovering = $0 }
+            .clipShape(.rect(cornerRadius: cornerRadius))
+            .onHover { isHovering = $0 }
             .animation(.easeOut(duration: 0.1), value: isHovering)
             .frame(minHeight: extraCompact ? elementExtraMinHeight : elementMinHeight)
             .opacity(isEnabled ? 1 : 0.5)
