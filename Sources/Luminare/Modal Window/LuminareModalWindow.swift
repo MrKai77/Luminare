@@ -48,7 +48,6 @@ class LuminareModal<Content>: NSWindow where Content: View {
         contentView = hostingView
         contentView?.wantsLayer = true
         ignoresMouseEvents = false
-        isMovableByWindowBackground = popoverMode ? true : false
         isOpaque = false
         hasShadow = true
         titlebarAppearsTransparent = true
