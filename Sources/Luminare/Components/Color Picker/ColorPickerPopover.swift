@@ -17,20 +17,43 @@ struct ColorPickerPopover: View {
 
     // Main view containing all components of the color picker
     var body: some View {
-        LuminareSection(showDividers: false) {
-            // Lightness adjustment view
-            ColorSaturationBrightnessView(selectedColor: $color)
-                .scaledToFill()
-                .clipShape(.rect(cornerRadius: 2))
+        VStack(spacing: 12) {
+            VStack(spacing: 4) {
+                ColorSaturationBrightnessView(selectedColor: $color)
+                    .scaledToFill()
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 8,
+                            bottomLeadingRadius: 2,
+                            bottomTrailingRadius: 2,
+                            topTrailingRadius: 8
+                        )
+                    )
 
-            // Color spectrum slider
-            ColorHueSliderView(selectedColor: $color)
-                .scaledToFill()
-                .clipShape(.rect(cornerRadius: 2))
+                ColorHueSliderView(selectedColor: $color)
+                    .scaledToFill()
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 2,
+                            bottomLeadingRadius: 8,
+                            bottomTrailingRadius: 8,
+                            topTrailingRadius: 2
+                        )
+                    )
+            }
+            .padding(4)
+            .background {
+                Rectangle()
+                    .foregroundStyle(.quinary.opacity(0.5))
+                    .clipShape(.rect(cornerRadius: 8))
+
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
+            }
+
+            RGBInputFields
         }
-
-        // RGB input fields
-        RGBInputFields
+        .padding(8)
 
         .onAppear {
             updateComponents(newValue: color)

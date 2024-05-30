@@ -26,7 +26,6 @@ class LuminareModal<Content>: NSWindow where Content: View {
     init(
         view: () -> Content,
         isPresented: Binding<Bool>,
-        popoverMode: Bool,
         closeOnDefocus: Bool
     ) {
         self._isPresented = isPresented
@@ -38,7 +37,7 @@ class LuminareModal<Content>: NSWindow where Content: View {
             defer: false
         )
 
-        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self, popoverMode: popoverMode)
+        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self)
             .environment(\.floatingPanel, self)
             .environment(\.tintColor, LuminareSettingsWindow.tint))
 
@@ -103,7 +102,6 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     @Binding var isPresented: Bool
     @ViewBuilder let view: () -> PanelContent
     @State private var panel: LuminareModal<PanelContent>?
-    let popoverMode: Bool
     let closeOnDefocus: Bool
 
     func body(content: Content) -> some View {
@@ -127,7 +125,6 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
             self.panel = LuminareModal(
                 view: view,
                 isPresented: $isPresented,
-                popoverMode: popoverMode,
                 closeOnDefocus: closeOnDefocus
             )
             self.panel?.orderFrontRegardless()
@@ -144,7 +141,6 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
 extension View {
     public func luminareModal<Content: View>(
         isPresented: Binding<Bool>,
-        popoverMode: Bool = false,
         closeOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
@@ -152,7 +148,6 @@ extension View {
             LuminareModalModifier(
                 isPresented: isPresented,
                 view: content,
-                popoverMode: popoverMode,
                 closeOnDefocus: closeOnDefocus
             )
         )
