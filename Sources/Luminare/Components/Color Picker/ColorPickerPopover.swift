@@ -17,55 +17,21 @@ struct ColorPickerPopover: View {
 
     // Main view containing all components of the color picker
     var body: some View {
-        VStack(spacing: 12) {
-            VStack(spacing: 2) {
-                // Lightness adjustment view
-                ColorSaturationBrightnessView(selectedColor: $color)
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 12,
-                            bottomLeadingRadius: 2,
-                            bottomTrailingRadius: 2,
-                            topTrailingRadius: 12
-                        )
-                    )
+        LuminareSection(showDividers: false) {
+            // Lightness adjustment view
+            ColorSaturationBrightnessView(selectedColor: $color)
+                .scaledToFill()
+                .clipShape(.rect(cornerRadius: 2))
 
-                // Color spectrum slider
-                ColorHueSliderView(selectedColor: $color)
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 2,
-                            bottomLeadingRadius: 8,
-                            bottomTrailingRadius: 8,
-                            topTrailingRadius: 2
-                        )
-                    )
-            }
-            .padding(4)
-
-            .background(.quinary.opacity(0.5))
-            .clipShape(
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 16,
-                    bottomLeadingRadius: 12,
-                    bottomTrailingRadius: 12,
-                    topTrailingRadius: 16
-                )
-            )
-            .background {
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 16,
-                    bottomLeadingRadius: 12,
-                    bottomTrailingRadius: 12,
-                    topTrailingRadius: 16
-                )
-                .strokeBorder(.quinary.opacity(0.5), lineWidth: 1)
-            }
-
-            // RGB input fields
-            RGBInputFields
+            // Color spectrum slider
+            ColorHueSliderView(selectedColor: $color)
+                .scaledToFill()
+                .clipShape(.rect(cornerRadius: 2))
         }
-        .padding(8)
+
+        // RGB input fields
+        RGBInputFields
+
         .onAppear {
             updateComponents(newValue: color)
         }

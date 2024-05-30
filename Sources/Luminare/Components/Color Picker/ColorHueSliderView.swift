@@ -30,19 +30,15 @@ struct ColorHueSliderView: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        gradient: colorSpectrumGradient,
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .frame(maxHeight: .infinity)
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged(handleDragChange)
-                )
+            LinearGradient(
+                gradient: colorSpectrumGradient,
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged(handleDragChange)
+            )
 
             RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition))
                 .frame(width: handleWidth(at: selectionPosition), height: 12)

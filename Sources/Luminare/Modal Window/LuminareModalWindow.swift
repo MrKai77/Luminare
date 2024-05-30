@@ -21,12 +21,16 @@ extension EnvironmentValues {
 
 class LuminareModal<Content>: NSWindow where Content: View {
     @Binding var isPresented: Bool
+    let closeOnDefocus: Bool
 
     init(
         view: () -> Content,
-        isPresented: Binding<Bool>
+        isPresented: Binding<Bool>,
+        popoverMode: Bool,
+        closeOnDefocus: Bool
     ) {
         self._isPresented = isPresented
+        self.closeOnDefocus = closeOnDefocus
         super.init(
             contentRect: .zero,
             styleMask: [.titled, .fullSizeContentView],
@@ -34,7 +38,7 @@ class LuminareModal<Content>: NSWindow where Content: View {
             defer: false
         )
 
-        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self)
+        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self, popoverMode: popoverMode)
             .environment(\.floatingPanel, self)
             .environment(\.tintColor, LuminareSettingsWindow.tint))
 
@@ -44,11 +48,13 @@ class LuminareModal<Content>: NSWindow where Content: View {
         contentView = hostingView
         contentView?.wantsLayer = true
         ignoresMouseEvents = false
+        isMovableByWindowBackground = popoverMode ? true : false
         isOpaque = false
         hasShadow = true
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         animationBehavior = .documentWindow
+
         center()
     }
 
@@ -76,6 +82,14 @@ class LuminareModal<Content>: NSWindow where Content: View {
         self.isPresented = false
     }
 
+    override func resignMain() {
+        super.resignMain()
+
+        if closeOnDefocus {
+            close()
+        }
+    }
+
     override func keyDown(with event: NSEvent) {
         let wKey = 13
         if event.keyCode == wKey && event.modifierFlags.contains(.command) {
@@ -90,6 +104,8 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     @Binding var isPresented: Bool
     @ViewBuilder let view: () -> PanelContent
     @State private var panel: LuminareModal<PanelContent>?
+    let popoverMode: Bool
+    let closeOnDefocus: Bool
 
     func body(content: Content) -> some View {
         content
@@ -109,7 +125,12 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     private func present() {
         guard panel == nil else { return }
         DispatchQueue.main.async {
-            self.panel = LuminareModal(view: view, isPresented: $isPresented)
+            self.panel = LuminareModal(
+                view: view,
+                isPresented: $isPresented,
+                popoverMode: popoverMode,
+                closeOnDefocus: closeOnDefocus
+            )
             self.panel?.orderFrontRegardless()
             self.panel?.makeKey()
         }
@@ -124,8 +145,17 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
 extension View {
     public func luminareModal<Content: View>(
         isPresented: Binding<Bool>,
+        popoverMode: Bool = false,
+        closeOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        self.modifier(LuminareModalModifier(isPresented: isPresented, view: content))
+        self.modifier(
+            LuminareModalModifier(
+                isPresented: isPresented,
+                view: content,
+                popoverMode: popoverMode,
+                closeOnDefocus: closeOnDefocus
+            )
+        )
     }
 }

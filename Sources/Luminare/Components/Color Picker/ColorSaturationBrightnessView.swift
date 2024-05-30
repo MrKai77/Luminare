@@ -16,73 +16,75 @@ struct ColorSaturationBrightnessView: View {
     @State private var originalSaturation: CGFloat = 0
     @State private var isDragging: Bool = false
 
-    private let viewSize: CGFloat = 276
     private let circleSize: CGFloat = 12
 
     var body: some View {
-        ZStack {
-            Color(
-                hue: originalHue,
-                saturation: 1,
-                brightness: 1
-            )
-
-            LinearGradient(
-                gradient: Gradient(colors: [.white.opacity(0), .white]),
-                startPoint: .trailing,
-                endPoint: .leading
-            )
-
-            LinearGradient(
-                gradient: Gradient(colors: [.black.opacity(0), .black]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-
-            ColorPickerCircle(selectedColor: $selectedColor, isDragging: $isDragging, circleSize: circleSize)
-                .offset(
-                    x: circlePosition.x - viewSize / 2,
-                    y: circlePosition.y - viewSize / 2
+        GeometryReader { geo in
+            ZStack {
+                Color(
+                    hue: originalHue,
+                    saturation: 1,
+                    brightness: 1
                 )
-        }
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    isDragging = true
-                    updateColor(value.location)
-                }
-                .onEnded { value in
-                    isDragging = false
-                    updateColor(value.location)
-                }
-        )
-        .frame(width: viewSize, height: viewSize)
 
-        .onAppear {
-            let hsb = selectedColor.toHSB()
-            originalHue = hsb.hue
-            originalSaturation = hsb.saturation
-            updateCirclePosition()
-        }
-        .onChange(of: selectedColor) { _ in
-            if !isDragging {
+                LinearGradient(
+                    gradient: Gradient(colors: [.white.opacity(0), .white]),
+                    startPoint: .trailing,
+                    endPoint: .leading
+                )
+
+                LinearGradient(
+                    gradient: Gradient(colors: [.black.opacity(0), .black]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                ColorPickerCircle(selectedColor: $selectedColor, isDragging: $isDragging, circleSize: circleSize)
+                    .offset(
+                        x: circlePosition.x - geo.size.width / 2,
+                        y: circlePosition.y - geo.size.width / 2
+                    )
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        isDragging = true
+                        updateColor(value.location, geo.size)
+                    }
+                    .onEnded { value in
+                        isDragging = false
+                        updateColor(value.location, geo.size)
+                    }
+            )
+            .frame(width: geo.size.width, height: geo.size.width)
+
+            .onAppear {
                 let hsb = selectedColor.toHSB()
                 originalHue = hsb.hue
                 originalSaturation = hsb.saturation
-                updateCirclePosition()
+                updateCirclePosition(geo.size)
+            }
+            .onChange(of: selectedColor) { _ in
+                if !isDragging {
+                    let hsb = selectedColor.toHSB()
+                    originalHue = hsb.hue
+                    originalSaturation = hsb.saturation
+                    updateCirclePosition(geo.size)
+                }
             }
         }
     }
 
     // Update the position of the circle based on user interaction
-    private func updateColor(_ location: CGPoint) {
-        let adjustedX = max(0, min(location.x, viewSize))
-        let adjustedY = max(0, min(location.y, viewSize))
+    private func updateColor(_ location: CGPoint, _ viewSize: CGSize) {
+        let adjustedX = max(0, min(location.x, viewSize.width))
+        let adjustedY = max(0, min(location.y, viewSize.height))
 
         // Only adjust brightness if dragging, to avoid overwriting with white or black
         if isDragging {
-            let brightness = 1 - (adjustedY / viewSize)
-            let saturation = (adjustedX / viewSize)
+            let saturation = (adjustedX / viewSize.width)
+            let brightness = 1 - (adjustedY / viewSize.height)
+
             selectedColor = Color(
                 hue: Double(originalHue),
                 saturation: Double(saturation),
@@ -91,23 +93,23 @@ struct ColorSaturationBrightnessView: View {
         }
 
         withAnimation(.smooth(duration: 0.2)) {
-            updateCirclePosition()
+            updateCirclePosition(viewSize)
         }
     }
 
     // Initialize the position of the circle based on the current color
-    private func updateCirclePosition() {
+    private func updateCirclePosition(_ viewSize: CGSize) {
         let hsb = selectedColor.toHSB()
 
         if hsb.saturation <= 0.0001 {
             circlePosition = CGPoint(
                 x: .zero,
-                y: (1 - CGFloat(hsb.brightness)) * viewSize
+                y: (1 - CGFloat(hsb.brightness)) * viewSize.height
             )
         } else {
             circlePosition = CGPoint(
-                x: CGFloat(hsb.saturation) * viewSize,
-                y: (1 - CGFloat(hsb.brightness)) * viewSize
+                x: CGFloat(hsb.saturation) * viewSize.width,
+                y: (1 - CGFloat(hsb.brightness)) * viewSize.height
             )
         }
     }
