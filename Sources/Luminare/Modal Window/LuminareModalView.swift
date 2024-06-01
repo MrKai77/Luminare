@@ -10,17 +10,15 @@ import SwiftUI
 struct LuminareModalView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
 
-    let sectionSpacing: CGFloat
-    let outerPadding: CGFloat
+    let sectionSpacing: CGFloat = 16
+    let outerPadding: CGFloat = 16
 
     let content: Content
     let modalWindow: LuminareModal<Content>
 
-    init(_ content: Content, _ modalWindow: LuminareModal<Content>, popoverMode: Bool) {
+    init(_ content: Content, _ modalWindow: LuminareModal<Content>) {
         self.content = content
         self.modalWindow = modalWindow
-        self.sectionSpacing = popoverMode ? 12 : 16
-        self.outerPadding = popoverMode ? 8 : 16
     }
 
     var body: some View {
