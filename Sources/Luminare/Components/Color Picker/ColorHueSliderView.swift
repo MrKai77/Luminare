@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ColorHueSliderView: View {
     @Binding var selectedColor: Color
-    @State private var selectionPosition: CGFloat
+    @State private var selectionPosition: CGFloat = 0
     @State private var selectionOffset: CGFloat = 0
 
     // Gradient for the color spectrum slider
@@ -19,45 +19,46 @@ struct ColorHueSliderView: View {
                 Color(hue: $0, saturation: 1, brightness: 1)
             }
     )
-    private let viewSize: CGFloat = 276
 
     init(selectedColor: Binding<Color>) {
         self._selectedColor = selectedColor
-        let huePercentage = selectedColor.wrappedValue.toHSB().hue
-        self._selectionPosition = State(initialValue: huePercentage * viewSize)
-        self._selectionOffset = State(initialValue: 0) // Initialized later in onAppear
     }
 
     var body: some View {
-        ZStack(alignment: .leading) {
-            LinearGradient(
-                gradient: colorSpectrumGradient,
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged(handleDragChange)
-            )
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                LinearGradient(
+                    gradient: colorSpectrumGradient,
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            handleDragChange(value, geo.size.width)
+                        }
+                )
 
-            RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition))
-                .frame(width: handleWidth(at: selectionPosition), height: 12)
-                .offset(x: selectionOffset, y: 0)
-                .foregroundColor(.white)
-                .shadow(radius: 3)
-                .onChange(of: selectionPosition) { _ in
-                    withAnimation(.smooth(duration: 0.2)) {
-                        selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition))
+                RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition, geo.size.width))
+                    .frame(width: handleWidth(at: selectionPosition, geo.size.width), height: 12)
+                    .offset(x: selectionOffset, y: 0)
+                    .foregroundColor(.white)
+                    .shadow(radius: 3)
+                    .onChange(of: selectionPosition) { _ in
+                        withAnimation(.smooth(duration: 0.2)) {
+                            selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
+                        }
                     }
-                }
+            }
+            .onAppear {
+                selectionPosition = selectedColor.toHSB().hue * geo.size.width
+                selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
+            }
         }
         .frame(height: 16)
-        .onAppear {
-            selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition))
-        }
     }
 
-    private func handleDragChange(_ value: DragGesture.Value) {
+    private func handleDragChange(_ value: DragGesture.Value, _ viewSize: CGFloat) {
         let clampedX = max(0, min(value.location.x, viewSize))
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
@@ -75,19 +76,19 @@ struct ColorHueSliderView: View {
         return Color(hue: 0.01 + (percentage * 0.99), saturation: max(0.0001, hsb.saturation), brightness: hsb.brightness)
     }
 
-    private func calculateOffset(handleWidth: CGFloat) -> CGFloat {
+    private func calculateOffset(handleWidth: CGFloat, _ viewSize: CGFloat) -> CGFloat {
         let halfWidth = handleWidth / 2
         let adjustedPosition = min(max(selectionPosition, halfWidth), viewSize - halfWidth)
         return adjustedPosition - halfWidth
     }
 
-    private func handleWidth(at position: CGFloat) -> CGFloat {
+    private func handleWidth(at position: CGFloat, _ viewSize: CGFloat) -> CGFloat {
         let edgeDistance = min(position, viewSize - position)
         let edgeFactor = 1 - max(0, min(edgeDistance / 10, 1))
         return max(5, min(10, 5 + (5 * edgeFactor)))
     }
 
-    private func handleCornerRadius(at position: CGFloat) -> CGFloat {
+    private func handleCornerRadius(at position: CGFloat, _ viewSize: CGFloat) -> CGFloat {
         let edgeDistance = min(position, viewSize - position)
         let edgeFactor = max(0, min(edgeDistance / 5, 1))
         return max(2, 15 * edgeFactor)

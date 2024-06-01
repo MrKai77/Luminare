@@ -45,9 +45,9 @@ struct ColorPickerPopover: View {
             .background {
                 Rectangle()
                     .foregroundStyle(.quinary.opacity(0.5))
-                    .clipShape(.rect(cornerRadius: 8))
+                    .clipShape(.rect(cornerRadius: 12))
 
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
             }
 
