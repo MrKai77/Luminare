@@ -27,7 +27,6 @@ struct LuminareModalView<Content>: View where Content: View {
                 self.content
             }
             .padding(outerPadding)
-            .frame(width: 400)
             .fixedSize()
             .background {
                 VisualEffectView(

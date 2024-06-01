@@ -19,7 +19,11 @@ public struct LuminareButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(backgroundForState(isPressed: configuration.isPressed))
-            .onHover { isHovering = $0 }
+            .onHover { hover in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    isHovering = hover
+                }
+            }
             .animation(.easeOut(duration: 0.1), value: isHovering)
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
@@ -51,7 +55,11 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(destructiveBackgroundForState(isPressed: configuration.isPressed))
-            .onHover { isHovering = $0 }
+            .onHover { hover in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    isHovering = hover
+                }
+            }
             .animation(.easeOut(duration: 0.1), value: isHovering)
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
@@ -66,6 +74,51 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
                 Rectangle().foregroundStyle(.red.opacity(0.25))
             } else {
                 Rectangle().foregroundStyle(.red.opacity(0.15))
+            }
+        }
+    }
+}
+
+public struct LuminareCosmeticButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled: Bool
+    let innerCornerRadius: CGFloat = 2
+    let elementMinHeight: CGFloat = 34
+    @State var isHovering: Bool = false
+    let icon: Image
+
+    public init(_ icon: Image) {
+        self.icon = icon
+    }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(backgroundForState(isPressed: configuration.isPressed))
+            .onHover { hover in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    isHovering = hover
+                }
+            }
+            .frame(minHeight: elementMinHeight)
+            .clipShape(.rect(cornerRadius: innerCornerRadius))
+            .opacity(isEnabled ? 1 : 0.5)
+            .overlay {
+                HStack {
+                    Spacer()
+                    icon
+                        .opacity(isHovering ? 1 : 0)
+                }
+                .padding(24)
+                .allowsHitTesting(false)
+            }
+    }
+
+    private func backgroundForState(isPressed: Bool) -> some View {
+        Group {
+            if isPressed && isEnabled {
+                Rectangle().foregroundStyle(.quaternary)
+            } else if isHovering && isEnabled {
+                Rectangle().foregroundStyle(.quaternary.opacity(0.7))
             }
         }
     }
@@ -94,7 +147,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             }
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
             .clipShape(.rect(cornerRadius: cornerRadius))
-            .onHover { isHovering = $0 }
+            .onHover { hover in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    isHovering = hover
+                }
+            }
             .animation(.easeOut(duration: 0.1), value: isHovering)
             .frame(minHeight: extraCompact ? elementExtraMinHeight : elementMinHeight)
             .opacity(isEnabled ? 1 : 0.5)

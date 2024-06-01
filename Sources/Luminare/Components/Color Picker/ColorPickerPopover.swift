@@ -18,20 +18,20 @@ struct ColorPickerPopover: View {
     // Main view containing all components of the color picker
     var body: some View {
         VStack(spacing: 12) {
-            VStack(spacing: 2) {
-                // Lightness adjustment view
+            VStack(spacing: 4) {
                 ColorSaturationBrightnessView(selectedColor: $color)
+                    .scaledToFill()
                     .clipShape(
                         UnevenRoundedRectangle(
-                            topLeadingRadius: 12,
+                            topLeadingRadius: 8,
                             bottomLeadingRadius: 2,
                             bottomTrailingRadius: 2,
-                            topTrailingRadius: 12
+                            topTrailingRadius: 8
                         )
                     )
 
-                // Color spectrum slider
                 ColorHueSliderView(selectedColor: $color)
+                    .scaledToFill()
                     .clipShape(
                         UnevenRoundedRectangle(
                             topLeadingRadius: 2,
@@ -42,30 +42,19 @@ struct ColorPickerPopover: View {
                     )
             }
             .padding(4)
-
-            .background(.quinary.opacity(0.5))
-            .clipShape(
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 16,
-                    bottomLeadingRadius: 12,
-                    bottomTrailingRadius: 12,
-                    topTrailingRadius: 16
-                )
-            )
             .background {
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 16,
-                    bottomLeadingRadius: 12,
-                    bottomTrailingRadius: 12,
-                    topTrailingRadius: 16
-                )
-                .strokeBorder(.quinary.opacity(0.5), lineWidth: 1)
+                Rectangle()
+                    .foregroundStyle(.quinary.opacity(0.5))
+                    .clipShape(.rect(cornerRadius: 8))
+
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
             }
 
-            // RGB input fields
             RGBInputFields
         }
         .padding(8)
+
         .onAppear {
             updateComponents(newValue: color)
         }

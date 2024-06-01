@@ -28,7 +28,7 @@ struct RGBInputField: View {
                 .clipShape(.rect(cornerRadius: 8))
                 .background {
                     RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(.quinary.opacity(0.5), lineWidth: 1)
+                        .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
                 }
         }
     }
