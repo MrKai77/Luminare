@@ -10,6 +10,7 @@ import SwiftUI
 public struct ScreenView<Content>: View where Content: View {
     let screenContent: () -> Content
     @State private var image: NSImage?
+
     private let screenShape = UnevenRoundedRectangle(
         topLeadingRadius: 12,
         bottomLeadingRadius: 0,
@@ -24,7 +25,7 @@ public struct ScreenView<Content>: View where Content: View {
     public var body: some View {
         ZStack {
             GeometryReader { geo in
-                if let image = self.image {
+                if let image = image {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -47,7 +48,7 @@ public struct ScreenView<Content>: View where Content: View {
                 await updateImage()
             }
             .overlay {
-                if self.image != nil {
+                if image != nil {
                     screenContent()
                         .padding(5)
                 }

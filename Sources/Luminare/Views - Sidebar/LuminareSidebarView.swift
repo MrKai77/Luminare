@@ -29,7 +29,7 @@ struct LuminareSidebarView: View {
             Spacer()
                 .frame(height: titlebarHeight)
 
-            ForEach(self.groups) { group in
+            ForEach(groups) { group in
                 VStack(spacing: itemSpacing) {
                     groupTitle(group)
 

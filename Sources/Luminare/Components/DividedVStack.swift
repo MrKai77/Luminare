@@ -24,7 +24,7 @@ public struct DividedVStack<Content: View>: View {
     public var body: some View {
         _VariadicView.Tree(
             DividedVStackLayout(
-                spacing: self.applyMaskToItems ? self.spacing : 0,
+                spacing: applyMaskToItems ? spacing : 0,
                 applyMaskToItems: applyMaskToItems,
                 showDividers: showDividers
             )
@@ -52,7 +52,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
         let first = children.first?.id
         let last = children.last?.id
 
-        VStack(spacing: self.showDividers ? self.spacing : self.spacing / 2) {
+        VStack(spacing: showDividers ? spacing : spacing / 2) {
             ForEach(children) { child in
                 Group {
                     if applyMaskToItems {
@@ -83,8 +83,6 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     }
 }
 
-// TODO: FIX 3 vs 4 pt padding
-
 public struct LuminareCroppedSectionItem: ViewModifier {
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
@@ -100,7 +98,7 @@ public struct LuminareCroppedSectionItem: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .mask(self.getMask())
+            .mask(getMask())
             .padding(.horizontal, innerPadding)
     }
 

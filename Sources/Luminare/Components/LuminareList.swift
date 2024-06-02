@@ -53,21 +53,21 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 }
 
                 Button("Remove") {
-                    if !self.selection.isEmpty {
+                    if !selection.isEmpty {
                         canRefreshSelection = false
                         withAnimation(.smooth(duration: 0.25)) {
-                            self.items.removeAll(where: { selection.contains($0) })
+                            items.removeAll(where: { selection.contains($0) })
                         }
 
-                        self.selection = []
+                        selection = []
 
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            self.canRefreshSelection = true
+                            canRefreshSelection = true
                         }
                     }
                 }
                 .buttonStyle(LuminareDestructiveButtonStyle())
-                .disabled(self.selection.isEmpty)
+                .disabled(selection.isEmpty)
             }
             .modifier(
                 LuminareCroppedSectionItem(
@@ -105,12 +105,12 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                     .listRowInsets(EdgeInsets())
                     .padding(.horizontal, -10)
                 }
-                .frame(height: CGFloat(self.items.count * 50))
+                .frame(height: CGFloat(items.count * 50))
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(true)
                 .listStyle(.plain)
-                .onChange(of: self.selection) { _ in
-                    self.processSelection()
+                .onChange(of: selection) { _ in
+                    processSelection()
                 }
             }
         }
@@ -125,11 +125,11 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
 
     func processSelection() {
         if selection.isEmpty {
-            self.firstItem = nil
-            self.lastItem = nil
+            firstItem = nil
+            lastItem = nil
         } else {
-            self.firstItem = self.items.first(where: { selection.contains($0) })
-            self.lastItem = self.items.last(where: { selection.contains($0) })
+            firstItem = items.first(where: { selection.contains($0) })
+            lastItem = items.last(where: { selection.contains($0) })
         }
     }
 }
@@ -210,7 +210,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             }
 
             .overlay {
-                if item != self.items.last {
+                if item != items.last {
                     VStack {
                         Spacer()
                         Divider()
@@ -218,7 +218,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                     .padding(.trailing, -0.5)
                 }
             }
-            .onChange(of: self.selection) { _ in
+            .onChange(of: selection) { _ in
                 guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
                     withAnimation(.easeOut(duration: 0.2)) {
@@ -234,7 +234,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             tintColor()
                 .opacity(tintOpacity)
 
-            if self.isHovering {
+            if isHovering {
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
                     .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
@@ -243,38 +243,38 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     }
 
     @ViewBuilder func getItemBorder() -> some View {
-        if self.isFirstInSelection() && self.isLastInSelection() {
-            self.singleSelectionPart(isBottomOfList: item == self.items.last)
+        if isFirstInSelection() && isLastInSelection() {
+            singleSelectionPart(isBottomOfList: item == items.last)
 
-        } else if self.isFirstInSelection() {
-            self.firstItemPart()
+        } else if isFirstInSelection() {
+            firstItemPart()
 
-        } else if self.isLastInSelection() {
-            self.lastItemPart(isBottomOfList: item == self.items.last)
+        } else if isLastInSelection() {
+            lastItemPart(isBottomOfList: item == items.last)
 
-        } else if self.selection.contains(item) {
-            self.doubleLinePart()
+        } else if selection.contains(item) {
+            doubleLinePart()
         }
     }
 
     func isFirstInSelection() -> Bool {
         if let firstIndex = items.firstIndex(of: item),
            firstIndex > 0,
-           !self.selection.contains(self.items[firstIndex - 1]) {
+           !selection.contains(items[firstIndex - 1]) {
             return true
         }
 
-        return item == self.firstItem
+        return item == firstItem
     }
 
     func isLastInSelection() -> Bool {
         if let firstIndex = items.firstIndex(of: item),
-           firstIndex < self.items.count - 1,
-           !self.selection.contains(self.items[firstIndex + 1]) {
+           firstIndex < items.count - 1,
+           !selection.contains(items[firstIndex + 1]) {
             return true
         }
 
-        return item == self.lastItem
+        return item == lastItem
     }
 
     func firstItemPart() -> some View {

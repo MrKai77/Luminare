@@ -51,7 +51,7 @@ public class LuminareSettingsWindow {
         guard windowController?.window == nil else { return }
 
         let view = NSHostingView(
-            rootView: ContentView(self.tabs, didTabChange: didTabChange)
+            rootView: ContentView(tabs, didTabChange: didTabChange)
                 .environment(\.tintColor, LuminareSettingsWindow.tint)
         )
 
@@ -75,23 +75,23 @@ public class LuminareSettingsWindow {
 
         // Private API
         window.setBackgroundBlur(radius: 20)
-//        self.swizzleWidgets()
+//        swizzleWidgets()
         window.identifier = LuminareSettingsWindow.identifier
 
         window.center()
 
-        self.windowController = .init(window: window)
+        windowController = .init(window: window)
     }
 
     public func deinitWindow() {
-        self.windowController?.window?.close()
-        self.windowController = nil
+        windowController?.window?.close()
+        windowController = nil
     }
 
     public func addPreview<Content: View>(content: Content, identifier: String, fullSize: Bool = false) {
         guard
-            let window = self.windowController?.window,
-            let bounds = self.previewBounds
+            let window = windowController?.window,
+            let bounds = previewBounds
         else {
             return
         }

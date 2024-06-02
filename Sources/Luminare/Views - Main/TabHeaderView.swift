@@ -19,9 +19,9 @@ struct TabHeaderView: View {
             Spacer()
 
             HStack {
-                self.activeTab.iconView()
+                activeTab.iconView()
 
-                Text(self.activeTab.title)
+                Text(activeTab.title)
                     .font(.title2)
 
                 Spacer()

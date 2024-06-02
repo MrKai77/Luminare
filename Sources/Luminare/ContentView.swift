@@ -40,7 +40,7 @@ struct ContentView: View {
 
                     ScrollView(.vertical) {
                         VStack(spacing: sectionSpacing) {
-                            self.activeTab.view
+                            activeTab.view
                         }
                         .padding(mainViewSectionOuterPadding)
                     }

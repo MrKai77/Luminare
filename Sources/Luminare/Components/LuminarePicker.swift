@@ -75,8 +75,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             }
         }
         // This will improve animation performance
-        .onChange(of: self.internalSelection) { _ in
-            self.selectedItem = self.internalSelection
+        .onChange(of: internalSelection) { _ in
+            selectedItem = internalSelection
         }
     }
 

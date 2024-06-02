@@ -140,7 +140,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(compactBackgroundForState(isPressed: configuration.isPressed))
+            .background(backgroundForState(isPressed: configuration.isPressed))
             .background {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary, lineWidth: 1)
@@ -157,7 +157,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 
-    private func compactBackgroundForState(isPressed: Bool) -> some View {
+    private func backgroundForState(isPressed: Bool) -> some View {
         Group {
             if isPressed {
                 Rectangle().foregroundStyle(.quaternary)
@@ -181,7 +181,7 @@ public struct LuminareBordered: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .background {
-                if self.highlight {
+                if highlight {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 } else {
                     Rectangle().foregroundStyle(.quinary)

@@ -27,7 +27,7 @@ struct LuminareSidebarGroupItem: View {
             didTabChange(tab)
         } label: {
             HStack {
-                self.tab.iconView()
+                tab.iconView()
                 Text(tab.title)
 
                 Spacer()
@@ -35,7 +35,7 @@ struct LuminareSidebarGroupItem: View {
         }
         .buttonStyle(SidebarButtonStyle(isActive: $isActive))
         .overlay {
-            if self.isActive {
+            if isActive {
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(.quaternary, lineWidth: 1)
             }
@@ -43,14 +43,14 @@ struct LuminareSidebarGroupItem: View {
         .onAppear {
             checkIfSelfIsActiveTab()
         }
-        .onChange(of: self.activeTab) { _ in
+        .onChange(of: activeTab) { _ in
             checkIfSelfIsActiveTab()
         }
     }
 
     func checkIfSelfIsActiveTab() {
         withAnimation(.easeOut(duration: 0.1)) {
-            self.isActive = self.activeTab == self.tab
+            isActive = activeTab == tab
         }
     }
 }
@@ -66,14 +66,14 @@ struct SidebarButtonStyle: ButtonStyle {
             .background {
                 if configuration.isPressed{
                     Rectangle().foregroundStyle(.quaternary)
-                } else if isHovering || self.isActive {
+                } else if isHovering || isActive {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 }
             }
             .onHover { hover in
-                self.isHovering = hover
+                isHovering = hover
             }
-            .animation(.easeOut(duration: 0.1), value: [self.isHovering, self.isActive, configuration.isPressed])
+            .animation(.easeOut(duration: 0.1), value: [isHovering, isActive, configuration.isPressed])
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }

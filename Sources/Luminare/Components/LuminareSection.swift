@@ -28,7 +28,7 @@ public struct LuminareSection<Content: View>: View {
 
     public var body: some View {
         VStack(spacing: headerSpacing) {
-            if let header = self.header {
+            if let header = header {
                 HStack {
                     Text(header)
                     Spacer()
@@ -38,17 +38,17 @@ public struct LuminareSection<Content: View>: View {
 
 
             if noBorder {
-                self.content()
+                content()
             } else {
                 DividedVStack(applyMaskToItems: !disablePadding, showDividers: showDividers) {
-                    self.content()
+                    content()
                 }
                 .frame(maxWidth: .infinity)
                 .background(.quinary)
-                .clipShape(.rect(cornerRadius: self.cornerRadius))
+                .clipShape(.rect(cornerRadius: cornerRadius))
 
                 .overlay {
-                    RoundedRectangle(cornerRadius: self.cornerRadius)
+                    RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary, lineWidth: 1)
                 }
             }

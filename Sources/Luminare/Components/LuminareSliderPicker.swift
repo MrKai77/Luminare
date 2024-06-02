@@ -32,7 +32,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
     public var body: some View {
         VStack {
             HStack {
-                Text(self.title)
+                Text(title)
 
                 Spacer()
 
@@ -42,11 +42,11 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
             Slider(
                 value: Binding<Double>(
                     get: {
-                        Double(self.options.firstIndex(where: { $0 == self.internalSelection }) ?? 0)
+                        Double(options.firstIndex(where: { $0 == internalSelection }) ?? 0)
                     },
                     set: { newIndex in
                         withAnimation {
-                            self.internalSelection = self.options[Int(newIndex)]
+                            internalSelection = options[Int(newIndex)]
                         }
                     }
                 ),
@@ -56,15 +56,15 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
         }
         .padding(.horizontal, horizontalPadding)
         .frame(height: height)
-        .onChange(of: self.internalSelection) { _ in
-            self.selection = self.internalSelection
+        .onChange(of: internalSelection) { _ in
+            selection = internalSelection
         }
     }
 
     @ViewBuilder
     func labelView() -> some View {
         HStack {
-            Text(self.label(self.internalSelection))
+            Text(label(internalSelection))
                 .contentTransition(.numericText())
                 .multilineTextAlignment(.trailing)
 

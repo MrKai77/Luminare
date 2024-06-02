@@ -24,9 +24,9 @@ extension NSWindow {
     }
 
     private func configureWindowAppearance() {
-        self.backgroundColor = .white.withAlphaComponent(0.0001)
-        self.isOpaque = false
-        self.ignoresMouseEvents = false
+        backgroundColor = .white.withAlphaComponent(0.0001)
+        isOpaque = false
+        ignoresMouseEvents = false
     }
 }
 
