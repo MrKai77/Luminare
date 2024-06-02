@@ -93,20 +93,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     self.labelView()
                 }
 
-                Slider(
-                    value: Binding(
-                        get: {
-                            self.internalValue
-                        },
-                        set: { newValue in
-                            withAnimation {
-                                self.internalValue = newValue
-                                self.isShowingTextBox = false
-                            }
-                        }
-                    ),
-                    in: self.sliderRange
-                )
+                sliderView()
             } else {
                 HStack(spacing: 12) {
                     Text(self.title)
@@ -114,20 +101,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     Spacer(minLength: 0)
 
                     HStack(spacing: 12) {
-                        Slider(
-                            value: Binding(
-                                get: {
-                                    self.value
-                                },
-                                set: { newValue in
-                                    withAnimation {
-                                        self.value = newValue
-                                        self.isShowingTextBox = false
-                                    }
-                                }
-                            ),
-                            in: self.sliderRange
-                        )
+                        sliderView()
 
                         self.labelView()
                     }
@@ -140,6 +114,23 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         .onChange(of: self.internalValue) { _ in
             self.value = self.internalValue
         }
+    }
+
+    func sliderView() -> some View {
+        Slider(
+            value: Binding(
+                get: {
+                    self.value
+                },
+                set: { newValue in
+                    withAnimation {
+                        self.internalValue = newValue
+                        self.isShowingTextBox = false
+                    }
+                }
+            ),
+            in: self.sliderRange
+        )
     }
 
     @ViewBuilder

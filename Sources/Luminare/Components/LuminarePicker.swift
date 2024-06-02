@@ -23,6 +23,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     let columnsIndex: Int
 
     @Binding var selectedItem: V
+    @State var internalSelection: V
 
     let roundTop: Bool
     let roundBottom: Bool
@@ -42,7 +43,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self.roundTop = roundTop
         self.roundBottom = roundBottom
         self.content = content
+
         self._selectedItem = selection
+        self._internalSelection = State(initialValue: selection.wrappedValue)
     }
 
     var isCompact: Bool {
@@ -71,8 +74,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 .frame(minHeight: 150)
             }
         }
-        .onChange(of: selectedItem) { newValue in
-            selectedItem = newValue
+        // This will improve animation performance
+        .onChange(of: self.internalSelection) { _ in
+            self.selectedItem = self.internalSelection
         }
     }
 
@@ -80,10 +84,12 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         if let element = getElement(i: i, j: j) {
             Button {
                 guard !isDisabled(element) else { return }
-                selectedItem = element
+                withAnimation(.smooth(duration: 0.3)) {
+                    internalSelection = element
+                }
             } label: {
                 ZStack {
-                    let isActive = selectedItem == element
+                    let isActive = internalSelection == element
                     getShape(i: i, j: j)
                         .foregroundStyle(isActive ? tintColor().opacity(0.15) : .clear)
                         .overlay {
