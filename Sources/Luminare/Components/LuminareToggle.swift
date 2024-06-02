@@ -14,16 +14,27 @@ public struct LuminareToggle: View {
     let horizontalPadding: CGFloat = 8
 
     let title: LocalizedStringKey
+    let infoView: LuminareInfoView?
     @Binding var value: Bool
+    @State var isShowingDescription: Bool = false
 
-    public init(_ title: LocalizedStringKey, isOn value: Binding<Bool>) {
+    public init(_ title: LocalizedStringKey, info: LuminareInfoView? = nil, isOn value: Binding<Bool>) {
         self.title = title
+        self.infoView = info
         self._value = value
     }
 
     public var body: some View {
         HStack {
-            Text(title)
+            HStack(spacing: 0) {
+                Text(title)
+
+                if let infoView = infoView {
+                    infoView
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+
             Spacer()
 
             Toggle("", isOn: $value.animation(.smooth(duration: 0.3)))

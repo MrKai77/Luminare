@@ -37,6 +37,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     @FocusState var focusedField: FocusedField?
 
     let title: LocalizedStringKey
+    let infoView: LuminareInfoView?
     @Binding var value: V
     @State var internalValue: V
     let sliderRange: ClosedRange<V>
@@ -51,6 +52,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     // TODO: MAX DIGIT SPACING FOR LABEL
     public init(
         _ title: LocalizedStringKey,
+        info: LuminareInfoView? = nil,
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         suffix: LocalizedStringKey? = nil,
@@ -61,6 +63,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         decimalPlaces: Int = 0
     ) {
         self.title = title
+        self.infoView = info
         self._value = value
         self._internalValue = State(initialValue: value.wrappedValue)
         self.sliderRange = sliderRange
@@ -86,7 +89,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         VStack {
             if controlSize == .regular {
                 HStack {
-                    Text(title)
+                    titleView()
 
                     Spacer()
 
@@ -96,7 +99,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 sliderView()
             } else {
                 HStack(spacing: 12) {
-                    Text(title)
+                    titleView()
 
                     Spacer(minLength: 0)
 
@@ -114,6 +117,17 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         .onChange(of: internalValue) { _ in
             value = internalValue
         }
+    }
+
+    func titleView() -> some View {
+        HStack(spacing: 0) {
+            Text(title)
+
+            if let infoView = infoView {
+                infoView
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     func sliderView() -> some View {
