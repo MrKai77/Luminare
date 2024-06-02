@@ -86,33 +86,33 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         VStack {
             if controlSize == .regular {
                 HStack {
-                    Text(self.title)
+                    Text(title)
 
                     Spacer()
 
-                    self.labelView()
+                    labelView()
                 }
 
                 sliderView()
             } else {
                 HStack(spacing: 12) {
-                    Text(self.title)
+                    Text(title)
 
                     Spacer(minLength: 0)
 
                     HStack(spacing: 12) {
                         sliderView()
 
-                        self.labelView()
+                        labelView()
                     }
                     .frame(width: 270)
                 }
             }
         }
         .padding(.horizontal, horizontalPadding)
-        .frame(height: self.controlSize.height)
-        .onChange(of: self.internalValue) { _ in
-            self.value = self.internalValue
+        .frame(height: controlSize.height)
+        .onChange(of: internalValue) { _ in
+            value = internalValue
         }
     }
 
@@ -120,93 +120,91 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         Slider(
             value: Binding(
                 get: {
-                    self.value
+                    internalValue
                 },
                 set: { newValue in
-                    withAnimation {
-                        self.internalValue = newValue
-                        self.isShowingTextBox = false
+                    withAnimation(.smooth(duration: 0.25)) {
+                        internalValue = newValue
+                        isShowingTextBox = false
                     }
                 }
             ),
-            in: self.sliderRange
+            in: sliderRange
         )
     }
 
     @ViewBuilder
     func labelView() -> some View {
         HStack {
-            HStack {
-                if self.isShowingTextBox {
-                    TextField(
-                        .init(""),
-                        value: Binding(
-                            get: {
-                                self.internalValue
-                            },
-                            set: {
-                                if lowerClamp && upperClamp {
-                                    self.internalValue = $0.clamped(to: sliderRange)
-                                } else if lowerClamp {
-                                    self.internalValue = max(self.sliderRange.lowerBound, $0)
-                                } else if upperClamp {
-                                    self.internalValue = min(self.sliderRange.upperBound, $0)
-                                } else {
-                                    self.internalValue = $0
-                                }
-                            }
-                        ),
-                        formatter: formatter,
-                        onCommit: {
-                            withAnimation(.easeOut(duration: 0.1)) {
-                                self.isShowingTextBox.toggle()
+            if isShowingTextBox {
+                TextField(
+                    .init(""),
+                    value: Binding(
+                        get: {
+                            internalValue
+                        },
+                        set: {
+                            if lowerClamp && upperClamp {
+                                internalValue = $0.clamped(to: sliderRange)
+                            } else if lowerClamp {
+                                internalValue = max(sliderRange.lowerBound, $0)
+                            } else if upperClamp {
+                                internalValue = min(sliderRange.upperBound, $0)
+                            } else {
+                                internalValue = $0
                             }
                         }
-                    )
-                    .focused($focusedField, equals: .textbox)
-                    .labelsHidden()
-                    .textFieldStyle(.plain)
-                    .padding(.trailing, -8)
-                } else {
-                    Button {
+                    ),
+                    formatter: formatter,
+                    onCommit: {
                         withAnimation(.easeOut(duration: 0.1)) {
-                            self.isShowingTextBox.toggle()
-                            self.focusedField = .textbox
+                            isShowingTextBox.toggle()
                         }
-                    } label: {
-                        Text("\(self.internalValue, specifier: "%.\(decimalPlaces)f")")
-                            .contentTransition(.numericText())
-                            .multilineTextAlignment(.trailing)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .padding(.trailing, suffix == nil ? 0 : -6)
-                }
-
-                if let suffix = suffix {
-                    Text(suffix)
-                }
-            }
-            .frame(maxWidth: 150)
-            .monospaced()
-            .padding(4)
-            .padding(.horizontal, 4)
-            .background {
-                ZStack {
-                    Capsule()
-                        .strokeBorder(.quaternary, lineWidth: 1)
-
-                    if self.isShowingTextBox {
-                        Capsule()
-                            .foregroundStyle(.quinary)
-                    } else {
-                        Capsule()
-                            .foregroundStyle(.quinary.opacity(0.5))
+                )
+                .focused($focusedField, equals: .textbox)
+                .labelsHidden()
+                .textFieldStyle(.plain)
+                .padding(.trailing, -8)
+            } else {
+                Button {
+                    withAnimation(.easeOut(duration: 0.1)) {
+                        isShowingTextBox.toggle()
+                        focusedField = .textbox
                     }
+                } label: {
+                    Text("\(internalValue, specifier: "%.\(decimalPlaces)f")")
+                        .contentTransition(.numericText())
+                        .multilineTextAlignment(.trailing)
                 }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.trailing, suffix == nil ? 0 : -6)
             }
-            .fixedSize()
-            .clipShape(.capsule)
+
+            if let suffix = suffix {
+                Text(suffix)
+            }
         }
+        .frame(maxWidth: 150)
+        .monospaced()
+        .padding(4)
+        .padding(.horizontal, 4)
+        .background {
+            ZStack {
+                Capsule()
+                    .strokeBorder(.quaternary, lineWidth: 1)
+
+                if isShowingTextBox {
+                    Capsule()
+                        .foregroundStyle(.quinary)
+                } else {
+                    Capsule()
+                        .foregroundStyle(.quinary.opacity(0.5))
+                }
+            }
+        }
+        .fixedSize()
+        .clipShape(.capsule)
     }
 }
 
