@@ -107,6 +107,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                     .padding(.horizontal, -10)
                 }
                 .frame(height: CGFloat(items.count * 50))
+                .padding(.top, 4)
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(true)
                 .listStyle(.plain)
