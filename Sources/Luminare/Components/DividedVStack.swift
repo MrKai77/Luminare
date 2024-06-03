@@ -69,7 +69,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                     } else {
                         child
                             .mask(Rectangle()) // Fixes hover areas for some reason
-                            .padding(.bottom, -4)
+                            .padding(.vertical, -4)
                     }
                 }
 

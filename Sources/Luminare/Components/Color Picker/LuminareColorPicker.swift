@@ -44,7 +44,7 @@ public struct LuminareColorPicker: View {
                     .modifier(LuminareBordered())
             }
             .buttonStyle(PlainButtonStyle())
-            .popover(isPresented: $showColorPicker, arrowEdge: .trailing) {
+            .luminareModal(isPresented: $showColorPicker, closeOnDefocus: true, compactMode: true) {
                 ColorPickerPopover(color: $currentColor, hexColor: $text)
                     .frame(width: 280)
             }

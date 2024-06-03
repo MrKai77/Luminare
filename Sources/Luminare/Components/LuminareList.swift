@@ -75,7 +75,8 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                     isLastChild: false
                 )
             )
-            .padding(.bottom, 8)
+            .padding(.vertical, 4)
+            .padding(.bottom, 4)
             .padding([.top, .horizontal], 1)
 
             if items.isEmpty {

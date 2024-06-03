@@ -17,8 +17,8 @@ struct ColorPickerPopover: View {
 
     // Main view containing all components of the color picker
     var body: some View {
-        VStack(spacing: 12) {
-            VStack(spacing: 4) {
+        LuminareSection(disablePadding: true, showDividers: false) {
+            Group {
                 ColorSaturationBrightnessView(selectedColor: $color)
                     .scaledToFill()
                     .clipShape(
@@ -42,25 +42,15 @@ struct ColorPickerPopover: View {
                     )
             }
             .padding(4)
-            .background {
-                Rectangle()
-                    .foregroundStyle(.quinary.opacity(0.5))
-                    .clipShape(.rect(cornerRadius: 12))
+        }
 
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
+        RGBInputFields
+            .onAppear {
+                updateComponents(newValue: color)
             }
-
-            RGBInputFields
-        }
-        .padding(8)
-
-        .onAppear {
-            updateComponents(newValue: color)
-        }
-        .onChange(of: color) { _ in
-            updateComponents(newValue: color)
-        }
+            .onChange(of: color) { _ in
+                updateComponents(newValue: color)
+            }
     }
 
     // View for RGB input fields

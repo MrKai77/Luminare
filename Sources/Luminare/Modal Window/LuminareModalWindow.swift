@@ -26,18 +26,19 @@ class LuminareModal<Content>: NSWindow where Content: View {
     init(
         view: () -> Content,
         isPresented: Binding<Bool>,
-        closeOnDefocus: Bool
+        closeOnDefocus: Bool,
+        compactMode: Bool
     ) {
         self._isPresented = isPresented
         self.closeOnDefocus = closeOnDefocus
         super.init(
             contentRect: .zero,
-            styleMask: [.titled, .fullSizeContentView],
+            styleMask: [.fullSizeContentView],
             backing: .buffered,
             defer: false
         )
 
-        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self)
+        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self, compactMode: compactMode)
             .environment(\.floatingPanel, self)
             .environment(\.tintColor, LuminareSettingsWindow.tint))
 
@@ -96,6 +97,22 @@ class LuminareModal<Content>: NSWindow where Content: View {
         }
         super.keyDown(with: event)
     }
+
+    override func mouseDragged(with event: NSEvent) {
+        if event.locationInWindow.y > frame.height - 8 {
+            super.performDrag(with: event)
+        } else {
+            super.mouseDragged(with: event)
+        }
+    }
+
+    override var canBecomeKey: Bool {
+        return true
+    }
+
+    override var canBecomeMain: Bool {
+        return true
+    }
 }
 
 struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
@@ -103,6 +120,7 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     @ViewBuilder let view: () -> PanelContent
     @State private var panel: LuminareModal<PanelContent>?
     let closeOnDefocus: Bool
+    let compactMode: Bool
 
     func body(content: Content) -> some View {
         content
@@ -125,7 +143,8 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
             self.panel = LuminareModal(
                 view: view,
                 isPresented: $isPresented,
-                closeOnDefocus: closeOnDefocus
+                closeOnDefocus: closeOnDefocus,
+                compactMode: compactMode
             )
             self.panel?.orderFrontRegardless()
             self.panel?.makeKey()
@@ -142,13 +161,15 @@ extension View {
     public func luminareModal<Content: View>(
         isPresented: Binding<Bool>,
         closeOnDefocus: Bool = false,
+        compactMode: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
         self.modifier(
             LuminareModalModifier(
                 isPresented: isPresented,
                 view: content,
-                closeOnDefocus: closeOnDefocus
+                closeOnDefocus: closeOnDefocus,
+                compactMode: compactMode
             )
         )
     }
