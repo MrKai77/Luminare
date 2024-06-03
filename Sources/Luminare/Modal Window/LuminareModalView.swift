@@ -9,16 +9,14 @@ import SwiftUI
 
 struct LuminareModalView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
+    @Environment(\.floatingPanel) var floatingPanel
 
     let sectionSpacing: CGFloat
     let outerPadding: CGFloat
-
     let content: Content
-    let modalWindow: LuminareModal<Content>
 
-    init(_ content: Content, _ modalWindow: LuminareModal<Content>, compactMode: Bool) {
+    init(_ content: Content, compactMode: Bool) {
         self.content = content
-        self.modalWindow = modalWindow
 
         sectionSpacing = compactMode ? 8 : 16
         outerPadding = compactMode ? 8 : 16
@@ -60,7 +58,7 @@ struct LuminareModalView<Content>: View where Content: View {
                 GeometryReader { proxy in
                     Color.clear
                         .onChange(of: proxy.size) { _ in
-                            let newSize = proxy.size
+                            guard let modalWindow = floatingPanel as? LuminareModal<Content> else { return }
                             modalWindow.updateShadow(for: 0.5)
                         }
                 }

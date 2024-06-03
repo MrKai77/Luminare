@@ -38,7 +38,7 @@ class LuminareModal<Content>: NSWindow where Content: View {
             defer: false
         )
 
-        let hostingView = NSHostingView(rootView: LuminareModalView(view(), self, compactMode: compactMode)
+        let hostingView = NSHostingView(rootView: LuminareModalView(view(), compactMode: compactMode)
             .environment(\.floatingPanel, self)
             .environment(\.tintColor, LuminareSettingsWindow.tint))
 
