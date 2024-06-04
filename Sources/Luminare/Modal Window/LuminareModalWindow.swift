@@ -22,6 +22,7 @@ extension EnvironmentValues {
 class LuminareModal<Content>: NSWindow where Content: View {
     @Binding var isPresented: Bool
     let closeOnDefocus: Bool
+    let compactMode: Bool
 
     init(
         view: () -> Content,
@@ -31,6 +32,7 @@ class LuminareModal<Content>: NSWindow where Content: View {
     ) {
         self._isPresented = isPresented
         self.closeOnDefocus = closeOnDefocus
+        self.compactMode = compactMode
         super.init(
             contentRect: .zero,
             styleMask: [.fullSizeContentView],
@@ -98,8 +100,9 @@ class LuminareModal<Content>: NSWindow where Content: View {
         super.keyDown(with: event)
     }
 
-    override func mouseDragged(with event: NSEvent) {
-        if event.locationInWindow.y > frame.height - 8 {
+    override func mouseDown(with event: NSEvent) {
+        let titlebarHeight: CGFloat = compactMode ? 12 : 16
+        if event.locationInWindow.y > frame.height - titlebarHeight {
             super.performDrag(with: event)
         } else {
             super.mouseDragged(with: event)
