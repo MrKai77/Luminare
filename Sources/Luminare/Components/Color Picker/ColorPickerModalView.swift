@@ -1,5 +1,5 @@
 //
-//  ColorPickerPopover.swift
+//  ColorPickerModalView.swift
 //
 //
 //  Created by Kai Azim on 2024-05-15.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 // View for the color popup as a whole
-struct ColorPickerPopover: View {
+struct ColorPickerModalView: View {
     @Binding var color: Color
     @Binding var hexColor: String
     @State private var redComponent: Double = 0
@@ -17,40 +17,42 @@ struct ColorPickerPopover: View {
 
     // Main view containing all components of the color picker
     var body: some View {
-        LuminareSection(disablePadding: true, showDividers: false) {
-            Group {
-                ColorSaturationBrightnessView(selectedColor: $color)
-                    .scaledToFill()
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 8,
-                            bottomLeadingRadius: 2,
-                            bottomTrailingRadius: 2,
-                            topTrailingRadius: 8
+        Group {
+            LuminareSection(disablePadding: true, showDividers: false) {
+                Group {
+                    ColorSaturationBrightnessView(selectedColor: $color)
+                        .scaledToFill()
+                        .clipShape(
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 8,
+                                bottomLeadingRadius: 2,
+                                bottomTrailingRadius: 2,
+                                topTrailingRadius: 8
+                            )
                         )
-                    )
 
-                ColorHueSliderView(selectedColor: $color)
-                    .scaledToFill()
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 2,
-                            bottomLeadingRadius: 8,
-                            bottomTrailingRadius: 8,
-                            topTrailingRadius: 2
+                    ColorHueSliderView(selectedColor: $color)
+                        .scaledToFill()
+                        .clipShape(
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 2,
+                                bottomLeadingRadius: 8,
+                                bottomTrailingRadius: 8,
+                                topTrailingRadius: 2
+                            )
                         )
-                    )
+                }
+                .padding(4)
             }
-            .padding(4)
+
+            RGBInputFields
         }
-
-        RGBInputFields
-            .onAppear {
-                updateComponents(newValue: color)
-            }
-            .onChange(of: color) { _ in
-                updateComponents(newValue: color)
-            }
+        .onAppear {
+            updateComponents(newValue: color)
+        }
+        .onChange(of: color) { _ in
+            updateComponents(newValue: color)
+        }
     }
 
     // View for RGB input fields
