@@ -32,12 +32,6 @@ struct ColorHueSliderView: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            handleDragChange(value, geo.size.width)
-                        }
-                )
 
                 RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition, geo.size.width))
                     .frame(width: handleWidth(at: selectionPosition, geo.size.width), height: 12)
@@ -50,6 +44,12 @@ struct ColorHueSliderView: View {
                         }
                     }
             }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        handleDragChange(value, geo.size.width)
+                    }
+            )
             .onAppear {
                 selectionPosition = selectedColor.toHSB().hue * geo.size.width
                 selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
