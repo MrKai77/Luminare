@@ -19,7 +19,7 @@ struct ColorPickerModalView: View {
     var body: some View {
         Group {
             LuminareSection(disablePadding: true, showDividers: false) {
-                Group {
+                VStack(spacing: 2) {
                     ColorSaturationBrightnessView(selectedColor: $color)
                         .scaledToFill()
                         .clipShape(
