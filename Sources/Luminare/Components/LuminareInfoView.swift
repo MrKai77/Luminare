@@ -19,23 +19,19 @@ public struct LuminareInfoView: View {
 
     public var body: some View {
         VStack {
-            Button {
-                isShowingDescription.toggle()
-            } label: {
-                Circle()
-                    .foregroundStyle(color)
-                    .frame(width: 4, height: 4)
-                    .padding([.horizontal, .bottom], 4)
-                    .contentShape(.rect)
-            }
-            .buttonStyle(PlainButtonStyle())
-
-            .padding(.bottom, -4)
-            .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
-                Text(description)
-                    .multilineTextAlignment(.center)
-                    .padding(8)
-            }
+            Circle()
+                .foregroundStyle(color)
+                .frame(width: 4, height: 4)
+                .padding([.horizontal, .bottom], 4)
+                .contentShape(.rect)
+                .onHover { hovering in
+                    isShowingDescription = hovering
+                }
+                .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
+                    Text(description)
+                        .multilineTextAlignment(.center)
+                        .padding(8)
+                }
 
             Spacer()
         }
