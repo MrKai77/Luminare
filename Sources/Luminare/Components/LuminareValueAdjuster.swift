@@ -24,8 +24,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     let horizontalPadding: CGFloat = 8
 
     let formatter: NumberFormatter
-    var totalRange: V.Stride {
-        V.Stride(sliderRange.upperBound) - V.Stride(sliderRange.lowerBound)
+    var totalRange: V {
+        sliderRange.upperBound - sliderRange.lowerBound
     }
 
     @State var isShowingTextBox: Bool = false
@@ -41,12 +41,13 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     @Binding var value: V
     let sliderRange: ClosedRange<V>
     let suffix: LocalizedStringKey?
-    var step: V.Stride
+    var step: V
     let upperClamp: Bool
     let lowerClamp: Bool
     let controlSize: LuminareValueAdjuster.ControlSize
 
     let decimalPlaces: Int
+    @State var eventMonitor: AnyObject?
 
     // TODO: MAX DIGIT SPACING FOR LABEL
     public init(
@@ -76,7 +77,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         self.formatter.maximumFractionDigits = decimalPlaces
 
         if let step = step {
-            self.step = V.Stride(step)
+            self.step = step
         } else {
             self.step = 0   // Initialize first
             self.step = totalRange / 10
@@ -214,6 +215,52 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         }
         .fixedSize()
         .clipShape(.capsule)
+
+        .onChange(of: isShowingTextBox) { _ in
+            if isShowingTextBox {
+                addEventMonitor()
+            } else {
+                removeEventMonitor()
+            }
+        }
+        .onDisappear {
+            removeEventMonitor()
+        }
+    }
+
+    func addEventMonitor() {
+        removeEventMonitor()
+
+        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            let downArrow: CGKeyCode = 0x7D
+            let upArrow: CGKeyCode = 0x7E
+
+            if event.keyCode == upArrow {
+                value += step
+            }
+
+            if event.keyCode == downArrow {
+                value -= step
+            }
+
+            if lowerClamp && upperClamp {
+                value = value.clamped(to: sliderRange)
+            } else if lowerClamp {
+                value = max(sliderRange.lowerBound, value)
+            } else if upperClamp {
+                value = min(sliderRange.upperBound, value)
+            } else {
+                value = value
+            }
+
+            return event
+        } as? NSObject
+    }
+
+    func removeEventMonitor() {
+        if let eventMonitor {
+            NSEvent.removeMonitor(eventMonitor)
+        }
     }
 }
 
