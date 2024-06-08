@@ -16,6 +16,7 @@ public class LuminareSettingsWindow {
     static var tint: () -> Color = { .accentColor }
 
     private let didTabChange: (SettingsTab) -> Void
+    var windowDidMoveObserver: NSObjectProtocol?
 
     public var previewBounds: NSRect? {
         guard let window = windowController?.window else { return nil }
@@ -75,15 +76,31 @@ public class LuminareSettingsWindow {
 
         // Private API
         window.setBackgroundBlur(radius: 20)
-//        swizzleWidgets()
         window.identifier = LuminareSettingsWindow.identifier
 
         window.center()
 
         windowController = .init(window: window)
+
+        windowDidMoveObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.didMoveNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            guard let children = self.windowController?.window?.childWindows else {
+                return
+            }
+
+            children.forEach { self.relocatePreview($0) }
+        }
     }
 
     public func deinitWindow() {
+        if let windowDidMoveObserver {
+            NotificationCenter.default.removeObserver(windowDidMoveObserver)
+        }
+        windowDidMoveObserver = nil
+
         windowController?.window?.close()
         windowController = nil
     }
@@ -91,7 +108,7 @@ public class LuminareSettingsWindow {
     public func addPreview<Content: View>(content: Content, identifier: String, fullSize: Bool = false) {
         guard
             let window = windowController?.window,
-            let bounds = previewBounds
+            let bounds = self.previewBounds
         else {
             return
         }
@@ -111,24 +128,36 @@ public class LuminareSettingsWindow {
             panel.contentView = NSHostingView(rootView: content)
         }
         panel.alphaValue = 0
+        panel.ignoresMouseEvents = true
         panel.identifier = .init("LuminareSettingsPreview\(identifier)")
 
-        let windowFrame = window.frame
+        relocatePreview(panel)
+        window.addChildWindow(panel, ordered: .above)
+    }
 
-        let panelSize = panel.frame.size
+    private func relocatePreview(_ panel: NSWindow) {
+        guard let bounds = self.previewBounds else {
+            return
+        }
+        let panelFrame = panel.frame
+
         let newSize = CGSize(
-            width: min(bounds.width, panelSize.width),
-            height: min(bounds.height, panelSize.height)
+            width: min(bounds.width, panelFrame.width),
+            height: min(bounds.height, panelFrame.height)
         )
         let newOrigin = CGPoint(
             x: bounds.midX - newSize.width / 2,
             y: bounds.midY - newSize.height / 2
         )
+
+        guard panelFrame.origin != newOrigin else {
+            return
+        }
+
         panel.setFrame(
             .init(origin: newOrigin, size: newSize),
             display: false
         )
-        window.addChildWindow(panel, ordered: .above)
     }
 
     public func showPreview(identifier: String) {
@@ -166,14 +195,4 @@ public class LuminareSettingsWindow {
             })
         }
     }
-
-//    func swizzleWidgets() {
-//        let original = Selector("updateLayer")
-//        let swizzle = Selector("xxx_updateLayer")
-//        if let widgetClass = NSClassFromString("NSMenu"), // NSWidgetView
-//            let originalMethod = class_getInstanceMethod(widgetClass, original),
-//            let swizzleMethod = class_getInstanceMethod(NSView.self, swizzle) {
-//            method_exchangeImplementations(originalMethod, swizzleMethod)
-//        }
-//    }
 }
