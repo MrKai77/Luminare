@@ -11,6 +11,9 @@ public struct LuminareInfoView: View {
     let color: Color
     let description: LocalizedStringKey
     @State var isShowingDescription: Bool = false
+    @State var isHovering: Bool = false
+
+    @State var hoverTimer: Timer?
 
     public init(_ description: LocalizedStringKey, _ color: Color = .blue) {
         self.color = color
@@ -22,11 +25,24 @@ public struct LuminareInfoView: View {
             Circle()
                 .foregroundStyle(color)
                 .frame(width: 4, height: 4)
-                .padding([.horizontal, .bottom], 4)
-                .contentShape(.rect)
+                .padding(.leading, 4)
+                .padding(12)
+                .contentShape(.circle)
+                .padding(-12)
+
                 .onHover { hovering in
-                    isShowingDescription = hovering
+                    isHovering = hovering
+
+                    if isHovering {
+                        hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
+                            isShowingDescription = true
+                        }
+                    } else {
+                        hoverTimer?.invalidate()
+                        isShowingDescription = false
+                    }
                 }
+
                 .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
                     Text(description)
                         .multilineTextAlignment(.center)
