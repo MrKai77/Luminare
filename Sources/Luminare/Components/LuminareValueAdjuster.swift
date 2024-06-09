@@ -235,6 +235,10 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
             let downArrow: CGKeyCode = 0x7D
             let upArrow: CGKeyCode = 0x7E
 
+            guard event.keyCode == downArrow || event.keyCode == upArrow else {
+                return event
+            }
+
             if event.keyCode == upArrow {
                 value += step
             }
@@ -253,7 +257,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 value = value
             }
 
-            return event
+            return nil
         } as? NSObject
     }
 

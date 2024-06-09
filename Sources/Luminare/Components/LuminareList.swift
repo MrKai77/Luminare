@@ -24,6 +24,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     @State var canRefreshSelection: Bool = true
     let cornerRadius: CGFloat = 2
     let lineWidth: CGFloat = 1.5
+    @State var eventMonitor: AnyObject?
 
     public init(
         _ header: LocalizedStringKey? = nil,
@@ -116,6 +117,22 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 }
             }
         }
+        .background {
+            Color.white.opacity(0.0001)
+                .padding(-12)
+                .onTapGesture {
+                    withAnimation(.smooth(duration: 0.25)) {
+                        selection = []
+                    }
+                }
+        }
+        .onChange(of: selection) { _ in
+            if selection.isEmpty {
+                removeEventMonitor()
+            } else {
+                addEventMonitor()
+            }
+        }
     }
 
     // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
@@ -132,6 +149,28 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         } else {
             firstItem = items.first(where: { selection.contains($0) })
             lastItem = items.last(where: { selection.contains($0) })
+        }
+    }
+
+    func addEventMonitor() {
+        removeEventMonitor()
+
+        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            let kVK_Escape: CGKeyCode = 0x35
+
+            if event.keyCode == kVK_Escape {
+                withAnimation(.smooth(duration: 0.25)) {
+                    selection = []
+                }
+                return nil
+            }
+            return event
+        } as? NSObject
+    }
+
+    func removeEventMonitor() {
+        if let eventMonitor {
+            NSEvent.removeMonitor(eventMonitor)
         }
     }
 }
