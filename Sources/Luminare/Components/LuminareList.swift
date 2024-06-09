@@ -133,6 +133,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 addEventMonitor()
             }
         }
+        .onDisappear {
+            removeEventMonitor()
+        }
     }
 
     // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
