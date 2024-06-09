@@ -44,7 +44,7 @@ struct ContentView: View {
                     Divider()
 
                     ScrollView(.vertical) {
-                        VStack(spacing: sectionSpacing) {
+                        LazyVStack(spacing: sectionSpacing) {
                             activeTab.view
                                 .environment(\.clickedOutsideFlag, clickedOutsideFlag)
                                 .environment(\.currentlyScrolling, isScrolling)
@@ -68,7 +68,7 @@ struct ContentView: View {
                             isScrolling = true
 
                             scrollTimer?.invalidate()
-                            scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
+                            scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false) { _ in
                                 if lastPosition - scrollPosition <= 10 {
                                     isScrolling = false
                                     scrollTimer?.invalidate()

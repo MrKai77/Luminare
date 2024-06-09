@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - TintColor
+// MARK: - TintColor (public)
 
 // Currently, it is impossible to read the .tint(Color) modifier on a view.
 // This is a custom environement value as an alternative implementation of it.
@@ -19,6 +19,19 @@ public extension EnvironmentValues {
     var tintColor: () -> Color {
         get { return self[TintColorEnvironmentKey.self] }
         set { self[TintColorEnvironmentKey.self] = newValue }
+    }
+}
+
+// MARK: - HoveringOverLuminareListItem (public)
+
+public struct HoveringOverLuminareListItem: EnvironmentKey {
+    public static var defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hoveringOverLuminareListItem: Bool {
+        get { return self[HoveringOverLuminareListItem.self] }
+        set { self[HoveringOverLuminareListItem.self] = newValue }
     }
 }
 
@@ -60,4 +73,3 @@ extension EnvironmentValues {
         set { self[CurrentlyScrollingKey.self] = newValue }
     }
 }
-

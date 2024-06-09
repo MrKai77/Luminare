@@ -113,9 +113,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(true)
                 .listStyle(.plain)
-                .onChange(of: selection) { _ in
-                    processSelection()
-                }
             }
         }
         .onChange(of: clickedOutsideFlag) { _ in
@@ -124,6 +121,8 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             }
         }
         .onChange(of: selection) { _ in
+            processSelection()
+
             if selection.isEmpty {
                 removeEventMonitor()
             } else {
@@ -174,17 +173,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             NSEvent.removeMonitor(eventMonitor)
         }
         eventMonitor = nil
-    }
-}
-
-public struct HoveringOverLuminareListItem: EnvironmentKey {
-    public static var defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hoveringOverLuminareListItem: Bool {
-        get { return self[HoveringOverLuminareListItem.self] }
-        set { self[HoveringOverLuminareListItem.self] = newValue }
     }
 }
 
