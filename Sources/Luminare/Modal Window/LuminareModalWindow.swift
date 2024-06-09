@@ -8,17 +8,6 @@
 
 import SwiftUI
 
-struct FloatingPanelKey: EnvironmentKey {
-    static let defaultValue: NSWindow? = nil
-}
-
-extension EnvironmentValues {
-    var floatingPanel: NSWindow? {
-        get { self[FloatingPanelKey.self] }
-        set { self[FloatingPanelKey.self] = newValue }
-    }
-}
-
 class LuminareModal<Content>: NSWindow where Content: View {
     @Binding var isPresented: Bool
     let closeOnDefocus: Bool

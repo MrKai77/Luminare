@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     @Environment(\.tintColor) var tintColor
+    @Environment(\.clickedOutsideFlag) var clickedOutsideFlag
 
     let header: LocalizedStringKey?
     @Binding var items: [V]
@@ -117,14 +118,10 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 }
             }
         }
-        .background {
-            Color.white.opacity(0.0001)
-                .padding(-12)
-                .onTapGesture {
-                    withAnimation(.smooth(duration: 0.25)) {
-                        selection = []
-                    }
-                }
+        .onChange(of: clickedOutsideFlag) { _ in
+            withAnimation(.smooth(duration: 0.25)) {
+                selection = []
+            }
         }
         .onChange(of: selection) { _ in
             if selection.isEmpty {

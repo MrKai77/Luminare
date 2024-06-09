@@ -17,6 +17,7 @@ struct ContentView: View {
     let sectionSpacing: CGFloat = 16
 
     @State var activeTab: SettingsTab
+    @State var clickedOutsideFlag: Bool = false
     let groups: [SettingsTabGroup]
     let didTabChange: (SettingsTab) -> Void
 
@@ -41,8 +42,16 @@ struct ContentView: View {
                     ScrollView(.vertical) {
                         VStack(spacing: sectionSpacing) {
                             activeTab.view
+                                .environment(\.clickedOutsideFlag, clickedOutsideFlag)
                         }
                         .padding(mainViewSectionOuterPadding)
+                        .background {
+                            Color.white.opacity(0.0001)
+                                .padding(-12)
+                                .onTapGesture {
+                                    clickedOutsideFlag.toggle()
+                                }
+                        }
                     }
                     .scrollIndicators(.never)
                     .clipped()
