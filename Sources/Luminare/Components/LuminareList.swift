@@ -156,8 +156,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     }
 
     func addEventMonitor() {
-        removeEventMonitor()
-
+        if eventMonitor != nil {
+            return
+        }
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let kVK_Escape: CGKeyCode = 0x35
 
@@ -175,6 +176,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         if let eventMonitor {
             NSEvent.removeMonitor(eventMonitor)
         }
+        eventMonitor = nil
     }
 }
 

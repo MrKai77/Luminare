@@ -228,7 +228,9 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     }
 
     func addEventMonitor() {
-        removeEventMonitor()
+        if eventMonitor != nil {
+            return
+        }
 
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let downArrow: CGKeyCode = 0x7D
@@ -264,6 +266,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         if let eventMonitor {
             NSEvent.removeMonitor(eventMonitor)
         }
+        eventMonitor = nil
     }
 }
 
