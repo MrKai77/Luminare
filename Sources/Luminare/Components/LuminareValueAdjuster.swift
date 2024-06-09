@@ -79,8 +79,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         if let step = step {
             self.step = step
         } else {
-            self.step = 0   // Initialize first
-            self.step = totalRange / 10
+            self.step = 1
         }
     }
 
