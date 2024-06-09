@@ -190,6 +190,7 @@ extension EnvironmentValues {
 
 struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     @Environment(\.tintColor) var tintColor
+    @Environment(\.currentlyScrolling) var currentlyScrolling
 
     @Binding var item: V
     let content: (Binding<V>) -> Content
@@ -238,6 +239,8 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             .tag(item)
 
             .onHover { hover in
+                guard !currentlyScrolling else { return }
+
                 withAnimation(.easeOut(duration: 0.1)) {
                     isHovering = hover
                 }
@@ -267,6 +270,13 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                     withAnimation(.easeOut(duration: 0.2)) {
                         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
                         lineWidth = selection.contains(item) ? maxLineWidth : .zero
+                    }
+                }
+            }
+            .onChange(of: currentlyScrolling) { _ in
+                if currentlyScrolling {
+                    withAnimation(.easeOut(duration: 0.1)) {
+                        isHovering = false
                     }
                 }
             }

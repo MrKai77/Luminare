@@ -21,6 +21,10 @@ struct ContentView: View {
     let groups: [SettingsTabGroup]
     let didTabChange: (SettingsTab) -> Void
 
+    @State var scrollTimer: Timer?
+    @State var scrollPosition: CGFloat = 0
+    @State var isScrolling: Bool = false
+
     init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> Void) {
         self.groups = groups
         self.activeTab = groups.first!.tabs.first!
@@ -43,6 +47,7 @@ struct ContentView: View {
                         VStack(spacing: sectionSpacing) {
                             activeTab.view
                                 .environment(\.clickedOutsideFlag, clickedOutsideFlag)
+                                .environment(\.currentlyScrolling, isScrolling)
                         }
                         .padding(mainViewSectionOuterPadding)
                         .background {
@@ -51,6 +56,25 @@ struct ContentView: View {
                                 .onTapGesture {
                                     clickedOutsideFlag.toggle()
                                 }
+                        }
+                        .background(
+                             GeometryReader { inner in
+                                Color.clear.preference(key: ScrollOffsetPreferenceKey.self, value: inner.frame(in: .global).origin.y)
+                             }
+                        )
+                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                            let lastPosition = scrollPosition
+                            scrollPosition = value
+                            isScrolling = true
+
+                            scrollTimer?.invalidate()
+                            scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
+                                if lastPosition - scrollPosition <= 10 {
+                                    isScrolling = false
+                                    scrollTimer?.invalidate()
+                                    scrollTimer = nil
+                                }
+                            }
                         }
                     }
                     .scrollIndicators(.never)
@@ -70,5 +94,12 @@ struct ContentView: View {
         .buttonStyle(LuminareButtonStyle())
 
         .tint(tintColor())
+    }
+}
+
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value += nextValue()
     }
 }
