@@ -35,6 +35,8 @@ public struct LuminareTextField: View {
             }
 
             .onAppear {
+                guard monitor != nil else { return }
+
                 monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
@@ -50,7 +52,10 @@ public struct LuminareTextField: View {
                 }
             }
             .onDisappear {
-                NSEvent.removeMonitor(monitor)
+                if let monitor {
+                    NSEvent.removeMonitor(monitor)
+                }
+                monitor = nil
             }
     }
 }
