@@ -35,12 +35,13 @@ public struct LuminareTextField: View {
             }
 
             .onAppear {
+                guard monitor != nil else { return }
+
                 monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
 
-                        // Fixed cmd+w to close window.
-                        // TODO: Find a better solution
+                        // Fixes cmd+w to close window.
                         let wKey = 13
                         if event.keyCode == wKey && event.modifierFlags.contains(.command) {
                             return nil
@@ -50,7 +51,10 @@ public struct LuminareTextField: View {
                 }
             }
             .onDisappear {
-                NSEvent.removeMonitor(monitor)
+                if let monitor {
+                    NSEvent.removeMonitor(monitor)
+                }
+                monitor = nil
             }
     }
 }
