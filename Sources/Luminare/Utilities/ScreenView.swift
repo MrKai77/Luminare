@@ -25,7 +25,7 @@ public struct ScreenView<Content>: View where Content: View {
     public var body: some View {
         ZStack {
             GeometryReader { geo in
-                if let image = image {
+                if let image {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -66,21 +66,21 @@ public struct ScreenView<Content>: View where Content: View {
                 .inset(by: 3)
                 .stroke(.gray.opacity(0.2), lineWidth: 1)
         }
-        .aspectRatio(16/10, contentMode: .fill)
+        .aspectRatio(16 / 10, contentMode: .fill)
     }
 
     func updateImage() async {
-        guard 
+        guard
             let screen = NSScreen.main,
             let url = NSWorkspace.shared.desktopImageURL(for: screen),
-            self.image == nil || self.image!.isValid == false
+            image == nil || image!.isValid == false
         else {
             return
         }
 
         if let newImage = NSImage.resize(url, width: 300) {
             withAnimation {
-                self.image = newImage
+                image = newImage
             }
         }
     }

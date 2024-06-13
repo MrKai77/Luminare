@@ -69,7 +69,7 @@ class LuminareModal<Content>: NSWindow where Content: View {
         }, completionHandler: {
             super.close()
         })
-        self.isPresented = false
+        isPresented = false
     }
 
     override func resignMain() {
@@ -82,7 +82,7 @@ class LuminareModal<Content>: NSWindow where Content: View {
 
     override func keyDown(with event: NSEvent) {
         let wKey = 13
-        if event.keyCode == wKey && event.modifierFlags.contains(.command) {
+        if event.keyCode == wKey, event.modifierFlags.contains(.command) {
             close()
             return
         }
@@ -99,11 +99,11 @@ class LuminareModal<Content>: NSWindow where Content: View {
     }
 
     override var canBecomeKey: Bool {
-        return true
+        true
     }
 
     override var canBecomeMain: Bool {
-        return true
+        true
     }
 }
 
@@ -132,14 +132,14 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     private func present() {
         guard panel == nil else { return }
         DispatchQueue.main.async {
-            self.panel = LuminareModal(
+            panel = LuminareModal(
                 view: view,
                 isPresented: $isPresented,
                 closeOnDefocus: closeOnDefocus,
                 compactMode: compactMode
             )
-            self.panel?.orderFrontRegardless()
-            self.panel?.makeKey()
+            panel?.orderFrontRegardless()
+            panel?.makeKey()
         }
     }
 
@@ -149,14 +149,14 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     }
 }
 
-extension View {
-    public func luminareModal<Content: View>(
+public extension View {
+    func luminareModal(
         isPresented: Binding<Bool>,
         closeOnDefocus: Bool = false,
         compactMode: Bool = false,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> some View
     ) -> some View {
-        self.modifier(
+        modifier(
             LuminareModalModifier(
                 isPresented: isPresented,
                 view: content,

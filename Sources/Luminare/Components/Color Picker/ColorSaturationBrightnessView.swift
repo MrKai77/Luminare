@@ -1,5 +1,5 @@
 //
-//  ColorLightnessView.swift
+//  ColorSaturationBrightnessView.swift
 //
 //
 //  Created by Kai Azim on 2024-05-15.
@@ -57,7 +57,6 @@ struct ColorSaturationBrightnessView: View {
                     }
             )
             .frame(width: geo.size.width, height: geo.size.width)
-
             .onAppear {
                 let hsb = selectedColor.toHSB()
                 originalHue = hsb.hue
@@ -115,7 +114,6 @@ struct ColorSaturationBrightnessView: View {
     }
 }
 
-
 struct ColorPickerCircle: View {
     @Binding var selectedColor: Color
     @Binding var isDragging: Bool
@@ -138,7 +136,6 @@ struct ColorPickerCircle: View {
                     .stroke(.white, lineWidth: 6)
             }
             .shadow(radius: 3)
-
             .scaleEffect((isHovering && !isDragging) ? 1.25 : 1.0)
             .onHover { hovering in
                 isHovering = hovering

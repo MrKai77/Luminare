@@ -14,7 +14,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     let header: LocalizedStringKey?
     @Binding var items: [V]
     @Binding var selection: Set<V>
-    let addAction: () -> Void
+    let addAction: () -> ()
     let content: (Binding<V>) -> ContentA
     let emptyView: () -> ContentB
 
@@ -22,7 +22,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     @State private var lastItem: V?
     let id: KeyPath<V, ID>
 
-    @State var canRefreshSelection: Bool = true
+    @State var canRefreshSelection = true
     let cornerRadius: CGFloat = 2
     let lineWidth: CGFloat = 1.5
     @State var eventMonitor: AnyObject?
@@ -31,7 +31,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         _ header: LocalizedStringKey? = nil,
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
-        addAction: @escaping () -> Void,
+        addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
         id: KeyPath<V, ID>
@@ -139,7 +139,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     //  withAnimation {
     //    items.remove(atOffsets: offsets)
     //  }
-    //}
+    // }
 
     func processSelection() {
         if selection.isEmpty {
@@ -190,7 +190,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     @Binding var lastItem: V?
     @Binding var canRefreshSelection: Bool
 
-    @State var isHovering: Bool = false
+    @State var isHovering = false
 
     let cornerRadius: CGFloat = 2
     let maxLineWidth: CGFloat = 1.5
@@ -225,7 +225,6 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                     .environment(\.hoveringOverLuminareListItem, isHovering)
             }
             .tag(item)
-
             .onHover { hover in
                 guard !currentlyScrolling else { return }
 
@@ -284,7 +283,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     }
 
     @ViewBuilder func getItemBorder() -> some View {
-        if isFirstInSelection() && isLastInSelection() {
+        if isFirstInSelection(), isLastInSelection() {
             singleSelectionPart(isBottomOfList: item == items.last)
 
         } else if isFirstInSelection() {
@@ -429,7 +428,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
 }
 
 extension NSTableView {
-    open override func viewDidMoveToWindow() {
+    override open func viewDidMoveToWindow() {
         super.viewWillDraw()
         selectionHighlightStyle = .none
     }

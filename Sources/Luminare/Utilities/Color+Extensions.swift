@@ -5,27 +5,25 @@
 //  Created by Kai Azim on 2024-05-13.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 // Extension to add functionality to SwiftUI's Color type
-extension Color {
-    public static let violet = Color(red: 0.56, green: 0, blue: 1)
+public extension Color {
+    static let violet = Color(red: 0.56, green: 0, blue: 1)
 
     // Initialize with HEX value, supporting both 3 and 6 characters
-    public init?(hex: String) {
+    init?(hex: String) {
         let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")
-        let expandedHex: String
-
-        if hexSanitized.count == 3 {
-            expandedHex = hexSanitized.map { "\($0)\($0)" }.joined()
+        let expandedHex: String = if hexSanitized.count == 3 {
+            hexSanitized.map { "\($0)\($0)" }.joined()
         } else {
-            expandedHex = hexSanitized
+            hexSanitized
         }
 
         let rgbValue = UInt64(expandedHex, radix: 16) ?? 0
 
-        if rgbValue == 0 && expandedHex != "000000" {
+        if rgbValue == 0, expandedHex != "000000" {
             NSLog("Invalid HEX value provided: \(hex)")
             return nil
         }
@@ -38,15 +36,16 @@ extension Color {
     }
 
     // Convert to HEX representation
-    public func toHex() -> String {
+    func toHex() -> String {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return String(
             format: "#%02X%02X%02X", Int(nsColor.redComponent * 255), Int(nsColor.greenComponent * 255),
-            Int(nsColor.blueComponent * 255))
+            Int(nsColor.blueComponent * 255)
+        )
     }
 
     // Convert to RGB values
-    public func toRGB() -> (red: Double, green: Double, blue: Double) {
+    func toRGB() -> (red: Double, green: Double, blue: Double) {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return (
             Double(nsColor.redComponent * 255), Double(nsColor.greenComponent * 255),
@@ -55,22 +54,23 @@ extension Color {
     }
 
     // Mix with another color
-    public func mixed(with other: Color, amount: CGFloat) -> Color {
-        guard amount >= 0 && amount <= 1 else {
+    func mixed(with other: Color, amount: CGFloat) -> Color {
+        guard amount >= 0, amount <= 1 else {
             NSLog("Invalid mix amount: \(amount). Amount must be between 0 and 1.")
             return self
         }
         let blend = { (c1: CGFloat, c2: CGFloat) -> CGFloat in c1 + (c2 - c1) * amount }
-        let selfComponents = self.components
+        let selfComponents = components
         let otherComponents = other.components
         return Color(
             red: blend(selfComponents.red, otherComponents.red),
             green: blend(selfComponents.green, otherComponents.green),
-            blue: blend(selfComponents.blue, otherComponents.blue))
+            blue: blend(selfComponents.blue, otherComponents.blue)
+        )
     }
 
     // Extract RGBA components
-    public var components: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+    var components: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         let nsColor = NSColor(self)
         var red: CGFloat = 0
         var green: CGFloat = 0
@@ -80,18 +80,18 @@ extension Color {
         return (red, green, blue, alpha)
     }
 
-
     // Adjust the brightness of the color
-    public func brightnessAdjustment(brightness: Double) -> Color {
-        let hsb = self.toHSB()
+    func brightnessAdjustment(brightness: Double) -> Color {
+        let hsb = toHSB()
         // Ensure the new brightness is within the range [0, 1]
         let adjustedBrightness = max(0.0, min(brightness, 1.0))
         return Color(
-            hue: Double(hsb.hue), saturation: Double(hsb.saturation), brightness: adjustedBrightness)
+            hue: Double(hsb.hue), saturation: Double(hsb.saturation), brightness: adjustedBrightness
+        )
     }
 
     // Convert color to HSB values
-    public func toHSB() -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
+    func toHSB() -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
         var hue: CGFloat = 0
         var saturation: CGFloat = 0

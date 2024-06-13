@@ -42,7 +42,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let innerPadding: CGFloat = 4
 
     init(spacing: CGFloat?, applyMaskToItems: Bool, showDividers: Bool) {
-        self.spacing = spacing ?? self.innerPadding
+        self.spacing = spacing ?? innerPadding
         self.applyMaskToItems = applyMaskToItems
         self.showDividers = showDividers
     }
@@ -73,7 +73,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                     }
                 }
 
-                if showDividers && child.id != last {
+                if showDividers, child.id != last {
                     Divider()
                         .padding(.horizontal, 1)
                 }
@@ -103,7 +103,7 @@ public struct LuminareCroppedSectionItem: ViewModifier {
     }
 
     func getMask() -> some View {
-        if isFirstChild && isLastChild {
+        if isFirstChild, isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: cornerRadius - innerPadding,

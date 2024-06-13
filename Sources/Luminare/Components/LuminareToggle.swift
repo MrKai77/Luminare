@@ -37,7 +37,7 @@ public struct LuminareToggle: View {
             HStack(spacing: 0) {
                 Text(title)
 
-                if let infoView = infoView {
+                if let infoView {
                     infoView
                 }
             }

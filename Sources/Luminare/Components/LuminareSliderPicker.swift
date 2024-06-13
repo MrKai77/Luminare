@@ -8,7 +8,6 @@
 import SwiftUI
 
 public struct LuminareSliderPicker<V>: View where V: Equatable {
-
     let height: CGFloat = 70
 
     let title: LocalizedStringKey
@@ -48,7 +47,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
                         selection = options[Int(newIndex)]
                     }
                 ),
-                in: 0 ... Double(options.count - 1),
+                in: 0...Double(options.count - 1),
                 step: 1
             )
         }
@@ -63,7 +62,6 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
             Text(label(selection))
                 .contentTransition(.numericText())
                 .multilineTextAlignment(.trailing)
-
                 .monospaced()
                 .padding(4)
                 .padding(.horizontal, 4)

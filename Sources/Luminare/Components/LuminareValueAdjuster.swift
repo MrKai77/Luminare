@@ -8,7 +8,6 @@
 import SwiftUI
 
 public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint, V: _FormatSpecifiable {
-
     public enum ControlSize {
         case regular
         case compact
@@ -28,12 +27,13 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         sliderRange.upperBound - sliderRange.lowerBound
     }
 
-    @State var isShowingTextBox: Bool = false
+    @State var isShowingTextBox = false
 
     // Focus
     enum FocusedField {
         case textbox
     }
+
     @FocusState var focusedField: FocusedField?
 
     let title: LocalizedStringKey
@@ -74,9 +74,9 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         self.decimalPlaces = decimalPlaces
 
         self.formatter = NumberFormatter()
-        self.formatter.maximumFractionDigits = decimalPlaces
+        formatter.maximumFractionDigits = decimalPlaces
 
-        if let step = step {
+        if let step {
             self.step = step
         } else {
             self.step = 1
@@ -120,7 +120,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         HStack(spacing: 0) {
             Text(title)
 
-            if let infoView = infoView {
+            if let infoView {
                 infoView
             }
         }
@@ -153,7 +153,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                             value
                         },
                         set: {
-                            if lowerClamp && upperClamp {
+                            if lowerClamp, upperClamp {
                                 value = $0.clamped(to: sliderRange)
                             } else if lowerClamp {
                                 value = max(sliderRange.lowerBound, $0)
@@ -190,7 +190,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 .padding(.trailing, suffix == nil ? 0 : -6)
             }
 
-            if let suffix = suffix {
+            if let suffix {
                 Text(suffix)
             }
         }
@@ -214,7 +214,6 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         }
         .fixedSize()
         .clipShape(.capsule)
-
         .onChange(of: isShowingTextBox) { _ in
             if isShowingTextBox {
                 addEventMonitor()
@@ -248,7 +247,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 value -= step
             }
 
-            if lowerClamp && upperClamp {
+            if lowerClamp, upperClamp {
                 value = value.clamped(to: sliderRange)
             } else if lowerClamp {
                 value = max(sliderRange.lowerBound, value)
@@ -270,8 +269,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     }
 }
 
-extension Comparable {
-    fileprivate func clamped(to limits: ClosedRange<Self>) -> Self {
-        return min(max(self, limits.lowerBound), limits.upperBound)
+private extension Comparable {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        min(max(self, limits.lowerBound), limits.upperBound)
     }
 }

@@ -17,7 +17,7 @@ public struct TintColorEnvironmentKey: EnvironmentKey {
 
 public extension EnvironmentValues {
     var tintColor: () -> Color {
-        get { return self[TintColorEnvironmentKey.self] }
+        get { self[TintColorEnvironmentKey.self] }
         set { self[TintColorEnvironmentKey.self] = newValue }
     }
 }
@@ -28,9 +28,9 @@ public struct HoveringOverLuminareListItem: EnvironmentKey {
     public static var defaultValue: Bool = false
 }
 
-extension EnvironmentValues {
-    public var hoveringOverLuminareListItem: Bool {
-        get { return self[HoveringOverLuminareListItem.self] }
+public extension EnvironmentValues {
+    var hoveringOverLuminareListItem: Bool {
+        get { self[HoveringOverLuminareListItem.self] }
         set { self[HoveringOverLuminareListItem.self] = newValue }
     }
 }

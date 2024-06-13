@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct SettingsTabGroup: Identifiable {
-    public var id: UUID = UUID()
+    public var id: UUID = .init()
 
     public let title: LocalizedStringKey?
     public let tabs: [SettingsTab]

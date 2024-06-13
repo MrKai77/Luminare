@@ -16,9 +16,9 @@ struct LuminareSidebarView: View {
 
     @Binding var activeTab: SettingsTab
     let groups: [SettingsTabGroup]
-    let didTabChange: (SettingsTab) -> Void
+    let didTabChange: (SettingsTab) -> ()
 
-    init(_ groups: [SettingsTabGroup], _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> Void) {
+    init(_ groups: [SettingsTabGroup], _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> ()) {
         self._activeTab = activeTab
         self.groups = groups
         self.didTabChange = didTabChange

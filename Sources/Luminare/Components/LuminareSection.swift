@@ -28,14 +28,13 @@ public struct LuminareSection<Content: View>: View {
 
     public var body: some View {
         VStack(spacing: headerSpacing) {
-            if let header = header {
+            if let header {
                 HStack {
                     Text(header)
                     Spacer()
                 }
                 .foregroundStyle(.secondary)
             }
-
 
             if noBorder {
                 content()
@@ -46,7 +45,6 @@ public struct LuminareSection<Content: View>: View {
                 .frame(maxWidth: .infinity)
                 .background(.quinary)
                 .clipShape(.rect(cornerRadius: cornerRadius))
-
                 .overlay {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary, lineWidth: 1)

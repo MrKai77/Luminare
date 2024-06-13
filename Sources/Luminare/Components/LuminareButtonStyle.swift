@@ -32,9 +32,9 @@ public struct LuminareButtonStyle: ButtonStyle {
 
     private func backgroundForState(isPressed: Bool) -> some View {
         Group {
-            if isPressed && isEnabled {
+            if isPressed, isEnabled {
                 Rectangle().foregroundStyle(.quaternary)
-            } else if isHovering && isEnabled {
+            } else if isHovering, isEnabled {
                 Rectangle().foregroundStyle(.quaternary.opacity(0.7))
             } else {
                 Rectangle().foregroundStyle(.quinary)
@@ -68,9 +68,9 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 
     private func destructiveBackgroundForState(isPressed: Bool) -> some View {
         Group {
-            if isPressed && isEnabled {
+            if isPressed, isEnabled {
                 Rectangle().foregroundStyle(.red.opacity(0.4))
-            } else if isHovering && isEnabled {
+            } else if isHovering, isEnabled {
                 Rectangle().foregroundStyle(.red.opacity(0.25))
             } else {
                 Rectangle().foregroundStyle(.red.opacity(0.15))
@@ -115,9 +115,9 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 
     private func backgroundForState(isPressed: Bool) -> some View {
         Group {
-            if isPressed && isEnabled {
+            if isPressed, isEnabled {
                 Rectangle().foregroundStyle(.quaternary)
-            } else if isHovering && isEnabled {
+            } else if isHovering, isEnabled {
                 Rectangle().foregroundStyle(.quaternary.opacity(0.7))
             }
         }
@@ -173,7 +173,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 public struct LuminareBordered: ViewModifier {
     @Binding var highlight: Bool
     let cornerRadius: CGFloat = 8
-    
+
     public init(highlight: Binding<Bool> = .constant(false)) {
         self._highlight = highlight
     }

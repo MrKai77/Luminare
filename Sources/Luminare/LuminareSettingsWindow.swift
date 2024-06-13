@@ -15,7 +15,7 @@ public class LuminareSettingsWindow {
     public var tabs: [SettingsTabGroup]
     static var tint: () -> Color = { .accentColor }
 
-    private let didTabChange: (SettingsTab) -> Void
+    private let didTabChange: (SettingsTab) -> ()
     var windowDidMoveObserver: NSObjectProtocol?
 
     public var previewBounds: NSRect? {
@@ -33,7 +33,7 @@ public class LuminareSettingsWindow {
     public init(
         _ tabs: [SettingsTabGroup],
         tint: @escaping () -> Color = { .accentColor },
-        didTabChange: @escaping (SettingsTab) -> Void
+        didTabChange: @escaping (SettingsTab) -> ()
     ) {
         self.tabs = tabs
         LuminareSettingsWindow.tint = tint
@@ -64,7 +64,7 @@ public class LuminareSettingsWindow {
         )
 
         window.contentView = view
-        window.contentView?.wantsLayer =  true
+        window.contentView?.wantsLayer = true
 
         window.toolbarStyle = .unified
         window.titlebarAppearsTransparent = true
@@ -105,10 +105,10 @@ public class LuminareSettingsWindow {
         windowController = nil
     }
 
-    public func addPreview<Content: View>(content: Content, identifier: String, fullSize: Bool = false) {
+    public func addPreview(content: some View, identifier: String, fullSize: Bool = false) {
         guard
             let window = windowController?.window,
-            let bounds = self.previewBounds
+            let bounds = previewBounds
         else {
             return
         }
@@ -136,7 +136,7 @@ public class LuminareSettingsWindow {
     }
 
     private func relocatePreview(_ panel: NSWindow) {
-        guard let bounds = self.previewBounds else {
+        guard let bounds = previewBounds else {
             return
         }
         let panelFrame = panel.frame
@@ -169,12 +169,12 @@ public class LuminareSettingsWindow {
         else {
             return
         }
-        
+
         for window in windows {
-            NSAnimationContext.runAnimationGroup({ ctx in
+            NSAnimationContext.runAnimationGroup { ctx in
                 ctx.duration = 0.3
                 window.animator().alphaValue = 1
-            })
+            }
         }
     }
 
@@ -189,10 +189,10 @@ public class LuminareSettingsWindow {
         }
 
         for window in windows {
-            NSAnimationContext.runAnimationGroup({ ctx in
+            NSAnimationContext.runAnimationGroup { ctx in
                 ctx.duration = 0.2
                 window.animator().alphaValue = 0
-            })
+            }
         }
     }
 }

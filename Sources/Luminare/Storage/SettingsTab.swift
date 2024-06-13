@@ -1,6 +1,6 @@
 //
 //  SettingsTab.swift
-//  
+//
 //
 //  Created by Kai Azim on 2024-04-01.
 //
@@ -12,13 +12,13 @@ public struct SettingsTab: Identifiable, Equatable {
         rhs.id == lhs.id
     }
 
-    public var id: UUID = UUID()
-    
+    public var id: UUID = .init()
+
     public let title: LocalizedStringKey
     public let icon: Image
     @ViewBuilder public let view: AnyView
 
-    public init<Content: View>(_ title: LocalizedStringKey, _ icon: Image, _ view: Content) {
+    public init(_ title: LocalizedStringKey, _ icon: Image, _ view: some View) {
         self.title = title
         self.icon = icon
         self.view = AnyView(view)
@@ -28,7 +28,7 @@ public struct SettingsTab: Identifiable, Equatable {
         Rectangle()
             .opacity(0)
             .overlay {
-                self.icon
+                icon
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)

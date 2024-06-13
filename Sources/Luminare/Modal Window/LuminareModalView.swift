@@ -18,14 +18,14 @@ struct LuminareModalView<Content>: View where Content: View {
     init(_ content: Content, compactMode: Bool) {
         self.content = content
 
-        sectionSpacing = compactMode ? 8 : 16
-        outerPadding = compactMode ? 8 : 16
+        self.sectionSpacing = compactMode ? 8 : 16
+        self.outerPadding = compactMode ? 8 : 16
     }
 
     var body: some View {
         VStack {
-            VStack(spacing: self.sectionSpacing) {
-                self.content
+            VStack(spacing: sectionSpacing) {
+                content
             }
             .padding(outerPadding)
             .fixedSize()

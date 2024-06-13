@@ -29,7 +29,6 @@ public struct LuminareInfoView: View {
                 .padding(12)
                 .contentShape(.circle)
                 .padding(-12)
-
                 .onHover { hovering in
                     isHovering = hovering
 

@@ -1,5 +1,5 @@
-import XCTest
 @testable import Luminare
+import XCTest
 
 final class LuminareTests: XCTestCase {
     func testExample() throws {
@@ -8,6 +8,5 @@ final class LuminareTests: XCTestCase {
 
         // Defining Test Cases and Test Methods
         // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
-
     }
 }

@@ -19,13 +19,13 @@ struct ContentView: View {
     @State var activeTab: SettingsTab
     @State var clickedOutsideFlag: Bool = false
     let groups: [SettingsTabGroup]
-    let didTabChange: (SettingsTab) -> Void
+    let didTabChange: (SettingsTab) -> ()
 
     @State var scrollTimer: Timer?
     @State var scrollPosition: CGFloat = 0
     @State var isScrolling: Bool = false
 
-    init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> Void) {
+    init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> ()) {
         self.groups = groups
         self.activeTab = groups.first!.tabs.first!
         self.didTabChange = didTabChange
@@ -58,9 +58,9 @@ struct ContentView: View {
                                 }
                         }
                         .background(
-                             GeometryReader { inner in
+                            GeometryReader { inner in
                                 Color.clear.preference(key: ScrollOffsetPreferenceKey.self, value: inner.frame(in: .global).origin.y)
-                             }
+                            }
                         )
                         .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
                             let lastPosition = scrollPosition
@@ -90,9 +90,7 @@ struct ContentView: View {
                 .frame(width: previewViewWidth)
         }
         .ignoresSafeArea()
-
         .buttonStyle(LuminareButtonStyle())
-
         .tint(tintColor())
     }
 }

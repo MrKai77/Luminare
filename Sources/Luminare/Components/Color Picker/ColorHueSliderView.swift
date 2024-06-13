@@ -1,5 +1,5 @@
 //
-//  ColorSpectrumSliderView.swift
+//  ColorHueSliderView.swift
 //
 //
 //  Created by Kai Azim on 2024-05-15.

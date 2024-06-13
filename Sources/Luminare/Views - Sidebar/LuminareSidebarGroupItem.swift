@@ -13,9 +13,9 @@ struct LuminareSidebarGroupItem: View {
 
     @State private var isHovering: Bool = false
     @State private var isActive: Bool = false
-    let didTabChange: (SettingsTab) -> Void
+    let didTabChange: (SettingsTab) -> ()
 
-    init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> Void) {
+    init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> ()) {
         self._activeTab = activeTab
         self.tab = tab
         self.didTabChange = didTabChange
@@ -64,7 +64,7 @@ struct SidebarButtonStyle: ButtonStyle {
         configuration.label
             .padding(4)
             .background {
-                if configuration.isPressed{
+                if configuration.isPressed {
                     Rectangle().foregroundStyle(.quaternary)
                 } else if isHovering || isActive {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))

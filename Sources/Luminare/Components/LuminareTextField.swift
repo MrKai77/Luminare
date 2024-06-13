@@ -13,11 +13,11 @@ public struct LuminareTextField: View {
 
     @Binding var text: String
     let placeHolder: LocalizedStringKey
-    let onSubmit: (() -> Void)?
+    let onSubmit: (() -> ())?
 
     @State var monitor: Any?
 
-    public init(_ text: Binding<String>, placeHolder: LocalizedStringKey, onSubmit: (() -> Void)? = nil) {
+    public init(_ text: Binding<String>, placeHolder: LocalizedStringKey, onSubmit: (() -> ())? = nil) {
         self._text = text
         self.placeHolder = placeHolder
         self.onSubmit = onSubmit
@@ -29,7 +29,7 @@ public struct LuminareTextField: View {
             .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
             .onSubmit {
-                if let onSubmit = onSubmit {
+                if let onSubmit {
                     onSubmit()
                 }
             }
@@ -43,7 +43,7 @@ public struct LuminareTextField: View {
 
                         // Fixes cmd+w to close window.
                         let wKey = 13
-                        if event.keyCode == wKey && event.modifierFlags.contains(.command) {
+                        if event.keyCode == wKey, event.modifierFlags.contains(.command) {
                             return nil
                         }
                     }
