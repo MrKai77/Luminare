@@ -70,11 +70,12 @@ struct ContentView: View {
                             scrollTimer?.invalidate()
                             scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false) { _ in
                                 if lastPosition - scrollPosition <= 10 {
-                                    isScrolling = false
-                                    scrollTimer?.invalidate()
-                                    scrollTimer = nil
+                                    stoppedScrolling()
                                 }
                             }
+                        }
+                        .onChange(of: activeTab) { _ in
+                            stoppedScrolling()
                         }
                     }
                     .scrollIndicators(.never)
@@ -92,6 +93,12 @@ struct ContentView: View {
         .ignoresSafeArea()
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
+    }
+
+    func stoppedScrolling() {
+        isScrolling = false
+        scrollTimer?.invalidate()
+        scrollTimer = nil
     }
 }
 
