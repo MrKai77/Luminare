@@ -222,7 +222,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             .frame(height: 50)
             .overlay {
                 content($item)
-                    .environment(\.hoveringOverLuminareListItem, isHovering)
+                    .environment(\.hoveringOverLuminareItem, isHovering)
             }
             .tag(item)
             .onHover { hover in

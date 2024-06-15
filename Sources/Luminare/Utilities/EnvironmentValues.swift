@@ -22,16 +22,16 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - HoveringOverLuminareListItem (public)
+// MARK: - HoveringOverLuminareItem (public)
 
-public struct HoveringOverLuminareListItem: EnvironmentKey {
+public struct HoveringOverLuminareItem: EnvironmentKey {
     public static var defaultValue: Bool = false
 }
 
 public extension EnvironmentValues {
-    var hoveringOverLuminareListItem: Bool {
-        get { self[HoveringOverLuminareListItem.self] }
-        set { self[HoveringOverLuminareListItem.self] = newValue }
+    var hoveringOverLuminareItem: Bool {
+        get { self[HoveringOverLuminareItem.self] }
+        set { self[HoveringOverLuminareItem.self] = newValue }
     }
 }
 
