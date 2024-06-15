@@ -129,6 +129,11 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 addEventMonitor()
             }
         }
+        .onAppear {
+            if !selection.isEmpty {
+                addEventMonitor()
+            }
+        }
         .onDisappear {
             removeEventMonitor()
         }
