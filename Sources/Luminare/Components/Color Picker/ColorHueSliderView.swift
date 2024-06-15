@@ -62,18 +62,15 @@ struct ColorHueSliderView: View {
         let clampedX = max(0, min(value.location.x, viewSize))
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
-        setColor(colorFromSpectrum(percentage: Double(percentage)))
-    }
-
-    private func setColor(_ newColor: Color) {
-        withAnimation(.smooth(duration: 0.2)) {
-            selectedColor = newColor
-        }
-    }
-
-    private func colorFromSpectrum(percentage: Double) -> Color {
         let hsb = selectedColor.toHSB()
-        return Color(hue: 0.01 + (percentage * 0.99), saturation: max(0.0001, hsb.saturation), brightness: hsb.brightness)
+
+        withAnimation(.smooth(duration: 0.25)) {
+            selectedColor = Color(
+                hue: 0.01 + (percentage * 0.99),
+                saturation: max(0.0001, hsb.saturation),
+                brightness: hsb.brightness
+            )
+        }
     }
 
     private func calculateOffset(handleWidth: CGFloat, _ viewSize: CGFloat) -> CGFloat {
