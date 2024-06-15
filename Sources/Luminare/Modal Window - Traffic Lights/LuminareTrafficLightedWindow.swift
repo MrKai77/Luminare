@@ -8,8 +8,8 @@
 import SwiftUI
 
 // Initialize this window simply by initializing it.
-class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View {
-    init(view: () -> Content) {
+public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View {
+    public init(view: () -> Content) {
         super.init(
             contentRect: .zero,
             styleMask: [.titled, .closable, .fullSizeContentView],
@@ -55,7 +55,7 @@ class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View {
         }
     }
 
-    override func close() {
+    override public func close() {
         NSAnimationContext.runAnimationGroup({ context in
             context.duration = 0.15
             self.animator().alphaValue = 0
