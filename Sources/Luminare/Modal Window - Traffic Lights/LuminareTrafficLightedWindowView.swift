@@ -11,7 +11,6 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
 
     let sectionSpacing: CGFloat = 12
-    let outerPadding: CGFloat = 12
     let cornerRadius: CGFloat = 12
     let content: Content
 
@@ -20,30 +19,29 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
             VStack(spacing: sectionSpacing) {
                 content
             }
-            .padding(outerPadding)
             .padding(.top, 40) // titlebar
             .fixedSize()
             .background {
                 VisualEffectView(
-                    material: .fullScreenUI,
+                    material: .menu,
                     blendingMode: .behindWindow
                 )
-                .overlay {
-                    // The bottom has a smaller corner radius because a compact button will be used there
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: cornerRadius,
-                        bottomLeadingRadius: outerPadding + cornerRadius,
-                        bottomTrailingRadius: outerPadding + cornerRadius,
-                        topTrailingRadius: cornerRadius
-                    )
-                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
-                }
+            }
+            .overlay {
+                // The bottom has a smaller corner radius because a compact button will be used there
+                UnevenRoundedRectangle(
+                    topLeadingRadius: cornerRadius,
+                    bottomLeadingRadius: 8 + cornerRadius,
+                    bottomTrailingRadius: 8 + cornerRadius,
+                    topTrailingRadius: cornerRadius
+                )
+                .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
             }
             .clipShape(
                 UnevenRoundedRectangle(
                     topLeadingRadius: cornerRadius,
-                    bottomLeadingRadius: outerPadding + cornerRadius,
-                    bottomTrailingRadius: outerPadding + cornerRadius,
+                    bottomLeadingRadius: 8 + cornerRadius,
+                    bottomTrailingRadius: 8 + cornerRadius,
                     topTrailingRadius: cornerRadius
                 )
             )

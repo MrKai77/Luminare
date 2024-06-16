@@ -44,7 +44,7 @@ public class LuminareSettingsWindow {
         guard let controller = windowController else { return }
 
         controller.window?.center()
-        controller.window?.orderFrontRegardless()
+        controller.window?.makeKeyAndOrderFront(self)
         NSApp.activate(ignoringOtherApps: true)
     }
 

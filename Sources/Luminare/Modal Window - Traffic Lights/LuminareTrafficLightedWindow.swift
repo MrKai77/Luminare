@@ -39,7 +39,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
         center()
 
         DispatchQueue.main.async {
-            self.orderFrontRegardless()
+            self.makeKeyAndOrderFront(nil)
         }
     }
 
@@ -53,14 +53,5 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
                 self.invalidateShadow()
             }
         }
-    }
-
-    override public func close() {
-        NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.15
-            self.animator().alphaValue = 0
-        }, completionHandler: {
-            super.close()
-        })
     }
 }
