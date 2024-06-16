@@ -17,7 +17,9 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
             defer: true
         )
 
-        let hostingView = NSHostingView(rootView: LuminareTrafficLightedWindowView(content: view()))
+        let hostingView = NSHostingView(rootView: LuminareTrafficLightedWindowView(content: view())
+            .environment(\.floatingPanel, self)
+            .environment(\.tintColor, LuminareSettingsWindow.tint))
 
         backgroundColor = .clear
         contentView = hostingView

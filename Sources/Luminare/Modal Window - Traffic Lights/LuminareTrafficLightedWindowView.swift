@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
+    @Environment(\.floatingPanel) var floatingPanel
 
     let sectionSpacing: CGFloat = 12
     let cornerRadius: CGFloat = 12
@@ -45,6 +46,16 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
                     topTrailingRadius: cornerRadius
                 )
             )
+
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onChange(of: proxy.size) { _ in
+                            guard let modalWindow = floatingPanel as? LuminareTrafficLightedWindow<Content> else { return }
+                            modalWindow.updateShadow(for: 0.5)
+                        }
+                }
+            }
 
             Spacer()
         }
