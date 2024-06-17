@@ -33,16 +33,21 @@ struct ColorHueSliderView: View {
                     endPoint: .trailing
                 )
 
-                RoundedRectangle(cornerRadius: handleCornerRadius(at: selectionPosition, geo.size.width))
-                    .frame(width: handleWidth(at: selectionPosition, geo.size.width), height: 12)
-                    .offset(x: selectionOffset, y: 0)
-                    .foregroundColor(.white)
-                    .shadow(radius: 3)
-                    .onChange(of: selectionPosition) { _ in
-                        withAnimation(.smooth(duration: 0.2)) {
-                            selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
-                        }
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 2,
+                    bottomLeadingRadius: selectionOffset < (geo.size.width / 2) ? handleCornerRadius(at: selectionPosition, geo.size.width) : 2,
+                    bottomTrailingRadius: selectionOffset > (geo.size.width / 2) ? handleCornerRadius(at: selectionPosition, geo.size.width) : 2,
+                    topTrailingRadius: 2
+                )
+                .frame(width: handleWidth(at: selectionPosition, geo.size.width), height: 12)
+                .offset(x: selectionOffset, y: 0)
+                .foregroundColor(.white)
+                .shadow(radius: 3)
+                .onChange(of: selectionPosition) { _ in
+                    withAnimation(.smooth(duration: 0.2)) {
+                        selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
                     }
+                }
             }
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -59,7 +64,7 @@ struct ColorHueSliderView: View {
     }
 
     private func handleDragChange(_ value: DragGesture.Value, _ viewSize: CGFloat) {
-        let clampedX = max(0, min(value.location.x, viewSize))
+        let clampedX = max(6, min(value.location.x, viewSize - 6))
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
         let hsb = selectedColor.toHSB()
@@ -88,6 +93,6 @@ struct ColorHueSliderView: View {
     private func handleCornerRadius(at position: CGFloat, _ viewSize: CGFloat) -> CGFloat {
         let edgeDistance = min(position, viewSize - position)
         let edgeFactor = max(0, min(edgeDistance / 5, 1))
-        return max(2, 15 * edgeFactor)
+        return 15 * edgeFactor
     }
 }
