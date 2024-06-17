@@ -172,9 +172,10 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     }
                 )
                 .focused($focusedField, equals: .textbox)
+                .multilineTextAlignment(.trailing)
                 .labelsHidden()
                 .textFieldStyle(.plain)
-                .padding(.trailing, -8)
+                .padding(.leading, -4)
             } else {
                 Button {
                     withAnimation(.easeOut(duration: 0.1)) {
@@ -187,11 +188,11 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                         .multilineTextAlignment(.trailing)
                 }
                 .buttonStyle(PlainButtonStyle())
-                .padding(.trailing, suffix == nil ? 0 : -6)
             }
 
             if let suffix {
                 Text(suffix)
+                    .padding(.leading, -6)
             }
         }
         .frame(maxWidth: 150)
