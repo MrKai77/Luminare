@@ -22,33 +22,33 @@ To add  to your Xcode project, you can use Swift Package Manager (SPM). Follow t
 Luminare offers a variety of components, including:
 
 - **Buttons**: Customizable buttons with predefined styles:
-    - `LuminareButtonStyle`
-        ![](assets/LuminareButtonStyle.png)
-    - `LuminareDestructiveButtonStyle`
-        ![](assets/LuminareDestructiveButtonStyle.png)
-    - `LuminareCompactButtonStyle`
-        ![](assets/LuminareCompactButtonStyle.png)
-    - `LuminareCosmeticButtonStyle`
-        ![](assets/LuminareCosmeticButtonStyle.png)
-- **Toggle Buttons**: `LuminareToggle`, a toggle switch view with a clean design.
-    ![](assets/LuminareToggle.png)
-- **Value Adjusters**: `LuminareValueAdjuster`, a slider with an input field for numerical values.
-    ![](assets/LuminareValueAdjuster.png)
-- **Pickers**: Custom picker views for selecting options, demonstrated by:
-    - `LuminarePicker`
-        ![](assets/LuminarePicker.png)
-    - `LuminareSliderPicker`
-        ![](assets/LuminareSliderPicker.png)
-- **Color Picker**: `LuminareColorPicker`, for choosing and setting colors.
-    ![](assets/LuminareColorPicker.png)
-- **Text Field**: `LuminareTextField`, a styled textbox.
-    ![](assets/LuminareTextField.png)
-- **Modal Views**: With the `.luminareModal(...)` modifier, support Luminare-styled modals.
-     ![](assets/LuminareModal.png)
-- **Sections**: `LuminareSection`, used to group related components.
-     ![](assets/LuminareSection.png)
-- **Lists**: `LuminareList`, built on SwiftUI's `List`, for displaying collections of items.
-     ![](assets/LuminareList.png)
+    - `LuminareButtonStyle`  
+<img src="assets/LuminareButtonStyle.png" width="300"></img>
+    - `LuminareDestructiveButtonStyle`  
+<img src="assets/LuminareDestructiveButtonStyle.png" width="150"></img>
+    - `LuminareCompactButtonStyle`  
+<img src="assets/LuminareCompactButtonStyle.png" width="300"></img>
+    - `LuminareCosmeticButtonStyle`  
+<img src="assets/LuminareCosmeticButtonStyle.png" width="300"></img>
+- **Toggle Buttons**: `LuminareToggle`, a toggle switch view with a clean design.  
+<img src="assets/LuminareToggle.png" width="300"></img>
+- **Value Adjusters**: `LuminareValueAdjuster`, a slider with an input field for numerical values.  
+<img src="assets/LuminareValueAdjuster.png" width="300"></img>
+- **Pickers**: Custom picker views for selecting options, demonstrated by:  
+    - `LuminarePicker`  
+<img src="assets/LuminarePicker.png" width="300"></img>
+    - `LuminareSliderPicker`  
+<img src="assets/LuminareSliderPicker.png" width="300"></img>
+- **Color Picker**: `LuminareColorPicker`, for choosing and setting colors.  
+<img src="assets/LuminareColorPicker.png" width="300"></img>
+- **Text Field**: `LuminareTextField`, a styled textbox.  
+<img src="assets/LuminareTextField.png" width="300"></img>
+- **Modal Views**: With the `.luminareModal(...)` modifier, support Luminare-styled modals.  
+<img src="assets/LuminareModal.jpeg" width="300"></img>
+- **Sections**: `LuminareSection`, used to group related components.  
+<img src="assets/LuminareSection.png" width="300"></img>
+- **Lists**: `LuminareList`, built on SwiftUI's `List`, for displaying collections of items.  
+<img src="assets/LuminareList.png" width="300"></img>
 
 ## Example Usage
 
