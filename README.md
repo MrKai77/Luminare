@@ -33,7 +33,7 @@ Luminare offers a variety of components, organized for easy reference:
 |  | `LuminareSliderPicker` | <img src="assets/LuminareSliderPicker.png" width="300"> |
 | Color Picker | `LuminareColorPicker` | <img src="assets/LuminareColorPicker.png" width="300"> |
 | Text Field | `LuminareTextField` | <img src="assets/LuminareTextField.png" width="300"> |
-| Modal Views | `.luminareModal(...)` | <img src="assets/LuminareModal.jpeg" width="300"> |
+| Modal Views | `.luminareModal(...)` | <img src="assets/LuminareModal.png" width="300"> |
 | Sections | `LuminareSection` | <img src="assets/LuminareSection.png" width="300"> |
 | Lists | `LuminareList` | <img src="assets/LuminareList.png" width="300"> |
 
