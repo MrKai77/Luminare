@@ -22,6 +22,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
     @State private var lastItem: V?
     let id: KeyPath<V, ID>
 
+    let addText: LocalizedStringKey
+    let removeText: LocalizedStringKey
+
     @State var canRefreshSelection = true
     let cornerRadius: CGFloat = 2
     let lineWidth: CGFloat = 1.5
@@ -34,7 +37,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
-        id: KeyPath<V, ID>
+        id: KeyPath<V, ID>,
+        addText: LocalizedStringKey,
+        removeText: LocalizedStringKey
     ) {
         self.header = header
         self._items = items
@@ -43,18 +48,20 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         self.content = content
         self.emptyView = emptyView
         self.id = id
+        self.addText = addText
+        self.removeText = removeText
     }
 
     public var body: some View {
         LuminareSection(header, disablePadding: true) {
             HStack(spacing: 2) {
-                Button("Add") {
+                Button(addText) {
                     withAnimation(.smooth(duration: 0.25)) {
                         addAction()
                     }
                 }
 
-                Button("Remove") {
+                Button(removeText) {
                     if !selection.isEmpty {
                         canRefreshSelection = false
                         withAnimation(.smooth(duration: 0.25)) {

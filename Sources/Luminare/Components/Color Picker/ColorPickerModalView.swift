@@ -15,6 +15,8 @@ struct ColorPickerModalView: View {
     @State private var greenComponent: Double = 0
     @State private var blueComponent: Double = 0
 
+    let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+
     // Main view containing all components of the color picker
     var body: some View {
         Group {
@@ -58,17 +60,17 @@ struct ColorPickerModalView: View {
     // View for RGB input fields
     private var RGBInputFields: some View {
         HStack(spacing: 8) {
-            RGBInputField(label: "Red", value: $redComponent)
+            RGBInputField(label: colorNames.red, value: $redComponent)
                 .onChange(of: redComponent) { _ in
                     setColor(updateColorFromRGB())
                 }
 
-            RGBInputField(label: "Green", value: $greenComponent)
+            RGBInputField(label: colorNames.green, value: $greenComponent)
                 .onChange(of: greenComponent) { _ in
                     setColor(updateColorFromRGB())
                 }
 
-            RGBInputField(label: "Blue", value: $blueComponent)
+            RGBInputField(label: colorNames.blue, value: $blueComponent)
                 .onChange(of: blueComponent) { _ in
                     setColor(updateColorFromRGB())
                 }
