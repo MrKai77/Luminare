@@ -43,4 +43,4 @@ Luminare can be used pretty much exactly like how you would use SwiftUI. For a p
 
 ## License
 
-Luminare is released under the MIT License. See the [LICENSE](LICENSE) file in the repository for the full license text.
+Luminare is released under the GNU GPLv3 License. See the [LICENSE](LICENSE) file in the repository for the full license text.
