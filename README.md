@@ -21,21 +21,84 @@ To add Luminare to your Xcode project, you can use Swift Package Manager (SPM). 
 
 Luminare offers a variety of components, organized for easy reference:
 
-| Component Type | Component | Preview |
-|----------------|-----------|---------|
-| Buttons | `LuminareButtonStyle` | <img src="assets/LuminareButtonStyle.png" width="300"> |
-|  | `LuminareDestructiveButtonStyle` | <img src="assets/LuminareDestructiveButtonStyle.png" width="150"> |
-|  | `LuminareCompactButtonStyle` | <img src="assets/LuminareCompactButtonStyle.png" width="300"> |
-|  | `LuminareCosmeticButtonStyle` | <img src="assets/LuminareCosmeticButtonStyle.png" width="300"> |
-| Toggle Buttons | `LuminareToggle` | <img src="assets/LuminareToggle.png" width="300"> |
-| Value Adjusters | `LuminareValueAdjuster` | <img src="assets/LuminareValueAdjuster.png" width="300"> |
-| Pickers | `LuminarePicker` | <img src="assets/LuminarePicker.png" width="300"> |
-|  | `LuminareSliderPicker` | <img src="assets/LuminareSliderPicker.png" width="300"> |
-| Color Picker | `LuminareColorPicker` | <img src="assets/LuminareColorPicker.png" width="300"> |
-| Text Field | `LuminareTextField` | <img src="assets/LuminareTextField.png" width="300"> |
-| Modal Views | `.luminareModal(...)` | <img src="assets/LuminareModal.png" width="300"> |
-| Sections | `LuminareSection` | <img src="assets/LuminareSection.png" width="300"> |
-| Lists | `LuminareList` | <img src="assets/LuminareList.png" width="300"> |
+<table>
+  <!-- Headers -->
+  <tr>
+    <th>Component Type</th>
+    <th>Component</th>
+    <th>Preview</th>
+  </tr>
+  <!-- Buttons -->
+  <tr>
+    <th rowspan="4">Buttons</th>
+    <td><code>LuminareButtonStyle</code></td>
+    <td align="right"><img src="assets/LuminareButtonStyle.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><code>LuminareDestructiveButtonStyle</code></td>
+    <td align="right"><img src="assets/LuminareDestructiveButtonStyle.png" width="150"></td>
+  </tr>
+  <tr>
+    <td><code>LuminareCompactButtonStyle</code></td>
+    <td align="right"><img src="assets/LuminareCompactButtonStyle.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><code>LuminareCosmeticButtonStyle</code></td>
+    <td align="right"><img src="assets/LuminareCosmeticButtonStyle.png" width="300"></td>
+  </tr>
+  <!-- Toggle Buttons -->
+  <tr>
+    <th rowspan="1">Toggle Buttons</th>
+    <td><code>LuminareToggle</code></td>
+    <td align="right"><img src="assets/LuminareToggle.png" width="300"></td>
+  </tr>
+  <!-- Value Adjusters -->
+  <tr>
+    <th rowspan="1">Value Adjusters</th>
+    <td><code>LuminareValueAdjuster</code></td>
+    <td align="right"><img src="assets/LuminareValueAdjuster.png" width="300"></td>
+  </tr>
+  <!-- Pickers -->
+  <tr>
+    <th rowspan="2">Pickers</th>
+    <td><code>LuminarePicker</code></td>
+    <td align="right"><img src="assets/LuminarePicker.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><code>LuminareSliderPicker</code></td>
+    <td align="right"><img src="assets/LuminareSliderPicker.png" width="300"></td>
+  </tr>
+  <!-- Color Pickers -->
+  <tr>
+    <th rowspan="1">Color Pickers</th>
+    <td><code>LuminareColorPicker</code></td>
+    <td align="right"><img src="assets/LuminareColorPicker.png" width="300"></td>
+  </tr>
+  <!-- Text Fields -->
+  <tr>
+    <th rowspan="1">Text Fields</th>
+    <td><code>LuminareTextField</code></td>
+    <td align="right"><img src="assets/LuminareTextField.png" width="300"></td>
+  </tr>
+  <!-- Modal Views -->
+  <tr>
+    <th rowspan="1">Modal Views</th>
+    <td><code>.luminareModal(...)</code></td>
+    <td align="right"><img src="assets/LuminareModal.png" width="300"></td>
+  </tr>
+  <!-- Sections -->
+  <tr>
+    <th rowspan="1">Sections</th>
+    <td><code>LuminareSection</code></td>
+    <td align="right"><img src="assets/LuminareSection.png" width="300"></td>
+  </tr>
+  <!-- Lists -->
+  <tr>
+    <th rowspan="1">Lists</th>
+    <td><code>LuminareList</code></td>
+    <td align="right"><img src="assets/LuminareList.png" width="300"></td>
+  </tr>
+</table>
 
 ## Example Usage
 
@@ -43,4 +106,4 @@ Luminare can be used pretty much exactly like how you would use SwiftUI. For a p
 
 ## License
 
-Luminare is released under the GNU GPLv3 License. See the [LICENSE](LICENSE) file in the repository for the full license text.
+Luminare is released under **GNU General Public License v3.0.** See the [LICENSE](LICENSE) file in the repository for the full license text.
