@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint, V: _FormatSpecifiable {
+public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public enum ControlSize {
         case regular
         case compact
@@ -183,7 +183,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                         focusedField = .textbox
                     }
                 } label: {
-                    Text("\(value, specifier: "%.\(decimalPlaces)f")")
+//                    Text("\(value, specifier: "%.\(decimalPlaces)f")")
+                    Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
                         .contentTransition(.numericText())
                         .multilineTextAlignment(.trailing)
                 }
