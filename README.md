@@ -1,6 +1,16 @@
+<div align="center">
+  
 # Luminare
 
+[![License: GPL](https://img.shields.io/badge/license-GPL-green.svg)](LICENSE.md)
+[![Open Issues](https://img.shields.io/github/issues/MrKai77/Luminare.svg)](https://github.com/MrKai77/Luminare)
+
 Luminare is a SwiftUI framework designed to enhance the development of macOS applications by providing a collection of pre-styled components that adhere to a consistent design language. It simplifies the creation of visually appealing and functional user interfaces.
+
+</div>
+
+> [!CAUTION]
+> This package is still under active development! Bugs are to be expected.
 
 ## Features
 
