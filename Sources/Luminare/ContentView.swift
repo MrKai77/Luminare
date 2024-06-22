@@ -91,6 +91,7 @@ struct ContentView: View {
                 .frame(width: previewViewWidth)
         }
         .ignoresSafeArea()
+        .frame(minHeight: 580)
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
     }
