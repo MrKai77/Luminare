@@ -1,4 +1,4 @@
-# Luminare
+# Luminare (also known as lumière)
 
 Luminare is a SwiftUI framework designed to enhance the development of macOS applications by providing a collection of pre-styled components that adhere to a consistent design language. It simplifies the creation of visually appealing and functional user interfaces.
 
