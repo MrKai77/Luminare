@@ -43,10 +43,12 @@ public class LuminareSettingsWindow {
     public func show() {
         guard let controller = windowController else { return }
 
-        controller.window?.center()
-        controller.window?.makeKeyAndOrderFront(self)
-        controller.window?.orderFrontRegardless()
-        NSApp.activate(ignoringOtherApps: true)
+        DispatchQueue.main.async {
+            controller.window?.center()
+            controller.window?.makeKeyAndOrderFront(self)
+            controller.window?.orderFrontRegardless()
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     public func initializeWindow() {
@@ -78,8 +80,6 @@ public class LuminareSettingsWindow {
         // Private API
         window.setBackgroundBlur(radius: 20)
         window.identifier = LuminareSettingsWindow.identifier
-
-        window.center()
 
         windowController = .init(window: window)
 
