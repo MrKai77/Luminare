@@ -74,7 +74,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         self.decimalPlaces = decimalPlaces
 
         self.formatter = NumberFormatter()
-        formatter.maximumFractionDigits = decimalPlaces
+        formatter.maximumFractionDigits = 5
 
         if let step {
             self.step = step
@@ -147,7 +147,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         HStack {
             if isShowingTextBox {
                 TextField(
-                    .init(""),
+                    "",
                     value: Binding(
                         get: {
                             value
@@ -164,13 +164,13 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                             }
                         }
                     ),
-                    formatter: formatter,
-                    onCommit: {
-                        withAnimation(.easeOut(duration: 0.1)) {
-                            isShowingTextBox.toggle()
-                        }
-                    }
+                    formatter: formatter
                 )
+                .onSubmit {
+                    withAnimation(.easeOut(duration: 0.1)) {
+                        isShowingTextBox.toggle()
+                    }
+                }
                 .focused($focusedField, equals: .textbox)
                 .multilineTextAlignment(.trailing)
                 .labelsHidden()
@@ -183,7 +183,6 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                         focusedField = .textbox
                     }
                 } label: {
-//                    Text("\(value, specifier: "%.\(decimalPlaces)f")")
                     Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
                         .contentTransition(.numericText())
                         .multilineTextAlignment(.trailing)
