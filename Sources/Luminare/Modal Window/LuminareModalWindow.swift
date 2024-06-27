@@ -43,7 +43,6 @@ class LuminareModal<Content>: NSWindow where Content: View {
         hasShadow = true
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
-        animationBehavior = .documentWindow
 
         center()
     }

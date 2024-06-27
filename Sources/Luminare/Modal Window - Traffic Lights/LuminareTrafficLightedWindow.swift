@@ -28,7 +28,6 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
         isOpaque = false
         hasShadow = true
         titleVisibility = .hidden
-        animationBehavior = .documentWindow
 
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
