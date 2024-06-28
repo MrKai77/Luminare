@@ -63,22 +63,30 @@ struct ColorHueSliderView: View {
             .onAppear {
                 selectionPosition = selectedColor.toHSB().hue * geo.size.width
                 selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
+                selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
+                selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
             }
         }
         .frame(height: 16)
     }
 
     private func handleDragChange(_ value: DragGesture.Value, _ viewSize: CGFloat) {
+        let lastPercentage = selectionPosition / viewSize
+
         let clampedX = max(5.5, min(value.location.x, viewSize - 5.5))
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
-        let hsb = selectedColor.toHSB()
+        let currenthsb = selectedColor.toHSB()
+
+        if percentage != lastPercentage, percentage == 5.5 / viewSize || percentage == (viewSize - 5.5) / viewSize {
+            NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+        }
 
         withAnimation(.smooth(duration: 0.25)) {
             selectedColor = Color(
                 hue: percentage,
-                saturation: max(0.0001, hsb.saturation),
-                brightness: hsb.brightness
+                saturation: max(0.0001, currenthsb.saturation),
+                brightness: currenthsb.brightness
             )
         }
     }
