@@ -67,16 +67,12 @@ class LuminareModal<Content>: NSWindow where Content: View {
             self.animator().alphaValue = 0
         }, completionHandler: {
             super.close()
+            self.isPresented = false
         })
-        isPresented = false
     }
 
     override func resignMain() {
-        super.resignMain()
-
-        if closeOnDefocus {
-            close()
-        }
+        close()
     }
 
     override func keyDown(with event: NSEvent) {
