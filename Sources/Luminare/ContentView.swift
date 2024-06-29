@@ -10,10 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.tintColor) var tintColor
 
-    let sidebarWidth: CGFloat = 260
-    let mainViewWidth: CGFloat = 390
     let mainViewSectionOuterPadding: CGFloat = 12
-    let previewViewWidth: CGFloat = 520
     let sectionSpacing: CGFloat = 16
 
     @State var activeTab: SettingsTab
@@ -21,26 +18,30 @@ struct ContentView: View {
     let groups: [SettingsTabGroup]
     let didTabChange: (SettingsTab) -> ()
 
+    @State private var showPreview: Bool = false
+    let togglePreview: (Bool) -> ()
+
     @State var scrollTimer: Timer?
     @State var scrollPosition: CGFloat = 0
     @State var isScrolling: Bool = false
 
-    init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> ()) {
+    init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> (), togglePreview: @escaping (Bool) -> ()) {
         self.groups = groups
         self.activeTab = groups.first!.tabs.first!
         self.didTabChange = didTabChange
+        self.togglePreview = togglePreview
     }
 
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 0) {
                 LuminareSidebarView(groups, $activeTab, didTabChange: didTabChange)
-                    .frame(width: sidebarWidth)
+                    .frame(width: LuminareSettingsWindow.sidebarWidth)
 
                 Divider()
 
                 VStack(spacing: 0) {
-                    TabHeaderView($activeTab)
+                    TabHeaderView($activeTab, $showPreview)
                     Divider()
 
                     ScrollView(.vertical) {
@@ -81,19 +82,21 @@ struct ContentView: View {
                     .scrollIndicators(.never)
                     .clipped()
                 }
-                .frame(width: mainViewWidth)
+                .frame(width: LuminareSettingsWindow.mainViewWidth)
 
                 Divider()
+                    .opacity(showPreview ? 1 : 0)
+                    .animation(.easeOut(duration: 0.1).delay(showPreview ? 0 : 0.25), value: showPreview)
             }
             .background(VisualEffectView(material: .menu, blendingMode: .behindWindow))
 
-            Spacer()
-                .frame(width: previewViewWidth)
+            Spacer(minLength: 0)
         }
         .ignoresSafeArea()
         .frame(minHeight: 580)
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
+        .onChange(of: showPreview, perform: togglePreview)
     }
 
     func stoppedScrolling() {

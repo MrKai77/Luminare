@@ -9,23 +9,25 @@
 
 import SwiftUI
 
-public class LuminareSettingsWindow {
+public class LuminareSettingsWindow: NSWindow {
     static var identifier = NSUserInterfaceItemIdentifier("LuminareSettingsWindow")
-    public var windowController: NSWindowController?
     public var tabs: [SettingsTabGroup]
     static var tint: () -> Color = { .accentColor }
 
     private let didTabChange: (SettingsTab) -> ()
     var windowDidMoveObserver: NSObjectProtocol?
 
+    static let sidebarWidth: CGFloat = 260
+    static let mainViewWidth: CGFloat = 390
+    static let previewWidth: CGFloat = 520
+
     public var previewBounds: NSRect? {
         guard let window = windowController?.window else { return nil }
-        let previewWidth: CGFloat = 520
 
         return .init(
-            x: window.frame.maxX - previewWidth,
+            x: window.frame.maxX - Self.previewWidth,
             y: window.frame.minY,
-            width: previewWidth,
+            width: Self.previewWidth,
             height: window.frame.height
         )
     }
@@ -36,63 +38,69 @@ public class LuminareSettingsWindow {
         didTabChange: @escaping (SettingsTab) -> ()
     ) {
         self.tabs = tabs
-        LuminareSettingsWindow.tint = tint
+        Self.tint = tint
         self.didTabChange = didTabChange
-    }
 
-    public func show() {
-        guard let controller = windowController else { return }
-
-        DispatchQueue.main.async {
-            controller.window?.center()
-            controller.window?.makeKeyAndOrderFront(self)
-            controller.window?.orderFrontRegardless()
-            NSApp.activate(ignoringOtherApps: true)
-        }
-    }
-
-    public func initializeWindow() {
-        guard windowController?.window == nil else { return }
-
-        let view = NSHostingView(
-            rootView: ContentView(tabs, didTabChange: didTabChange)
-                .environment(\.tintColor, LuminareSettingsWindow.tint)
-        )
-
-        let window = NSWindow(
-            contentRect: view.bounds,
+        super.init(
+            contentRect: .zero,
             styleMask: [.closable, .titled, .fullSizeContentView],
             backing: .buffered,
             defer: false // If true, background blur will break
         )
 
-        window.contentView = view
-        window.contentView?.wantsLayer = true
+        let view = NSHostingView(
+            rootView: ContentView(tabs, didTabChange: didTabChange, togglePreview: togglePreview(show:))
+                .environment(\.tintColor, LuminareSettingsWindow.tint)
+        )
 
-        window.toolbarStyle = .unified
-        window.titlebarAppearsTransparent = true
-        window.titleVisibility = .hidden
+        contentView = view
+        contentView?.wantsLayer = true
 
-        let customToolbar = NSToolbar()
-        customToolbar.showsBaselineSeparator = false
-        window.toolbar = customToolbar
+        toolbarStyle = .unified
+        titlebarAppearsTransparent = true
+        titleVisibility = .hidden
+
+//        let customToolbar = NSToolbar()
+//        customToolbar.showsBaselineSeparator = false
+//        toolbar = customToolbar
 
         // Private API
-        window.setBackgroundBlur(radius: 20)
-        window.identifier = LuminareSettingsWindow.identifier
+        setBackgroundBlur(radius: 20)
+        identifier = Self.identifier
 
-        windowController = .init(window: window)
-
-        windowDidMoveObserver = NotificationCenter.default.addObserver(
+        self.windowDidMoveObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.didMoveNotification,
             object: nil,
             queue: .main
         ) { _ in
-            guard let children = self.windowController?.window?.childWindows else {
+            guard let children = self.childWindows else {
                 return
             }
 
             children.forEach { self.relocatePreview($0) }
+        }
+    }
+
+    public func show() {
+        center()
+        makeKeyAndOrderFront(self)
+        orderFrontRegardless()
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    public func togglePreview(show: Bool) {
+        let closedSize = Self.sidebarWidth + Self.mainViewWidth
+        let openSize = Self.sidebarWidth + Self.mainViewWidth + Self.previewWidth
+
+        let frame = frame
+        let newFrame = CGRect(
+            origin: .init(x: frame.midX - (show ? openSize / 2 : closedSize / 2), y: frame.minY),
+            size: .init(width: show ? openSize : closedSize, height: frame.height)
+        )
+
+        NSAnimationContext.runAnimationGroup { ctx in
+            ctx.duration = 0.3
+            animator().setFrame(newFrame, display: false)
         }
     }
 
@@ -102,11 +110,14 @@ public class LuminareSettingsWindow {
         }
         windowDidMoveObserver = nil
 
-        windowController?.window?.close()
-        windowController = nil
+        close()
     }
+}
 
-    public func addPreview(content: some View, identifier: String, fullSize: Bool = false) {
+// MARK: - Previews
+
+public extension LuminareSettingsWindow {
+    func addPreview(content: some View, identifier: String, fullSize: Bool = false) {
         guard
             let window = windowController?.window,
             let bounds = previewBounds
@@ -161,7 +172,7 @@ public class LuminareSettingsWindow {
         )
     }
 
-    public func showPreview(identifier: String) {
+    func showPreview(identifier: String) {
         guard
             let windows = windowController?.window?.childWindows?.compactMap({
                 $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
@@ -179,7 +190,7 @@ public class LuminareSettingsWindow {
         }
     }
 
-    public func hidePreview(identifier: String) {
+    func hidePreview(identifier: String) {
         guard
             let windows = windowController?.window?.childWindows?.compactMap({
                 $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil

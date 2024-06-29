@@ -9,9 +9,11 @@ import SwiftUI
 
 struct TabHeaderView: View {
     @Binding var activeTab: SettingsTab
+    @Binding var showPreview: Bool
 
-    init(_ activeTab: Binding<SettingsTab>) {
+    init(_ activeTab: Binding<SettingsTab>, _ showPreview: Binding<Bool>) {
         self._activeTab = activeTab
+        self._showPreview = showPreview
     }
 
     var body: some View {
@@ -25,6 +27,14 @@ struct TabHeaderView: View {
                     .font(.title2)
 
                 Spacer()
+
+                Button("TOGGLE") {
+                    withAnimation(.smooth(duration: 0.25)) {
+                        showPreview.toggle()
+                    }
+                }
+                .buttonStyle(.plain)
+                .contentShape(.rect)
             }
             .padding(.horizontal, 10)
 
