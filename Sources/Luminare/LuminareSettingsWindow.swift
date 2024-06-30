@@ -27,8 +27,8 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
     static let mainViewWidth: CGFloat = 390
     static let previewWidth: CGFloat = 520
 
-    static var animation: Animation = .smooth(duration: 0.2)
-    static var fastAnimation: Animation = .easeOut(duration: 0.1)
+    public static var animation: Animation = .smooth(duration: 0.2)
+    public static var fastAnimation: Animation = .easeOut(duration: 0.1)
 
     var closedSize: CGFloat {
         Self.sidebarWidth + Self.mainViewWidth
