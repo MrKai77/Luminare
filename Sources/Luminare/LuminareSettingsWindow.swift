@@ -99,8 +99,8 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
 
         DispatchQueue.main.async {
             self.center()
-            self.alphaValue = 1
             self.togglePreview(show: true, animate: false)
+            self.alphaValue = 1
         }
     }
 
@@ -269,7 +269,9 @@ public extension LuminareSettingsWindow {
                     window.animator().alphaValue = 1
                 }
 
-                relocatePreview(window)
+                DispatchQueue.main.async {
+                    self.relocatePreview(window)
+                }
             }
         }
     }
