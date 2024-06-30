@@ -56,7 +56,7 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         )
 
         let view = NSHostingView(
-            rootView: ContentView(tabs, didTabChange: didTabChange, togglePreview: togglePreview(show:))
+            rootView: ContentView(tabs, didTabChange: didTabChange, togglePreview: { self.togglePreview(show: $0) })
                 .environment(\.tintColor, LuminareSettingsWindow.tint)
                 .environmentObject(self)
         )
@@ -100,6 +100,7 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         DispatchQueue.main.async {
             self.center()
             self.alphaValue = 1
+            self.togglePreview(show: true, animate: false)
         }
     }
 
@@ -119,7 +120,7 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         }
     }
 
-    public func togglePreview(show: Bool) {
+    public func togglePreview(show: Bool, animate: Bool = true) {
         showPreview = show
 
         let frame = frame
@@ -132,13 +133,18 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
             self.disableAllPreviews()
         }
 
-        NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.3
-            animator().setFrame(newFrame, display: false)
-        } completionHandler: {
-            if show {
-                self.enableAllShownPreviews()
+        if animate {
+            NSAnimationContext.runAnimationGroup { ctx in
+                ctx.duration = 0.3
+                animator().setFrame(newFrame, display: false)
+            } completionHandler: {
+                if show {
+                    self.enableAllShownPreviews()
+                }
             }
+        } else {
+            setFrame(newFrame, display: false)
+            enableAllShownPreviews()
         }
     }
 }
