@@ -20,11 +20,11 @@ public struct LuminareButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(backgroundForState(isPressed: configuration.isPressed))
             .onHover { hover in
-                withAnimation(.easeOut(duration: 0.1)) {
+                withAnimation(LuminareSettingsWindow.fastAnimation) {
                     isHovering = hover
                 }
             }
-            .animation(.easeOut(duration: 0.1), value: isHovering)
+            .animation(LuminareSettingsWindow.fastAnimation, value: isHovering)
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
@@ -56,11 +56,11 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(destructiveBackgroundForState(isPressed: configuration.isPressed))
             .onHover { hover in
-                withAnimation(.easeOut(duration: 0.1)) {
+                withAnimation(LuminareSettingsWindow.fastAnimation) {
                     isHovering = hover
                 }
             }
-            .animation(.easeOut(duration: 0.1), value: isHovering)
+            .animation(LuminareSettingsWindow.fastAnimation, value: isHovering)
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
@@ -95,7 +95,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(backgroundForState(isPressed: configuration.isPressed))
             .onHover { hover in
-                withAnimation(.easeOut(duration: 0.1)) {
+                withAnimation(LuminareSettingsWindow.fastAnimation) {
                     isHovering = hover
                 }
             }
@@ -148,11 +148,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
             .clipShape(.rect(cornerRadius: cornerRadius))
             .onHover { hover in
-                withAnimation(.easeOut(duration: 0.1)) {
+                withAnimation(LuminareSettingsWindow.fastAnimation) {
                     isHovering = hover
                 }
             }
-            .animation(.easeOut(duration: 0.1), value: isHovering)
+            .animation(LuminareSettingsWindow.fastAnimation, value: isHovering)
             .frame(minHeight: extraCompact ? elementExtraMinHeight : elementMinHeight)
             .opacity(isEnabled ? 1 : 0.5)
     }

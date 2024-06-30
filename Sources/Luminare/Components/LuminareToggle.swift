@@ -45,7 +45,7 @@ public struct LuminareToggle: View {
 
             Spacer()
 
-            Toggle("", isOn: $value.animation(.smooth(duration: 0.3)))
+            Toggle("", isOn: $value.animation(LuminareSettingsWindow.animation))
                 .labelsHidden()
                 .controlSize(.small)
                 .toggleStyle(.switch)

@@ -91,7 +91,7 @@ struct ColorSaturationBrightnessView: View {
             )
         }
 
-        withAnimation(.smooth(duration: 0.2)) {
+        withAnimation(LuminareSettingsWindow.animation) {
             updateCirclePosition(viewSize)
         }
     }
@@ -140,6 +140,6 @@ struct ColorPickerCircle: View {
             .onHover { hovering in
                 isHovering = hovering
             }
-            .animation(.smooth(duration: 0.2), value: [isHovering, isDragging])
+            .animation(LuminareSettingsWindow.animation, value: [isHovering, isDragging])
     }
 }

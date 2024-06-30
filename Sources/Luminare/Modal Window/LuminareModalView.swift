@@ -77,7 +77,7 @@ struct LuminareModalView<Content>: View where Content: View {
         .opacity(isFullyOpen ? 1 : 0)
         .onAppear {
             DispatchQueue.main.async {
-                withAnimation(.smooth(duration: 0.25)) {
+                withAnimation(LuminareSettingsWindow.animation) {
                     self.isFullyOpen = true
                 }
                 floatingPanel?.center()

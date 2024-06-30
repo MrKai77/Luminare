@@ -70,7 +70,7 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
         .opacity(isFullyOpen ? 1 : 0)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                withAnimation(.smooth(duration: 0.25)) {
+                withAnimation(LuminareSettingsWindow.animation) {
                     self.isFullyOpen = true
                 }
                 floatingPanel?.center()

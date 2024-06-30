@@ -14,7 +14,6 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
 
     let options: [V]
     @Binding var selection: V
-//    @State var internalSelection: V
 
     let label: (V) -> LocalizedStringKey
 
@@ -24,7 +23,6 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
         self.title = title
         self.options = options
         self._selection = selection
-//        self._internalSelection = State(initialValue: selection.wrappedValue)
         self.label = label
     }
 
@@ -53,7 +51,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
         }
         .padding(.horizontal, horizontalPadding)
         .frame(height: height)
-        .animation(.smooth(duration: 0.25), value: selection)
+        .animation(LuminareSettingsWindow.animation, value: selection)
     }
 
     @ViewBuilder

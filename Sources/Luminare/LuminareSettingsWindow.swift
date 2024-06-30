@@ -11,6 +11,7 @@ import SwiftUI
 
 public class LuminareSettingsWindow: NSWindow, ObservableObject {
     @Published var showPreview: Bool = false
+    @Published var hoverPreviewButton: Bool = false
 
     @Published var showPreviewIcon: Image
     @Published var hidePreviewIcon: Image
@@ -25,6 +26,9 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
     static let sidebarWidth: CGFloat = 260
     static let mainViewWidth: CGFloat = 390
     static let previewWidth: CGFloat = 520
+
+    static var animation: Animation = .smooth(duration: 0.2)
+    static var fastAnimation: Animation = .easeOut(duration: 0.1)
 
     var closedSize: CGFloat {
         Self.sidebarWidth + Self.mainViewWidth
@@ -117,6 +121,25 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
             togglePreview(show: !showPreview)
         } else {
             super.mouseDown(with: event)
+        }
+    }
+
+    override public func mouseMoved(with event: NSEvent) {
+        let previewToggleButtonFrame = NSRect(
+            x: closedSize - 38,
+            y: frame.height - 38,
+            width: 26,
+            height: 26
+        )
+
+        if previewToggleButtonFrame.contains(event.locationInWindow) {
+            hoverPreviewButton = true
+        } else {
+            if hoverPreviewButton != false {
+                hoverPreviewButton = false
+            }
+
+            super.mouseMoved(with: event)
         }
     }
 

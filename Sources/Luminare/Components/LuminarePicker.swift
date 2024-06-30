@@ -84,7 +84,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         if let element = getElement(i: i, j: j) {
             Button {
                 guard !isDisabled(element) else { return }
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(LuminareSettingsWindow.animation) {
                     internalSelection = element
                 }
             } label: {

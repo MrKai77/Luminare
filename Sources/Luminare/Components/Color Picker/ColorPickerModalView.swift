@@ -79,7 +79,7 @@ struct ColorPickerModalView: View {
 
     // Set the color based on the source of change
     private func setColor(_ newColor: Color) {
-        withAnimation(.smooth(duration: 0.2)) {
+        withAnimation(LuminareSettingsWindow.fastAnimation) {
             color = newColor
         }
     }

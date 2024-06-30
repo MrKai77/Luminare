@@ -56,7 +56,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         LuminareSection(header, disablePadding: true) {
             HStack(spacing: 2) {
                 Button(addText) {
-                    withAnimation(.smooth(duration: 0.25)) {
+                    withAnimation(LuminareSettingsWindow.animation) {
                         addAction()
                     }
                 }
@@ -64,7 +64,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                 Button(removeText) {
                     if !selection.isEmpty {
                         canRefreshSelection = false
-                        withAnimation(.smooth(duration: 0.25)) {
+                        withAnimation(LuminareSettingsWindow.animation) {
                             items.removeAll(where: { selection.contains($0) })
                         }
 
@@ -106,7 +106,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                     }
                     // .onDelete(perform: deleteItems) // deleteItems crashes Loop, need to be investigated further
                     .onMove { indices, newOffset in
-                        withAnimation(.smooth(duration: 0.25)) {
+                        withAnimation(LuminareSettingsWindow.animation) {
                             items.move(fromOffsets: indices, toOffset: newOffset)
                         }
                     }
@@ -123,7 +123,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             }
         }
         .onChange(of: clickedOutsideFlag) { _ in
-            withAnimation(.smooth(duration: 0.25)) {
+            withAnimation(LuminareSettingsWindow.animation) {
                 selection = []
             }
         }
@@ -171,7 +171,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             let kVK_Escape: CGKeyCode = 0x35
 
             if event.keyCode == kVK_Escape {
-                withAnimation(.smooth(duration: 0.25)) {
+                withAnimation(LuminareSettingsWindow.animation) {
                     selection = []
                 }
                 return nil
@@ -240,7 +240,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             .onHover { hover in
                 guard !currentlyScrolling else { return }
 
-                withAnimation(.easeOut(duration: 0.1)) {
+                withAnimation(LuminareSettingsWindow.fastAnimation) {
                     isHovering = hover
                 }
             }
@@ -266,7 +266,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             .onChange(of: selection) { _ in
                 guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
-                    withAnimation(.easeOut(duration: 0.2)) {
+                    withAnimation(LuminareSettingsWindow.animation) {
                         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
                         lineWidth = selection.contains(item) ? maxLineWidth : .zero
                     }
@@ -274,7 +274,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             }
             .onChange(of: currentlyScrolling) { _ in
                 if currentlyScrolling {
-                    withAnimation(.easeOut(duration: 0.1)) {
+                    withAnimation(LuminareSettingsWindow.fastAnimation) {
                         isHovering = false
                     }
                 }

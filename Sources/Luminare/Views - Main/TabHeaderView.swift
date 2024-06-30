@@ -34,8 +34,8 @@ struct TabHeaderView: View {
                         settingsWindow.showPreviewIcon
                     }
                 }
-                .foregroundStyle(.secondary)
-                .animation(.smooth(duration: 0.25), value: settingsWindow.showPreview)
+                .foregroundStyle(settingsWindow.hoverPreviewButton ? .primary : .secondary)
+                .animation(LuminareSettingsWindow.fastAnimation, value: [settingsWindow.showPreview, settingsWindow.hoverPreviewButton])
             }
             .padding(.horizontal, 10)
             .padding(.trailing, 5)

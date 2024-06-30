@@ -43,7 +43,7 @@ struct ContentView: View {
                     TabHeaderView($activeTab)
                     Divider()
 
-                    ScrollView(.vertical) {
+                    ScrollView(.vertical, showsIndicators: false) {
                         LazyVStack(spacing: sectionSpacing) {
                             activeTab.view
                                 .environment(\.clickedOutsideFlag, clickedOutsideFlag)
@@ -78,14 +78,13 @@ struct ContentView: View {
                             stoppedScrolling()
                         }
                     }
-                    .scrollIndicators(.never)
                     .clipped()
                 }
                 .frame(width: LuminareSettingsWindow.mainViewWidth)
 
                 Divider()
                     .opacity(settingsWindow.showPreview ? 1 : 0)
-                    .animation(.easeOut(duration: 0.1).delay(settingsWindow.showPreview ? 0 : 0.25), value: settingsWindow.showPreview)
+                    .animation(LuminareSettingsWindow.fastAnimation.delay(settingsWindow.showPreview ? 0 : 0.25), value: settingsWindow.showPreview)
             }
             .background(VisualEffectView(material: .menu, blendingMode: .behindWindow))
 

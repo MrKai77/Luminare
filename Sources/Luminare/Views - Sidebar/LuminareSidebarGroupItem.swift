@@ -49,7 +49,7 @@ struct LuminareSidebarGroupItem: View {
     }
 
     func checkIfSelfIsActiveTab() {
-        withAnimation(.easeOut(duration: 0.1)) {
+        withAnimation(LuminareSettingsWindow.fastAnimation) {
             isActive = activeTab == tab
         }
     }
@@ -73,7 +73,7 @@ struct SidebarButtonStyle: ButtonStyle {
             .onHover { hover in
                 isHovering = hover
             }
-            .animation(.easeOut(duration: 0.1), value: [isHovering, isActive, configuration.isPressed])
+            .animation(LuminareSettingsWindow.fastAnimation, value: [isHovering, isActive, configuration.isPressed])
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }
