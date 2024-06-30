@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct TabHeaderView: View {
+    @EnvironmentObject var settingsWindow: LuminareSettingsWindow
     @Binding var activeTab: SettingsTab
-    @Binding var showPreview: Bool
 
-    init(_ activeTab: Binding<SettingsTab>, _ showPreview: Binding<Bool>) {
+    init(_ activeTab: Binding<SettingsTab>) {
         self._activeTab = activeTab
-        self._showPreview = showPreview
     }
 
     var body: some View {
@@ -28,15 +27,18 @@ struct TabHeaderView: View {
 
                 Spacer()
 
-                Button("TOGGLE") {
-                    withAnimation(.smooth(duration: 0.25)) {
-                        showPreview.toggle()
+                Group {
+                    if settingsWindow.showPreview {
+                        settingsWindow.hidePreviewIcon
+                    } else {
+                        settingsWindow.showPreviewIcon
                     }
                 }
-                .buttonStyle(.plain)
-                .contentShape(.rect)
+                .foregroundStyle(.secondary)
+                .animation(.smooth(duration: 0.25), value: settingsWindow.showPreview)
             }
             .padding(.horizontal, 10)
+            .padding(.trailing, 5)
 
             Spacer()
         }

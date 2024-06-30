@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var settingsWindow: LuminareSettingsWindow
     @Environment(\.tintColor) var tintColor
 
     let mainViewSectionOuterPadding: CGFloat = 12
@@ -17,8 +18,6 @@ struct ContentView: View {
     @State var clickedOutsideFlag: Bool = false
     let groups: [SettingsTabGroup]
     let didTabChange: (SettingsTab) -> ()
-
-    @State private var showPreview: Bool = false
     let togglePreview: (Bool) -> ()
 
     @State var scrollTimer: Timer?
@@ -41,7 +40,7 @@ struct ContentView: View {
                 Divider()
 
                 VStack(spacing: 0) {
-                    TabHeaderView($activeTab, $showPreview)
+                    TabHeaderView($activeTab)
                     Divider()
 
                     ScrollView(.vertical) {
@@ -85,8 +84,8 @@ struct ContentView: View {
                 .frame(width: LuminareSettingsWindow.mainViewWidth)
 
                 Divider()
-                    .opacity(showPreview ? 1 : 0)
-                    .animation(.easeOut(duration: 0.1).delay(showPreview ? 0 : 0.25), value: showPreview)
+                    .opacity(settingsWindow.showPreview ? 1 : 0)
+                    .animation(.easeOut(duration: 0.1).delay(settingsWindow.showPreview ? 0 : 0.25), value: settingsWindow.showPreview)
             }
             .background(VisualEffectView(material: .menu, blendingMode: .behindWindow))
 
@@ -96,7 +95,6 @@ struct ContentView: View {
         .frame(minHeight: 580)
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
-        .onChange(of: showPreview, perform: togglePreview)
     }
 
     func stoppedScrolling() {

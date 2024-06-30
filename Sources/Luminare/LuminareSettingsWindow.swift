@@ -9,7 +9,12 @@
 
 import SwiftUI
 
-public class LuminareSettingsWindow: NSWindow {
+public class LuminareSettingsWindow: NSWindow, ObservableObject {
+    @Published var showPreview: Bool = false
+
+    @Published var showPreviewIcon: Image
+    @Published var hidePreviewIcon: Image
+
     static var identifier = NSUserInterfaceItemIdentifier("LuminareSettingsWindow")
     public var tabs: [SettingsTabGroup]
     static var tint: () -> Color = { .accentColor }
@@ -21,25 +26,27 @@ public class LuminareSettingsWindow: NSWindow {
     static let mainViewWidth: CGFloat = 390
     static let previewWidth: CGFloat = 520
 
-    public var previewBounds: NSRect? {
-        guard let window = windowController?.window else { return nil }
-
-        return .init(
-            x: window.frame.maxX - Self.previewWidth,
-            y: window.frame.minY,
-            width: Self.previewWidth,
-            height: window.frame.height
-        )
+    var closedSize: CGFloat {
+        Self.sidebarWidth + Self.mainViewWidth
     }
+    var openSize: CGFloat {
+        Self.sidebarWidth + Self.mainViewWidth + Self.previewWidth
+    }
+
+    var shownPreviews: Set<NSUserInterfaceItemIdentifier> = []
 
     public init(
         _ tabs: [SettingsTabGroup],
         tint: @escaping () -> Color = { .accentColor },
-        didTabChange: @escaping (SettingsTab) -> ()
+        didTabChange: @escaping (SettingsTab) -> (),
+        showPreviewIcon: Image,
+        hidePreviewIcon: Image
     ) {
         self.tabs = tabs
         Self.tint = tint
         self.didTabChange = didTabChange
+        self.showPreviewIcon = showPreviewIcon
+        self.hidePreviewIcon = hidePreviewIcon
 
         super.init(
             contentRect: .zero,
@@ -51,18 +58,20 @@ public class LuminareSettingsWindow: NSWindow {
         let view = NSHostingView(
             rootView: ContentView(tabs, didTabChange: didTabChange, togglePreview: togglePreview(show:))
                 .environment(\.tintColor, LuminareSettingsWindow.tint)
+                .environmentObject(self)
         )
 
         contentView = view
         contentView?.wantsLayer = true
+        setContentSize(view.bounds.size)
 
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
 
-//        let customToolbar = NSToolbar()
-//        customToolbar.showsBaselineSeparator = false
-//        toolbar = customToolbar
+        let customToolbar = NSToolbar()
+        customToolbar.showsBaselineSeparator = false
+        toolbar = customToolbar
 
         // Private API
         setBackgroundBlur(radius: 20)
@@ -82,15 +91,33 @@ public class LuminareSettingsWindow: NSWindow {
     }
 
     public func show() {
-        center()
         makeKeyAndOrderFront(self)
         orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
+
+        DispatchQueue.main.async {
+            self.center()
+        }
+    }
+
+    // We use this to manually detect the preview toggle button presses, as the invisible titlebar blocks all clicks.
+    override public func mouseUp(with event: NSEvent) {
+        let previewToggleButtonFrame = NSRect(
+            x: closedSize - 38,
+            y: frame.height - 38,
+            width: 26,
+            height: 26
+        )
+
+        if previewToggleButtonFrame.contains(event.locationInWindow) {
+            togglePreview(show: !showPreview)
+        } else {
+            super.mouseDown(with: event)
+        }
     }
 
     public func togglePreview(show: Bool) {
-        let closedSize = Self.sidebarWidth + Self.mainViewWidth
-        let openSize = Self.sidebarWidth + Self.mainViewWidth + Self.previewWidth
+        showPreview = show
 
         let frame = frame
         let newFrame = CGRect(
@@ -98,32 +125,35 @@ public class LuminareSettingsWindow: NSWindow {
             size: .init(width: show ? openSize : closedSize, height: frame.height)
         )
 
+        if !show {
+            self.disableAllPreviews()
+        }
+
         NSAnimationContext.runAnimationGroup { ctx in
             ctx.duration = 0.3
             animator().setFrame(newFrame, display: false)
+        } completionHandler: {
+            if show {
+                self.enableAllShownPreviews()
+            }
         }
-    }
-
-    public func deinitWindow() {
-        if let windowDidMoveObserver {
-            NotificationCenter.default.removeObserver(windowDidMoveObserver)
-        }
-        windowDidMoveObserver = nil
-
-        close()
     }
 }
 
 // MARK: - Previews
 
 public extension LuminareSettingsWindow {
+    var previewBounds: NSRect {
+        .init(
+            x: frame.maxX - Self.previewWidth,
+            y: frame.minY,
+            width: Self.previewWidth,
+            height: frame.height
+        )
+    }
+
     func addPreview(content: some View, identifier: String, fullSize: Bool = false) {
-        guard
-            let window = windowController?.window,
-            let bounds = previewBounds
-        else {
-            return
-        }
+        let bounds = previewBounds
 
         let panel = NSPanel(
             contentRect: .zero,
@@ -144,13 +174,50 @@ public extension LuminareSettingsWindow {
         panel.identifier = .init("LuminareSettingsPreview\(identifier)")
 
         relocatePreview(panel)
-        window.addChildWindow(panel, ordered: .above)
+        addChildWindow(panel, ordered: .above)
+    }
+
+    func showPreview(identifier: String) {
+        guard
+            let windows = childWindows?.compactMap({
+                $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
+            }),
+            !windows.isEmpty
+        else {
+            return
+        }
+
+        for window in windows {
+            if frame.width == openSize {
+                NSAnimationContext.runAnimationGroup { ctx in
+                    ctx.duration = 0.2
+                    window.animator().alphaValue = 1
+                }
+            }
+
+            shownPreviews.insert(window.identifier!)
+        }
+    }
+
+    func hidePreview(identifier: String) {
+        guard
+            let windows = childWindows?.filter({ $0.identifier?.rawValue.contains(identifier) ?? false }),
+            !windows.isEmpty
+        else {
+            return
+        }
+
+        for window in windows {
+            NSAnimationContext.runAnimationGroup { ctx in
+                ctx.duration = 0.2
+                window.animator().alphaValue = 0
+            }
+            shownPreviews.remove(window.identifier!)
+        }
     }
 
     private func relocatePreview(_ panel: NSWindow) {
-        guard let bounds = previewBounds else {
-            return
-        }
+        let bounds = previewBounds
         let panelFrame = panel.frame
 
         let newSize = CGSize(
@@ -172,38 +239,28 @@ public extension LuminareSettingsWindow {
         )
     }
 
-    func showPreview(identifier: String) {
-        guard
-            let windows = windowController?.window?.childWindows?.compactMap({
-                $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
-            }),
-            !windows.isEmpty
-        else {
-            return
-        }
-
-        for window in windows {
+    private func disableAllPreviews() {
+        guard let childWindows else { return }
+        for window in childWindows {
             NSAnimationContext.runAnimationGroup { ctx in
-                ctx.duration = 0.3
-                window.animator().alphaValue = 1
+                ctx.duration = 0.2
+                window.animator().alphaValue = 0
             }
         }
     }
 
-    func hidePreview(identifier: String) {
-        guard
-            let windows = windowController?.window?.childWindows?.compactMap({
-                $0.identifier?.rawValue.contains(identifier) ?? false ? $0 : nil
-            }),
-            !windows.isEmpty
-        else {
-            return
-        }
+    private func enableAllShownPreviews() {
+        for identifier in shownPreviews {
+            let windows = childWindows?.filter { $0.identifier?.rawValue.contains(identifier.rawValue) ?? false }
+            guard let windows else { return }
 
-        for window in windows {
-            NSAnimationContext.runAnimationGroup { ctx in
-                ctx.duration = 0.2
-                window.animator().alphaValue = 0
+            for window in windows {
+                NSAnimationContext.runAnimationGroup { ctx in
+                    ctx.duration = 0.2
+                    window.animator().alphaValue = 1
+                }
+
+                relocatePreview(window)
             }
         }
     }
