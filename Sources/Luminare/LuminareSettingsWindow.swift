@@ -77,6 +77,8 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         setBackgroundBlur(radius: 20)
         identifier = Self.identifier
 
+        alphaValue = 0
+
         self.windowDidMoveObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.didMoveNotification,
             object: nil,
@@ -97,6 +99,7 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
 
         DispatchQueue.main.async {
             self.center()
+            self.alphaValue = 1
         }
     }
 
