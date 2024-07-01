@@ -8,7 +8,7 @@
 import SwiftUI
 
 // Initialize this window simply by initializing it.
-public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View {
+public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject where Content: View {
     public init(view: () -> Content) {
         super.init(
             contentRect: .zero,
@@ -17,9 +17,11 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
             defer: true
         )
 
-        let hostingView = NSHostingView(rootView: LuminareTrafficLightedWindowView(content: view())
-            .environment(\.floatingPanel, self)
-            .environment(\.tintColor, LuminareSettingsWindow.tint))
+        let hostingView = NSHostingView(
+            rootView: LuminareTrafficLightedWindowView(content: view())
+                .environment(\.tintColor, LuminareSettingsWindow.tint)
+                .environmentObject(self)
+        )
 
         backgroundColor = .clear
         contentView = hostingView
@@ -28,6 +30,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
         isOpaque = false
         hasShadow = true
         titleVisibility = .hidden
+        alphaValue = 0
 
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
@@ -38,9 +41,14 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow where Content: View
         toolbar = customToolbar
 
         center()
+    }
+
+    override public func orderFrontRegardless() {
+        super.orderFrontRegardless()
 
         DispatchQueue.main.async {
-            self.makeKeyAndOrderFront(nil)
+            self.center()
+            self.alphaValue = 1
         }
     }
 

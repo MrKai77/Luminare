@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class LuminareModal<Content>: NSWindow where Content: View {
+class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     @Binding var isPresented: Bool
     let closeOnDefocus: Bool
     let compactMode: Bool
@@ -29,9 +29,11 @@ class LuminareModal<Content>: NSWindow where Content: View {
             defer: false
         )
 
-        let hostingView = NSHostingView(rootView: LuminareModalView(view(), compactMode: compactMode)
-            .environment(\.floatingPanel, self)
-            .environment(\.tintColor, LuminareSettingsWindow.tint))
+        let hostingView = NSHostingView(
+            rootView: LuminareModalView(view(), compactMode: compactMode)
+                .environment(\.tintColor, LuminareSettingsWindow.tint)
+                .environmentObject(self)
+        )
 
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating

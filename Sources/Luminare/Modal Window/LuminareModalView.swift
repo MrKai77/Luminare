@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LuminareModalView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
-    @Environment(\.floatingPanel) var floatingPanel
+    @EnvironmentObject var floatingPanel: LuminareModal<Content>
 
     @State var isFullyOpen: Bool = false
 
@@ -80,7 +80,7 @@ struct LuminareModalView<Content>: View where Content: View {
                 withAnimation(LuminareSettingsWindow.animation) {
                     self.isFullyOpen = true
                 }
-                floatingPanel?.center()
+                floatingPanel.center()
             }
         }
     }

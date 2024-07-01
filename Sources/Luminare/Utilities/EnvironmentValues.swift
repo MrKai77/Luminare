@@ -35,19 +35,6 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - FloatingPanel
-
-struct FloatingPanelKey: EnvironmentKey {
-    static let defaultValue: NSWindow? = nil
-}
-
-extension EnvironmentValues {
-    var floatingPanel: NSWindow? {
-        get { self[FloatingPanelKey.self] }
-        set { self[FloatingPanelKey.self] = newValue }
-    }
-}
-
 // MARK: - ClickedOutside
 
 struct ClickedOutsideFlagKey: EnvironmentKey {

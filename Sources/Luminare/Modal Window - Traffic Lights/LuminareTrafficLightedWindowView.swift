@@ -9,9 +9,7 @@ import SwiftUI
 
 struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
-    @Environment(\.floatingPanel) var floatingPanel
-
-    @State var isFullyOpen: Bool = false
+    @EnvironmentObject var floatingPanel: LuminareTrafficLightedWindow<Content>
 
     let sectionSpacing: CGFloat = 12
     let cornerRadius: CGFloat = 12
@@ -64,17 +62,5 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
         .ignoresSafeArea()
-
-        .scaleEffect(isFullyOpen ? 1 : 0.1)
-        .blur(radius: isFullyOpen ? 0 : 10)
-        .opacity(isFullyOpen ? 1 : 0)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                withAnimation(LuminareSettingsWindow.animation) {
-                    self.isFullyOpen = true
-                }
-                floatingPanel?.center()
-            }
-        }
     }
 }
