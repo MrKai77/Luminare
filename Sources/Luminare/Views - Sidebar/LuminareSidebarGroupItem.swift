@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct LuminareSidebarGroupItem: View {
+    @Environment(\.tintColor) var tintColor
+
     @Binding var activeTab: SettingsTab
     let tab: SettingsTab
 
@@ -26,9 +28,24 @@ struct LuminareSidebarGroupItem: View {
             activeTab = tab
             didTabChange(tab)
         } label: {
-            HStack {
+            HStack(spacing: 8) {
                 tab.iconView()
-                Text(tab.title)
+
+                HStack(spacing: 0) {
+                    Text(tab.title)
+
+                    if let showIndicator = tab.showIndicator, showIndicator() {
+                        VStack {
+                            Circle()
+                                .foregroundStyle(tintColor())
+                                .frame(width: 4, height: 4)
+                                .padding(.leading, 4)
+
+                            Spacer()
+                        }
+                    }
+                }
+                .fixedSize()
 
                 Spacer()
             }

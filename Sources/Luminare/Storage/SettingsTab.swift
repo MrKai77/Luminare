@@ -16,15 +16,17 @@ public struct SettingsTab: Identifiable, Equatable {
 
     public let title: LocalizedStringKey
     public let icon: Image
-    @ViewBuilder public let view: AnyView
+    public let view: AnyView
+    public let showIndicator: (() -> Bool)?
 
-    public init(_ title: LocalizedStringKey, _ icon: Image, _ view: some View) {
+    public init(_ title: LocalizedStringKey, _ icon: Image, _ view: some View, showIndicator: (() -> Bool)? = nil) {
         self.title = title
         self.icon = icon
         self.view = AnyView(view)
+        self.showIndicator = showIndicator
     }
 
-    @ViewBuilder func iconView() -> some View {
+    func iconView() -> some View {
         Rectangle()
             .opacity(0)
             .overlay {
