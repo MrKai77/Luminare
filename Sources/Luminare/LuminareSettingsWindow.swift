@@ -82,6 +82,7 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         identifier = Self.identifier
 
         alphaValue = 0
+        togglePreview(show: true, animate: false)
 
         self.windowDidMoveObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.didMoveNotification,
@@ -103,7 +104,6 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
 
         DispatchQueue.main.async {
             self.center()
-            self.togglePreview(show: true, animate: false)
             self.alphaValue = 1
         }
     }
