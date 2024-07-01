@@ -105,6 +105,10 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         DispatchQueue.main.async {
             self.center()
             self.alphaValue = 1
+
+            if self.showPreview {
+                self.enableAllShownPreviews()
+            }
         }
     }
 
