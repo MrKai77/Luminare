@@ -15,6 +15,7 @@ struct LuminareSidebarGroupItem: View {
 
     @State private var isHovering: Bool = false
     @State private var isActive: Bool = false
+    @State private var showIndicator: Bool = false
     let didTabChange: (SettingsTab) -> ()
 
     init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> ()) {
@@ -34,7 +35,7 @@ struct LuminareSidebarGroupItem: View {
                 HStack(spacing: 0) {
                     Text(tab.title)
 
-                    if let showIndicator = tab.showIndicator, showIndicator() {
+                    if showIndicator {
                         VStack {
                             Circle()
                                 .foregroundStyle(tintColor())
@@ -62,6 +63,11 @@ struct LuminareSidebarGroupItem: View {
         }
         .onChange(of: activeTab) { _ in
             checkIfSelfIsActiveTab()
+        }
+        .onChange(of: tab.showIndicator?() ?? false) { newValue in
+            withAnimation(LuminareSettingsWindow.fastAnimation) {
+                showIndicator = newValue
+            }
         }
     }
 
