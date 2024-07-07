@@ -12,19 +12,25 @@ public struct LuminareColorPicker: View {
 
     @State private var text: String
     @State private var showColorPicker = false
-    let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+    var colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+    var formatStrategy: StringFormatStyle.HexStrategy = .uppercasedWithWell
 
-    public init(color: Binding<Color>, colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)) {
+    public init(
+        color: Binding<Color>, colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey),
+        formatStrategy: StringFormatStyle.HexStrategy = .uppercasedWithWell
+    ) {
         self._currentColor = color
         self._text = State(initialValue: color.wrappedValue.toHex())
         self.colorNames = colorNames
+        self.formatStrategy = formatStrategy
     }
 
     public var body: some View {
         HStack {
             LuminareTextField(
-                $text,
-                placeHolder: "Hex Color",
+                "Hex Color",
+                value: .init($text),
+                format: StringFormatStyle(parseStrategy: .hex(formatStrategy)),
                 onSubmit: {
                     if let newColor = Color(hex: text) {
                         currentColor = newColor

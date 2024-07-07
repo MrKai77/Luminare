@@ -7,31 +7,6 @@
 
 import SwiftUI
 
-public struct StringFormatStyle: ParseableFormatStyle {
-    public var parseStrategy: Strategy = .identity
-    
-    public typealias FormatInput = String
-    public typealias FormatOutput = String
-    
-    public enum Strategy: ParseStrategy {
-        public typealias ParseInput = String
-        public typealias ParseOutput = String
-        
-        case identity
-        
-        public func parse(_ value: String) throws -> String {
-            switch self {
-            case .identity:
-                value
-            }
-        }
-    }
-    
-    public func format(_ value: String) -> String {
-        value
-    }
-}
-
 public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
     let elementMinHeight: CGFloat = 34
     let horizontalPadding: CGFloat = 8
@@ -49,9 +24,9 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
         self.placeholder = placeholder
         self.onSubmit = onSubmit
     }
-
-    public init(_ placeholder: LocalizedStringKey, text: Binding<String?>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
-        self.init(placeholder, value: text, format: StringFormatStyle(), onSubmit: onSubmit)
+    
+    public init(_ placeholder: LocalizedStringKey, text: Binding<String>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
+        self.init(placeholder, value: .init(text), format: StringFormatStyle(), onSubmit: onSubmit)
     }
 
     public var body: some View {
