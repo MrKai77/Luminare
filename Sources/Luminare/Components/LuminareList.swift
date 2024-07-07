@@ -51,6 +51,55 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         self.addText = addText
         self.removeText = removeText
     }
+    
+    public init(
+        _ header: LocalizedStringKey? = nil,
+        addText: LocalizedStringKey,
+        removeText: LocalizedStringKey,
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>,
+        id: KeyPath<V, ID>,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder emptyView: @escaping () -> ContentB,
+        addAction: @escaping () -> ()
+    ) {
+        self.init(
+            header,
+            items: items,
+            selection: selection, 
+            addAction: addAction,
+            content: content,
+            emptyView: emptyView,
+            id: id,
+            addText: addText,
+            removeText: removeText
+        )
+    }
+    
+    public init(
+        _ header: LocalizedStringKey? = nil,
+        addText: LocalizedStringKey,
+        removeText: LocalizedStringKey,
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>,
+        id: KeyPath<V, ID>,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        addAction: @escaping () -> ()
+    ) where ContentB == EmptyView {
+        self.init(
+            header,
+            addText: addText,
+            removeText: removeText,
+            items: items,
+            selection: selection,
+            id: id,
+            content: content,
+            emptyView: {
+                EmptyView()
+            },
+            addAction: addAction
+        )
+    }
 
     public var body: some View {
         LuminareSection(header, disablePadding: true) {
