@@ -7,24 +7,55 @@
 
 import SwiftUI
 
-public struct LuminareTextField: View {
+public struct StringFormatStyle: ParseableFormatStyle {
+    public var parseStrategy: Strategy = .identity
+    
+    public typealias FormatInput = String
+    public typealias FormatOutput = String
+    
+    public enum Strategy: ParseStrategy {
+        public typealias ParseInput = String
+        public typealias ParseOutput = String
+        
+        case identity
+        
+        public func parse(_ value: String) throws -> String {
+            switch self {
+            case .identity:
+                value
+            }
+        }
+    }
+    
+    public func format(_ value: String) -> String {
+        value
+    }
+}
+
+public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
     let elementMinHeight: CGFloat = 34
     let horizontalPadding: CGFloat = 8
 
-    @Binding var text: String
-    let placeHolder: LocalizedStringKey
+    @Binding var value: F.FormatInput?
+    var format: F
+    let placeholder: LocalizedStringKey
     let onSubmit: (() -> ())?
 
     @State var monitor: Any?
-
-    public init(_ text: Binding<String>, placeHolder: LocalizedStringKey, onSubmit: (() -> ())? = nil) {
-        self._text = text
-        self.placeHolder = placeHolder
+    
+    public init(_ placeholder: LocalizedStringKey, value: Binding<F.FormatInput?>, format: F, onSubmit: (() -> ())? = nil) {
+        self._value = value
+        self.format = format
+        self.placeholder = placeholder
         self.onSubmit = onSubmit
     }
 
+    public init(_ placeholder: LocalizedStringKey, text: Binding<String?>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
+        self.init(placeholder, value: text, format: StringFormatStyle(), onSubmit: onSubmit)
+    }
+
     public var body: some View {
-        TextField(placeHolder, text: $text)
+        TextField(placeholder, value: $value, format: format)
             .padding(.horizontal, horizontalPadding)
             .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
