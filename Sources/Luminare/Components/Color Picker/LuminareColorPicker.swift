@@ -12,8 +12,8 @@ public struct LuminareColorPicker: View {
 
     @State private var text: String
     @State private var showColorPicker = false
-    var colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
-    var formatStrategy: StringFormatStyle.HexStrategy = .uppercasedWithWell
+    let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+    let formatStrategy: StringFormatStyle.HexStrategy
 
     public init(
         color: Binding<Color>, colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey),
@@ -52,7 +52,7 @@ public struct LuminareColorPicker: View {
                     .modifier(LuminareBordered())
             }
             .buttonStyle(PlainButtonStyle())
-            .luminareModal(isPresented: $showColorPicker, closeOnDefocus: true, compactMode: true) {
+            .luminareModal(isPresented: $showColorPicker, closeOnDefocus: true, isCompact: true) {
                 ColorPickerModalView(color: $currentColor, hexColor: $text, colorNames: colorNames)
                     .frame(width: 280)
             }

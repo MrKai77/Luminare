@@ -13,8 +13,8 @@ struct LuminareModalView<Content>: View where Content: View {
 
     @State var isFullyOpen: Bool = false
 
-    var sectionSpacing: CGFloat
-    var outerPadding: CGFloat
+    let sectionSpacing: CGFloat
+    let outerPadding: CGFloat
     @ViewBuilder var content: () -> Content
 
     init(isCompact: Bool, @ViewBuilder content: @escaping () -> Content) {
@@ -59,8 +59,7 @@ struct LuminareModalView<Content>: View where Content: View {
                 GeometryReader { proxy in
                     Color.clear
                         .onChange(of: proxy.size) { _ in
-                            guard let modalWindow = floatingPanel as? LuminareModal<Content> else { return }
-                            modalWindow.updateShadow(for: 0.5)
+                            floatingPanel.updateShadow(for: 0.5)
                         }
                 }
             }
