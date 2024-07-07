@@ -13,21 +13,20 @@ struct LuminareModalView<Content>: View where Content: View {
 
     @State var isFullyOpen: Bool = false
 
-    let sectionSpacing: CGFloat
-    let outerPadding: CGFloat
-    let content: Content
+    var sectionSpacing: CGFloat
+    var outerPadding: CGFloat
+    @ViewBuilder var content: () -> Content
 
-    init(_ content: Content, compactMode: Bool) {
+    init(isCompact: Bool, @ViewBuilder content: @escaping () -> Content) {
+        self.sectionSpacing = isCompact ? 8 : 16
+        self.outerPadding = isCompact ? 8 : 16
         self.content = content
-
-        self.sectionSpacing = compactMode ? 8 : 16
-        self.outerPadding = compactMode ? 8 : 16
     }
 
     var body: some View {
         VStack {
             VStack(spacing: sectionSpacing) {
-                content
+                content()
             }
             .padding(outerPadding)
             .fixedSize()
