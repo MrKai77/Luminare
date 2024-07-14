@@ -45,6 +45,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         hasShadow = true
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
+        animationBehavior = .documentWindow
 
         center()
     }
@@ -128,13 +129,15 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
 
     private func present() {
         guard panel == nil else { return }
+        panel = LuminareModal(
+            view: view,
+            isPresented: $isPresented,
+            closeOnDefocus: closeOnDefocus,
+            compactMode: compactMode
+        )
+
         DispatchQueue.main.async {
-            panel = LuminareModal(
-                view: view,
-                isPresented: $isPresented,
-                closeOnDefocus: closeOnDefocus,
-                compactMode: compactMode
-            )
+            panel?.center()
             panel?.orderFrontRegardless()
             panel?.makeKey()
         }

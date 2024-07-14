@@ -11,8 +11,6 @@ struct LuminareModalView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
     @EnvironmentObject var floatingPanel: LuminareModal<Content>
 
-    @State var isFullyOpen: Bool = false
-
     let sectionSpacing: CGFloat
     let outerPadding: CGFloat
     let content: Content
@@ -71,17 +69,5 @@ struct LuminareModalView<Content>: View where Content: View {
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
         .ignoresSafeArea()
-
-        .scaleEffect(isFullyOpen ? 1 : 0.1)
-        .blur(radius: isFullyOpen ? 0 : 10)
-        .opacity(isFullyOpen ? 1 : 0)
-        .onAppear {
-            DispatchQueue.main.async {
-                withAnimation(LuminareSettingsWindow.animation) {
-                    self.isFullyOpen = true
-                }
-                floatingPanel.center()
-            }
-        }
     }
 }
