@@ -10,7 +10,11 @@
 import SwiftUI
 
 public class LuminareSettingsWindow: NSWindow, ObservableObject {
-    @Published var showPreview: Bool = false
+    @Published var showPreview: Bool {
+        didSet {
+            UserDefaults.standard.set(showPreview, forKey: "LuminareSettingsWindow.showPreview")
+        }
+    }
     @Published var hoverPreviewButton: Bool = false
 
     @Published var showPreviewIcon: Image
@@ -52,6 +56,8 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         self.showPreviewIcon = showPreviewIcon
         self.hidePreviewIcon = hidePreviewIcon
 
+        showPreview = UserDefaults.standard.bool(forKey: "LuminareSettingsWindow.showPreview") ?? true
+
         super.init(
             contentRect: .zero,
             styleMask: [.closable, .titled, .fullSizeContentView],
@@ -82,7 +88,7 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
         identifier = Self.identifier
 
         alphaValue = 0
-        togglePreview(show: true, animate: false)
+        togglePreview(show: showPreview, animate: false)
 
         self.windowDidMoveObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.didMoveNotification,
