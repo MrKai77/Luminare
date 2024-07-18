@@ -183,9 +183,9 @@ public class LuminareSettingsWindow: NSWindow, ObservableObject {
 public extension LuminareSettingsWindow {
     var previewBounds: NSRect {
         .init(
-            x: frame.maxX - Self.previewWidth,
+            x: frame.maxX - Self.previewWidth + 2,
             y: frame.minY,
-            width: Self.previewWidth,
+            width: Self.previewWidth - 2,
             height: frame.height
         )
     }
