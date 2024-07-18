@@ -41,6 +41,7 @@ struct LuminareSidebarGroupItem: View {
                                 .foregroundStyle(tintColor())
                                 .frame(width: 4, height: 4)
                                 .padding(.leading, 4)
+                                .shadow(color: tintColor(), radius: 4)
 
                             Spacer()
                         }
@@ -60,6 +61,7 @@ struct LuminareSidebarGroupItem: View {
         }
         .onAppear {
             checkIfSelfIsActiveTab()
+            showIndicator = tab.showIndicator?() ?? false
         }
         .onChange(of: activeTab) { _ in
             checkIfSelfIsActiveTab()
