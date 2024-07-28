@@ -90,10 +90,10 @@ struct ContentView: View {
 
             Spacer(minLength: 0)
         }
-        .ignoresSafeArea()
         .frame(minHeight: 580)
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
+        .ignoresSafeArea()
     }
 
     func stoppedScrolling() {
