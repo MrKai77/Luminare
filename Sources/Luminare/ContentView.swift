@@ -20,10 +20,6 @@ struct ContentView: View {
     let didTabChange: (SettingsTab) -> ()
     let togglePreview: (Bool) -> ()
 
-    @State var scrollTimer: Timer?
-    @State var scrollPosition: CGFloat = 0
-    @State var isScrolling: Bool = false
-
     init(_ groups: [SettingsTabGroup], didTabChange: @escaping (SettingsTab) -> (), togglePreview: @escaping (Bool) -> ()) {
         self.groups = groups
         self.activeTab = groups.first!.tabs.first!
@@ -47,7 +43,6 @@ struct ContentView: View {
                         LazyVStack(spacing: sectionSpacing) {
                             activeTab.view
                                 .environment(\.clickedOutsideFlag, clickedOutsideFlag)
-                                .environment(\.currentlyScrolling, isScrolling)
                         }
                         .padding(mainViewSectionOuterPadding)
                         .background {
@@ -62,21 +57,6 @@ struct ContentView: View {
                                 Color.clear.preference(key: ScrollOffsetPreferenceKey.self, value: inner.frame(in: .global).origin.y)
                             }
                         )
-                        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                            let lastPosition = scrollPosition
-                            scrollPosition = value
-                            isScrolling = true
-
-                            scrollTimer?.invalidate()
-                            scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false) { _ in
-                                if lastPosition - scrollPosition <= 10 {
-                                    stoppedScrolling()
-                                }
-                            }
-                        }
-                        .onChange(of: activeTab) { _ in
-                            stoppedScrolling()
-                        }
                     }
                     .clipped()
                 }
@@ -94,12 +74,6 @@ struct ContentView: View {
         .buttonStyle(LuminareButtonStyle())
         .tint(tintColor())
         .ignoresSafeArea()
-    }
-
-    func stoppedScrolling() {
-        isScrolling = false
-        scrollTimer?.invalidate()
-        scrollTimer = nil
     }
 }
 
