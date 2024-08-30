@@ -21,10 +21,6 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSView, context: Context) {
-        if let contentViewController = context.coordinator.popover?.contentViewController as? NSHostingController<Content> {
-            contentViewController.rootView = content()
-        }
-
         DispatchQueue.main.async {
             context.coordinator.setVisible(isPresented, in: nsView)
         }

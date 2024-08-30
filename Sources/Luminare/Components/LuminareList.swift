@@ -56,17 +56,13 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         LuminareSection(header, disablePadding: true) {
             HStack(spacing: 2) {
                 Button(addText) {
-                    withAnimation(LuminareSettingsWindow.animation) {
-                        addAction()
-                    }
+                    addAction()
                 }
 
                 Button(removeText) {
                     if !selection.isEmpty {
                         canRefreshSelection = false
-                        withAnimation(LuminareSettingsWindow.animation) {
-                            items.removeAll(where: { selection.contains($0) })
-                        }
+                        items.removeAll(where: { selection.contains($0) })
 
                         selection = []
 

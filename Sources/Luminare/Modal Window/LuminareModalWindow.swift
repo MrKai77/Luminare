@@ -74,10 +74,6 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         })
     }
 
-    override func resignMain() {
-        close()
-    }
-
     override func keyDown(with event: NSEvent) {
         let wKey = 13
         if event.keyCode == wKey, event.modifierFlags.contains(.command) {
