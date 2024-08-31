@@ -44,8 +44,12 @@ public struct ScreenView<Content>: View where Content: View {
                 }
             }
             .allowsHitTesting(false)
-            .task {
-                await updateImage()
+            .onAppear {
+                DispatchQueue.main.async {
+                    Task {
+                        await updateImage()
+                    }
+                }
             }
             .overlay {
                 if image != nil {
