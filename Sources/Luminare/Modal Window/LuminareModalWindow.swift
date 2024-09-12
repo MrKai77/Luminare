@@ -99,6 +99,12 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     override var canBecomeMain: Bool {
         true
     }
+
+    override func resignMain() {
+        if closeOnDefocus {
+            close()
+        }
+    }
 }
 
 struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
