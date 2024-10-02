@@ -112,14 +112,33 @@ public class LuminareWindow: NSWindow {
 
         isResizing = true
 
-        let origin = CGPoint(
-            x: frame.midX - size.width / 2,
-            y: frame.midY - size.height / 2
-        )
-        var newFrame = CGRect(
-            origin: origin,
+        let screenFrame = screen?.frame ?? .zero
+        let originalFrame = frame
+
+        var newFrame = NSRect(
+            origin: CGPoint(
+                x: frame.midX - size.width / 2,
+                y: frame.midY - size.height / 2
+            ),
             size: size
         )
+
+        // If the window is going to collide with the screen edge, move the origin to compensate
+        if newFrame.maxX > screenFrame.maxX {
+            newFrame.origin.x = screenFrame.maxX - newFrame.width
+        }
+
+        if newFrame.maxY > screenFrame.maxY {
+            newFrame.origin.y = screenFrame.maxY - newFrame.height
+        }
+
+        if newFrame.minX < screenFrame.minX {
+            newFrame.origin.x = screenFrame.minX
+        }
+
+        if newFrame.minY < screenFrame.minY {
+            newFrame.origin.y = screenFrame.minY
+        }
 
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.4
