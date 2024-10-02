@@ -38,16 +38,13 @@ public class LuminareWindow: NSWindow {
 
         contentView = view
 
-        // Needs to be run async, or else the window's close button stops working :/
-        DispatchQueue.main.async {
-            view.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                view.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor),
-                view.trailingAnchor.constraint(lessThanOrEqualTo: self.contentView!.trailingAnchor),
-                view.topAnchor.constraint(equalTo: self.contentView!.topAnchor),
-                view.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor)
-            ])
-        }
+        view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            view.leadingAnchor.constraint(equalTo: contentView!.leadingAnchor),
+            view.trailingAnchor.constraint(lessThanOrEqualTo: contentView!.trailingAnchor),
+            view.topAnchor.constraint(equalTo: contentView!.topAnchor),
+            view.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor)
+        ])
 
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
@@ -65,9 +62,20 @@ public class LuminareWindow: NSWindow {
 
     public func show() {
         orderFrontRegardless()
+        NSApp.activate(ignoringOtherApps: true)
+
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.2
-            animator().alphaValue = 1
+            self.animator().alphaValue = 1
+        }
+
+        DispatchQueue.main.async {
+            // Explanation:
+            // Since we disable translatesAutoresizingMaskIntoConstraints, some window decorations become glitchy (not sure why).
+            // As soon as the window resizes, this bug magically fixes itself. So we do that here.
+            let originalSize = self.frame.size
+            super.setContentSize(CGSize(width: originalSize.width - 1, height: originalSize.height - 1))
+            super.setContentSize(originalSize)
         }
     }
 
