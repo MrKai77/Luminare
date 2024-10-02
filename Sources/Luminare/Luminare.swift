@@ -18,7 +18,7 @@ public class LuminareWindow: NSWindow {
 
     public init<Content>(
         content: @escaping () -> Content,
-        blurRadius: CGFloat?
+        blurRadius: CGFloat? = nil
     ) where Content: View {
         self.initializationTime = .now
 

@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
-    var id: UUID { get }
+public protocol LuminareTabItem: Equatable, Hashable, Identifiable where ID: Identifiable {
+    var id: ID { get }
 
     var title: String { get }
     var icon: Image { get }

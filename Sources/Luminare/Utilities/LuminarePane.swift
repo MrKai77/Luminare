@@ -8,10 +8,12 @@
 import SwiftUI
 
 public struct LuminarePane<V, C>: View where V: View, C: View {
+    @Environment(\.luminareWindow) var window
+    let titlebarHeight: CGFloat = 50
+
     let header: () -> C
     let content: () -> V
 
-    // Convenience init for a tab
     public init(
         @ViewBuilder header: @escaping () -> C,
         @ViewBuilder content: @escaping () -> V
@@ -23,11 +25,12 @@ public struct LuminarePane<V, C>: View where V: View, C: View {
     public var body: some View {
         ZStack {
             ScrollView {
-                VStack(spacing: 16) {
+                LazyVStack(spacing: 16) {
                     content()
                 }
                 .padding(12)
             }
+            .frame(maxHeight: max(window?.frame.height ?? 100, 100) - titlebarHeight - 2.5) // why 2.5? no idea, I think this is caused by the divider.
             .clipped()
 
             VStack(spacing: 0) {
@@ -35,7 +38,7 @@ public struct LuminarePane<V, C>: View where V: View, C: View {
                     .buttonStyle(TabHeaderButtonStyle())
                     .padding(.horizontal, 10)
                     .padding(.trailing, 5)
-                    .frame(height: 51, alignment: .leading)
+                    .frame(height: titlebarHeight, alignment: .leading)
 
                 Divider()
             }
