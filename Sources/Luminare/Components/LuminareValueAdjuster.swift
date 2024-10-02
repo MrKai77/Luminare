@@ -112,8 +112,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         }
         .padding(.horizontal, horizontalPadding)
         .frame(height: controlSize.height)
-        .animation(LuminareSettingsWindow.animation, value: value)
-        .animation(LuminareSettingsWindow.animation, value: isShowingTextBox)
+        .animation(LuminareConstants.animation, value: value)
+        .animation(LuminareConstants.animation, value: isShowingTextBox)
     }
 
     func titleView() -> some View {
@@ -167,7 +167,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                     formatter: formatter
                 )
                 .onSubmit {
-                    withAnimation(LuminareSettingsWindow.fastAnimation) {
+                    withAnimation(LuminareConstants.fastAnimation) {
                         isShowingTextBox.toggle()
                     }
                 }
@@ -178,7 +178,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 .padding(.leading, -4)
             } else {
                 Button {
-                    withAnimation(LuminareSettingsWindow.fastAnimation) {
+                    withAnimation(LuminareConstants.fastAnimation) {
                         isShowingTextBox.toggle()
                         focusedField = .textbox
                     }

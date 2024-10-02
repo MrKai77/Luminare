@@ -31,7 +31,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
         let hostingView = NSHostingView(
             rootView: LuminareModalView(view(), compactMode: compactMode)
-                .environment(\.tintColor, LuminareSettingsWindow.tint)
+                .environment(\.tintColor, LuminareConstants.tint)
                 .environmentObject(self)
         )
 

@@ -20,13 +20,5 @@ struct VisualEffectView: NSViewRepresentable {
         return visualEffectView
     }
 
-    // This change reduces memory by about 10mb in some cases, pretty nice
-    func updateNSView(_ visualEffectView: NSVisualEffectView, context _: Context) {
-        if visualEffectView.material != material {
-            visualEffectView.material = material
-        }
-        if visualEffectView.blendingMode != blendingMode {
-            visualEffectView.blendingMode = blendingMode
-        }
-    }
+    func updateNSView(_ visualEffectView: NSVisualEffectView, context _: Context) {}
 }

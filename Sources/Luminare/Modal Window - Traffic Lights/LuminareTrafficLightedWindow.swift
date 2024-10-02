@@ -19,7 +19,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject w
 
         let hostingView = NSHostingView(
             rootView: LuminareTrafficLightedWindowView(content: view())
-                .environment(\.tintColor, LuminareSettingsWindow.tint)
+                .environment(\.tintColor, LuminareConstants.tint)
                 .environmentObject(self)
         )
 
