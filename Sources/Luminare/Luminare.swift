@@ -17,8 +17,8 @@ public class LuminareWindow: NSWindow {
     private var initializationTime: Date
 
     public init<Content>(
-        content: @escaping () -> Content,
-        blurRadius: CGFloat? = nil
+        blurRadius: CGFloat? = nil,
+        content: @escaping () -> Content
     ) where Content: View {
         self.initializationTime = .now
 
@@ -38,13 +38,16 @@ public class LuminareWindow: NSWindow {
 
         contentView = view
 
-        view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            view.leadingAnchor.constraint(equalTo: contentView!.leadingAnchor),
-            view.trailingAnchor.constraint(lessThanOrEqualTo: contentView!.trailingAnchor),
-            view.topAnchor.constraint(equalTo: contentView!.topAnchor),
-            view.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor)
-        ])
+        // Needs to be run async, or else the window's close button stops working :/
+        DispatchQueue.main.async {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                view.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor),
+                view.trailingAnchor.constraint(lessThanOrEqualTo: self.contentView!.trailingAnchor),
+                view.topAnchor.constraint(equalTo: self.contentView!.topAnchor),
+                view.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor)
+            ])
+        }
 
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
@@ -55,6 +58,16 @@ public class LuminareWindow: NSWindow {
             try? setBackgroundBlur(radius: Int(blurRadius))
             backgroundColor = .white.withAlphaComponent(0.001)
             ignoresMouseEvents = false
+        }
+
+        alphaValue = 0
+    }
+
+    public func show() {
+        orderFrontRegardless()
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.2
+            animator().alphaValue = 1
         }
     }
 
