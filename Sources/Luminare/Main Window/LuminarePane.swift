@@ -35,7 +35,6 @@ public struct LuminarePane<V, C>: View where V: View, C: View {
                 .background {
                     Color.white.opacity(0.0001)
                         .onTapGesture {
-                            print("Clicked")
                             clickedOutsideFlag.toggle()
                         }
                         .ignoresSafeArea()
