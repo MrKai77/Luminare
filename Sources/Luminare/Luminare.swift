@@ -29,23 +29,15 @@ public class LuminareWindow: NSWindow {
             defer: false // If true, background blur will break
         )
 
-        let view = NSHostingView(rootView: content()
-            .environment(\.tintColor, LuminareConstants.tint)
-            .environment(\.luminareWindow, self)
-            .buttonStyle(LuminareButtonStyle())
-            .tint(LuminareConstants.tint())
+        let view = NSHostingView(
+            rootView: LuminareView(content: content)
+                .environment(\.tintColor, LuminareConstants.tint)
+                .environment(\.luminareWindow, self)
+                .buttonStyle(LuminareButtonStyle())
+                .tint(LuminareConstants.tint())
         )
 
         contentView = view
-
-        view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            view.leadingAnchor.constraint(equalTo: contentView!.leadingAnchor),
-            view.trailingAnchor.constraint(lessThanOrEqualTo: contentView!.trailingAnchor),
-            view.topAnchor.constraint(equalTo: contentView!.topAnchor),
-            view.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor)
-        ])
-
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
@@ -68,15 +60,6 @@ public class LuminareWindow: NSWindow {
             context.duration = 0.2
             self.animator().alphaValue = 1
         }
-
-        DispatchQueue.main.async {
-            // Explanation:
-            // Since we disable translatesAutoresizingMaskIntoConstraints, some window decorations become glitchy (not sure why).
-            // As soon as the window resizes, this bug magically fixes itself. So we do that here.
-            let originalSize = self.frame.size
-            super.setContentSize(CGSize(width: originalSize.width - 1, height: originalSize.height - 1))
-            super.setContentSize(originalSize)
-        }
     }
 
     func setBackgroundBlur(radius: Int) throws {
@@ -96,29 +79,6 @@ public class LuminareWindow: NSWindow {
                 code: 1,
                 userInfo: [NSLocalizedDescriptionKey: "Error setting blur radius: \(status)"]
             )
-        }
-    }
-
-    var currentResizeEvent: UUID? = nil
-    public override func setContentSize(_ size: NSSize) {
-        if initializationTime.timeIntervalSinceNow > -0.2 || frame.width * frame.height == 0 {
-            super.setContentSize(size)
-            return
-        }
-
-        currentResizeEvent = UUID()
-
-        var newFrame = NSRect(
-            origin: frame.origin,
-            size: size
-        )
-
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.4
-            context.timingFunction = CAMediaTimingFunction(controlPoints: 0.72, 0, 0.28, 1)
-            super.animator().setFrame(newFrame, display: true)
-        } completionHandler: {
-            self.currentResizeEvent = nil
         }
     }
 }

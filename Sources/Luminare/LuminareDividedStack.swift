@@ -62,7 +62,7 @@ struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
                         .luminareBackground()
                 }
             }
-            .transition(.asymmetric(insertion: .identity, removal: .opacity.animation(.easeInOut(duration: 0.5))))
+            .transition(.asymmetric(insertion: .identity, removal: .opacity.animation(.easeInOut(duration: 0.25))))
         }
     }
 }
@@ -82,7 +82,7 @@ struct LuminareDividedVStackLayout: _VariadicView_UnaryViewRoot {
                         .luminareBackground()
                 }
             }
-            .transition(.asymmetric(insertion: .identity, removal: .opacity.animation(.easeInOut(duration: 0.5))))
+            .transition(.asymmetric(insertion: .identity, removal: .opacity.animation(.easeInOut(duration: 0.25))))
         }
     }
 }

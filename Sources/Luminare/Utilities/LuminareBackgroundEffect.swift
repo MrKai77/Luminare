@@ -10,7 +10,6 @@ import SwiftUI
 public struct LuminareBackgroundEffect: ViewModifier {
     public func body(content: Content) -> some View {
         content
-            .frame(maxHeight: .infinity)
             .background {
                 VisualEffectView(material: .menu, blendingMode: .behindWindow)
                     .edgesIgnoringSafeArea(.top)
