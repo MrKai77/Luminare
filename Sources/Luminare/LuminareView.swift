@@ -16,17 +16,15 @@ struct LuminareView<Content>: View where Content: View {
     @State private var currentAnimation: LuminareWindowAnimation?
 
     var body: some View {
-        Group {
-            content()
-        }
-        .background {
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear(perform: { print(proxy.size.height); setSize(size: proxy.size, animate: false) })
-                    .onChange(of: proxy.size, perform: {  setSize(size: $0, animate: true) })
+        content()
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear(perform: { print(proxy.size.height); setSize(size: proxy.size, animate: false) })
+                        .onChange(of: proxy.size, perform: {  setSize(size: $0, animate: true) })
+                }
             }
-        }
-        .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
+            .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
     }
 
     func setSize(size: CGSize, animate: Bool) {

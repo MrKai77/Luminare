@@ -14,6 +14,8 @@ public struct LuminarePane<V, C>: View where V: View, C: View {
     let header: () -> C
     let content: () -> V
 
+    @State private var clickedOutsideFlag: Bool = false
+
     public init(
         @ViewBuilder header: @escaping () -> C,
         @ViewBuilder content: @escaping () -> V
@@ -29,8 +31,16 @@ public struct LuminarePane<V, C>: View where V: View, C: View {
                     content()
                 }
                 .padding(12)
+                .environment(\.clickedOutsideFlag, clickedOutsideFlag)
+                .background {
+                    Color.white.opacity(0.0001)
+                        .onTapGesture {
+                            print("Clicked")
+                            clickedOutsideFlag.toggle()
+                        }
+                        .ignoresSafeArea()
+                }
             }
-            .frame(maxHeight: max(window?.frame.height ?? 100, 100) - titlebarHeight - 2.5) // why 2.5? no idea, I think this is caused by the divider.
             .clipped()
 
             VStack(spacing: 0) {
