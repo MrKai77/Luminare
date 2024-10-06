@@ -40,6 +40,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
 
                             Spacer()
                         }
+                        .transition(.opacity.animation(LuminareConstants.animation))
                     }
                 }
                 .fixedSize()
