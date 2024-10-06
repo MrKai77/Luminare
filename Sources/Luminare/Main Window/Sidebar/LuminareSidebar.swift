@@ -9,11 +9,9 @@ import SwiftUI
 
 public struct LuminareSidebar<Content>: View where Content: View {
     let content: () -> Content
-    let width: CGFloat
 
-    public init(@ViewBuilder content: @escaping () -> Content, width: CGFloat = 260) {
+    public init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content
-        self.width = width
     }
 
     public var body: some View {
@@ -21,7 +19,6 @@ public struct LuminareSidebar<Content>: View where Content: View {
             content()
         }
         .padding(.horizontal, 12)
-        .frame(width: width)
         .frame(minHeight: 580, maxHeight: .infinity, alignment: .top)
         .luminareBackground()
     }
