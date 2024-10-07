@@ -20,7 +20,7 @@ struct LuminareView<Content>: View where Content: View {
             .background {
                 GeometryReader { proxy in
                     Color.clear
-                        .onAppear(perform: { print(proxy.size.height); setSize(size: proxy.size, animate: false) })
+                        .onAppear(perform: { setSize(size: proxy.size, animate: false) })
                         .onChange(of: proxy.size, perform: { setSize(size: $0, animate: true) })
                 }
             }

@@ -11,17 +11,17 @@ import SwiftUI
 class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     @Binding var isPresented: Bool
     let closeOnDefocus: Bool
-    let compactMode: Bool
+    let isCompact: Bool
 
     init(
-        view: () -> Content,
         isPresented: Binding<Bool>,
         closeOnDefocus: Bool,
-        compactMode: Bool
+        isCompact: Bool,
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
         self.closeOnDefocus = closeOnDefocus
-        self.compactMode = compactMode
+        self.isCompact = isCompact
         super.init(
             contentRect: .zero,
             styleMask: [.fullSizeContentView],
@@ -30,7 +30,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         )
 
         let hostingView = NSHostingView(
-            rootView: LuminareModalView(view(), compactMode: compactMode)
+            rootView: LuminareModalView(isCompact: isCompact, content: content)
                 .environment(\.tintColor, LuminareConstants.tint)
                 .environmentObject(self)
         )
@@ -84,7 +84,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     }
 
     override func mouseDown(with event: NSEvent) {
-        let titlebarHeight: CGFloat = compactMode ? 12 : 16
+        let titlebarHeight: CGFloat = isCompact ? 12 : 16
         if event.locationInWindow.y > frame.height - titlebarHeight {
             super.performDrag(with: event)
         } else {
@@ -108,11 +108,12 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 }
 
 struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
-    @Binding var isPresented: Bool
-    @ViewBuilder let view: () -> PanelContent
     @State private var panel: LuminareModal<PanelContent>?
+
+    @Binding var isPresented: Bool
     let closeOnDefocus: Bool
-    let compactMode: Bool
+    let isCompact: Bool
+    @ViewBuilder var content: () -> PanelContent
 
     func body(content: Content) -> some View {
         content
@@ -132,10 +133,10 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     private func present() {
         guard panel == nil else { return }
         panel = LuminareModal(
-            view: view,
             isPresented: $isPresented,
             closeOnDefocus: closeOnDefocus,
-            compactMode: compactMode
+            isCompact: isCompact,
+            content: content
         )
 
         DispatchQueue.main.async {
@@ -155,15 +156,15 @@ public extension View {
     func luminareModal(
         isPresented: Binding<Bool>,
         closeOnDefocus: Bool = false,
-        compactMode: Bool = false,
+        isCompact: Bool = false,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
             LuminareModalModifier(
                 isPresented: isPresented,
-                view: content,
                 closeOnDefocus: closeOnDefocus,
-                compactMode: compactMode
+                isCompact: isCompact,
+                content: content
             )
         )
     }

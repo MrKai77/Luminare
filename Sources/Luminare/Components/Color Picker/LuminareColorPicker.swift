@@ -13,18 +13,24 @@ public struct LuminareColorPicker: View {
     @State private var text: String
     @State private var showColorPicker = false
     let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+    let formatStrategy: StringFormatStyle.HexStrategy
 
-    public init(color: Binding<Color>, colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)) {
+    public init(
+        color: Binding<Color>, colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey),
+        formatStrategy: StringFormatStyle.HexStrategy = .uppercasedWithWell
+    ) {
         self._currentColor = color
         self._text = State(initialValue: color.wrappedValue.toHex())
         self.colorNames = colorNames
+        self.formatStrategy = formatStrategy
     }
 
     public var body: some View {
         HStack {
             LuminareTextField(
-                $text,
-                placeHolder: "Hex Color",
+                "Hex Color",
+                value: .init($text),
+                format: StringFormatStyle(parseStrategy: .hex(formatStrategy)),
                 onSubmit: {
                     if let newColor = Color(hex: text) {
                         currentColor = newColor
@@ -46,7 +52,7 @@ public struct LuminareColorPicker: View {
                     .modifier(LuminareBordered())
             }
             .buttonStyle(PlainButtonStyle())
-            .luminareModal(isPresented: $showColorPicker, closeOnDefocus: true, compactMode: true) {
+            .luminareModal(isPresented: $showColorPicker, closeOnDefocus: true, isCompact: true) {
                 ColorPickerModalView(color: $currentColor, hexColor: $text, colorNames: colorNames)
                     .frame(width: 280)
             }
