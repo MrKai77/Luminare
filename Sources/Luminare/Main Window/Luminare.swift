@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminareConstants {
+public enum LuminareConstants {
     public static var tint: () -> Color = { .accentColor }
     public static var animation: Animation = .smooth(duration: 0.2)
     public static var fastAnimation: Animation = .easeOut(duration: 0.1)
@@ -16,10 +16,10 @@ public struct LuminareConstants {
 public class LuminareWindow: NSWindow {
     private var initializationTime: Date
 
-    public init<Content>(
+    public init(
         blurRadius: CGFloat? = nil,
-        content: @escaping () -> Content
-    ) where Content: View {
+        content: @escaping () -> some View
+    ) {
         self.initializationTime = .now
 
         super.init(

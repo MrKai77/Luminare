@@ -13,7 +13,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     @Binding var activeTab: Tab
     let tab: Tab
 
-    @State private var isActive: Bool = false
+    @State private var isActive = false
 
     public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
         self._activeTab = activeTab

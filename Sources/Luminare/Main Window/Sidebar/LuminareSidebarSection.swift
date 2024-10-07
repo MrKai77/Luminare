@@ -29,7 +29,7 @@ public struct LuminareSidebarSection<Tab>: View where Tab: LuminareTabItem, Tab:
     }
 
     @ViewBuilder func sectionTitle() -> some View {
-        if let title = title {
+        if let title {
             HStack {
                 Text(title)
                     .opacity(0.7)
