@@ -63,6 +63,11 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
     }
     
     public func format(_ value: String) -> String {
-        try! parseStrategy.parse(value)
+        do {
+            return try parseStrategy.parse(value)
+        } catch {
+            print("Error: \(error)")
+            return value
+        }
     }
 }
