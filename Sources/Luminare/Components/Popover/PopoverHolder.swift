@@ -16,7 +16,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
         self.content = content
     }
 
-    public func makeNSView(context: Context) -> NSView {
+    public func makeNSView(context _: Context) -> NSView {
         .init()
     }
 
@@ -25,7 +25,6 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
             context.coordinator.setVisible(isPresented, in: nsView)
         }
     }
-
 
     public func makeCoordinator() -> Coordinator {
         Coordinator(self, content: content)
@@ -49,7 +48,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
         func setVisible(_ isPresented: Bool, in view: NSView? = nil) {
             // If we're going to be closing the window
             guard isPresented else {
-                self.popover?.resignKey()
+                popover?.resignKey()
                 return
             }
 
@@ -92,7 +91,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
             }
         }
 
-        public func windowWillClose(_ notification: Notification) {
+        public func windowWillClose(_: Notification) {
             Task {
                 await MainActor.run {
                     removeMonitor()
@@ -104,7 +103,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
 
         func initializePopup() {
             self.popover = .init()
-            guard let popover = self.popover else { return }
+            guard let popover else { return }
 
             popover.delegate = self
             popover.contentViewController = NSHostingController(

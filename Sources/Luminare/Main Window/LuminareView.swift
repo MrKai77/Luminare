@@ -21,7 +21,7 @@ struct LuminareView<Content>: View where Content: View {
                 GeometryReader { proxy in
                     Color.clear
                         .onAppear(perform: { print(proxy.size.height); setSize(size: proxy.size, animate: false) })
-                        .onChange(of: proxy.size, perform: {  setSize(size: $0, animate: true) })
+                        .onChange(of: proxy.size, perform: { setSize(size: $0, animate: true) })
                 }
             }
             .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
@@ -72,6 +72,7 @@ struct LuminareView<Content>: View where Content: View {
 }
 
 // MARK: - NSWindow Animation
+
 // Custom NSWindow resize animation so that it can be stopped midway
 
 class LuminareWindowAnimation: NSAnimation {
@@ -84,11 +85,12 @@ class LuminareWindowAnimation: NSAnimation {
         super.init(duration: 0.5, animationCurve: .easeOut)
         super.animationBlockingMode = .nonblocking // Allows the window to redraw contents while animating
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override var currentProgress: NSAnimation.Progress {
         didSet {
             // The last frame of this NSAnimation looks a little stuttery,
