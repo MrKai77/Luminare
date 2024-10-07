@@ -31,7 +31,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
         let hostingView = NSHostingView(
             rootView: LuminareModalView(isCompact: isCompact, content: content)
-                .environment(\.tintColor, LuminareSettingsWindow.tint)
+                .environment(\.tintColor, LuminareConstants.tint)
                 .environmentObject(self)
         )
 
@@ -74,10 +74,6 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         })
     }
 
-    override func resignMain() {
-        close()
-    }
-
     override func keyDown(with event: NSEvent) {
         let wKey = 13
         if event.keyCode == wKey, event.modifierFlags.contains(.command) {
@@ -102,6 +98,12 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
     override var canBecomeMain: Bool {
         true
+    }
+
+    override func resignMain() {
+        if closeOnDefocus {
+            close()
+        }
     }
 }
 
@@ -131,10 +133,10 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     private func present() {
         guard panel == nil else { return }
         panel = LuminareModal(
-            view: view,
             isPresented: $isPresented,
             closeOnDefocus: closeOnDefocus,
-            compactMode: compactMode
+            isCompact: isCompact,
+            content: content
         )
 
         DispatchQueue.main.async {

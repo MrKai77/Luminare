@@ -76,7 +76,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
         // This will improve animation performance
         .onChange(of: internalSelection) { _ in
-            selectedItem = internalSelection
+            withAnimation(LuminareConstants.animation) {
+                selectedItem = internalSelection
+            }
         }
     }
 
@@ -84,7 +86,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         if let element = getElement(i: i, j: j) {
             Button {
                 guard !isDisabled(element) else { return }
-                withAnimation(LuminareSettingsWindow.animation) {
+                withAnimation(LuminareConstants.animation) {
                     internalSelection = element
                 }
             } label: {

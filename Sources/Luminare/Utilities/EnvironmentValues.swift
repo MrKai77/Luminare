@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - TintColor (public)
+// MARK: - TintColor
 
 // Currently, it is impossible to read the .tint(Color) modifier on a view.
 // This is a custom environement value as an alternative implementation of it.
@@ -22,7 +22,7 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - HoveringOverLuminareItem (public)
+// MARK: - HoveringOverLuminareItem
 
 public struct HoveringOverLuminareItem: EnvironmentKey {
     public static var defaultValue: Bool = false
@@ -37,6 +37,19 @@ public extension EnvironmentValues {
 
 // MARK: - ClickedOutside
 
+public struct LuminareWindowKey: EnvironmentKey {
+    public static let defaultValue: NSWindow? = nil
+}
+
+public extension EnvironmentValues {
+    var luminareWindow: NSWindow? {
+        get { self[LuminareWindowKey.self] }
+        set { self[LuminareWindowKey.self] = newValue }
+    }
+}
+
+// MARK: - ClickedOutside (Private)
+
 struct ClickedOutsideFlagKey: EnvironmentKey {
     static let defaultValue: Bool = false
 }
@@ -45,18 +58,5 @@ extension EnvironmentValues {
     var clickedOutsideFlag: Bool {
         get { self[ClickedOutsideFlagKey.self] }
         set { self[ClickedOutsideFlagKey.self] = newValue }
-    }
-}
-
-// MARK: - CurrentlyScrolling
-
-struct CurrentlyScrollingKey: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    var currentlyScrolling: Bool {
-        get { self[CurrentlyScrollingKey.self] }
-        set { self[CurrentlyScrollingKey.self] = newValue }
     }
 }

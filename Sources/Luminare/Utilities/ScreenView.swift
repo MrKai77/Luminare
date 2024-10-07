@@ -8,6 +8,7 @@
 import SwiftUI
 
 public struct ScreenView<Content>: View where Content: View {
+    @Binding var blurred: Bool
     let screenContent: () -> Content
     @State private var image: NSImage?
 
@@ -18,7 +19,8 @@ public struct ScreenView<Content>: View where Content: View {
         topTrailingRadius: 12
     )
 
-    public init(@ViewBuilder _ screenContent: @escaping () -> Content) {
+    public init(blurred: Binding<Bool> = .constant(false), @ViewBuilder _ screenContent: @escaping () -> Content) {
+        self._blurred = blurred
         self.screenContent = screenContent
     }
 
@@ -30,28 +32,24 @@ public struct ScreenView<Content>: View where Content: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: geo.size.width, height: geo.size.height)
+                        .blur(radius: blurred ? 10 : 0)
+                        .opacity(blurred ? 0.5 : 1)
                 } else {
-                    ZStack {
-                        /// We may be able to add the wallpaper
-                        /// But the method changed in Sonoma
-                        /// So this is kinda a v2 thing
-                        Color.black
-                        Image(systemName: "apple.logo")
-                            .font(.system(size: 20))
-                            .foregroundStyle(.white)
-                    }
-                    .frame(width: geo.size.width, height: geo.size.height)
+                    LuminareConstants.tint()
+                        .opacity(0.1)
                 }
             }
             .allowsHitTesting(false)
-            .task {
-                await updateImage()
+            .onAppear {
+                DispatchQueue.main.async {
+                    Task {
+                        await updateImage()
+                    }
+                }
             }
             .overlay {
-                if image != nil {
-                    screenContent()
-                        .padding(5)
-                }
+                screenContent()
+                    .padding(5)
             }
             .clipShape(screenShape)
 
@@ -79,7 +77,7 @@ public struct ScreenView<Content>: View where Content: View {
         }
 
         if let newImage = NSImage.resize(url, width: 300) {
-            await withAnimation(LuminareSettingsWindow.fastAnimation) {
+            await withAnimation(LuminareConstants.fastAnimation) {
                 image = newImage
             }
         }

@@ -22,7 +22,7 @@ struct LuminareModalView<Content>: View where Content: View {
     }
 
     var body: some View {
-        VStack {
+        Group {
             VStack(spacing: sectionSpacing) {
                 content()
             }
@@ -61,11 +61,10 @@ struct LuminareModalView<Content>: View where Content: View {
                         }
                 }
             }
-
-            Spacer()
+            .buttonStyle(LuminareButtonStyle())
+            .tint(tintColor())
+            .ignoresSafeArea()
         }
-        .buttonStyle(LuminareButtonStyle())
-        .tint(tintColor())
-        .ignoresSafeArea()
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 }
