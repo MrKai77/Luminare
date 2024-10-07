@@ -109,7 +109,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
 struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
     @State private var panel: LuminareModal<PanelContent>?
-    
+
     @Binding var isPresented: Bool
     let closeOnDefocus: Bool
     let isCompact: Bool

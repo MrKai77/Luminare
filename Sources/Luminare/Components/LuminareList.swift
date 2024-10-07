@@ -51,7 +51,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         self.addText = addText
         self.removeText = removeText
     }
-    
+
     public init(
         _ header: LocalizedStringKey? = nil,
         addText: LocalizedStringKey,
@@ -66,7 +66,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         self.init(
             header,
             items: items,
-            selection: selection, 
+            selection: selection,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
@@ -75,7 +75,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             removeText: removeText
         )
     }
-    
+
     public init(
         _ header: LocalizedStringKey? = nil,
         addText: LocalizedStringKey,

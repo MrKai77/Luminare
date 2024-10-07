@@ -1,10 +1,9 @@
 //
-//  DividedHStack.swift
+//  LuminareDividedStack.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-09-29.
 //
-
 
 import SwiftUI
 

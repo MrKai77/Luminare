@@ -5,7 +5,6 @@
 //  Created by Kai Azim on 2024-08-25.
 //
 
-
 import SwiftUI
 
 public class PopoverPanel: NSPanel, ObservableObject {
@@ -13,7 +12,7 @@ public class PopoverPanel: NSPanel, ObservableObject {
     public static let contentPadding: CGFloat = 6
     public static let sectionPadding: CGFloat = 8
 
-    @Published public var closeHandler: (() -> Void)?
+    @Published public var closeHandler: (() -> ())?
 
     public init() {
         super.init(
@@ -32,24 +31,24 @@ public class PopoverPanel: NSPanel, ObservableObject {
         level = .floating
     }
 
-    public override var canBecomeKey: Bool {
+    override public var canBecomeKey: Bool {
         true
     }
 
-    public override var canBecomeMain: Bool {
+    override public var canBecomeMain: Bool {
         false
     }
 
-    public override var acceptsFirstResponder: Bool {
+    override public var acceptsFirstResponder: Bool {
         true
     }
 
-    public override func close() {
+    override public func close() {
         closeHandler?()
         super.close()
     }
 
-    public override func resignKey() {
+    override public func resignKey() {
         close()
     }
 }

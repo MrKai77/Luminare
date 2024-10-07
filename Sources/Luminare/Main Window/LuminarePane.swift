@@ -14,7 +14,7 @@ public struct LuminarePane<V, C>: View where V: View, C: View {
     let header: () -> C
     let content: () -> V
 
-    @State private var clickedOutsideFlag: Bool = false
+    @State private var clickedOutsideFlag = false
 
     public init(
         @ViewBuilder header: @escaping () -> C,

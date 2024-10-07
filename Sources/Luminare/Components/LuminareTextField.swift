@@ -17,14 +17,14 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     let onSubmit: (() -> ())?
 
     @State var monitor: Any?
-    
+
     public init(_ placeholder: LocalizedStringKey, value: Binding<F.FormatInput?>, format: F, onSubmit: (() -> ())? = nil) {
         self._value = value
         self.format = format
         self.placeholder = placeholder
         self.onSubmit = onSubmit
     }
-    
+
     public init(_ placeholder: LocalizedStringKey, text: Binding<String>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
         self.init(placeholder, value: .init(text), format: StringFormatStyle(), onSubmit: onSubmit)
     }
