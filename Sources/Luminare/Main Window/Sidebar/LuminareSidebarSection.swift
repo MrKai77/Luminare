@@ -8,11 +8,11 @@
 import SwiftUI
 
 public struct LuminareSidebarSection<Tab>: View where Tab: LuminareTabItem, Tab: Hashable {
-    let title: String?
+    let title: LocalizedStringKey?
     @Binding var selection: Tab
     let items: [Tab]
 
-    public init(_ title: String? = nil, selection: Binding<Tab>, items: [Tab]) {
+    public init(_ title: LocalizedStringKey? = nil, selection: Binding<Tab>, items: [Tab]) {
         self.title = title
         self._selection = selection
         self.items = items
