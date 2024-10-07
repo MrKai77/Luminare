@@ -35,7 +35,7 @@ public struct ScreenView<Content>: View where Content: View {
                         .blur(radius: blurred ? 10 : 0)
                         .opacity(blurred ? 0.5 : 1)
                 } else {
-                    LuminareSettingsWindow.tint()
+                    LuminareConstants.tint()
                         .opacity(0.1)
                 }
             }
@@ -77,7 +77,7 @@ public struct ScreenView<Content>: View where Content: View {
         }
 
         if let newImage = NSImage.resize(url, width: 300) {
-            await withAnimation(LuminareSettingsWindow.fastAnimation) {
+            await withAnimation(LuminareConstants.fastAnimation) {
                 image = newImage
             }
         }

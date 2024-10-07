@@ -47,7 +47,7 @@ struct ColorHueSliderView: View {
                 .foregroundColor(.white)
                 .shadow(radius: 3)
                 .onChange(of: selectionPosition) { _ in
-                    withAnimation(LuminareSettingsWindow.animation) {
+                    withAnimation(LuminareConstants.animation) {
                         selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
                         selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
                         selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
@@ -82,7 +82,7 @@ struct ColorHueSliderView: View {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
 
-        withAnimation(LuminareSettingsWindow.animation) {
+        withAnimation(LuminareConstants.animation) {
             selectedColor = Color(
                 hue: percentage,
                 saturation: max(0.0001, currenthsb.saturation),

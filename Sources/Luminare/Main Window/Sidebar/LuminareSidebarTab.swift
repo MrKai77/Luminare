@@ -1,33 +1,28 @@
 //
-//  LuminareSidebarGroupItem.swift
+//  LuminareSidebarTab.swift
+//  Luminare
 //
-//
-//  Created by Kai Azim on 2024-04-01.
+//  Created by Kai Azim on 2024-09-29.
 //
 
 import SwiftUI
 
-struct LuminareSidebarGroupItem: View {
+public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     @Environment(\.tintColor) var tintColor
 
-    @Binding var activeTab: SettingsTab
-    let tab: SettingsTab
+    @Binding var activeTab: Tab
+    let tab: Tab
 
-    @State private var isHovering: Bool = false
     @State private var isActive: Bool = false
-    @State private var showIndicator: Bool = false
-    let didTabChange: (SettingsTab) -> ()
 
-    init(_ tab: SettingsTab, _ activeTab: Binding<SettingsTab>, didTabChange: @escaping (SettingsTab) -> ()) {
+    public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
         self._activeTab = activeTab
         self.tab = tab
-        self.didTabChange = didTabChange
     }
 
-    var body: some View {
+    public var body: some View {
         Button {
             activeTab = tab
-            didTabChange(tab)
         } label: {
             HStack(spacing: 8) {
                 tab.iconView()
@@ -35,7 +30,7 @@ struct LuminareSidebarGroupItem: View {
                 HStack(spacing: 0) {
                     Text(tab.title)
 
-                    if showIndicator {
+                    if tab.showIndicator {
                         VStack {
                             Circle()
                                 .foregroundStyle(tintColor())
@@ -45,6 +40,7 @@ struct LuminareSidebarGroupItem: View {
 
                             Spacer()
                         }
+                        .transition(.opacity.animation(LuminareConstants.animation))
                     }
                 }
                 .fixedSize()
@@ -60,21 +56,15 @@ struct LuminareSidebarGroupItem: View {
             }
         }
         .onAppear {
-            checkIfSelfIsActiveTab()
-            showIndicator = tab.showIndicator?() ?? false
+            processActiveTab()
         }
         .onChange(of: activeTab) { _ in
-            checkIfSelfIsActiveTab()
-        }
-        .onChange(of: tab.showIndicator?() ?? false) { newValue in
-            withAnimation(LuminareSettingsWindow.fastAnimation) {
-                showIndicator = newValue
-            }
+            processActiveTab()
         }
     }
 
-    func checkIfSelfIsActiveTab() {
-        withAnimation(LuminareSettingsWindow.fastAnimation) {
+    func processActiveTab() {
+        withAnimation(LuminareConstants.fastAnimation) {
             isActive = activeTab == tab
         }
     }
@@ -98,7 +88,7 @@ struct SidebarButtonStyle: ButtonStyle {
             .onHover { hover in
                 isHovering = hover
             }
-            .animation(LuminareSettingsWindow.fastAnimation, value: [isHovering, isActive, configuration.isPressed])
+            .animation(LuminareConstants.fastAnimation, value: [isHovering, isActive, configuration.isPressed])
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }

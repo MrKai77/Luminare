@@ -51,7 +51,7 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
         }
         .padding(.horizontal, horizontalPadding)
         .frame(height: height)
-        .animation(LuminareSettingsWindow.animation, value: selection)
+        .animation(LuminareConstants.animation, value: selection)
     }
 
     @ViewBuilder

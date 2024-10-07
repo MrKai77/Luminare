@@ -102,7 +102,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
                     }
                     // .onDelete(perform: deleteItems) // deleteItems crashes Loop, need to be investigated further
                     .onMove { indices, newOffset in
-                        withAnimation(LuminareSettingsWindow.animation) {
+                        withAnimation(LuminareConstants.animation) {
                             items.move(fromOffsets: indices, toOffset: newOffset)
                         }
                     }
@@ -119,7 +119,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             }
         }
         .onChange(of: clickedOutsideFlag) { _ in
-            withAnimation(LuminareSettingsWindow.animation) {
+            withAnimation(LuminareConstants.animation) {
                 selection = []
             }
         }
@@ -167,7 +167,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
             let kVK_Escape: CGKeyCode = 0x35
 
             if event.keyCode == kVK_Escape {
-                withAnimation(LuminareSettingsWindow.animation) {
+                withAnimation(LuminareConstants.animation) {
                     selection = []
                 }
                 return nil
@@ -186,7 +186,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
 
 struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     @Environment(\.tintColor) var tintColor
-    @Environment(\.currentlyScrolling) var currentlyScrolling
 
     @Binding var item: V
     let content: (Binding<V>) -> Content
@@ -234,9 +233,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             }
             .tag(item)
             .onHover { hover in
-                guard !currentlyScrolling else { return }
-
-                withAnimation(LuminareSettingsWindow.fastAnimation) {
+                withAnimation(LuminareConstants.fastAnimation) {
                     isHovering = hover
                 }
             }
@@ -262,16 +259,9 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             .onChange(of: selection) { _ in
                 guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
-                    withAnimation(LuminareSettingsWindow.animation) {
+                    withAnimation(LuminareConstants.animation) {
                         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
                         lineWidth = selection.contains(item) ? maxLineWidth : .zero
-                    }
-                }
-            }
-            .onChange(of: currentlyScrolling) { _ in
-                if currentlyScrolling {
-                    withAnimation(LuminareSettingsWindow.fastAnimation) {
-                        isHovering = false
                     }
                 }
             }
