@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - Luminare View
 
 struct LuminareView<Content>: View where Content: View {
+    @Environment(\.tintColor) var tintColor
     @Environment(\.luminareWindow) var window
     let content: () -> Content
 
@@ -17,6 +18,8 @@ struct LuminareView<Content>: View where Content: View {
 
     var body: some View {
         content()
+            .buttonStyle(LuminareButtonStyle())
+            .tint(tintColor())
             .background {
                 GeometryReader { proxy in
                     Color.clear

@@ -34,7 +34,6 @@ public class LuminareWindow: NSWindow {
                 .environment(\.tintColor, LuminareConstants.tint)
                 .environment(\.luminareWindow, self)
                 .buttonStyle(LuminareButtonStyle())
-                .tint(LuminareConstants.tint())
         )
 
         contentView = view
