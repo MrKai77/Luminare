@@ -18,8 +18,6 @@ struct LuminareView<Content>: View where Content: View {
 
     var body: some View {
         content()
-            .buttonStyle(LuminareButtonStyle())
-            .tint(tintColor())
             .background {
                 GeometryReader { proxy in
                     Color.clear
@@ -28,6 +26,9 @@ struct LuminareView<Content>: View where Content: View {
                 }
             }
             .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
+            .focusable(false)
+            .buttonStyle(LuminareButtonStyle())
+            .tint(tintColor())
     }
 
     func setSize(size: CGSize, animate: Bool) {
