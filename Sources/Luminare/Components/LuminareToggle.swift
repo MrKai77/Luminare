@@ -8,8 +8,6 @@
 import SwiftUI
 
 public struct LuminareToggle: View {
-    @Environment(\.tintColor) var tintColor
-
     let elementMinHeight: CGFloat = 34
     let horizontalPadding: CGFloat = 8
 
@@ -18,7 +16,6 @@ public struct LuminareToggle: View {
     @Binding var value: Bool
 
     let disabled: Bool
-    @State var isShowingDescription: Bool = false
 
     public init(
         _ title: LocalizedStringKey,

@@ -7,17 +7,33 @@
 
 import SwiftUI
 
-public struct LuminareInfoView: View {
+public struct LuminareInfoView<Content>: View where Content: View {
     let color: Color
-    let description: LocalizedStringKey
-    @State var isShowingDescription: Bool = false
-    @State var isHovering: Bool = false
-
-    @State var hoverTimer: Timer?
-
-    public init(_ description: LocalizedStringKey, _ color: Color = .blue) {
+    let withoutPadding: Bool
+    @ViewBuilder private let content: () -> Content
+    
+    @State private var isShowingDescription: Bool = false
+    @State private var isHovering: Bool = false
+    @State private var hoverTimer: Timer?
+    
+    public init(
+        color: Color = .blue,
+        withoutPadding: Bool = false,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.color = color
-        self.description = description
+        self.withoutPadding = withoutPadding
+        self.content = content
+    }
+
+    public init(
+        _ key: LocalizedStringKey,
+        color: Color = .blue,
+        withoutPadding: Bool = false
+    ) where Content == Text {
+        self.init(color: color, withoutPadding: withoutPadding) {
+            Text(key)
+        }
     }
 
     public var body: some View {
@@ -43,9 +59,9 @@ public struct LuminareInfoView: View {
                 }
 
                 .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
-                    Text(description)
+                    content()
                         .multilineTextAlignment(.center)
-                        .padding(8)
+                        .padding(withoutPadding ? 0 : 8)
                 }
 
             Spacer()

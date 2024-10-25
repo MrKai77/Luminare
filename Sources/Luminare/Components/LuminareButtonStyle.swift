@@ -9,8 +9,10 @@ import SwiftUI
 
 public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
+    
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
+    
     @State var isHovering: Bool = false
 
     public init() {}
@@ -45,8 +47,10 @@ public struct LuminareButtonStyle: ButtonStyle {
 
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
+    
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
+    
     @State var isHovering: Bool = false
 
     public init() {}
@@ -81,8 +85,10 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 
 public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
+    
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
+    
     @State var isHovering: Bool = false
     let icon: Image
 
@@ -126,9 +132,11 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
+    
     let elementMinHeight: CGFloat = 34
     let elementExtraMinHeight: CGFloat = 25
     let extraCompact: Bool
+    
     @State var isHovering: Bool = false
     let cornerRadius: CGFloat = 8
 
