@@ -10,25 +10,25 @@ import SwiftUI
 struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Content: View, Info: View {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
+    let spacing: CGFloat?
     let disabled: Bool
-    private let hasInfo: Bool
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let label: () -> Label
     @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
-    init(
+    public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        spacing: CGFloat? = nil,
         disabled: Bool = false,
-        hasInfo: Bool,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
+        self.spacing = spacing
         self.disabled = disabled
-        self.hasInfo = hasInfo
         self.label = label
         self.content = content
         self.info = info
@@ -36,30 +36,37 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        spacing: CGFloat? = nil,
         disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
-    ) {
+        @ViewBuilder label: @escaping () -> Label
+    ) where Info == EmptyView {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled, hasInfo: true,
-            content: content, label: label, info: info
-        )
+            spacing: spacing, disabled: disabled
+        ) {
+            content()
+        } label: {
+            label()
+        } info: {
+            LuminareInfoView()
+        }
     }
     
     public init(
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        spacing: CGFloat? = nil,
         disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) where Label == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled, hasInfo: true,
-            content: content
+            spacing: spacing, disabled: disabled
         ) {
+            content()
+        } label: {
             Text(key)
         } info: {
             info()
@@ -67,7 +74,26 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     }
     
     public init(
+        _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        spacing: CGFloat? = nil,
+        disabled: Bool = false,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Label == Text, Info == EmptyView {
+        self.init(
+            key,
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            spacing: spacing, disabled: disabled
+        ) {
+            content()
+        } info: {
+            LuminareInfoView()
+        }
+    }
+    
+    public init(
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        spacing: CGFloat? = nil,
         disabled: Bool = false,
         infoKey: LocalizedStringKey,
         infoWithoutPadding: Bool = false,
@@ -76,7 +102,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     ) where Info == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled, hasInfo: true,
+            spacing: spacing, disabled: disabled,
             content: content, label: label
         ) {
             LuminareInfoView(infoKey, withoutPadding: infoWithoutPadding)
@@ -86,6 +112,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     public init(
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        spacing: CGFloat? = nil,
         disabled: Bool = false,
         infoKey: LocalizedStringKey,
         infoWithoutPadding: Bool = false,
@@ -94,40 +121,8 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     ) where Label == Text, Info == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled,
+            spacing: spacing, disabled: disabled,
             infoKey: infoKey, infoWithoutPadding: infoWithoutPadding,
-            content: content
-        ) {
-            Text(key)
-        }
-    }
-    
-    public init(
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Info == EmptyView {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled, hasInfo: false,
-            content: content, label: label
-        ) {
-            LuminareInfoView {
-                EmptyView()
-            }
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
-        @ViewBuilder content: @escaping () -> Content
-    ) where Label == Text, Info == EmptyView {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled,
             content: content
         ) {
             Text(key)
@@ -139,7 +134,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
             HStack(spacing: 0) {
                 label()
                 
-                if hasInfo {
+                if Info.self != EmptyView.self {
                     info()
                 }
             }

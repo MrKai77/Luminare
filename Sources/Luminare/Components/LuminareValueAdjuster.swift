@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjuster<Label, Info, Suffix, V>: View
+where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public enum ControlSize {
         case regular
         case compact
@@ -20,53 +21,57 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         }
     }
 
-    let horizontalPadding: CGFloat = 8
+    private let horizontalPadding: CGFloat
+    private let disabled: Bool
 
-    let formatter: NumberFormatter
-    var totalRange: V {
+    private let formatter: NumberFormatter
+    private var totalRange: V {
         sliderRange.upperBound - sliderRange.lowerBound
     }
 
-    @State var isShowingTextBox = false
+    @State private var isShowingTextBox = false
 
-    // Focus
     enum FocusedField {
         case textbox
     }
 
-    @FocusState var focusedField: FocusedField?
+    @FocusState private var focusedField: FocusedField?
 
-    let title: LocalizedStringKey
-    let infoView: LuminareInfoView?
-    @Binding var value: V
-    let sliderRange: ClosedRange<V>
-    let suffix: LocalizedStringKey?
-    var step: V
-    let upperClamp: Bool
-    let lowerClamp: Bool
-    let controlSize: LuminareValueAdjuster.ControlSize
-
-    let decimalPlaces: Int
+    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private let suffix: () -> Suffix
+    @ViewBuilder private let info: () -> LuminareInfoView<Info>
+    
+    @Binding private var value: V
+    private let sliderRange: ClosedRange<V>
+    private var step: V
+    private let upperClamp: Bool
+    private let lowerClamp: Bool
+    private let controlSize: LuminareValueAdjuster.ControlSize
+    private let decimalPlaces: Int
+    
     @State var eventMonitor: AnyObject?
 
-    // TODO: MAX DIGIT SPACING FOR LABEL
+    // TODO: max digit spacing for label
     public init(
-        _ title: LocalizedStringKey,
-        info: LuminareInfoView? = nil,
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
-        suffix: LocalizedStringKey? = nil,
+        horizontalPadding: CGFloat = 8,
+        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
         controlSize: LuminareValueAdjuster.ControlSize = .regular,
-        decimalPlaces: Int = 0
+        decimalPlaces: Int = 0,
+        @ViewBuilder label: @escaping () -> Label,
+        @ViewBuilder suffix: @escaping () -> Suffix,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) {
-        self.title = title
-        self.infoView = info
+        self.label = label
+        self.suffix = suffix
+        self.info = info
+        
         self._value = value
         self.sliderRange = sliderRange
-        self.suffix = suffix
         self.lowerClamp = lowerClamp
         self.upperClamp = upperClamp
         self.controlSize = controlSize
@@ -81,32 +86,126 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         } else {
             self.step = 1
         }
+        
+        self.horizontalPadding = horizontalPadding
+        self.disabled = disabled
+    }
+    
+    public init(
+        value: Binding<V>,
+        sliderRange: ClosedRange<V>,
+        step: V? = nil,
+        lowerClamp: Bool = false,
+        upperClamp: Bool = false,
+        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        decimalPlaces: Int = 0,
+        @ViewBuilder label: @escaping () -> Label,
+        @ViewBuilder suffix: @escaping () -> Suffix
+    ) where Info == EmptyView {
+        self.init(
+            value: value,
+            sliderRange: sliderRange,
+            step: step,
+            lowerClamp: lowerClamp,
+            upperClamp: upperClamp,
+            controlSize: controlSize,
+            decimalPlaces: decimalPlaces
+        ) {
+            label()
+        } suffix: {
+            suffix()
+        } info: {
+            LuminareInfoView()
+        }
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        _ suffixKey: LocalizedStringKey,
+        value: Binding<V>,
+        sliderRange: ClosedRange<V>,
+        horizontalPadding: CGFloat = 8,
+        disabled: Bool = false,
+        step: V? = nil,
+        lowerClamp: Bool = false,
+        upperClamp: Bool = false,
+        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        decimalPlaces: Int = 0,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+    ) where Label == Text, Suffix == Text {
+        self.init(
+            value: value,
+            sliderRange: sliderRange,
+            horizontalPadding: horizontalPadding,
+            disabled: disabled,
+            step: step,
+            lowerClamp: lowerClamp,
+            upperClamp: upperClamp,
+            controlSize: controlSize,
+            decimalPlaces: decimalPlaces
+        ) {
+            Text(key)
+        } suffix: {
+            Text(suffixKey)
+        } info: {
+            info()
+        }
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        _ suffixKey: LocalizedStringKey,
+        value: Binding<V>,
+        sliderRange: ClosedRange<V>,
+        horizontalPadding: CGFloat = 8,
+        disabled: Bool = false,
+        step: V? = nil,
+        lowerClamp: Bool = false,
+        upperClamp: Bool = false,
+        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        decimalPlaces: Int = 0
+    ) where Label == Text, Suffix == Text, Info == EmptyView {
+        self.init(
+            key,
+            suffixKey,
+            value: value,
+            sliderRange: sliderRange,
+            horizontalPadding: horizontalPadding,
+            disabled: disabled,
+            step: step,
+            lowerClamp: lowerClamp,
+            upperClamp: upperClamp,
+            controlSize: controlSize,
+            decimalPlaces: decimalPlaces
+        ) {
+            LuminareInfoView()
+        }
     }
 
     public var body: some View {
         VStack {
             if controlSize == .regular {
-                HStack {
-                    titleView()
-
-                    Spacer()
-
-                    labelView()
+                LuminareLabeledContent(horizontalPadding: horizontalPadding, disabled: disabled) {
+                    content()
+                } label: {
+                    label()
+                } info: {
+                    info()
                 }
 
-                sliderView()
+                slider()
             } else {
-                HStack(spacing: 12) {
-                    titleView()
-
-                    Spacer(minLength: 0)
-
+                LuminareLabeledContent(horizontalPadding: horizontalPadding, spacing: 12, disabled: disabled) {
                     HStack(spacing: 12) {
-                        sliderView()
-
-                        labelView()
+                        slider()
+                        
+                        content()
                     }
                     .frame(width: 270)
+                } label: {
+                    label()
+                } info: {
+                    info()
                 }
             }
         }
@@ -116,18 +215,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
         .animation(LuminareConstants.animation, value: isShowingTextBox)
     }
 
-    func titleView() -> some View {
-        HStack(spacing: 0) {
-            Text(title)
-
-            if let infoView {
-                infoView
-            }
-        }
-        .fixedSize(horizontal: false, vertical: true)
-    }
-
-    func sliderView() -> some View {
+    func slider() -> some View {
         Slider(
             value: Binding(
                 get: {
@@ -143,7 +231,7 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
     }
 
     @ViewBuilder
-    func labelView() -> some View {
+    func content() -> some View {
         HStack {
             if isShowingTextBox {
                 TextField(
@@ -190,8 +278,8 @@ public struct LuminareValueAdjuster<V>: View where V: Strideable, V: BinaryFloat
                 .buttonStyle(PlainButtonStyle())
             }
 
-            if let suffix {
-                Text(suffix)
+            if Suffix.self != EmptyView.self {
+                suffix()
                     .padding(.leading, -6)
             }
         }

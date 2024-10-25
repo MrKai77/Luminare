@@ -7,48 +7,91 @@
 
 import SwiftUI
 
-public struct LuminareToggle: View {
-    let elementMinHeight: CGFloat = 34
-    let horizontalPadding: CGFloat = 8
-
-    let title: LocalizedStringKey
-    let infoView: LuminareInfoView?
+public struct LuminareToggle<Label, Info>: View where Label: View, Info: View {
+    let elementMinHeight: CGFloat
+    let horizontalPadding: CGFloat
+    let disabled: Bool
+    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private let info: () -> LuminareInfoView<Info>
+    
     @Binding var value: Bool
 
-    let disabled: Bool
-
     public init(
-        _ title: LocalizedStringKey,
-        info: LuminareInfoView? = nil,
         isOn value: Binding<Bool>,
-        disabled: Bool = false
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        disabled: Bool = false,
+        @ViewBuilder label: @escaping () -> Label,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) {
-        self.title = title
-        self.infoView = info
-        self._value = value
+        self.elementMinHeight = elementMinHeight
+        self.horizontalPadding = horizontalPadding
         self.disabled = disabled
+        self.label = label
+        self.info = info
+        self._value = value
+    }
+    
+    public init(
+        isOn value: Binding<Bool>,
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        disabled: Bool = false,
+        @ViewBuilder label: @escaping () -> Label
+    ) where Info == EmptyView {
+        self.init(
+            isOn: value,
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            disabled: disabled
+        ) {
+            label()
+        } info: {
+            LuminareInfoView()
+        }
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        isOn value: Binding<Bool>,
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        disabled: Bool = false,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+    ) where Label == Text {
+        self.init(
+            isOn: value,
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            disabled: disabled
+        ) {
+            Text(key)
+        } info: {
+            info()
+        }
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        isOn value: Binding<Bool>,
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        disabled: Bool = false
+    ) where Label == Text, Info == EmptyView {
+        self.init(
+            key, 
+            isOn: value,
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            disabled: disabled
+        ) {
+            LuminareInfoView()
+        }
     }
 
     public var body: some View {
-        HStack {
-            HStack(spacing: 0) {
-                Text(title)
-
-                if let infoView {
-                    infoView
-                }
-            }
-            .fixedSize(horizontal: false, vertical: true)
-
-            Spacer()
-
+        LuminareLabeledContent(elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding, disabled: disabled) {
             Toggle("", isOn: $value.animation(LuminareConstants.animation))
                 .labelsHidden()
                 .controlSize(.small)
                 .toggleStyle(.switch)
-                .disabled(disabled)
+        } label: {
+            label()
+        } info: {
+            info()
         }
-        .padding(.horizontal, horizontalPadding)
-        .frame(minHeight: elementMinHeight)
     }
 }

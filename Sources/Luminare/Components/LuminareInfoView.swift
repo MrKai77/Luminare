@@ -35,6 +35,12 @@ public struct LuminareInfoView<Content>: View where Content: View {
             Text(key)
         }
     }
+    
+    public init() where Content == EmptyView {
+        self.init {
+            EmptyView()
+        }
+    }
 
     public var body: some View {
         VStack {
