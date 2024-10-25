@@ -9,7 +9,6 @@ import SwiftUI
 
 public struct LuminareInfoView<Content>: View where Content: View {
     let color: Color
-    let withoutPadding: Bool
     @ViewBuilder private let content: () -> Content
     
     @State private var isShowingDescription: Bool = false
@@ -18,20 +17,17 @@ public struct LuminareInfoView<Content>: View where Content: View {
     
     public init(
         color: Color = .blue,
-        withoutPadding: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.color = color
-        self.withoutPadding = withoutPadding
         self.content = content
     }
 
     public init(
         _ key: LocalizedStringKey,
-        color: Color = .blue,
-        withoutPadding: Bool = false
+        color: Color = .blue
     ) where Content == Text {
-        self.init(color: color, withoutPadding: withoutPadding) {
+        self.init(color: color) {
             Text(key)
         }
     }
@@ -67,7 +63,6 @@ public struct LuminareInfoView<Content>: View where Content: View {
                 .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
                     content()
                         .multilineTextAlignment(.center)
-                        .padding(withoutPadding ? 0 : 8)
                 }
 
             Spacer()
