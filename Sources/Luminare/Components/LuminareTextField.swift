@@ -9,14 +9,14 @@ import SwiftUI
 
 public struct LuminareTextField<F>: View
 where F: ParseableFormatStyle, F.FormatOutput == String {
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
+    private let elementMinHeight: CGFloat
+    private let horizontalPadding: CGFloat
     
-    @Binding var value: F.FormatInput?
-    let format: F
-    let placeholder: LocalizedStringKey
+    @Binding private var value: F.FormatInput?
+    private let format: F
+    private let placeholder: LocalizedStringKey
 
-    @State var monitor: Any?
+    @State private var monitor: Any?
 
     public init(
         _ placeholder: LocalizedStringKey,
