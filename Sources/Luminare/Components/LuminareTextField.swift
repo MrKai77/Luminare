@@ -7,26 +7,39 @@
 
 import SwiftUI
 
-public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
-    let elementMinHeight: CGFloat = 34
-    let horizontalPadding: CGFloat = 8
-
+public struct LuminareTextField<F>: View
+where F: ParseableFormatStyle, F.FormatOutput == String {
+    let elementMinHeight: CGFloat
+    let horizontalPadding: CGFloat
+    
     @Binding var value: F.FormatInput?
-    var format: F
+    let format: F
     let placeholder: LocalizedStringKey
-    let onSubmit: (() -> ())?
 
     @State var monitor: Any?
 
-    public init(_ placeholder: LocalizedStringKey, value: Binding<F.FormatInput?>, format: F, onSubmit: (() -> ())? = nil) {
+    public init(
+        _ placeholder: LocalizedStringKey,
+        value: Binding<F.FormatInput?>, format: F,
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8
+    ) {
+        self.elementMinHeight = elementMinHeight
+        self.horizontalPadding = horizontalPadding
         self._value = value
         self.format = format
         self.placeholder = placeholder
-        self.onSubmit = onSubmit
     }
 
-    public init(_ placeholder: LocalizedStringKey, text: Binding<String>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
-        self.init(placeholder, value: .init(text), format: StringFormatStyle(), onSubmit: onSubmit)
+    public init(
+        _ placeholder: LocalizedStringKey,
+        text: Binding<String>,
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8
+    ) where F == StringFormatStyle {
+        self.init(
+            placeholder,
+            value: .init(text), format: StringFormatStyle(),
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
+        )
     }
 
     public var body: some View {
@@ -34,12 +47,6 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
             .padding(.horizontal, horizontalPadding)
             .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
-            .onSubmit {
-                if let onSubmit {
-                    onSubmit()
-                }
-            }
-
             .onAppear {
                 guard monitor != nil else { return }
 
