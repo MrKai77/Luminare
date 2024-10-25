@@ -7,33 +7,116 @@
 
 import SwiftUI
 
-public struct LuminareSliderPicker<V>: View where V: Equatable {
-    let height: CGFloat = 70
+public struct LuminareSliderPicker<Label, Content, Info, V>: View
+where Label: View, Content: View, Info: View, V: Equatable {
+    private let height: CGFloat
+    private let horizontalPadding: CGFloat
+    
+    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private let content: (V) -> Content
+    @ViewBuilder private let info: () -> LuminareInfoView<Info>
 
-    let title: LocalizedStringKey
+    private let options: [V]
+    @Binding private var selection: V
 
-    let options: [V]
-    @Binding var selection: V
-
-    let label: (V) -> LocalizedStringKey
-
-    let horizontalPadding: CGFloat = 8
-
-    public init(_ title: LocalizedStringKey, _ options: [V], selection: Binding<V>, label: @escaping (V) -> LocalizedStringKey) {
-        self.title = title
+    public init(
+        _ options: [V], selection: Binding<V>,
+        height: CGFloat = 70,
+        horizontalPadding: CGFloat = 8,
+        @ViewBuilder label: @escaping () -> Label,
+        @ViewBuilder content: @escaping (V) -> Content,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+    ) {
+        self.height = height
+        self.horizontalPadding = horizontalPadding
+        self.label = label
+        self.content = content
+        self.info = info
         self.options = options
         self._selection = selection
-        self.label = label
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        _ options: [V], selection: Binding<V>,
+        height: CGFloat = 70,
+        horizontalPadding: CGFloat = 8,
+        contentKey: @escaping (V) -> LocalizedStringKey,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+    ) where Label == Text, Content == Text {
+        self.init(
+            options, selection: selection,
+            height: height,
+            horizontalPadding: horizontalPadding
+        ) {
+            Text(key)
+        } content: { value in
+            Text(contentKey(value))
+        } info: {
+            info()
+        }
+    }
+    
+    public init(
+        _ options: [V], selection: Binding<V>,
+        height: CGFloat = 70,
+        horizontalPadding: CGFloat = 8,
+        @ViewBuilder label: @escaping () -> Label,
+        @ViewBuilder content: @escaping (V) -> Content
+    ) where Info == EmptyView {
+        self.init(
+            options, selection: selection,
+            height: height,
+            horizontalPadding: horizontalPadding
+        ) {
+            label()
+        } content: { value in
+            content(value)
+        } info: {
+            LuminareInfoView()
+        }
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        _ options: [V], selection: Binding<V>,
+        height: CGFloat = 70,
+        horizontalPadding: CGFloat = 8,
+        contentKey: @escaping (V) -> LocalizedStringKey
+    ) where Label == Text, Content == Text, Info == EmptyView {
+        self.init(
+            key,
+            options, selection: selection,
+            height: height,
+            horizontalPadding: horizontalPadding,
+            contentKey: contentKey
+        ) {
+            LuminareInfoView()
+        }
     }
 
     public var body: some View {
         VStack {
-            HStack {
-                Text(title)
-
-                Spacer()
-
-                labelView()
+            LuminareLabeledContent(horizontalPadding: horizontalPadding) {
+                content(selection)
+                    .contentTransition(.numericText())
+                    .multilineTextAlignment(.trailing)
+                    .monospaced()
+                    .padding(4)
+                    .padding(.horizontal, 4)
+                    .background {
+                        ZStack {
+                            Capsule()
+                                .strokeBorder(.quaternary, lineWidth: 1)
+                            
+                            Capsule()
+                                .foregroundStyle(.quinary.opacity(0.5))
+                        }
+                    }
+                    .fixedSize()
+                    .clipShape(.capsule)
+            } label: {
+                label()
             }
 
             Slider(
@@ -52,28 +135,5 @@ public struct LuminareSliderPicker<V>: View where V: Equatable {
         .padding(.horizontal, horizontalPadding)
         .frame(height: height)
         .animation(LuminareConstants.animation, value: selection)
-    }
-
-    @ViewBuilder
-    func labelView() -> some View {
-        HStack {
-            Text(label(selection))
-                .contentTransition(.numericText())
-                .multilineTextAlignment(.trailing)
-                .monospaced()
-                .padding(4)
-                .padding(.horizontal, 4)
-                .background {
-                    ZStack {
-                        Capsule()
-                            .strokeBorder(.quaternary, lineWidth: 1)
-
-                        Capsule()
-                            .foregroundStyle(.quinary.opacity(0.5))
-                    }
-                }
-                .fixedSize()
-                .clipShape(.capsule)
-        }
     }
 }
