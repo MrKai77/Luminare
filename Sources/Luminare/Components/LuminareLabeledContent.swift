@@ -147,3 +147,21 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
         .frame(minHeight: elementMinHeight)
     }
 }
+
+#Preview {
+    LuminareSection {
+        LuminareLabeledContent {
+            Button {
+                
+            } label: {
+                Text("Test")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        } label: {
+            Text("Label")
+        }
+    }
+    .padding()
+}

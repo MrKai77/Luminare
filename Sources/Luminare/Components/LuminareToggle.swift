@@ -95,3 +95,10 @@ public struct LuminareToggle<Label, Info>: View where Label: View, Info: View {
         }
     }
 }
+
+#Preview {
+    LuminareSection {
+        LuminareToggle("Toggle", isOn: .constant(true))
+    }
+    .padding()
+}

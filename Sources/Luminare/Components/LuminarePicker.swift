@@ -12,7 +12,7 @@ public protocol LuminarePickerData {
 }
 
 public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
-    @Environment(\.tintColor) var tintColor
+    @Environment(\.tintColor) private var tintColor
 
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
@@ -25,9 +25,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Binding var selectedItem: V
     @State var internalSelection: V
 
-    let roundTop: Bool
-    let roundBottom: Bool
-    let content: (V) -> Content
+    private let roundTop: Bool
+    private let roundBottom: Bool
+    @ViewBuilder private let content: (V) -> Content
 
     public init(
         elements: [V],

@@ -10,6 +10,7 @@ import SwiftUI
 public struct LuminareInfoView<Content>: View where Content: View {
     let color: Color
     let arrowEdge: Edge
+    
     @ViewBuilder private let content: () -> Content
     
     @State private var isShowingDescription: Bool = false
@@ -75,26 +76,26 @@ public struct LuminareInfoView<Content>: View where Content: View {
 }
 
 #Preview {
-    VStack {
-        HStack {
-            Text("A sentence")
-            
+    LuminareSection {
+        LuminareLabeledContent {
+        } label: {
+            Text("Pops to bottom")
+        } info: {
             LuminareInfoView {
                 Text("An info description")
                     .padding()
             }
         }
-        .fixedSize(horizontal: false, vertical: true)
         
-        HStack {
-            Text("A sentence")
-            
-            LuminareInfoView(color: .violet, arrowEdge: .leading) {
+        LuminareLabeledContent {
+        } label: {
+            Text("Pops to trailing")
+        } info: {
+            LuminareInfoView(color: .violet, arrowEdge: .trailing) {
                 Text("An info description")
                     .padding()
             }
         }
-        .fixedSize(horizontal: false, vertical: true)
     }
     .padding()
 }

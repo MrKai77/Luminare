@@ -363,3 +363,20 @@ private extension Comparable {
         min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
+
+#Preview {
+    LuminareSection {
+        LuminareValueAdjuster(
+            value: .constant(42),
+            sliderRange: 0...128,
+            step: 1,
+            lowerClamp: true, 
+            upperClamp: false
+        ) {
+            Text("Value Adjuster")
+        } suffix: {
+            Text("Suffix")
+        }
+    }
+    .padding()
+}

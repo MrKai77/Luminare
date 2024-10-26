@@ -13,7 +13,7 @@ public struct LuminareButtonStyle: ButtonStyle {
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
     
-    @State var isHovering: Bool = false
+    @State private var isHovering: Bool = false
 
     public init() {}
 
