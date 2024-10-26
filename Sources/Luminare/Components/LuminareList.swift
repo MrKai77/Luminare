@@ -384,13 +384,14 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
                             items: $items,
                             selection: $selection,
                             item: item,
-                            content: content,
                             firstItem: $firstItem,
                             lastItem: $lastItem,
-                            canRefreshSelection: $canRefreshSelection
+                            canRefreshSelection: $canRefreshSelection,
+                            content: content
                         )
                     }
-                    // .onDelete(perform: deleteItems) // deleteItems crashes Loop, need to be investigated further
+                    // TODO: `deleteItems` crashes Loop, need to be investigated further
+                    // .onDelete(perform: deleteItems)
                     .onMove { indices, newOffset in
                         withAnimation(LuminareConstants.animation) {
                             items.move(fromOffsets: indices, toOffset: newOffset)
@@ -436,6 +437,7 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         }
     }
 
+    // TODO: investigate this
     // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
     // private func deleteItems(at offsets: IndexSet) {
     //  withAnimation {
@@ -504,18 +506,18 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
         item: Binding<V>,
-        @ViewBuilder content: @escaping (Binding<V>) -> Content,
         firstItem: Binding<V?>,
         lastItem: Binding<V?>,
-        canRefreshSelection: Binding<Bool>
+        canRefreshSelection: Binding<Bool>,
+        @ViewBuilder content: @escaping (Binding<V>) -> Content
     ) {
         self._items = items
         self._selection = selection
         self._item = item
-        self.content = content
         self._firstItem = firstItem
         self._lastItem = lastItem
         self._canRefreshSelection = canRefreshSelection
+        self.content = content
     }
 
     var body: some View {
