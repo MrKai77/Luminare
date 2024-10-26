@@ -20,9 +20,10 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             }
         }
     }
+    
+    @Environment(\.isEnabled) private var isEnabled
 
-    private let horizontalPadding: CGFloat
-    private let disabled: Bool
+    let horizontalPadding: CGFloat
 
     private let formatter: NumberFormatter
     private var totalRange: V {
@@ -56,7 +57,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
@@ -88,12 +88,12 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         }
         
         self.horizontalPadding = horizontalPadding
-        self.disabled = disabled
     }
     
     public init(
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
+        horizontalPadding: CGFloat = 8,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
@@ -105,6 +105,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         self.init(
             value: value,
             sliderRange: sliderRange,
+            horizontalPadding: horizontalPadding,
             step: step,
             lowerClamp: lowerClamp,
             upperClamp: upperClamp,
@@ -125,7 +126,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
@@ -137,7 +137,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             value: value,
             sliderRange: sliderRange,
             horizontalPadding: horizontalPadding,
-            disabled: disabled,
             step: step,
             lowerClamp: lowerClamp,
             upperClamp: upperClamp,
@@ -158,7 +157,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
@@ -171,7 +169,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             value: value,
             sliderRange: sliderRange,
             horizontalPadding: horizontalPadding,
-            disabled: disabled,
             step: step,
             lowerClamp: lowerClamp,
             upperClamp: upperClamp,
@@ -185,7 +182,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
     public var body: some View {
         VStack {
             if controlSize == .regular {
-                LuminareCompose(horizontalPadding: horizontalPadding, disabled: disabled) {
+                LuminareCompose(horizontalPadding: horizontalPadding) {
                     content()
                 } label: {
                     label()
@@ -194,8 +191,9 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
                 }
 
                 slider()
+                    .padding(.horizontal, horizontalPadding)
             } else {
-                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12, disabled: disabled) {
+                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12) {
                     HStack(spacing: 12) {
                         slider()
                         
@@ -288,17 +286,16 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         .padding(4)
         .padding(.horizontal, 4)
         .background {
-            ZStack {
+            Capsule()
+                .strokeBorder(.quaternary, lineWidth: 1)
+        }
+        .background {
+            if isShowingTextBox {
                 Capsule()
-                    .strokeBorder(.quaternary, lineWidth: 1)
-
-                if isShowingTextBox {
-                    Capsule()
-                        .foregroundStyle(.quinary)
-                } else {
-                    Capsule()
-                        .foregroundStyle(.quinary.opacity(0.5))
-                }
+                    .foregroundStyle(.quinary)
+            } else {
+                Capsule()
+                    .foregroundStyle(.quinary.opacity(0.5))
             }
         }
         .fixedSize()
@@ -313,6 +310,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         .onDisappear {
             removeEventMonitor()
         }
+        .opacity(isEnabled ? 1 : 0.5)
     }
 
     func addEventMonitor() {
@@ -374,6 +372,20 @@ private extension Comparable {
             upperClamp: false
         ) {
             Text("Value Adjuster")
+        } suffix: {
+            Text("suffix")
+        }
+        
+        
+        LuminareValueAdjusterCompose(
+            value: .constant(42),
+            sliderRange: 0...128,
+            step: 1,
+            lowerClamp: true,
+            upperClamp: false,
+            controlSize: .compact
+        ) {
+            Text("Value Adjuster Large")
         } suffix: {
             Text("suffix")
         }

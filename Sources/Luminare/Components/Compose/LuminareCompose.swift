@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: View, Info: View {
+    @Environment(\.isEnabled) private var isEnabled
+    
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let spacing: CGFloat?
-    let disabled: Bool
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let label: () -> Label
@@ -20,7 +21,6 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
@@ -28,7 +28,6 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.spacing = spacing
-        self.disabled = disabled
         self.label = label
         self.content = content
         self.info = info
@@ -37,13 +36,12 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) where Info == EmptyView {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled
+            spacing: spacing
         ) {
             content()
         } label: {
@@ -57,13 +55,12 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) where Label == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled
+            spacing: spacing
         ) {
             content()
         } label: {
@@ -77,13 +74,12 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text, Info == EmptyView {
         self.init(
             key,
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled
+            spacing: spacing
         ) {
             content()
         } info: {
@@ -94,14 +90,13 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         infoKey: LocalizedStringKey,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) where Info == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled,
+            spacing: spacing,
             content: content, label: label
         ) {
             LuminareInfoView(infoKey)
@@ -112,14 +107,13 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         infoKey: LocalizedStringKey,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) where Label == Text, Info == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled,
+            spacing: spacing,
             infoKey: infoKey,
             content: content
         ) {
@@ -131,6 +125,8 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         HStack(spacing: spacing) {
             HStack(spacing: 0) {
                 label()
+                    .opacity(isEnabled ? 1 : 0.5)
+                    .disabled(!isEnabled)
                 
                 if Info.self != EmptyView.self {
                     info()
@@ -141,7 +137,7 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
             Spacer()
             
             content()
-                .disabled(disabled)
+                .disabled(!isEnabled)
         }
         .padding(.horizontal, horizontalPadding)
         .frame(minHeight: elementMinHeight)
@@ -161,6 +157,20 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
         .padding(.trailing, -4)
+        
+        
+        LuminareCompose("Label") {
+            Button {
+                
+            } label: {
+                Text("Test")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
+        .padding(.trailing, -4)
+        .disabled(true)
     }
     .padding()
 }
