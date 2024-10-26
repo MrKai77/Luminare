@@ -44,9 +44,9 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
             super.init()
         }
 
-        // View is optional bevause it is not needed to close the popup
+        // view is optional bevause it is not needed to close the popup
         func setVisible(_ isPresented: Bool, in view: NSView? = nil) {
-            // If we're going to be closing the window
+            // if we're going to be closing the window
             guard isPresented else {
                 popover?.resignKey()
                 return
@@ -58,22 +58,22 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
                 initializePopup()
                 guard let popover else { return }
 
-                // Popover size
+                // popover size
                 let targetSize = NSSize(width: 300, height: 300)
                 let extraPadding: CGFloat = 10
 
-                // Get coordinates to place popopver
+                // get coordinates to place popopver
                 guard let windowFrame = view.window?.frame else { return }
                 let viewBounds = view.bounds
-                var targetPoint = view.convert(viewBounds, to: nil).origin // Convert to window coordinates
+                var targetPoint = view.convert(viewBounds, to: nil).origin // convert to window coordinates
                 originalYPoint = targetPoint.y
 
-                // Correct popover position
+                // correct popover position
                 targetPoint.y += windowFrame.minY
                 targetPoint.x += windowFrame.minX
                 targetPoint.y -= targetSize.height + extraPadding
 
-                // Set position and show popover
+                // set position and show popover
                 popover.setContentSize(targetSize)
                 popover.setFrameOrigin(targetPoint)
                 popover.makeKeyAndOrderFront(nil)

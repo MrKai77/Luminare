@@ -136,12 +136,14 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     let elementMinHeight: CGFloat = 34
     let elementExtraMinHeight: CGFloat = 25
     let extraCompact: Bool
+    let borderlessWhileNotHovering: Bool
     
     @State var isHovering: Bool = false
     let cornerRadius: CGFloat = 8
 
-    public init(extraCompact: Bool = false) {
+    public init(extraCompact: Bool = false, borderlessWhileNotHovering: Bool = false) {
         self.extraCompact = extraCompact
+        self.borderlessWhileNotHovering = borderlessWhileNotHovering
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -149,10 +151,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(backgroundForState(isPressed: configuration.isPressed))
-            .background {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
+            .background(border())
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
             .clipShape(.rect(cornerRadius: cornerRadius))
             .onHover { hover in
@@ -164,15 +163,35 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .frame(minHeight: extraCompact ? elementExtraMinHeight : elementMinHeight)
             .opacity(isEnabled ? 1 : 0.5)
     }
+    
+    @ViewBuilder private func border() -> some View {
+        Group {
+            if isHovering || !borderlessWhileNotHovering {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.quaternary, lineWidth: 1)
+            } else {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.clear, lineWidth: 1)
+            }
+        }
+    }
 
-    private func backgroundForState(isPressed: Bool) -> some View {
+    @ViewBuilder private func backgroundForState(isPressed: Bool) -> some View {
         Group {
             if isPressed {
                 Rectangle().foregroundStyle(.quaternary)
             } else if isHovering {
-                Rectangle().foregroundStyle(.quaternary.opacity(0.7))
+                if borderlessWhileNotHovering {
+                    Rectangle().foregroundStyle(.quinary)
+                } else {
+                    Rectangle().foregroundStyle(.quaternary.opacity(0.7))
+                }
             } else {
-                Rectangle().foregroundStyle(.quinary)
+                if borderlessWhileNotHovering {
+                    Rectangle().foregroundStyle(.clear)
+                } else {
+                    Rectangle().foregroundStyle(.quinary)
+                }
             }
         }
     }
