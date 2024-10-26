@@ -12,6 +12,7 @@ where Content: View, V: Hashable & Equatable {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let cornerRadius: CGFloat
+    let borderless: Bool
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
@@ -22,12 +23,14 @@ where Content: View, V: Hashable & Equatable {
         selection: Binding<V>,
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
+        borderless: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
+        self.borderless = borderless
         self.content = content
     }
 
@@ -50,9 +53,12 @@ where Content: View, V: Hashable & Equatable {
             if isHovering {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary, lineWidth: 1)
-            } else {
+            } else if borderless {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.clear, lineWidth: 1)
+            } else {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
             }
         }
         .background {
@@ -72,7 +78,7 @@ where Content: View, V: Hashable & Equatable {
 #Preview {
     LuminareSection {
         LuminareLabeledContent("Picker") {
-            LuminareCompactPicker(selection: .constant(42)) {
+            LuminareCompactPicker(selection: .constant(42), borderless: false) {
                 ForEach(0..<200) { num in
                     Text("\(num)")
                 }
