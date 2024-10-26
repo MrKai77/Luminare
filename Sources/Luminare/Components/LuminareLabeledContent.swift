@@ -96,7 +96,6 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
         spacing: CGFloat? = nil,
         disabled: Bool = false,
         infoKey: LocalizedStringKey,
-        infoWithoutPadding: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) where Info == Text {
@@ -105,7 +104,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
             spacing: spacing, disabled: disabled,
             content: content, label: label
         ) {
-            LuminareInfoView(infoKey, withoutPadding: infoWithoutPadding)
+            LuminareInfoView(infoKey)
         }
     }
     
@@ -115,14 +114,13 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
         spacing: CGFloat? = nil,
         disabled: Bool = false,
         infoKey: LocalizedStringKey,
-        infoWithoutPadding: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) where Label == Text, Info == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
             spacing: spacing, disabled: disabled,
-            infoKey: infoKey, infoWithoutPadding: infoWithoutPadding,
+            infoKey: infoKey,
             content: content
         ) {
             Text(key)

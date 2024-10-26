@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct LuminareInfoView<Content>: View where Content: View {
     let color: Color
+    let arrowEdge: Edge
     @ViewBuilder private let content: () -> Content
     
     @State private var isShowingDescription: Bool = false
@@ -16,18 +17,21 @@ public struct LuminareInfoView<Content>: View where Content: View {
     @State private var hoverTimer: Timer?
     
     public init(
-        color: Color = .blue,
+        color: Color = .accentColor,
+        arrowEdge: Edge = .bottom,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.color = color
+        self.arrowEdge = arrowEdge
         self.content = content
     }
 
     public init(
         _ key: LocalizedStringKey,
-        color: Color = .blue
+        color: Color = .accentColor,
+        arrowEdge: Edge = .bottom
     ) where Content == Text {
-        self.init(color: color) {
+        self.init(color: color, arrowEdge: arrowEdge) {
             Text(key)
         }
     }
@@ -60,7 +64,7 @@ public struct LuminareInfoView<Content>: View where Content: View {
                     }
                 }
 
-                .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
+                .popover(isPresented: $isShowingDescription, arrowEdge: arrowEdge) {
                     content()
                         .multilineTextAlignment(.center)
                 }
@@ -68,4 +72,29 @@ public struct LuminareInfoView<Content>: View where Content: View {
             Spacer()
         }
     }
+}
+
+#Preview {
+    VStack {
+        HStack {
+            Text("A sentence")
+            
+            LuminareInfoView {
+                Text("An info description")
+                    .padding()
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        
+        HStack {
+            Text("A sentence")
+            
+            LuminareInfoView(color: .violet, arrowEdge: .leading) {
+                Text("An info description")
+                    .padding()
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+    .padding()
 }

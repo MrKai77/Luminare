@@ -30,16 +30,16 @@ public struct LuminareColorPicker: View {
             LuminareTextField(
                 "Hex Color",
                 value: .init($text),
-                format: StringFormatStyle(parseStrategy: .hex(formatStrategy)),
-                onSubmit: {
-                    if let newColor = Color(hex: text) {
-                        currentColor = newColor
-                        text = newColor.toHex()
-                    } else {
-                        text = currentColor.toHex() // revert to last valid color
-                    }
-                }
+                format: StringFormatStyle(parseStrategy: .hex(formatStrategy))
             )
+            .onSubmit {
+                if let newColor = Color(hex: text) {
+                    currentColor = newColor
+                    text = newColor.toHex()
+                } else {
+                    text = currentColor.toHex() // revert to last valid color
+                }
+            }
             .modifier(LuminareBordered())
 
             Button {
