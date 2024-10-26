@@ -33,6 +33,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
     public enum HexStrategy: Codable, Equatable, Hashable, ParseStrategy {
         public typealias ParseInput = String
         public typealias ParseOutput = String
+        public typealias Lowercased = Bool
 
         /// `#42ab0E` -> `42ab0e`
         case lowercased
@@ -45,6 +46,9 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
 
         /// `42ab0E` -> `#42AB0E`
         case uppercasedWithWell
+        
+        /// Customized case and prefix characters.
+        case custom(Lowercased, String)
 
         public func parse(_ value: String) throws -> String {
             switch self {
@@ -58,6 +62,8 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
                 try "#" + Self.lowercased.parse(value)
             case .uppercasedWithWell:
                 try "#" + Self.uppercased.parse(value)
+            case .custom(let lowercased, let prefix):
+                try prefix + (lowercased ? Self.lowercased : Self.uppercased).parse(value)
             }
         }
     }
