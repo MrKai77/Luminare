@@ -38,8 +38,8 @@ where Label: View, Content: View, Info: View, V: Hashable & Equatable {
             Picker("", selection: $selection) {
                 content()
             }
-            .pickerStyle(.menu)
-            .background(.clear)
+            .buttonStyle(.borderless)
+            .padding(.leading, -4)
             .clipShape(Capsule())
             .fixedSize()
             .padding(4)
