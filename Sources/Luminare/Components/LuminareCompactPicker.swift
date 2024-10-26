@@ -7,57 +7,53 @@
 
 import SwiftUI
 
-struct LuminareCompactPicker<Label, Content, Info, V>: View
-where Label: View, Content: View, Info: View, V: Hashable & Equatable {
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
-    let disabled: Bool = false
+struct LuminareCompactPicker<Content, V>: View
+where Content: View, V: Hashable & Equatable {
+    let cornerRadius: CGFloat
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
-    @ViewBuilder private let label: () -> Label
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
+    
+    @State var isHovering: Bool = false
     
     public init(
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         selection: Binding<V>,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        cornerRadius: CGFloat = 8,
+        @ViewBuilder content: @escaping () -> Content
     ) {
-        self.elementMinHeight = elementMinHeight
-        self.horizontalPadding = horizontalPadding
+        self.cornerRadius = cornerRadius
         self._selection = selection
         self.content = content
-        self.label = label
-        self.info = info
     }
 
     var body: some View {
-        LuminareLabeledContent(elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding) {
-            Picker("", selection: $selection) {
-                content()
-            }
-            .buttonStyle(.borderless)
-            .padding(.leading, -4)
-            .clipShape(Capsule())
-            .fixedSize()
-            .padding(4)
-            .background {
-                ZStack {
-                    Capsule()
-                        .strokeBorder(.quaternary, lineWidth: 1)
-                    
-                    Capsule()
-                        .foregroundStyle(.quinary.opacity(0.5))
-                }
-            }
-            .disabled(disabled)
+        Picker(selection: $selection) {
+            content()
         } label: {
-            label()
-        } info: {
-            info()
+            EmptyView()
         }
+        .padding(.leading, 2)
+        .buttonStyle(.borderless)
+        .fixedSize()
+        .background {
+            if isHovering {
+                Rectangle()
+                    .foregroundStyle(.quaternary.opacity(0.7))
+            } else {
+                Rectangle()
+                    .foregroundStyle(.quinary)
+            }
+        }
+        .background {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .strokeBorder(.quaternary, lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius)).onHover { hover in
+            withAnimation(LuminareConstants.fastAnimation) {
+                isHovering = hover
+            }
+        }
+        .animation(LuminareConstants.fastAnimation, value: isHovering)
     }
 }
 
@@ -67,11 +63,19 @@ where Label: View, Content: View, Info: View, V: Hashable & Equatable {
             ForEach(0..<200) { num in
                 Text("\(num)")
             }
-        } label: {
-            Text("Picker")
-        } info: {
-            LuminareInfoView()
         }
+        
+        LuminareLabeledContent("Button") {
+            Button {
+                
+            } label: {
+                Text("Test")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
+        .padding(.trailing, -4)
     }
     .padding()
 }

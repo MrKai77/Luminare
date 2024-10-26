@@ -128,7 +128,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     }
     
     var body: some View {
-        HStack {
+        HStack(spacing: spacing) {
             HStack(spacing: 0) {
                 label()
                 
@@ -150,7 +150,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
 
 #Preview {
     LuminareSection {
-        LuminareLabeledContent {
+        LuminareLabeledContent("Label") {
             Button {
                 
             } label: {
@@ -159,9 +159,8 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
                     .padding(.horizontal, 8)
             }
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
-        } label: {
-            Text("Label")
         }
+        .padding(.trailing, -4)
     }
     .padding()
 }
