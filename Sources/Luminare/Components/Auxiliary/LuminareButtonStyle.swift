@@ -26,7 +26,6 @@ public struct LuminareButtonStyle: ButtonStyle {
                     isHovering = hover
                 }
             }
-            .animation(LuminareConstants.fastAnimation, value: isHovering)
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
@@ -64,7 +63,6 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
                     isHovering = hover
                 }
             }
-            .animation(LuminareConstants.fastAnimation, value: isHovering)
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
@@ -159,7 +157,6 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
                     isHovering = hover
                 }
             }
-            .animation(LuminareConstants.fastAnimation, value: isHovering)
             .frame(minHeight: extraCompact ? elementExtraMinHeight : elementMinHeight)
             .opacity(isEnabled ? 1 : 0.5)
     }

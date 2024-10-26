@@ -186,8 +186,18 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public var body: some View {
         VStack(spacing: 0) {
             if Header.self != EmptyView.self {
-                header()
-                    .foregroundStyle(.secondary)
+                Group {
+                    if Header.self == Text.self {
+                        HStack {
+                            header()
+                            
+                            Spacer()
+                        }
+                    } else {
+                        header()
+                    }
+                }
+                .foregroundStyle(.secondary)
                 
                 Spacer()
                     .frame(height: headerSpacing)
@@ -212,8 +222,18 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 Spacer()
                     .frame(height: footerSpacing)
                 
-                footer()
-                    .foregroundStyle(.secondary)
+                Group {
+                    if Footer.self == Text.self {
+                        HStack {
+                            footer()
+                            
+                            Spacer()
+                        }
+                    } else {
+                        footer()
+                    }
+                }
+                .foregroundStyle(.secondary)
             }
 
         }

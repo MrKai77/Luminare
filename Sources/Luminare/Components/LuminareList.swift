@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-public struct LuminareList<Header, ContentA, ContentB, Footer, V, ID>: View
-where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, ID: Hashable {
+public struct LuminareList<Header, ContentA, ContentB, AddView, RemoveView, Footer, V, ID>: View
+where Header: View, ContentA: View, ContentB: View, AddView: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
     @Environment(\.tintColor) private var tintColor
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
 
@@ -18,6 +18,8 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     
     @ViewBuilder private let content: (Binding<V>) -> ContentA
     @ViewBuilder private let emptyView: () -> ContentB
+    @ViewBuilder private let addView: () -> AddView
+    @ViewBuilder private let removeView: () -> RemoveView
     @ViewBuilder private let header: () -> Header
     @ViewBuilder private let footer: () -> Footer
 
@@ -25,19 +27,17 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     @State private var lastItem: V?
     private let id: KeyPath<V, ID>
 
-    private let addText: LocalizedStringKey
-    private let removeText: LocalizedStringKey
-
     @State private var canRefreshSelection = true
     @State private var eventMonitor: AnyObject?
 
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
@@ -45,10 +45,10 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         self._selection = selection
         self.addAction = addAction
         self.id = id
-        self.addText = addText
-        self.removeText = removeText
         self.content = content
         self.emptyView = emptyView
+        self.addView = addView
+        self.removeView = removeView
         self.header = header
         self.footer = footer
     }
@@ -58,18 +58,23 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         _ footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB
-    ) where Header == Text, Footer == Text {
+    ) where Header == Text, AddView == Text, RemoveView == Text, Footer == Text {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
+            },
             header: {
                 Text(headerKey)
             },
@@ -82,21 +87,23 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) where ContentB == EmptyView {
         self.init(
             items: items,
-            selection: selection, id: id, 
-            addText: addText, removeText: removeText,
+            selection: selection, id: id,
             addAction: addAction,
             content: content,
             emptyView: {
                 EmptyView()
             },
+            addView: addView,
+            removeView: removeView,
             header: header,
             footer: footer
         )
@@ -107,16 +114,21 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         _ footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
-    ) where Header == Text, ContentB == EmptyView, Footer == Text {
+    ) where Header == Text, ContentB == EmptyView, AddView == Text, RemoveView == Text, Footer == Text {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
+            },
             header: {
                 Text(headerKey)
             },
@@ -129,19 +141,21 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder header: @escaping () -> Header
     ) where Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
+            addView: addView,
+            removeView: removeView,
             header: header,
             footer: {
                 EmptyView()
@@ -153,18 +167,23 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB
-    ) where Header == Text, Footer == EmptyView {
+    ) where Header == Text, AddView == Text, RemoveView == Text, Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
+            },
             header: {
                 Text(headerKey)
             }
@@ -174,20 +193,22 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder header: @escaping () -> Header
     ) where ContentB == EmptyView, Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: {
                 EmptyView()
             },
+            addView: addView,
+            removeView: removeView,
             header: header
         )
     }
@@ -196,16 +217,21 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
-    ) where Header == Text, ContentB == EmptyView, Footer == EmptyView {
+    ) where Header == Text, ContentB == EmptyView, AddView == Text, RemoveView == Text, Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
+            },
             header: {
                 Text(headerKey)
             }
@@ -215,19 +241,21 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder footer: @escaping () -> Footer
     ) where Header == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
+            addView: addView,
+            removeView: removeView,
             header: {
                 EmptyView()
             },
@@ -239,18 +267,23 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB
-    ) where Header == EmptyView, Footer == Text {
+    ) where Header == EmptyView, AddView == Text, RemoveView == Text, Footer == Text {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
+            },
             footer: {
                 Text(footerKey)
             }
@@ -260,20 +293,22 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder footer: @escaping () -> Footer
     ) where Header == EmptyView, ContentB == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: {
                 EmptyView()
             },
+            addView: addView,
+            removeView: removeView,
             footer: footer
         )
     }
@@ -282,16 +317,21 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
-    ) where Header == EmptyView, ContentB == EmptyView, Footer == Text {
+    ) where Header == EmptyView, ContentB == EmptyView, AddView == Text, RemoveView == Text, Footer == Text {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
+            },
             footer: {
                 Text(footerKey)
             }
@@ -301,18 +341,20 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
-        @ViewBuilder emptyView: @escaping () -> ContentB
+        @ViewBuilder emptyView: @escaping () -> ContentB,
+        @ViewBuilder addView: @escaping () -> AddView,
+        @ViewBuilder removeView: @escaping () -> RemoveView
     ) where Header == EmptyView, Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: emptyView,
+            addView: addView,
+            removeView: removeView,
             header: {
                 EmptyView()
             },
@@ -325,18 +367,23 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        addText: LocalizedStringKey, removeText: LocalizedStringKey,
+        addKey: LocalizedStringKey, removeKey: LocalizedStringKey,
         addAction: @escaping () -> (),
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
-    ) where Header == EmptyView, ContentB == EmptyView, Footer == EmptyView {
+    ) where Header == EmptyView, ContentB == EmptyView, AddView == Text, RemoveView == Text, Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
-            addText: addText, removeText: removeText,
             addAction: addAction,
             content: content,
             emptyView: {
                 EmptyView()
+            },
+            addView: {
+                Text(addKey)
+            },
+            removeView: {
+                Text(removeKey)
             }
         )
     }
@@ -344,12 +391,14 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
     public var body: some View {
         LuminareSection(disablePadding: true) {
             HStack(spacing: 2) {
-                Button(addText) {
+                Button {
                     addAction()
+                } label: {
+                    addView()
                 }
                 .buttonStyle(LuminareButtonStyle())
 
-                Button(removeText) {
+                Button {
                     if !selection.isEmpty {
                         canRefreshSelection = false
                         items.removeAll(where: { selection.contains($0) })
@@ -360,6 +409,8 @@ where Header: View, ContentA: View, ContentB: View, Footer: View, V: Hashable, I
                             canRefreshSelection = true
                         }
                     }
+                } label: {
+                    removeView()
                 }
                 .buttonStyle(LuminareDestructiveButtonStyle())
                 .disabled(selection.isEmpty)
@@ -730,20 +781,17 @@ extension NSTableView {
 
 #Preview {
     LuminareList(
+        "Header", "Footer",
         items: .constant([37, 42, 1, 0]),
-        selection: .constant([0, 42]),
+        selection: .constant([1, 0]),
         id: \.self,
-        addText: .init("Add"),
-        removeText: .init("Remove")
+        addKey: .init("Add"),
+        removeKey: .init("Remove")
     ) {
     } content: { num in
         Text("\(num.wrappedValue)")
     } emptyView: {
         Text("Empty")
-    } header: {
-        Text("Header")
-    } footer: {
-        Text("Footer")
     }
     .padding()
 }
