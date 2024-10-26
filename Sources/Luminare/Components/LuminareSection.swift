@@ -93,7 +93,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     }
     
     public init(
-        _ headerKey: LocalizedStringKey,
+        headerKey: LocalizedStringKey,
         disablePadding: Bool = false,
         showDividers: Bool = true,
         noBorder: Bool = false,
@@ -139,7 +139,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     }
     
     public init(
-        _ footerKey: LocalizedStringKey,
+        footerKey: LocalizedStringKey,
         disablePadding: Bool = false,
         showDividers: Bool = true,
         noBorder: Bool = false,
