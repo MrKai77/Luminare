@@ -11,7 +11,8 @@ public protocol LuminarePickerData {
     var selectable: Bool { get }
 }
 
-public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
+public struct LuminarePicker<Content, V>: View 
+where Content: View, V: Equatable {
     @Environment(\.tintColor) private var tintColor
 
     let cornerRadius: CGFloat = 12
@@ -74,12 +75,13 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 .frame(minHeight: 150)
             }
         }
-        // This will improve animation performance
+        // this improves animation performance
         .onChange(of: internalSelection) { _ in
             withAnimation(LuminareConstants.animation) {
                 selectedItem = internalSelection
             }
         }
+        .buttonStyle(LuminareButtonStyle())
     }
 
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
@@ -169,4 +171,21 @@ extension Array {
                 Array(self[($0 * size) ..< (Swift.min($0 * size + size, count))])
             }
     }
+}
+
+#Preview {
+    LuminareSection {
+        Text("Pick Your Lucky Number")
+            .bold()
+            .font(.title3)
+            .padding()
+        
+        LuminarePicker(
+            elements: Array(30..<50),
+            selection: .constant(42)
+        ) { num in
+            Text("\(num)")
+        }
+    }
+    .padding()
 }
