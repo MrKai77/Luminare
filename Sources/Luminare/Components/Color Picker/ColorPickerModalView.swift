@@ -7,17 +7,26 @@
 
 import SwiftUI
 
-// View for the color popup as a whole
-struct ColorPickerModalView: View {
+public typealias RGBColorNames<R, G, B> = (
+    red: R,
+    green: G,
+    blue: B
+)
+
+
+// view for the color popup as a whole
+struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
+    typealias ColorNames = RGBColorNames<R, G, B>
+    
     @Binding var color: Color
     @Binding var hexColor: String
     @State private var redComponent: Double = 0
     @State private var greenComponent: Double = 0
     @State private var blueComponent: Double = 0
 
-    let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+    let colorNames: ColorNames
 
-    // Main view containing all components of the color picker
+    // main view containing all components of the color picker
     var body: some View {
         Group {
             LuminareSection(disablePadding: true, showDividers: false) {
@@ -57,34 +66,40 @@ struct ColorPickerModalView: View {
         }
     }
 
-    // View for RGB input fields
+    // view for RGB input fields
     private var RGBInputFields: some View {
         HStack(spacing: 8) {
-            RGBInputField(label: colorNames.red, value: $redComponent)
-                .onChange(of: redComponent) { _ in
-                    setColor(updateColorFromRGB())
-                }
-
-            RGBInputField(label: colorNames.green, value: $greenComponent)
-                .onChange(of: greenComponent) { _ in
-                    setColor(updateColorFromRGB())
-                }
-
-            RGBInputField(label: colorNames.blue, value: $blueComponent)
-                .onChange(of: blueComponent) { _ in
-                    setColor(updateColorFromRGB())
-                }
+            RGBInputField(value: $redComponent) {
+                colorNames.red
+            }
+            .onChange(of: redComponent) { _ in
+                setColor(updateColorFromRGB())
+            }
+            
+            RGBInputField(value: $greenComponent) {
+                colorNames.green
+            }
+            .onChange(of: greenComponent) { _ in
+                setColor(updateColorFromRGB())
+            }
+            
+            RGBInputField(value: $blueComponent) {
+                colorNames.blue
+            }
+            .onChange(of: blueComponent) { _ in
+                setColor(updateColorFromRGB())
+            }
         }
     }
 
-    // Set the color based on the source of change
+    // set the color based on the source of change
     private func setColor(_ newColor: Color) {
         withAnimation(LuminareConstants.fastAnimation) {
             color = newColor
         }
     }
 
-    // Update the color from RGB components
+    // update the color from RGB components
     private func updateColorFromRGB() -> Color {
         Color(
             red: redComponent / 255.0,
@@ -93,7 +108,7 @@ struct ColorPickerModalView: View {
         )
     }
 
-    // Update components when the color changes
+    // update components when the color changes
     private func updateComponents(newValue: Color) {
         hexColor = newValue.toHex()
         let rgb = newValue.toRGB()
@@ -101,4 +116,19 @@ struct ColorPickerModalView: View {
         greenComponent = rgb.green
         blueComponent = rgb.blue
     }
+}
+
+#Preview {
+    LuminareSection {
+        ColorPickerModalView(
+            color: .constant(.accentColor),
+            hexColor: .constant("ffffff"),
+            colorNames: (
+                red: Text("Red"),
+                green: Text("Green"),
+                blue: Text("Blue")
+            ))
+    }
+    .padding()
+    .frame(width: 300, height: 375)
 }

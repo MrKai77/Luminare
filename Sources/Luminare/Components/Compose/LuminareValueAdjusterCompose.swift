@@ -1,5 +1,5 @@
 //
-//  LuminareValueAdjuster.swift
+//  LuminareValueAdjusterCompose.swift
 //
 //
 //  Created by Kai Azim on 2024-04-02.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjuster<Label, Info, Suffix, V>: View
+public struct LuminareValueAdjusterCompose<Label, Info, Suffix, V>: View
 where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public enum ControlSize {
         case regular
@@ -46,7 +46,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
     private var step: V
     private let upperClamp: Bool
     private let lowerClamp: Bool
-    private let controlSize: LuminareValueAdjuster.ControlSize
+    private let controlSize: LuminareValueAdjusterCompose.ControlSize
     private let decimalPlaces: Int
     
     @State var eventMonitor: AnyObject?
@@ -60,7 +60,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder label: @escaping () -> Label,
         @ViewBuilder suffix: @escaping () -> Suffix,
@@ -97,7 +97,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder label: @escaping () -> Label,
         @ViewBuilder suffix: @escaping () -> Suffix
@@ -129,7 +129,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) where Label == Text, Suffix == Text {
@@ -162,7 +162,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjuster.ControlSize = .regular,
+        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
         decimalPlaces: Int = 0
     ) where Label == Text, Suffix == Text, Info == EmptyView {
         self.init(
@@ -185,7 +185,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
     public var body: some View {
         VStack {
             if controlSize == .regular {
-                LuminareLabeledContent(horizontalPadding: horizontalPadding, disabled: disabled) {
+                LuminareCompose(horizontalPadding: horizontalPadding, disabled: disabled) {
                     content()
                 } label: {
                     label()
@@ -195,7 +195,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
 
                 slider()
             } else {
-                LuminareLabeledContent(horizontalPadding: horizontalPadding, spacing: 12, disabled: disabled) {
+                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12, disabled: disabled) {
                     HStack(spacing: 12) {
                         slider()
                         
@@ -362,4 +362,21 @@ private extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         min(max(self, limits.lowerBound), limits.upperBound)
     }
+}
+
+#Preview {
+    LuminareSection {
+        LuminareValueAdjusterCompose(
+            value: .constant(42),
+            sliderRange: 0...128,
+            step: 1,
+            lowerClamp: true, 
+            upperClamp: false
+        ) {
+            Text("Value Adjuster")
+        } suffix: {
+            Text("suffix")
+        }
+    }
+    .padding()
 }

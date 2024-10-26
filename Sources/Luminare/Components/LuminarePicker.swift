@@ -11,8 +11,9 @@ public protocol LuminarePickerData {
     var selectable: Bool { get }
 }
 
-public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
-    @Environment(\.tintColor) var tintColor
+public struct LuminarePicker<Content, V>: View 
+where Content: View, V: Equatable {
+    @Environment(\.tintColor) private var tintColor
 
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
@@ -25,9 +26,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Binding var selectedItem: V
     @State var internalSelection: V
 
-    let roundTop: Bool
-    let roundBottom: Bool
-    let content: (V) -> Content
+    private let roundTop: Bool
+    private let roundBottom: Bool
+    @ViewBuilder private let content: (V) -> Content
 
     public init(
         elements: [V],
@@ -74,12 +75,13 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 .frame(minHeight: 150)
             }
         }
-        // This will improve animation performance
+        // this improves animation performance
         .onChange(of: internalSelection) { _ in
             withAnimation(LuminareConstants.animation) {
                 selectedItem = internalSelection
             }
         }
+        .buttonStyle(LuminareButtonStyle())
     }
 
     @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
@@ -123,35 +125,44 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     }
 
     func getShape(i: Int, j: Int) -> some InsettableShape {
-        if j == 0, i == 0, roundTop { // Top left
+        // top left
+        if j == 0, i == 0, roundTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
             )
-        } else if j == 0, i == rowsIndex, roundBottom { // Bottom left
+        }
+        // bottom left
+        else if j == 0, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
-        } else if j == columnsIndex, i == 0, roundTop { // Top right
+        }
+        // top right
+        else if j == columnsIndex, i == 0, roundTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
                 bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
-        } else if j == columnsIndex, i == rowsIndex, roundBottom { // Bottom right
+        }
+        // bottom right
+        else if j == columnsIndex, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
                 bottomTrailingRadius: cornerRadius - innerPadding,
                 topTrailingRadius: innerCornerRadius
             )
-        } else {
+        }
+        // regular
+        else {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
@@ -169,4 +180,21 @@ extension Array {
                 Array(self[($0 * size) ..< (Swift.min($0 * size + size, count))])
             }
     }
+}
+
+#Preview {
+    LuminareSection {
+        Text("Pick Your Lucky Number")
+            .bold()
+            .font(.title3)
+            .padding()
+        
+        LuminarePicker(
+            elements: Array(30..<50),
+            selection: .constant(42)
+        ) { num in
+            Text("\(num)")
+        }
+    }
+    .padding()
 }

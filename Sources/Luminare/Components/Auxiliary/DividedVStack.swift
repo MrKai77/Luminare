@@ -4,21 +4,27 @@
 //
 //  Created by Kai Azim on 2024-04-02.
 //
-// Thank you https://movingparts.io/variadic-views-in-swiftui
+//  Thanks to https://movingparts.io/variadic-views-in-swiftui
 
 import SwiftUI
 
-public struct DividedVStack<Content: View>: View {
+public struct DividedVStack<Content>: View where Content: View {
     let spacing: CGFloat?
     let applyMaskToItems: Bool
     let showDividers: Bool
-    var content: Content
+    
+    @ViewBuilder let content: () -> Content
 
-    public init(spacing: CGFloat? = nil, applyMaskToItems: Bool = true, showDividers: Bool = true, @ViewBuilder content: () -> Content) {
+    public init(
+        spacing: CGFloat? = nil,
+        applyMaskToItems: Bool = true,
+        showDividers: Bool = true,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.spacing = spacing
         self.applyMaskToItems = applyMaskToItems
         self.showDividers = showDividers
-        self.content = content()
+        self.content = content
     }
 
     public var body: some View {
@@ -29,7 +35,7 @@ public struct DividedVStack<Content: View>: View {
                 showDividers: showDividers
             )
         ) {
-            content
+            content()
         }
     }
 }
@@ -38,7 +44,6 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let spacing: CGFloat
     let applyMaskToItems: Bool
     let showDividers: Bool
-
     let innerPadding: CGFloat = 4
 
     init(spacing: CGFloat?, applyMaskToItems: Bool, showDividers: Bool) {
@@ -88,8 +93,8 @@ public struct LuminareCroppedSectionItem: ViewModifier {
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
 
-    let isFirstChild: Bool
-    let isLastChild: Bool
+    private let isFirstChild: Bool
+    private let isLastChild: Bool
 
     public init(isFirstChild: Bool, isLastChild: Bool) {
         self.isFirstChild = isFirstChild
@@ -133,4 +138,15 @@ public struct LuminareCroppedSectionItem: ViewModifier {
             )
         }
     }
+}
+
+#Preview {
+    LuminareSection {
+        DividedVStack {
+            ForEach(37..<43) { num in
+                Text("\(num)")
+            }
+        }
+    }
+    .padding()
 }

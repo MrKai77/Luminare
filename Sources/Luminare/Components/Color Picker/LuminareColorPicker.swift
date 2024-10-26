@@ -7,22 +7,38 @@
 
 import SwiftUI
 
-public struct LuminareColorPicker: View {
+public struct LuminareColorPicker<R, G, B, F>: View
+where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+    public typealias ColorNames = RGBColorNames<R, G, B>
+    
     @Binding var currentColor: Color
 
     @State private var text: String
     @State private var showColorPicker = false
-    let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
-    let formatStrategy: StringFormatStyle.HexStrategy
+    private let colorNames: ColorNames
+    private let format: F
 
     public init(
-        color: Binding<Color>, colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey),
-        formatStrategy: StringFormatStyle.HexStrategy = .uppercasedWithWell
+        color: Binding<Color>,
+        colorNames: ColorNames,
+        format: F
     ) {
         self._currentColor = color
         self._text = State(initialValue: color.wrappedValue.toHex())
         self.colorNames = colorNames
-        self.formatStrategy = formatStrategy
+        self.format = format
+    }
+    
+    public init(
+        color: Binding<Color>,
+        colorNames: ColorNames,
+        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
+    ) where F == StringFormatStyle {
+        self.init(
+            color: color,
+            colorNames: colorNames,
+            format: .init(parseStrategy: parseStrategy)
+        )
     }
 
     public var body: some View {
@@ -30,16 +46,17 @@ public struct LuminareColorPicker: View {
             LuminareTextField(
                 "Hex Color",
                 value: .init($text),
-                format: StringFormatStyle(parseStrategy: .hex(formatStrategy)),
-                onSubmit: {
-                    if let newColor = Color(hex: text) {
-                        currentColor = newColor
-                        text = newColor.toHex()
-                    } else {
-                        text = currentColor.toHex() // revert to last valid color
-                    }
-                }
+                format: format
             )
+            .onSubmit {
+                if let newColor = Color(hex: text) {
+                    currentColor = newColor
+                    text = newColor.toHex()
+                } else {
+                    // revert to last valid color
+                    text = currentColor.toHex()
+                }
+            }
             .modifier(LuminareBordered())
 
             Button {
@@ -61,4 +78,19 @@ public struct LuminareColorPicker: View {
             text = currentColor.toHex()
         }
     }
+}
+
+// preview this as app to show the modal panel
+#Preview {
+    LuminareColorPicker(
+        color: .constant(.accentColor),
+        colorNames: (
+            red: Text("Red"),
+            green: Text("Green"),
+            blue: Text("Blue")
+        ),
+        parseStrategy: .hex(.custom(true, "$"))
+    )
+    .monospaced()
+    .padding()
 }

@@ -1,5 +1,5 @@
 //
-//  LuminareLabeledContent.swift
+//  LuminareCompose.swift
 //  
 //
 //  Created by KrLite on 2024/10/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Content: View, Info: View {
+struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: View, Info: View {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let spacing: CGFloat?
@@ -96,7 +96,6 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
         spacing: CGFloat? = nil,
         disabled: Bool = false,
         infoKey: LocalizedStringKey,
-        infoWithoutPadding: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) where Info == Text {
@@ -105,7 +104,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
             spacing: spacing, disabled: disabled,
             content: content, label: label
         ) {
-            LuminareInfoView(infoKey, withoutPadding: infoWithoutPadding)
+            LuminareInfoView(infoKey)
         }
     }
     
@@ -115,14 +114,13 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
         spacing: CGFloat? = nil,
         disabled: Bool = false,
         infoKey: LocalizedStringKey,
-        infoWithoutPadding: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
     ) where Label == Text, Info == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
             spacing: spacing, disabled: disabled,
-            infoKey: infoKey, infoWithoutPadding: infoWithoutPadding,
+            infoKey: infoKey,
             content: content
         ) {
             Text(key)
@@ -130,7 +128,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
     }
     
     var body: some View {
-        HStack {
+        HStack(spacing: spacing) {
             HStack(spacing: 0) {
                 label()
                 
@@ -148,4 +146,21 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
         .padding(.horizontal, horizontalPadding)
         .frame(minHeight: elementMinHeight)
     }
+}
+
+#Preview {
+    LuminareSection {
+        LuminareCompose("Label") {
+            Button {
+                
+            } label: {
+                Text("Test")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
+        .padding(.trailing, -4)
+    }
+    .padding()
 }

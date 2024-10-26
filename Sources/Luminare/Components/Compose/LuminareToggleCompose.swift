@@ -1,5 +1,5 @@
 //
-//  LuminareToggle.swift
+//  LuminareToggleCompose.swift
 //
 //
 //  Created by Kai Azim on 2024-04-02.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminareToggle<Label, Info>: View where Label: View, Info: View {
+public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: View {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let disabled: Bool
@@ -83,7 +83,10 @@ public struct LuminareToggle<Label, Info>: View where Label: View, Info: View {
     }
 
     public var body: some View {
-        LuminareLabeledContent(elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding, disabled: disabled) {
+        LuminareCompose(
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            disabled: disabled
+        ) {
             Toggle("", isOn: $value.animation(LuminareConstants.animation))
                 .labelsHidden()
                 .controlSize(.small)
@@ -94,4 +97,11 @@ public struct LuminareToggle<Label, Info>: View where Label: View, Info: View {
             info()
         }
     }
+}
+
+#Preview {
+    LuminareSection {
+        LuminareToggleCompose("Toggle compose", isOn: .constant(true))
+    }
+    .padding()
 }

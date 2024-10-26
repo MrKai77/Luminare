@@ -9,7 +9,8 @@ import SwiftUI
 
 public struct LuminareInfoView<Content>: View where Content: View {
     let color: Color
-    let withoutPadding: Bool
+    let arrowEdge: Edge
+    
     @ViewBuilder private let content: () -> Content
     
     @State private var isShowingDescription: Bool = false
@@ -17,21 +18,21 @@ public struct LuminareInfoView<Content>: View where Content: View {
     @State private var hoverTimer: Timer?
     
     public init(
-        color: Color = .blue,
-        withoutPadding: Bool = false,
+        color: Color = .accentColor,
+        arrowEdge: Edge = .bottom,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.color = color
-        self.withoutPadding = withoutPadding
+        self.arrowEdge = arrowEdge
         self.content = content
     }
 
     public init(
         _ key: LocalizedStringKey,
-        color: Color = .blue,
-        withoutPadding: Bool = false
+        color: Color = .accentColor,
+        arrowEdge: Edge = .bottom
     ) where Content == Text {
-        self.init(color: color, withoutPadding: withoutPadding) {
+        self.init(color: color, arrowEdge: arrowEdge) {
             Text(key)
         }
     }
@@ -64,13 +65,37 @@ public struct LuminareInfoView<Content>: View where Content: View {
                     }
                 }
 
-                .popover(isPresented: $isShowingDescription, arrowEdge: .bottom) {
+                .popover(isPresented: $isShowingDescription, arrowEdge: arrowEdge) {
                     content()
                         .multilineTextAlignment(.center)
-                        .padding(withoutPadding ? 0 : 8)
                 }
 
             Spacer()
         }
     }
+}
+
+#Preview {
+    LuminareSection {
+        LuminareCompose {
+        } label: {
+            Text("Pops to bottom")
+        } info: {
+            LuminareInfoView {
+                Text("An info description")
+                    .padding()
+            }
+        }
+        
+        LuminareCompose {
+        } label: {
+            Text("Pops to trailing")
+        } info: {
+            LuminareInfoView(color: .violet, arrowEdge: .trailing) {
+                Text("An info description")
+                    .padding()
+            }
+        }
+    }
+    .padding()
 }

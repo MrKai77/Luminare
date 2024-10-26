@@ -71,3 +71,10 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
             }
     }
 }
+
+#Preview {
+    LuminareSection {
+        LuminareTextField("Text Field", text: .constant("Test"))
+    }
+    .padding()
+}

@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-// Custom input field for RGB values
-struct RGBInputField: View {
-    var label: LocalizedStringKey
+// custom input field for RGB values
+struct RGBInputField<Label>: View where Label: View {
     @Binding var value: Double
+    @ViewBuilder let label: () -> Label
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label)
+            label()
                 .foregroundStyle(.secondary)
 
             Color.clear
@@ -32,4 +32,13 @@ struct RGBInputField: View {
                 }
         }
     }
+}
+
+#Preview {
+    LuminareSection {
+        RGBInputField(value: .constant(42.0)) {
+            Text("Red")
+        }
+    }
+    .padding()
 }

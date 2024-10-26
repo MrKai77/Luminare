@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// View for adjusting the lightness of a selected color
+// view for adjusting the lightness of a selected color
 struct ColorSaturationBrightnessView: View {
     @Binding var selectedColor: Color
 
@@ -74,12 +74,12 @@ struct ColorSaturationBrightnessView: View {
         }
     }
 
-    // Update the position of the circle based on user interaction
+    // update the position of the circle based on user interaction
     private func updateColor(_ location: CGPoint, _ viewSize: CGSize) {
         let adjustedX = max(0, min(location.x, viewSize.width))
         let adjustedY = max(0, min(location.y, viewSize.height))
 
-        // Only adjust brightness if dragging, to avoid overwriting with white or black
+        // only adjust brightness if dragging, to avoid overwriting with white or black
         if isDragging {
             let saturation = (adjustedX / viewSize.width)
             let brightness = 1 - (adjustedY / viewSize.height)
@@ -96,7 +96,7 @@ struct ColorSaturationBrightnessView: View {
         }
     }
 
-    // Initialize the position of the circle based on the current color
+    // initialize the position of the circle based on the current color
     private func updateCirclePosition(_ viewSize: CGSize) {
         let hsb = selectedColor.toHSB()
 
@@ -142,4 +142,11 @@ struct ColorPickerCircle: View {
             }
             .animation(LuminareConstants.animation, value: [isHovering, isDragging])
     }
+}
+
+#Preview {
+    LuminareSection {
+        ColorSaturationBrightnessView(selectedColor: .constant(.accentColor))
+    }
+    .padding()
 }
