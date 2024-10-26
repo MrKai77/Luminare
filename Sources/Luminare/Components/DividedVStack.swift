@@ -4,7 +4,7 @@
 //
 //  Created by Kai Azim on 2024-04-02.
 //
-// Thank you https://movingparts.io/variadic-views-in-swiftui
+//  Thanks to https://movingparts.io/variadic-views-in-swiftui
 
 import SwiftUI
 

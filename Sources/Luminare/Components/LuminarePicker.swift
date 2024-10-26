@@ -125,35 +125,44 @@ where Content: View, V: Equatable {
     }
 
     func getShape(i: Int, j: Int) -> some InsettableShape {
-        if j == 0, i == 0, roundTop { // Top left
+        // top left
+        if j == 0, i == 0, roundTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
             )
-        } else if j == 0, i == rowsIndex, roundBottom { // Bottom left
+        }
+        // bottom left
+        else if j == 0, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
-        } else if j == columnsIndex, i == 0, roundTop { // Top right
+        }
+        // top right
+        else if j == columnsIndex, i == 0, roundTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
                 bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
-        } else if j == columnsIndex, i == rowsIndex, roundBottom { // Bottom right
+        }
+        // bottom right
+        else if j == columnsIndex, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
                 bottomTrailingRadius: cornerRadius - innerPadding,
                 topTrailingRadius: innerCornerRadius
             )
-        } else {
+        }
+        // regular
+        else {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
