@@ -77,7 +77,7 @@ public struct LuminareInfoView<Content>: View where Content: View {
 
 #Preview {
     LuminareSection {
-        LuminareLabeledContent {
+        LuminareCompose {
         } label: {
             Text("Pops to bottom")
         } info: {
@@ -87,7 +87,7 @@ public struct LuminareInfoView<Content>: View where Content: View {
             }
         }
         
-        LuminareLabeledContent {
+        LuminareCompose {
         } label: {
             Text("Pops to trailing")
         } info: {

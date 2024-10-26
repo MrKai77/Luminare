@@ -1,5 +1,5 @@
 //
-//  LuminareLabeledContent.swift
+//  LuminareCompose.swift
 //  
 //
 //  Created by KrLite on 2024/10/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Content: View, Info: View {
+struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: View, Info: View {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let spacing: CGFloat?
@@ -150,7 +150,7 @@ struct LuminareLabeledContent<Label, Content, Info>: View where Label: View, Con
 
 #Preview {
     LuminareSection {
-        LuminareLabeledContent("Label") {
+        LuminareCompose("Label") {
             Button {
                 
             } label: {

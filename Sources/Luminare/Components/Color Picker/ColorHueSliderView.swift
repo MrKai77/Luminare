@@ -14,7 +14,7 @@ struct ColorHueSliderView: View {
     @State private var selectionCornerRadius: CGFloat = 0
     @State private var selectionWidth: CGFloat = 0
 
-    // Gradient for the color spectrum slider
+    // gradient for the color spectrum slider
     private let colorSpectrumGradient = Gradient(
         colors: stride(from: 0.0, through: 1.0, by: 0.01)
             .map {
@@ -108,4 +108,11 @@ struct ColorHueSliderView: View {
         let edgeFactor = max(0, min(edgeDistance / 5, 1))
         return 15 * edgeFactor
     }
+}
+
+#Preview {
+    LuminareSection {
+        ColorHueSliderView(selectedColor: .constant(.accentColor))
+    }
+    .padding()
 }

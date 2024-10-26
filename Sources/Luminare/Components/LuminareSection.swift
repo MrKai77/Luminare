@@ -186,12 +186,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public var body: some View {
         VStack(spacing: 0) {
             if Header.self != EmptyView.self {
-                HStack {
-                    header()
-                    
-                    Spacer()
-                }
-                .foregroundStyle(.secondary)
+                header()
+                    .foregroundStyle(.secondary)
                 
                 Spacer()
                     .frame(height: headerSpacing)
@@ -216,12 +212,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 Spacer()
                     .frame(height: footerSpacing)
                 
-                HStack {
-                    footer()
-                    
-                    Spacer()
-                }
-                .foregroundStyle(.secondary)
+                footer()
+                    .foregroundStyle(.secondary)
             }
 
         }
@@ -231,10 +223,29 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 #Preview {
     LuminareSection {
         Text("Content")
+            .frame(height: 200)
     } header: {
-        Text("Header")
+        HStack(alignment: .bottom) {
+            Text("Header")
+            
+            Spacer()
+            
+            Button {
+                
+            } label: {
+                Text("Action")
+                    .font(.caption)
+                    .frame(height: 24)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
     } footer: {
-        Text("Footer")
+        HStack {
+            Text("Footer")
+            
+            Spacer()
+        }
     }
     .padding()
 }

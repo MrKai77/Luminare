@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LuminareCompactPicker<Content, V>: View
+public struct LuminareCompactPicker<Content, V>: View
 where Content: View, V: Hashable & Equatable {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
@@ -34,7 +34,7 @@ where Content: View, V: Hashable & Equatable {
         self.content = content
     }
 
-    var body: some View {
+    public var body: some View {
         Picker("", selection: $selection) {
             content()
         }
@@ -77,7 +77,7 @@ where Content: View, V: Hashable & Equatable {
 
 #Preview {
     LuminareSection {
-        LuminareLabeledContent("Picker") {
+        LuminareCompose("Picker") {
             LuminareCompactPicker(selection: .constant(42), borderless: false) {
                 ForEach(0..<200) { num in
                     Text("\(num)")
@@ -86,7 +86,7 @@ where Content: View, V: Hashable & Equatable {
         }
         .padding(.trailing, -4)
         
-        LuminareLabeledContent("Button") {
+        LuminareCompose("Button") {
             Button {
                 
             } label: {

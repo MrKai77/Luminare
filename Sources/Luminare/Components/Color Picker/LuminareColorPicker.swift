@@ -7,18 +7,20 @@
 
 import SwiftUI
 
-public struct LuminareColorPicker<F>: View
-where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+public struct LuminareColorPicker<R, G, B, F>: View
+where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+    public typealias ColorNames = RGBColorNames<R, G, B>
+    
     @Binding var currentColor: Color
 
     @State private var text: String
     @State private var showColorPicker = false
-    private let colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey)
+    private let colorNames: ColorNames
     private let format: F
 
     public init(
-        color: Binding<Color>, 
-        colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey),
+        color: Binding<Color>,
+        colorNames: ColorNames,
         format: F
     ) {
         self._currentColor = color
@@ -29,7 +31,7 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
     
     public init(
         color: Binding<Color>,
-        colorNames: (red: LocalizedStringKey, green: LocalizedStringKey, blue: LocalizedStringKey),
+        colorNames: ColorNames,
         parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
     ) where F == StringFormatStyle {
         self.init(
@@ -83,9 +85,9 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
     LuminareColorPicker(
         color: .constant(.accentColor),
         colorNames: (
-            red: .init("Red"),
-            green: .init("Green"),
-            blue: .init("Blue")
+            red: Text("Red"),
+            green: Text("Green"),
+            blue: Text("Blue")
         ),
         parseStrategy: .hex(.custom(true, "$"))
     )
