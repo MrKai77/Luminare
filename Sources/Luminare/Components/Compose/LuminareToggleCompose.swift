@@ -19,7 +19,9 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
         isOn value: Binding<Bool>,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
+            LuminareInfoView()
+        }
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
@@ -29,25 +31,12 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
     }
     
     public init(
-        isOn value: Binding<Bool>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Info == EmptyView {
-        self.init(
-            isOn: value,
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
-        ) {
-            label()
-        } info: {
-            LuminareInfoView()
-        }
-    }
-    
-    public init(
         _ key: LocalizedStringKey,
         isOn value: Binding<Bool>,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
+            LuminareInfoView()
+        }
     ) where Label == Text {
         self.init(
             isOn: value,
@@ -56,20 +45,6 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
             Text(key)
         } info: {
             info()
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        isOn value: Binding<Bool>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8
-    ) where Label == Text, Info == EmptyView {
-        self.init(
-            key, 
-            isOn: value,
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
-        ) {
-            LuminareInfoView()
         }
     }
 
@@ -92,6 +67,17 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
 #Preview {
     LuminareSection {
         LuminareToggleCompose("Toggle compose", isOn: .constant(true))
+        
+        LuminareCompose("Button", alignTrailing: true) {
+            Button {
+                
+            } label: {
+                Text("Button")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
     }
     .padding()
 }

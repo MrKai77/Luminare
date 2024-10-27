@@ -21,6 +21,8 @@ where Content: View, V: Hashable & Equatable {
         }
     }
     
+    @Environment(\.tintColor) private var tintColor
+    
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let cornerRadius: CGFloat
@@ -40,7 +42,7 @@ where Content: View, V: Hashable & Equatable {
         cornerRadius: CGFloat = 8,
         borderless: Bool = true,
         animation: Animation = .bouncy,
-        style: PickerStyle = .menu,
+        style: Self.PickerStyle = .menu,
         showDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -149,6 +151,7 @@ where Content: View, V: Hashable & Equatable {
                             selection: $selection, value: value,
                             view: child
                         )
+                        .foregroundStyle(isHovering && selection == value ? .primary : .secondary)
                         .background {
                             if selection == value {
                                 Group {
@@ -261,10 +264,9 @@ struct PickerPreview<V>: View where V: Hashable & Equatable {
 
 #Preview {
     LuminareSection {
-        LuminareCompose("Menu picker") {
+        LuminareCompose("Menu picker", alignTrailing: true) {
             PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
         }
-        .padding(.trailing, -4)
         
         VStack {
             LuminareCompose("Segmented picker") {
@@ -275,7 +277,7 @@ struct PickerPreview<V>: View where V: Hashable & Equatable {
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }
         
-        LuminareCompose("Button") {
+        LuminareCompose("Button", alignTrailing: true) {
             Button {
                 
             } label: {
@@ -285,7 +287,6 @@ struct PickerPreview<V>: View where V: Hashable & Equatable {
             }
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
-        .padding(.trailing, -4)
     }
     .padding()
 }

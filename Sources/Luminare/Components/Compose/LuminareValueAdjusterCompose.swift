@@ -60,11 +60,13 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
+        controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder label: @escaping () -> Label,
         @ViewBuilder suffix: @escaping () -> Suffix,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
+            LuminareInfoView()
+        }
     ) {
         self.label = label
         self.suffix = suffix
@@ -91,48 +93,20 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
     }
     
     public init(
+        _ key: LocalizedStringKey,
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
+        controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder suffix: @escaping () -> Suffix
-    ) where Info == EmptyView {
-        self.init(
-            value: value,
-            sliderRange: sliderRange,
-            horizontalPadding: horizontalPadding,
-            step: step,
-            lowerClamp: lowerClamp,
-            upperClamp: upperClamp,
-            controlSize: controlSize,
-            decimalPlaces: decimalPlaces
-        ) {
-            label()
-        } suffix: {
-            suffix()
-        } info: {
+        @ViewBuilder suffix: @escaping () -> Suffix,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
             LuminareInfoView()
         }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        _ suffixKey: LocalizedStringKey,
-        value: Binding<V>,
-        sliderRange: ClosedRange<V>,
-        horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
-        decimalPlaces: Int = 0,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
-    ) where Label == Text, Suffix == Text {
+    ) where Label == Text {
         self.init(
             value: value,
             sliderRange: sliderRange,
@@ -145,6 +119,38 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         ) {
             Text(key)
         } suffix: {
+            suffix()
+        } info: {
+            info()
+        }
+    }
+    
+    public init(
+        suffixKey: LocalizedStringKey,
+        value: Binding<V>,
+        sliderRange: ClosedRange<V>,
+        horizontalPadding: CGFloat = 8,
+        step: V? = nil,
+        lowerClamp: Bool = false,
+        upperClamp: Bool = false,
+        controlSize: Self.ControlSize = .regular,
+        decimalPlaces: Int = 0,
+        @ViewBuilder label: @escaping () -> Label,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
+            LuminareInfoView()
+        }
+    ) where Suffix == Text {
+        self.init(
+            value: value,
+            sliderRange: sliderRange,
+            horizontalPadding: horizontalPadding,
+            step: step,
+            lowerClamp: lowerClamp,
+            upperClamp: upperClamp,
+            controlSize: controlSize,
+            decimalPlaces: decimalPlaces,
+            label: label
+        ) {
             Text(suffixKey)
         } info: {
             info()
@@ -160,12 +166,14 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
-        decimalPlaces: Int = 0
-    ) where Label == Text, Suffix == Text, Info == EmptyView {
+        controlSize: Self.ControlSize = .regular,
+        decimalPlaces: Int = 0,
+        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
+            LuminareInfoView()
+        }
+    ) where Label == Text, Suffix == Text {
         self.init(
-            key,
-            suffixKey,
+            suffixKey: suffixKey,
             value: value,
             sliderRange: sliderRange,
             horizontalPadding: horizontalPadding,
@@ -175,7 +183,9 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             controlSize: controlSize,
             decimalPlaces: decimalPlaces
         ) {
-            LuminareInfoView()
+            Text(key)
+        } info: {
+            info()
         }
     }
 
