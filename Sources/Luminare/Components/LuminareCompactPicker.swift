@@ -25,6 +25,7 @@ where Content: View, V: Hashable & Equatable {
     let horizontalPadding: CGFloat
     let cornerRadius: CGFloat
     let borderless: Bool
+    let animation: Animation
     let style: PickerStyle
     
     @Binding private var selection: V
@@ -37,6 +38,7 @@ where Content: View, V: Hashable & Equatable {
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
         borderless: Bool = true,
+        animation: Animation = .bouncy,
         style: PickerStyle = .menu,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -45,6 +47,7 @@ where Content: View, V: Hashable & Equatable {
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.borderless = borderless
+        self.animation = animation
         self.style = style
         self.content = content
     }
@@ -57,6 +60,7 @@ where Content: View, V: Hashable & Equatable {
             case .segmented:
                 _VariadicView.Tree(SegmentedLayout(
                     cornerRadius: cornerRadius,
+                    animation: animation,
                     selection: $selection, isHovering: $isHovering
                 ), content: content)
             }
@@ -117,6 +121,8 @@ where Content: View, V: Hashable & Equatable {
     
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         let cornerRadius: CGFloat
+        let animation: Animation
+        
         @Binding var selection: V
         @Binding var isHovering: Bool
         
@@ -129,7 +135,8 @@ where Content: View, V: Hashable & Equatable {
                     if let value = child.id(as: V.self) {
                         SegmentedKnob(
                             cornerRadius: cornerRadius,
-                            selection: $selection, value: value, 
+                            animation: animation,
+                            selection: $selection, value: value,
                             view: child
                         )
                             .background {
@@ -183,6 +190,7 @@ where Content: View, V: Hashable & Equatable {
         
         struct SegmentedKnob: View {
             let cornerRadius: CGFloat
+            let animation: Animation
             
             @Binding var selection: V
             let value: V
@@ -192,7 +200,7 @@ where Content: View, V: Hashable & Equatable {
             
             var body: some View {
                 Button {
-                    withAnimation(.bouncy) {
+                    withAnimation(animation) {
                         selection = value
                     }
                 } label: {
@@ -237,11 +245,7 @@ struct PickerPreview<V>: View where V: Hashable & Equatable {
 #Preview {
     LuminareSection {
         LuminareCompose("Menu picker") {
-            LuminareCompactPicker(selection: .constant(42), borderless: false) {
-                ForEach(0..<200) { num in
-                    Text("\(num)")
-                }
-            }
+            PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
         }
         .padding(.trailing, -4)
         
