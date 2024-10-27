@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: View, Info: View {
+struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     @Environment(\.isEnabled) private var isEnabled
     
     let elementMinHeight: CGFloat
@@ -17,17 +17,13 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let label: () -> Label
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         alignTrailing: Bool = false,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        @ViewBuilder label: @escaping () -> Label
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
@@ -35,7 +31,6 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         self.spacing = spacing
         self.label = label
         self.content = content
-        self.info = info
     }
     
     public init(
@@ -43,10 +38,7 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         alignTrailing: Bool = false,
         spacing: CGFloat? = nil,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
@@ -55,46 +47,6 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         ) {
             content()
         } label: {
-            Text(key)
-        } info: {
-            info()
-        }
-    }
-    
-    public init(
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        alignTrailing: Bool = false,
-        spacing: CGFloat? = nil,
-        infoKey: LocalizedStringKey,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Info == Text {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            alignTrailing: alignTrailing,
-            spacing: spacing,
-            content: content, label: label
-        ) {
-            LuminareInfoView(infoKey)
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        alignTrailing: Bool = false,
-        spacing: CGFloat? = nil,
-        infoKey: LocalizedStringKey,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
-    ) where Label == Text, Info == Text {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            alignTrailing: alignTrailing,
-            spacing: spacing,
-            infoKey: infoKey,
-            content: content
-        ) {
             Text(key)
         }
     }
@@ -105,10 +57,6 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
                 label()
                     .opacity(isEnabled ? 1 : 0.5)
                     .disabled(!isEnabled)
-                
-                if Info.self != EmptyView.self {
-                    info()
-                }
             }
             .fixedSize(horizontal: false, vertical: true)
             

@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct LuminareButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.isEnabled) private var isEnabled
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -45,7 +45,7 @@ public struct LuminareButtonStyle: ButtonStyle {
 }
 
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.isEnabled) private var isEnabled
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -68,6 +68,44 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 
+    private func destructiveBackgroundForState(isPressed: Bool) -> some View {
+        Group {
+            if isPressed, isEnabled {
+                Rectangle().foregroundStyle(.red.opacity(0.4))
+            } else if isHovering, isEnabled {
+                Rectangle().foregroundStyle(.red.opacity(0.25))
+            } else {
+                Rectangle().foregroundStyle(.red.opacity(0.15))
+            }
+        }
+    }
+}
+
+public struct LuminareProminentButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.tintColor) private var tintColor
+    
+    let innerCornerRadius: CGFloat = 2
+    let elementMinHeight: CGFloat = 34
+    
+    @State var isHovering: Bool = false
+    
+    public init() {}
+    
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(destructiveBackgroundForState(isPressed: configuration.isPressed))
+            .onHover { hover in
+                withAnimation(LuminareConstants.fastAnimation) {
+                    isHovering = hover
+                }
+            }
+            .frame(minHeight: elementMinHeight)
+            .clipShape(.rect(cornerRadius: innerCornerRadius))
+            .opacity(isEnabled ? 1 : 0.5)
+    }
+    
     private func destructiveBackgroundForState(isPressed: Bool) -> some View {
         Group {
             if isPressed, isEnabled {
@@ -134,14 +172,12 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     let elementMinHeight: CGFloat = 34
     let elementExtraMinHeight: CGFloat = 25
     let extraCompact: Bool
-    let borderlessWhileNotHovering: Bool
     
     @State var isHovering: Bool = false
     let cornerRadius: CGFloat = 8
 
-    public init(extraCompact: Bool = false, borderlessWhileNotHovering: Bool = false) {
+    public init(extraCompact: Bool = false) {
         self.extraCompact = extraCompact
-        self.borderlessWhileNotHovering = borderlessWhileNotHovering
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -163,7 +199,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     
     @ViewBuilder private func border() -> some View {
         Group {
-            if isHovering || !borderlessWhileNotHovering {
+            if isHovering {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary, lineWidth: 1)
             } else {
@@ -178,17 +214,9 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             if isPressed {
                 Rectangle().foregroundStyle(.quaternary)
             } else if isHovering {
-                if borderlessWhileNotHovering {
-                    Rectangle().foregroundStyle(.quinary)
-                } else {
-                    Rectangle().foregroundStyle(.quaternary.opacity(0.7))
-                }
+                Rectangle().foregroundStyle(.quaternary.opacity(0.7))
             } else {
-                if borderlessWhileNotHovering {
-                    Rectangle().foregroundStyle(.clear)
-                } else {
-                    Rectangle().foregroundStyle(.quinary)
-                }
+                Rectangle().foregroundStyle(.quinary)
             }
         }
     }

@@ -7,44 +7,35 @@
 
 import SwiftUI
 
-public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: View {
+public struct LuminareToggleCompose<Label>: View where Label: View {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
+    
     @ViewBuilder private let label: () -> Label
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
     @Binding var value: Bool
 
     public init(
         isOn value: Binding<Bool>,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        @ViewBuilder label: @escaping () -> Label
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.label = label
-        self.info = info
         self._value = value
     }
     
     public init(
         _ key: LocalizedStringKey,
         isOn value: Binding<Bool>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8
     ) where Label == Text {
         self.init(
             isOn: value,
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
         ) {
             Text(key)
-        } info: {
-            info()
         }
     }
 
@@ -58,8 +49,6 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
                 .toggleStyle(.switch)
         } label: {
             label()
-        } info: {
-            info()
         }
     }
 }

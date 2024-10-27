@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjusterCompose<Label, Info, Suffix, V>: View
-where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjusterCompose<Label, Suffix, V>: View
+where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public enum ControlSize {
         case regular
         case compact
@@ -40,7 +40,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
 
     @ViewBuilder private let label: () -> Label
     @ViewBuilder private let suffix: () -> Suffix
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
     @Binding private var value: V
     private let sliderRange: ClosedRange<V>
@@ -63,14 +62,10 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder suffix: @escaping () -> Suffix,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        @ViewBuilder suffix: @escaping () -> Suffix
     ) {
         self.label = label
         self.suffix = suffix
-        self.info = info
         
         self._value = value
         self.sliderRange = sliderRange
@@ -102,10 +97,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         upperClamp: Bool = false,
         controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
-        @ViewBuilder suffix: @escaping () -> Suffix,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        @ViewBuilder suffix: @escaping () -> Suffix
     ) where Label == Text {
         self.init(
             value: value,
@@ -120,8 +112,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             Text(key)
         } suffix: {
             suffix()
-        } info: {
-            info()
         }
     }
     
@@ -135,10 +125,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         upperClamp: Bool = false,
         controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        @ViewBuilder label: @escaping () -> Label
     ) where Suffix == Text {
         self.init(
             value: value,
@@ -152,8 +139,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             label: label
         ) {
             Text(suffixKey)
-        } info: {
-            info()
         }
     }
     
@@ -167,10 +152,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
         controlSize: Self.ControlSize = .regular,
-        decimalPlaces: Int = 0,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info> = {
-            LuminareInfoView()
-        }
+        decimalPlaces: Int = 0
     ) where Label == Text, Suffix == Text {
         self.init(
             suffixKey: suffixKey,
@@ -184,8 +166,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             decimalPlaces: decimalPlaces
         ) {
             Text(key)
-        } info: {
-            info()
         }
     }
 
@@ -196,8 +176,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
                     content()
                 } label: {
                     label()
-                } info: {
-                    info()
                 }
 
                 slider()
@@ -212,8 +190,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
                     .frame(width: 270)
                 } label: {
                     label()
-                } info: {
-                    info()
                 }
             }
         }
@@ -381,7 +357,7 @@ private extension Comparable {
             lowerClamp: true, 
             upperClamp: false
         ) {
-            Text("Value Adjuster")
+            Text("Value adjuster")
         } suffix: {
             Text("suffix")
         }
@@ -395,7 +371,7 @@ private extension Comparable {
             upperClamp: false,
             controlSize: .compact
         ) {
-            Text("Value Adjuster Large")
+            Text("Value adjuster compact")
         } suffix: {
             Text("suffix")
         }

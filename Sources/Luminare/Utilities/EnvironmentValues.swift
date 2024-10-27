@@ -9,8 +9,8 @@ import SwiftUI
 
 // MARK: - TintColor
 
-// Currently, it is impossible to read the .tint(Color) modifier on a view.
-// This is a custom environement value as an alternative implementation of it.
+// currently, it is impossible to read the .tint(Color) modifier on a view
+// this is a custom environement value as an alternative implementation of it
 public struct TintColorEnvironmentKey: EnvironmentKey {
     public static var defaultValue: () -> Color = { .accentColor }
 }
