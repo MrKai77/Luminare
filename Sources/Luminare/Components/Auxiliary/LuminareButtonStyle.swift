@@ -106,7 +106,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     }
     
     @ViewBuilder private func prominentBackgroundForState(isPressed: Bool) -> some View {
-        LuminareProminentButtonStyle.tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, color: <#T##Color#>)
+        LuminareProminentButtonStyle.tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, color: .accentColor)
     }
     
     @ViewBuilder static func tintedBackgroundForState(isPressed: Bool, isEnabled: Bool, isHovering: Bool, color: Color) -> some View {

@@ -34,14 +34,14 @@ struct LuminareModalView<Content>: View where Content: View {
                     blendingMode: .behindWindow
                 )
                 .overlay {
-                    // The bottom has a smaller corner radius because a compact button will be used there
+                    // the bottom has a smaller corner radius because a compact button will be used there
                     UnevenRoundedRectangle(
                         topLeadingRadius: 12 + outerPadding,
                         bottomLeadingRadius: 8 + outerPadding,
                         bottomTrailingRadius: 8 + outerPadding,
                         topTrailingRadius: 12 + outerPadding
                     )
-                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                    .strokeBorder(.white.opacity(0.1), lineWidth: 1)
                 }
             }
             .clipShape(

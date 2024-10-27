@@ -30,10 +30,10 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                 HStack(spacing: 0) {
                     Text(tab.title)
 
-                    if tab.showIndicator {
+                    if tab.hasIndicator {
                         VStack {
                             Circle()
-                                .foregroundStyle(tintColor())
+                                .foregroundStyle(.tint)
                                 .frame(width: 4, height: 4)
                                 .padding(.leading, 4)
                                 .shadow(color: tintColor(), radius: 4)

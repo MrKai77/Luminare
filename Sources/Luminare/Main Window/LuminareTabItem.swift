@@ -12,11 +12,11 @@ public protocol LuminareTabItem: Equatable, Hashable, Identifiable where ID: Ide
 
     var title: String { get }
     var icon: Image { get }
-    var showIndicator: Bool { get }
+    var hasIndicator: Bool { get }
 }
 
 public extension LuminareTabItem {
-    var showIndicator: Bool { false }
+    var hasIndicator: Bool { false }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

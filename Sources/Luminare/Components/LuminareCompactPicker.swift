@@ -21,8 +21,6 @@ where Content: View, V: Hashable & Equatable {
         }
     }
     
-    @Environment(\.tintColor) private var tintColor
-    
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let cornerRadius: CGFloat
