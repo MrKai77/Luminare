@@ -12,11 +12,12 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     public typealias ColorNames = RGBColorNames<R, G, B>
     
     @Binding var currentColor: Color
-
-    @State private var text: String
-    @State private var showColorPicker = false
+    
     private let colorNames: ColorNames
     private let format: F
+
+    @State private var text: String
+    @State private var isColorPickerPresented = false
 
     public init(
         color: Binding<Color>,
@@ -60,7 +61,7 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
             .modifier(LuminareBordered())
 
             Button {
-                showColorPicker.toggle()
+                isColorPickerPresented.toggle()
             } label: {
                 RoundedRectangle(cornerRadius: 4)
                     .foregroundStyle(currentColor)
@@ -69,7 +70,7 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
                     .modifier(LuminareBordered())
             }
             .buttonStyle(PlainButtonStyle())
-            .luminareModal(isPresented: $showColorPicker, closeOnDefocus: true, isCompact: true) {
+            .luminareModal(isPresented: $isColorPickerPresented, closeOnDefocus: true, isCompact: true) {
                 ColorPickerModalView(color: $currentColor, hexColor: $text, colorNames: colorNames)
                     .frame(width: 280)
             }

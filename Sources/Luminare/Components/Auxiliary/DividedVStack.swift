@@ -11,19 +11,19 @@ import SwiftUI
 public struct DividedVStack<Content>: View where Content: View {
     let spacing: CGFloat?
     let applyMaskToItems: Bool
-    let showDividers: Bool
+    let hasDividers: Bool
     
     @ViewBuilder let content: () -> Content
 
     public init(
         spacing: CGFloat? = nil,
         applyMaskToItems: Bool = true,
-        showDividers: Bool = true,
+        hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.spacing = spacing
         self.applyMaskToItems = applyMaskToItems
-        self.showDividers = showDividers
+        self.hasDividers = hasDividers
         self.content = content
     }
 
@@ -32,7 +32,7 @@ public struct DividedVStack<Content>: View where Content: View {
             DividedVStackLayout(
                 spacing: applyMaskToItems ? spacing : 0,
                 applyMaskToItems: applyMaskToItems,
-                showDividers: showDividers
+                hasDividers: hasDividers
             )
         ) {
             content()
@@ -43,13 +43,13 @@ public struct DividedVStack<Content>: View where Content: View {
 struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let spacing: CGFloat
     let applyMaskToItems: Bool
-    let showDividers: Bool
+    let hasDividers: Bool
     let innerPadding: CGFloat = 4
 
-    init(spacing: CGFloat?, applyMaskToItems: Bool, showDividers: Bool) {
+    init(spacing: CGFloat?, applyMaskToItems: Bool, hasDividers: Bool) {
         self.spacing = spacing ?? innerPadding
         self.applyMaskToItems = applyMaskToItems
-        self.showDividers = showDividers
+        self.hasDividers = hasDividers
     }
 
     @ViewBuilder
@@ -57,7 +57,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
         let first = children.first?.id
         let last = children.last?.id
 
-        VStack(spacing: showDividers ? spacing : spacing / 2) {
+        VStack(spacing: hasDividers ? spacing : spacing / 2) {
             ForEach(children) { child in
                 Group {
                     if applyMaskToItems {
@@ -73,12 +73,12 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                             .padding(.horizontal, 1)
                     } else {
                         child
-                            .mask(Rectangle()) // Fixes hover areas for some reason
+                            .mask(Rectangle()) // fixes hover areas for some reason
                             .padding(.vertical, -4)
                     }
                 }
 
-                if showDividers, child.id != last {
+                if hasDividers, child.id != last {
                     Divider()
                         .padding(.horizontal, 1)
                 }

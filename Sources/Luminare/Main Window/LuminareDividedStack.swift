@@ -8,14 +8,14 @@
 import SwiftUI
 
 public struct LuminareDividedStack<Content: View>: View {
-    let orientation: StackOrientation
-    let content: () -> Content
-
     public enum StackOrientation {
         case vertical
         case horizontal
     }
 
+    let orientation: StackOrientation
+    @ViewBuilder let content: () -> Content
+    
     public init(orientation: StackOrientation = .horizontal, @ViewBuilder content: @escaping () -> Content) {
         self.orientation = orientation
         self.content = content
@@ -48,14 +48,11 @@ public struct LuminareDividedStack<Content: View>: View {
 struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
     @ViewBuilder
     func body(children: _VariadicView.Children) -> some View {
-        let first = children.first?.id
-        let last = children.last?.id
-
         HStack(spacing: 0) {
             ForEach(children) { child in
                 child
 
-                if child.id != last {
+                if child.id != children.last?.id {
                     Divider()
                         .edgesIgnoringSafeArea(.top)
                         .luminareBackground()
@@ -69,14 +66,11 @@ struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
 struct LuminareDividedVStackLayout: _VariadicView_UnaryViewRoot {
     @ViewBuilder
     func body(children: _VariadicView.Children) -> some View {
-        let first = children.first?.id
-        let last = children.last?.id
-
         VStack(spacing: 0) {
             ForEach(children) { child in
                 child
 
-                if child.id != last {
+                if child.id != children.last?.id {
                     Divider()
                         .luminareBackground()
                 }

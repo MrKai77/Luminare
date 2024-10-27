@@ -7,122 +7,46 @@
 
 import SwiftUI
 
-struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: View, Info: View {
+struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
+    @Environment(\.isEnabled) private var isEnabled
+    
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
+    let reducesTrailingSpace: Bool
     let spacing: CGFloat?
-    let disabled: Bool
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let label: () -> Label
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        reducesTrailingSpace: Bool = false,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder label: @escaping () -> Label
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
+        self.reducesTrailingSpace = reducesTrailingSpace
         self.spacing = spacing
-        self.disabled = disabled
         self.label = label
         self.content = content
-        self.info = info
-    }
-    
-    public init(
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        spacing: CGFloat? = nil,
-        disabled: Bool = false,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Info == EmptyView {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled
-        ) {
-            content()
-        } label: {
-            label()
-        } info: {
-            LuminareInfoView()
-        }
     }
     
     public init(
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        reducesTrailingSpace: Bool = false,
         spacing: CGFloat? = nil,
-        disabled: Bool = false,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled
+            reducesTrailingSpace: reducesTrailingSpace,
+            spacing: spacing
         ) {
             content()
         } label: {
-            Text(key)
-        } info: {
-            info()
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        spacing: CGFloat? = nil,
-        disabled: Bool = false,
-        @ViewBuilder content: @escaping () -> Content
-    ) where Label == Text, Info == EmptyView {
-        self.init(
-            key,
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled
-        ) {
-            content()
-        } info: {
-            LuminareInfoView()
-        }
-    }
-    
-    public init(
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        spacing: CGFloat? = nil,
-        disabled: Bool = false,
-        infoKey: LocalizedStringKey,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Info == Text {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled,
-            content: content, label: label
-        ) {
-            LuminareInfoView(infoKey)
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        spacing: CGFloat? = nil,
-        disabled: Bool = false,
-        infoKey: LocalizedStringKey,
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
-    ) where Label == Text, Info == Text {
-        self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            spacing: spacing, disabled: disabled,
-            infoKey: infoKey,
-            content: content
-        ) {
             Text(key)
         }
     }
@@ -131,26 +55,25 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
         HStack(spacing: spacing) {
             HStack(spacing: 0) {
                 label()
-                
-                if Info.self != EmptyView.self {
-                    info()
-                }
+                    .opacity(isEnabled ? 1 : 0.5)
+                    .disabled(!isEnabled)
             }
             .fixedSize(horizontal: false, vertical: true)
             
             Spacer()
             
             content()
-                .disabled(disabled)
+                .disabled(!isEnabled)
         }
         .padding(.horizontal, horizontalPadding)
+        .padding(.trailing, reducesTrailingSpace ? -4 : 0)
         .frame(minHeight: elementMinHeight)
     }
 }
 
 #Preview {
     LuminareSection {
-        LuminareCompose("Label") {
+        LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
                 
             } label: {
@@ -160,7 +83,19 @@ struct LuminareCompose<Label, Content, Info>: View where Label: View, Content: V
             }
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
-        .padding(.trailing, -4)
+        
+        
+        LuminareCompose("Label", reducesTrailingSpace: true) {
+            Button {
+                
+            } label: {
+                Text("Test")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
+        .disabled(true)
     }
     .padding()
 }

@@ -7,21 +7,29 @@
 
 import SwiftUI
 
-public struct LuminarePane<V, C>: View where V: View, C: View {
-    @Environment(\.luminareWindow) var window
+public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     let titlebarHeight: CGFloat = 50
 
-    let header: () -> C
-    let content: () -> V
+    @ViewBuilder let content: () -> Content
+    @ViewBuilder let header: () -> Header
 
     @State private var clickedOutsideFlag = false
 
     public init(
-        @ViewBuilder header: @escaping () -> C,
-        @ViewBuilder content: @escaping () -> V
+        @ViewBuilder content: @escaping () -> Content,
+        @ViewBuilder header: @escaping () -> Header
     ) {
-        self.header = header
         self.content = content
+        self.header = header
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == Text {
+        self.init(content: content) {
+            Text(key)
+        }
     }
 
     public var body: some View {

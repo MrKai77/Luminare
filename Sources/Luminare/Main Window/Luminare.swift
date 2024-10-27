@@ -26,11 +26,12 @@ public class LuminareWindow: NSWindow {
             contentRect: .zero,
             styleMask: [.titled, .fullSizeContentView, .closable],
             backing: .buffered,
-            defer: false // If true, background blur will break
+            defer: false // if true, background blur will break
         )
 
         let view = NSHostingView(
             rootView: LuminareView(content: content)
+                .tint(LuminareConstants.tint())
                 .environment(\.tintColor, LuminareConstants.tint)
                 .environment(\.luminareWindow, self)
         )

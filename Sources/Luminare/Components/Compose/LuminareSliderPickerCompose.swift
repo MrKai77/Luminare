@@ -7,14 +7,13 @@
 
 import SwiftUI
 
-public struct LuminareSliderPickerCompose<Label, Content, Info, V>: View
-where Label: View, Content: View, Info: View, V: Equatable {
+public struct LuminareSliderPickerCompose<Label, Content, V>: View
+where Label: View, Content: View, V: Equatable {
     private let height: CGFloat
     private let horizontalPadding: CGFloat
     
-    @ViewBuilder private let label: () -> Label
     @ViewBuilder private let content: (V) -> Content
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
+    @ViewBuilder private let label: () -> Label
 
     private let options: [V]
     @Binding private var selection: V
@@ -23,15 +22,13 @@ where Label: View, Content: View, Info: View, V: Equatable {
         _ options: [V], selection: Binding<V>,
         height: CGFloat = 70,
         horizontalPadding: CGFloat = 8,
-        @ViewBuilder label: @escaping () -> Label,
         @ViewBuilder content: @escaping (V) -> Content,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder label: @escaping () -> Label
     ) {
         self.height = height
         self.horizontalPadding = horizontalPadding
-        self.label = label
         self.content = content
-        self.info = info
+        self.label = label
         self.options = options
         self._selection = selection
     }
@@ -41,77 +38,34 @@ where Label: View, Content: View, Info: View, V: Equatable {
         _ options: [V], selection: Binding<V>,
         height: CGFloat = 70,
         horizontalPadding: CGFloat = 8,
-        @ViewBuilder content: @escaping (V) -> Content,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder content: @escaping (V) -> Content
     ) where Label == Text {
         self.init(
             options, selection: selection,
             height: height,
             horizontalPadding: horizontalPadding
-        ) {
-            Text(key)
-        } content: { value in
+        ) { value in
             content(value)
-        } info: {
-            info()
+        } label: {
+            Text(key)
         }
     }
     
     public init(
-        _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
         height: CGFloat = 70,
         horizontalPadding: CGFloat = 8,
         contentKey: @escaping (V) -> LocalizedStringKey,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
-    ) where Label == Text, Content == Text {
+        @ViewBuilder label: @escaping () -> Label
+    ) where Content == Text {
         self.init(
-            key,
             options, selection: selection,
             height: height,
             horizontalPadding: horizontalPadding
         ) { value in
             Text(contentKey(value))
-        } info: {
-            info()
-        }
-    }
-    
-    public init(
-        _ options: [V], selection: Binding<V>,
-        height: CGFloat = 70,
-        horizontalPadding: CGFloat = 8,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder content: @escaping (V) -> Content
-    ) where Info == EmptyView {
-        self.init(
-            options, selection: selection,
-            height: height,
-            horizontalPadding: horizontalPadding
-        ) {
+        } label: {
             label()
-        } content: { value in
-            content(value)
-        } info: {
-            LuminareInfoView()
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        _ options: [V], selection: Binding<V>,
-        height: CGFloat = 70,
-        horizontalPadding: CGFloat = 8,
-        @ViewBuilder content: @escaping (V) -> Content
-    ) where Label == Text, Info == EmptyView {
-        self.init(
-            options, selection: selection,
-            height: height,
-            horizontalPadding: horizontalPadding
-        ) {
-            Text(key)
-        } content: { value in
-            content(value)
         }
     }
     
@@ -121,20 +75,20 @@ where Label: View, Content: View, Info: View, V: Equatable {
         height: CGFloat = 70,
         horizontalPadding: CGFloat = 8,
         contentKey: @escaping (V) -> LocalizedStringKey
-    ) where Label == Text, Content == Text, Info == EmptyView {
+    ) where Label == Text, Content == Text {
         self.init(
-            key,
             options, selection: selection,
             height: height,
-            horizontalPadding: horizontalPadding
-        ) { value in
-            Text(contentKey(value))
+            horizontalPadding: horizontalPadding,
+            contentKey: contentKey
+        ) {
+            Text(key)
         }
     }
 
     public var body: some View {
         VStack {
-            LuminareCompose(horizontalPadding: horizontalPadding) {
+            LuminareCompose(horizontalPadding: horizontalPadding, reducesTrailingSpace: true) {
                 content(selection)
                     .contentTransition(.numericText())
                     .multilineTextAlignment(.trailing)

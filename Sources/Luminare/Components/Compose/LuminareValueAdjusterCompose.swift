@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjusterCompose<Label, Info, Suffix, V>: View
-where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjusterCompose<Label, Suffix, V>: View
+where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public enum ControlSize {
         case regular
         case compact
@@ -20,9 +20,10 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
             }
         }
     }
+    
+    @Environment(\.isEnabled) private var isEnabled
 
-    private let horizontalPadding: CGFloat
-    private let disabled: Bool
+    let horizontalPadding: CGFloat
 
     private let formatter: NumberFormatter
     private var totalRange: V {
@@ -39,7 +40,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
 
     @ViewBuilder private let label: () -> Label
     @ViewBuilder private let suffix: () -> Suffix
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
     @Binding private var value: V
     private let sliderRange: ClosedRange<V>
@@ -56,19 +56,16 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
+        controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder suffix: @escaping () -> Suffix,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder suffix: @escaping () -> Suffix
     ) {
         self.label = label
         self.suffix = suffix
-        self.info = info
         
         self._value = value
         self.sliderRange = sliderRange
@@ -88,56 +85,24 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         }
         
         self.horizontalPadding = horizontalPadding
-        self.disabled = disabled
-    }
-    
-    public init(
-        value: Binding<V>,
-        sliderRange: ClosedRange<V>,
-        step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
-        decimalPlaces: Int = 0,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder suffix: @escaping () -> Suffix
-    ) where Info == EmptyView {
-        self.init(
-            value: value,
-            sliderRange: sliderRange,
-            step: step,
-            lowerClamp: lowerClamp,
-            upperClamp: upperClamp,
-            controlSize: controlSize,
-            decimalPlaces: decimalPlaces
-        ) {
-            label()
-        } suffix: {
-            suffix()
-        } info: {
-            LuminareInfoView()
-        }
     }
     
     public init(
         _ key: LocalizedStringKey,
-        _ suffixKey: LocalizedStringKey,
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
+        controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
-    ) where Label == Text, Suffix == Text {
+        @ViewBuilder suffix: @escaping () -> Suffix
+    ) where Label == Text {
         self.init(
             value: value,
             sliderRange: sliderRange,
             horizontalPadding: horizontalPadding,
-            disabled: disabled,
             step: step,
             lowerClamp: lowerClamp,
             upperClamp: upperClamp,
@@ -146,9 +111,34 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         ) {
             Text(key)
         } suffix: {
+            suffix()
+        }
+    }
+    
+    public init(
+        suffixKey: LocalizedStringKey,
+        value: Binding<V>,
+        sliderRange: ClosedRange<V>,
+        horizontalPadding: CGFloat = 8,
+        step: V? = nil,
+        lowerClamp: Bool = false,
+        upperClamp: Bool = false,
+        controlSize: Self.ControlSize = .regular,
+        decimalPlaces: Int = 0,
+        @ViewBuilder label: @escaping () -> Label
+    ) where Suffix == Text {
+        self.init(
+            value: value,
+            sliderRange: sliderRange,
+            horizontalPadding: horizontalPadding,
+            step: step,
+            lowerClamp: lowerClamp,
+            upperClamp: upperClamp,
+            controlSize: controlSize,
+            decimalPlaces: decimalPlaces,
+            label: label
+        ) {
             Text(suffixKey)
-        } info: {
-            info()
         }
     }
     
@@ -158,44 +148,40 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: LuminareValueAdjusterCompose.ControlSize = .regular,
+        controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0
-    ) where Label == Text, Suffix == Text, Info == EmptyView {
+    ) where Label == Text, Suffix == Text {
         self.init(
-            key,
-            suffixKey,
+            suffixKey: suffixKey,
             value: value,
             sliderRange: sliderRange,
             horizontalPadding: horizontalPadding,
-            disabled: disabled,
             step: step,
             lowerClamp: lowerClamp,
             upperClamp: upperClamp,
             controlSize: controlSize,
             decimalPlaces: decimalPlaces
         ) {
-            LuminareInfoView()
+            Text(key)
         }
     }
 
     public var body: some View {
         VStack {
             if controlSize == .regular {
-                LuminareCompose(horizontalPadding: horizontalPadding, disabled: disabled) {
+                LuminareCompose(horizontalPadding: horizontalPadding) {
                     content()
                 } label: {
                     label()
-                } info: {
-                    info()
                 }
 
                 slider()
+                    .padding(.horizontal, horizontalPadding)
             } else {
-                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12, disabled: disabled) {
+                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12) {
                     HStack(spacing: 12) {
                         slider()
                         
@@ -204,8 +190,6 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
                     .frame(width: 270)
                 } label: {
                     label()
-                } info: {
-                    info()
                 }
             }
         }
@@ -288,17 +272,16 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         .padding(4)
         .padding(.horizontal, 4)
         .background {
-            ZStack {
+            Capsule()
+                .strokeBorder(.quaternary, lineWidth: 1)
+        }
+        .background {
+            if isShowingTextBox {
                 Capsule()
-                    .strokeBorder(.quaternary, lineWidth: 1)
-
-                if isShowingTextBox {
-                    Capsule()
-                        .foregroundStyle(.quinary)
-                } else {
-                    Capsule()
-                        .foregroundStyle(.quinary.opacity(0.5))
-                }
+                    .foregroundStyle(.quinary)
+            } else {
+                Capsule()
+                    .foregroundStyle(.quinary.opacity(0.5))
             }
         }
         .fixedSize()
@@ -313,6 +296,7 @@ where Label: View, Info: View, Suffix: View, V: Strideable & BinaryFloatingPoint
         .onDisappear {
             removeEventMonitor()
         }
+        .opacity(isEnabled ? 1 : 0.5)
     }
 
     func addEventMonitor() {
@@ -373,7 +357,21 @@ private extension Comparable {
             lowerClamp: true, 
             upperClamp: false
         ) {
-            Text("Value Adjuster")
+            Text("Value adjuster")
+        } suffix: {
+            Text("suffix")
+        }
+        
+        
+        LuminareValueAdjusterCompose(
+            value: .constant(42),
+            sliderRange: 0...128,
+            step: 1,
+            lowerClamp: true,
+            upperClamp: false,
+            controlSize: .compact
+        ) {
+            Text("Value adjuster compact")
         } suffix: {
             Text("suffix")
         }

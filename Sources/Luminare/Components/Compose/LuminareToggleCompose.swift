@@ -7,85 +7,41 @@
 
 import SwiftUI
 
-public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: View {
+public struct LuminareToggleCompose<Label>: View where Label: View {
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
-    let disabled: Bool
+    
     @ViewBuilder private let label: () -> Label
-    @ViewBuilder private let info: () -> LuminareInfoView<Info>
     
     @Binding var value: Bool
 
     public init(
         isOn value: Binding<Bool>,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        @ViewBuilder label: @escaping () -> Label
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
-        self.disabled = disabled
         self.label = label
-        self.info = info
         self._value = value
     }
     
     public init(
-        isOn value: Binding<Bool>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Info == EmptyView {
-        self.init(
-            isOn: value,
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled
-        ) {
-            label()
-        } info: {
-            LuminareInfoView()
-        }
-    }
-    
-    public init(
         _ key: LocalizedStringKey,
         isOn value: Binding<Bool>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        disabled: Bool = false,
-        @ViewBuilder info: @escaping () -> LuminareInfoView<Info>
+        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8
     ) where Label == Text {
         self.init(
             isOn: value,
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
         ) {
             Text(key)
-        } info: {
-            info()
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        isOn value: Binding<Bool>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        disabled: Bool = false
-    ) where Label == Text, Info == EmptyView {
-        self.init(
-            key, 
-            isOn: value,
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled
-        ) {
-            LuminareInfoView()
         }
     }
 
     public var body: some View {
         LuminareCompose(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            disabled: disabled
+            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
         ) {
             Toggle("", isOn: $value.animation(LuminareConstants.animation))
                 .labelsHidden()
@@ -93,8 +49,6 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
                 .toggleStyle(.switch)
         } label: {
             label()
-        } info: {
-            info()
         }
     }
 }
@@ -102,6 +56,17 @@ public struct LuminareToggleCompose<Label, Info>: View where Label: View, Info: 
 #Preview {
     LuminareSection {
         LuminareToggleCompose("Toggle compose", isOn: .constant(true))
+        
+        LuminareCompose("Button", reducesTrailingSpace: true) {
+            Button {
+                
+            } label: {
+                Text("Button")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
     }
     .padding()
 }

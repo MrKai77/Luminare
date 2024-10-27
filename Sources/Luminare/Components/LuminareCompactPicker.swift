@@ -9,10 +9,25 @@ import SwiftUI
 
 public struct LuminareCompactPicker<Content, V>: View
 where Content: View, V: Hashable & Equatable {
+    public enum PickerStyle {
+        case menu
+        case segmented
+        
+        var style: any SwiftUI.PickerStyle {
+            switch self {
+            case .menu: .menu
+            case .segmented: .segmented
+            }
+        }
+    }
+    
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let cornerRadius: CGFloat
     let borderless: Bool
+    let animation: Animation
+    let style: PickerStyle
+    let hasDividers: Bool
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
@@ -24,6 +39,9 @@ where Content: View, V: Hashable & Equatable {
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
         borderless: Bool = true,
+        animation: Animation = .bouncy,
+        style: Self.PickerStyle = .menu,
+        hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
@@ -31,17 +49,27 @@ where Content: View, V: Hashable & Equatable {
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.borderless = borderless
+        self.animation = animation
+        self.style = style
+        self.hasDividers = hasDividers
         self.content = content
     }
-
+    
     public var body: some View {
-        Picker("", selection: $selection) {
-            content()
+        Group {
+            switch style {
+            case .menu:
+                _VariadicView.Tree(MenuLayout(selection: $selection), content: content)
+            case .segmented:
+                _VariadicView.Tree(SegmentedLayout(
+                    elementMinHeight: elementMinHeight,
+                    cornerRadius: cornerRadius,
+                    animation: animation,
+                    showDividers: hasDividers,
+                    selection: $selection, isHovering: $isHovering
+                ), content: content)
+            }
         }
-        .labelsHidden()
-        .pickerStyle(.menu)
-        .buttonStyle(.borderless)
-        .padding(.trailing, -2)
         .onHover { hover in
             withAnimation(LuminareConstants.fastAnimation) {
                 isHovering = hover
@@ -73,20 +101,181 @@ where Content: View, V: Hashable & Equatable {
         .clipShape(.rect(cornerRadius: cornerRadius))
         .animation(LuminareConstants.fastAnimation, value: isHovering)
     }
+    
+    @ViewBuilder private func variadic<Layout>(
+        layout: Layout, content: () -> some View
+    ) -> some View where Layout: _VariadicView.ViewRoot {
+        _VariadicView.Tree(layout, content: content)
+    }
+    
+    struct MenuLayout: _VariadicView.UnaryViewRoot {
+        @Binding var selection: V
+        
+        @ViewBuilder func body(children: _VariadicView.Children) -> some View {
+            Picker("", selection: $selection) {
+                ForEach(Array(children.enumerated()), id: \.offset) { _, child in
+                    child
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .buttonStyle(.borderless)
+            .padding(.trailing, -2)
+        }
+    }
+    
+    struct SegmentedLayout: _VariadicView.UnaryViewRoot {
+        let elementMinHeight: CGFloat
+        let cornerRadius: CGFloat
+        let animation: Animation
+        let showDividers: Bool
+        
+        @Binding var selection: V
+        @Binding var isHovering: Bool
+        
+        @Namespace private var namespace
+        @State private var hoveringKnobOffset: Int?
+        @State private var isHolding: Bool = false
+        
+        private var mouseLocation: NSPoint { NSEvent.mouseLocation }
+        
+        @ViewBuilder func body(children: _VariadicView.Children) -> some View {
+            HStack {
+                ForEach(Array(children.enumerated()), id: \.offset) { index, child in
+                    if let value = child.id(as: V.self) {
+                        SegmentedKnob(
+                            cornerRadius: cornerRadius,
+                            animation: animation,
+                            selection: $selection, value: value,
+                            view: child
+                        )
+                        .foregroundStyle(isHovering && selection == value ? .primary : .secondary)
+                        .background {
+                            if selection == value {
+                                Group {
+                                    if isHovering {
+                                        Rectangle()
+                                            .foregroundStyle(.background.opacity(0.7))
+                                            .shadow(color: .black.opacity(0.1), radius: 8)
+                                    } else {
+                                        Rectangle()
+                                            .foregroundStyle(.quinary)
+                                    }
+                                }
+                                .overlay {
+                                    if hoveringKnobOffset == index {
+                                        Rectangle()
+                                            .foregroundStyle(.background.opacity(0.2))
+                                            .blendMode(.luminosity)
+                                    }
+                                }
+                                .clipShape(.rect(cornerRadius: cornerRadius))
+                                .matchedGeometryEffect(
+                                    id: "knob", in: namespace
+                                )
+                            }
+                        }
+                        .onHover { hover in
+                            if selection == value {
+                                withAnimation(LuminareConstants.fastAnimation) {
+                                    if hover {
+                                        hoveringKnobOffset = index
+                                    } else {
+                                        hoveringKnobOffset = nil
+                                    }
+                                }
+                            }
+                        }
+                        .onChange(of: selection) { newValue in
+                            if newValue == value {
+                                withAnimation(LuminareConstants.fastAnimation) {
+                                    hoveringKnobOffset = index
+                                }
+                            }
+                        }
+                        .zIndex(1)
+                        
+                        if showDividers, child.id != children.last?.id {
+                            Divider()
+                                .frame(width: 0, height: elementMinHeight / 2)
+                                .zIndex(0)
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+        
+        struct SegmentedKnob: View {
+            let cornerRadius: CGFloat
+            let animation: Animation
+            
+            @Binding var selection: V
+            let value: V
+            let view: _VariadicView.Children.Element
+            
+            @State private var isHovering: Bool = false
+            
+            var body: some View {
+                Button {
+                    withAnimation(animation) {
+                        selection = value
+                    }
+                } label: {
+                    view
+                        .frame(maxWidth: .infinity)
+                        .padding(4)
+                }
+                .buttonStyle(.borderless)
+                .onHover { hover in
+                    withAnimation(LuminareConstants.fastAnimation) {
+                        isHovering = hover
+                    }
+                }
+                .background {
+                    Group {
+                        if selection != value, isHovering {
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .foregroundStyle(.background.opacity(0.2))
+                        }
+                    }
+                    .blendMode(.luminosity)
+                }
+            }
+        }
+    }
+}
+
+private struct PickerPreview<V>: View where V: Hashable & Equatable {
+    let elements: [V]
+    @State var selection: V
+    let style: LuminareCompactPicker<ForEach<[V], V, Text>, V>.PickerStyle
+    
+    var body: some View {
+        LuminareCompactPicker(selection: $selection, borderless: false, style: style) {
+            ForEach(elements, id: \.self) { element in
+                Text("\(element)")
+            }
+        }
+    }
 }
 
 #Preview {
     LuminareSection {
-        LuminareCompose("Picker") {
-            LuminareCompactPicker(selection: .constant(42), borderless: false) {
-                ForEach(0..<200) { num in
-                    Text("\(num)")
-                }
-            }
+        LuminareCompose("Menu picker", reducesTrailingSpace: true) {
+            PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
         }
-        .padding(.trailing, -4)
         
-        LuminareCompose("Button") {
+        VStack {
+            LuminareCompose("Segmented picker") {
+            }
+            
+            PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", style: .segmented)
+            
+            PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
+        }
+        
+        LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
                 
             } label: {
@@ -96,7 +285,6 @@ where Content: View, V: Hashable & Equatable {
             }
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
-        .padding(.trailing, -4)
     }
     .padding()
 }

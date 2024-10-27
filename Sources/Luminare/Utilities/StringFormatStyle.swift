@@ -47,7 +47,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
         /// `42ab0E` -> `#42AB0E`
         case uppercasedWithWell
         
-        /// Customized case and prefix characters.
+        /// customized case and prefix characters.
         case custom(Lowercased, String)
 
         public func parse(_ value: String) throws -> String {

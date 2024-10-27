@@ -13,8 +13,6 @@ public protocol LuminarePickerData {
 
 public struct LuminarePicker<Content, V>: View 
 where Content: View, V: Equatable {
-    @Environment(\.tintColor) private var tintColor
-
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
@@ -95,11 +93,11 @@ where Content: View, V: Equatable {
                 ZStack {
                     let isActive = internalSelection == element
                     getShape(i: i, j: j)
-                        .foregroundStyle(isActive ? tintColor().opacity(0.15) : .clear)
+                        .foregroundStyle(isActive ? AnyShapeStyle(.tint.opacity(0.15)) : AnyShapeStyle(.clear))
                         .overlay {
                             getShape(i: i, j: j)
                                 .strokeBorder(
-                                    tintColor(),
+                                    .tint,
                                     lineWidth: isActive ? 1.5 : 0
                                 )
                         }
