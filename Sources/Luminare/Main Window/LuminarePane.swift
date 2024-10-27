@@ -8,8 +8,6 @@
 import SwiftUI
 
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
-    @Environment(\.luminareWindow) var window
-    
     let titlebarHeight: CGFloat = 50
 
     @ViewBuilder let content: () -> Content
@@ -23,6 +21,15 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     ) {
         self.content = content
         self.header = header
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == Text {
+        self.init(content: content) {
+            Text(key)
+        }
     }
 
     public var body: some View {

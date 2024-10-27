@@ -17,18 +17,20 @@ public class PopoverPanel: NSPanel, ObservableObject {
     public init() {
         super.init(
             contentRect: .zero,
-            styleMask: [.fullSizeContentView, .titled],
+            styleMask: [.fullSizeContentView],
             backing: .buffered,
             defer: false
         )
+        level = .floating
         titleVisibility = .hidden
         titlebarAppearsTransparent = true
-        titleVisibility = .hidden
-        backgroundColor = .clear
+        
         isOpaque = false
+        backgroundColor = .clear
+        isMovableByWindowBackground = true
+        
         ignoresMouseEvents = false
         becomesKeyOnlyIfNeeded = true
-        level = .floating
     }
 
     override public var canBecomeKey: Bool {
