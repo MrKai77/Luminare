@@ -27,6 +27,7 @@ where Content: View, V: Hashable & Equatable {
     let borderless: Bool
     let animation: Animation
     let style: PickerStyle
+    let showDividers: Bool
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
@@ -40,6 +41,7 @@ where Content: View, V: Hashable & Equatable {
         borderless: Bool = true,
         animation: Animation = .bouncy,
         style: PickerStyle = .menu,
+        showDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
@@ -49,9 +51,10 @@ where Content: View, V: Hashable & Equatable {
         self.borderless = borderless
         self.animation = animation
         self.style = style
+        self.showDividers = showDividers
         self.content = content
     }
-
+    
     public var body: some View {
         Group {
             switch style {
@@ -59,8 +62,10 @@ where Content: View, V: Hashable & Equatable {
                 _VariadicView.Tree(MenuLayout(selection: $selection), content: content)
             case .segmented:
                 _VariadicView.Tree(SegmentedLayout(
+                    elementMinHeight: elementMinHeight,
                     cornerRadius: cornerRadius,
                     animation: animation,
+                    showDividers: showDividers,
                     selection: $selection, isHovering: $isHovering
                 ), content: content)
             }
@@ -120,14 +125,19 @@ where Content: View, V: Hashable & Equatable {
     }
     
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
+        let elementMinHeight: CGFloat
         let cornerRadius: CGFloat
         let animation: Animation
+        let showDividers: Bool
         
         @Binding var selection: V
         @Binding var isHovering: Bool
         
         @Namespace private var namespace
         @State private var hoveringKnobOffset: Int?
+        @State private var isHolding: Bool = false
+        
+        private var mouseLocation: NSPoint { NSEvent.mouseLocation }
         
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
             HStack {
@@ -139,49 +149,56 @@ where Content: View, V: Hashable & Equatable {
                             selection: $selection, value: value,
                             view: child
                         )
-                            .background {
-                                if selection == value {
-                                    Group {
-                                        if isHovering {
-                                            Rectangle()
-                                                .foregroundStyle(.background.opacity(0.5))
-                                                .shadow(color: .black.opacity(0.1), radius: 8)
-                                        } else {
-                                            Rectangle()
-                                                .foregroundStyle(.quinary)
-                                        }
-                                    }
-                                    .overlay {
-                                        if hoveringKnobOffset == index {
-                                            Rectangle()
-                                                .foregroundStyle(.white.opacity(0.2))
-                                                .blendMode(.luminosity)
-                                        }
-                                    }
-                                    .clipShape(.rect(cornerRadius: cornerRadius))
-                                    .matchedGeometryEffect(
-                                        id: "knob", in: namespace
-                                    )
-                                }
-                            }
-                            .onHover { hover in
-                                if selection == value {
-                                    withAnimation(LuminareConstants.fastAnimation) {
-                                        if hover {
-                                            hoveringKnobOffset = index
-                                        } else {
-                                            hoveringKnobOffset = nil
-                                        }
+                        .background {
+                            if selection == value {
+                                Group {
+                                    if isHovering {
+                                        Rectangle()
+                                            .foregroundStyle(.background.opacity(0.7))
+                                            .shadow(color: .black.opacity(0.1), radius: 8)
+                                    } else {
+                                        Rectangle()
+                                            .foregroundStyle(.quinary)
                                     }
                                 }
+                                .overlay {
+                                    if hoveringKnobOffset == index {
+                                        Rectangle()
+                                            .foregroundStyle(.background.opacity(0.2))
+                                            .blendMode(.luminosity)
+                                    }
+                                }
+                                .clipShape(.rect(cornerRadius: cornerRadius))
+                                .matchedGeometryEffect(
+                                    id: "knob", in: namespace
+                                )
                             }
-                            .onChange(of: selection) { newValue in
-                                if newValue == value {
-                                    withAnimation(LuminareConstants.fastAnimation) {
+                        }
+                        .onHover { hover in
+                            if selection == value {
+                                withAnimation(LuminareConstants.fastAnimation) {
+                                    if hover {
                                         hoveringKnobOffset = index
+                                    } else {
+                                        hoveringKnobOffset = nil
                                     }
                                 }
                             }
+                        }
+                        .onChange(of: selection) { newValue in
+                            if newValue == value {
+                                withAnimation(LuminareConstants.fastAnimation) {
+                                    hoveringKnobOffset = index
+                                }
+                            }
+                        }
+                        .zIndex(1)
+                        
+                        if showDividers, child.id != children.last?.id {
+                            Divider()
+                                .frame(height: elementMinHeight / 2)
+                                .zIndex(0)
+                        }
                     }
                 }
             }
@@ -218,7 +235,7 @@ where Content: View, V: Hashable & Equatable {
                     Group {
                         if selection != value, isHovering {
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .foregroundStyle(.white.opacity(0.2))
+                                .foregroundStyle(.background.opacity(0.2))
                         }
                     }
                     .blendMode(.luminosity)
@@ -253,7 +270,7 @@ struct PickerPreview<V>: View where V: Hashable & Equatable {
             LuminareCompose("Segmented picker") {
             }
             
-            PickerPreview(elements: ["a", "b", "c"], selection: "a", style: .segmented)
+            PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", style: .segmented)
             
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }
