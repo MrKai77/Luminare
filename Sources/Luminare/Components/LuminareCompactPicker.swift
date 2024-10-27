@@ -55,7 +55,10 @@ where Content: View, V: Hashable & Equatable {
             case .menu:
                 _VariadicView.Tree(MenuLayout(selection: $selection), content: content)
             case .segmented:
-                _VariadicView.Tree(SegmentedLayout(selection: $selection, isHovering: $isHovering), content: content)
+                _VariadicView.Tree(SegmentedLayout(
+                    cornerRadius: cornerRadius,
+                    selection: $selection, isHovering: $isHovering
+                ), content: content)
             }
         }
         .onHover { hover in
@@ -113,40 +116,106 @@ where Content: View, V: Hashable & Equatable {
     }
     
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
+        let cornerRadius: CGFloat
         @Binding var selection: V
         @Binding var isHovering: Bool
+        
         @Namespace private var namespace
+        @State private var hoveringKnobOffset: Int?
         
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
             HStack {
                 ForEach(Array(children.enumerated()), id: \.offset) { index, child in
-                    Button {
-                        if let value = child.id(as: V.self) {
-                            withAnimation {
-                                selection = value
+                    if let value = child.id(as: V.self) {
+                        SegmentedKnob(
+                            cornerRadius: cornerRadius,
+                            selection: $selection, value: value, 
+                            view: child
+                        )
+                            .background {
+                                if selection == value {
+                                    Group {
+                                        if isHovering {
+                                            Rectangle()
+                                                .foregroundStyle(.background.opacity(0.5))
+                                                .shadow(color: .black.opacity(0.1), radius: 8)
+                                        } else {
+                                            Rectangle()
+                                                .foregroundStyle(.quinary)
+                                        }
+                                    }
+                                    .overlay {
+                                        if hoveringKnobOffset == index {
+                                            Rectangle()
+                                                .foregroundStyle(.white.opacity(0.2))
+                                                .blendMode(.luminosity)
+                                        }
+                                    }
+                                    .clipShape(.rect(cornerRadius: cornerRadius))
+                                    .matchedGeometryEffect(
+                                        id: "knob", in: namespace
+                                    )
+                                }
                             }
-                        }
-                    } label: {
-                        child
-                    }
-                    .buttonStyle(.borderless)
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background {
-                        if let value = child.id(as: V.self), selection == value {
-                            if isHovering {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .foregroundStyle(.background.opacity(0.5))
-                                    .shadow(color: .black.opacity(0.1), radius: 8)
-                            } else {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .foregroundStyle(.quinary)
+                            .onHover { hover in
+                                if selection == value {
+                                    withAnimation(LuminareConstants.fastAnimation) {
+                                        if hover {
+                                            hoveringKnobOffset = index
+                                        } else {
+                                            hoveringKnobOffset = nil
+                                        }
+                                    }
+                                }
                             }
-                        }
+                            .onChange(of: selection) { newValue in
+                                if newValue == value {
+                                    withAnimation(LuminareConstants.fastAnimation) {
+                                        hoveringKnobOffset = index
+                                    }
+                                }
+                            }
                     }
                 }
             }
             .padding(.vertical, 4)
+        }
+        
+        struct SegmentedKnob: View {
+            let cornerRadius: CGFloat
+            
+            @Binding var selection: V
+            let value: V
+            let view: _VariadicView.Children.Element
+            
+            @State private var isHovering: Bool = false
+            
+            var body: some View {
+                Button {
+                    withAnimation(.bouncy) {
+                        selection = value
+                    }
+                } label: {
+                    view
+                        .frame(maxWidth: .infinity)
+                        .padding(4)
+                }
+                .buttonStyle(.borderless)
+                .onHover { hover in
+                    withAnimation(LuminareConstants.fastAnimation) {
+                        isHovering = hover
+                    }
+                }
+                .background {
+                    Group {
+                        if selection != value, isHovering {
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .foregroundStyle(.white.opacity(0.2))
+                        }
+                    }
+                    .blendMode(.luminosity)
+                }
+            }
         }
     }
 }
