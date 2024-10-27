@@ -204,7 +204,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
             
             if hasBorder {
-                DividedVStack(applyMaskToItems: hasPadding, showDividers: hasDividers) {
+                DividedVStack(applyMaskToItems: hasPadding, hasDividers: hasDividers) {
                     content()
                 }
                 .frame(maxWidth: .infinity)
