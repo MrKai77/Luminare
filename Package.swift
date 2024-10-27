@@ -14,8 +14,6 @@ let package = Package(
             name: "Luminare",
             targets: ["Luminare"]
         )
-    ],dependencies: [
-        .package(url: "https://github.com/siteline/SwiftUI-Introspect", from: "1.3.0")
     ],
     targets: [
         // targets are the basic building blocks of a package, defining a module or a test suite

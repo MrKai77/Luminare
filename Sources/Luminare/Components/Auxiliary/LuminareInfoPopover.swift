@@ -11,7 +11,10 @@ public struct LuminareInfoPopover<Content, Badge>: View
 where Content: View, Badge: View {
     let delay: CGFloat
     let arrowEdge: Edge
+    let dimWhileActive: Bool
+    let cornerRadius: CGFloat
     let padding: CGFloat
+    let shade: AnyShapeStyle
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let badge: () -> Badge
@@ -20,31 +23,43 @@ where Content: View, Badge: View {
     @State private var isHovering: Bool = false
     @State private var hoverTimer: Timer?
     
-    public init(
+    public init<S: ShapeStyle>(
         delay: CGFloat = 0.5,
         arrowEdge: Edge = .bottom,
+        dimWhileActive: Bool = false,
+        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
+        shade: S = .secondary,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder badge: @escaping () -> Badge
     ) {
         self.delay = delay
         self.arrowEdge = arrowEdge
+        self.dimWhileActive = dimWhileActive
+        self.cornerRadius = cornerRadius
         self.padding = padding
+        self.shade = AnyShapeStyle(shade)
         self.content = content
         self.badge = badge
     }
     
-    public init(
+    public init<S: ShapeStyle>(
         _ key: LocalizedStringKey,
         delay: CGFloat = 0.5,
         arrowEdge: Edge = .bottom,
+        dimWhileActive: Bool = false,
+        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
+        shade: S = .secondary,
         @ViewBuilder badge: @escaping () -> Badge
     ) where Content == Text {
         self.init(
             delay: delay, 
             arrowEdge: arrowEdge,
-            padding: padding
+            dimWhileActive: dimWhileActive,
+            cornerRadius: cornerRadius,
+            padding: padding,
+            shade: shade
         ) {
             Text(key)
         } badge: {
@@ -55,6 +70,8 @@ where Content: View, Badge: View {
     public init(
         delay: CGFloat = 0.5,
         arrowEdge: Edge = .bottom,
+        dimWhileActive: Bool = false,
+        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         badgeSize: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
@@ -62,7 +79,10 @@ where Content: View, Badge: View {
         self.init(
             delay: delay,
             arrowEdge: arrowEdge,
+            dimWhileActive: dimWhileActive,
+            cornerRadius: cornerRadius,
             padding: padding,
+            shade: .tint,
             content: content
         ) {
             AnyView(
@@ -76,16 +96,36 @@ where Content: View, Badge: View {
     public var body: some View {
         badge()
             .padding(padding)
-            .onHover { hovering in
-                isHovering = hovering
+            .background {
+                if dimWhileActive && isPopoverPresented {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .foregroundStyle(shade.opacity(0.1))
+                        .blur(radius: padding)
+                }
+            }
+            .onHover { hover in
+                withAnimation(LuminareConstants.fastAnimation) {
+                    isHovering = hover
+                }
                 
                 if isHovering {
                     hoverTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { _ in
-                        isPopoverPresented = true
+                        withAnimation(LuminareConstants.fastAnimation) {
+                            isPopoverPresented = true
+                        }
+                        
+                        hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            withAnimation(LuminareConstants.fastAnimation) {
+                                isPopoverPresented = isHovering
+                            }
+                            hoverTimer?.invalidate()
+                            hoverTimer = nil
+                        }
                     }
-                } else {
-                    hoverTimer?.invalidate()
-                    isPopoverPresented = false
+                } else if hoverTimer == nil {
+                    withAnimation(LuminareConstants.fastAnimation) {
+                        isPopoverPresented = false
+                    }
                 }
             }
             .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
@@ -100,24 +140,24 @@ where Content: View, Badge: View {
     LuminareSection {
         LuminareCompose {
         } label: {
-            LuminareInfoPopover {
+            LuminareInfoPopover(dimWhileActive: true) {
                 Text("Here's to the *crazy* ones.")
                     .padding()
             } badge: {
-                Text("Pops to bottom")
+                Text("Pops to bottom (hover me)")
             }
         }
         
         LuminareCompose {
         } label: {
-            LuminareInfoPopover(arrowEdge: .trailing) {
+            LuminareInfoPopover(arrowEdge: .trailing, dimWhileActive: true) {
                 VStack(alignment: .leading) {
                     Text("The **misfits.** The ~rebels.~")
                     Text("The [troublemakers](https://apple.com).")
                 }
                 .padding()
             } badge: {
-                Text("Pops to trailing")
+                Text("Pops to trailing (hover me)")
             }
         }
         
@@ -127,7 +167,7 @@ where Content: View, Badge: View {
                 Text("Pops from a dot ↗")
                 
                 VStack {
-                    LuminareInfoPopover(arrowEdge: .top) {
+                    LuminareInfoPopover(arrowEdge: .top, dimWhileActive: true) {
                         VStack(alignment: .leading) {
                             Text("The round pegs in the square holes.")
                             Text("The ones **who see things differently.**")
