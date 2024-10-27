@@ -12,7 +12,7 @@ struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
-    let alignTrailing: Bool
+    let reducesTrailingSpace: Bool
     let spacing: CGFloat?
     
     @ViewBuilder private let content: () -> Content
@@ -20,14 +20,14 @@ struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        alignTrailing: Bool = false,
+        reducesTrailingSpace: Bool = false,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
-        self.alignTrailing = alignTrailing
+        self.reducesTrailingSpace = reducesTrailingSpace
         self.spacing = spacing
         self.label = label
         self.content = content
@@ -36,13 +36,13 @@ struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     public init(
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        alignTrailing: Bool = false,
+        reducesTrailingSpace: Bool = false,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            alignTrailing: alignTrailing,
+            reducesTrailingSpace: reducesTrailingSpace,
             spacing: spacing
         ) {
             content()
@@ -66,14 +66,14 @@ struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
                 .disabled(!isEnabled)
         }
         .padding(.horizontal, horizontalPadding)
-        .padding(.trailing, alignTrailing ? -4 : 0)
+        .padding(.trailing, reducesTrailingSpace ? -4 : 0)
         .frame(minHeight: elementMinHeight)
     }
 }
 
 #Preview {
     LuminareSection {
-        LuminareCompose("Label", alignTrailing: true) {
+        LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
                 
             } label: {
@@ -85,7 +85,7 @@ struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
         }
         
         
-        LuminareCompose("Label", alignTrailing: true) {
+        LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
                 
             } label: {

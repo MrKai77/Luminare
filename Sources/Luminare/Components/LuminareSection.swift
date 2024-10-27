@@ -8,9 +8,9 @@
 import SwiftUI
 
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
-    let disablePadding: Bool
-    let showDividers: Bool
-    let noBorder: Bool
+    let hasPadding: Bool
+    let hasDividers: Bool
+    let hasBorder: Bool
     
     let headerSpacing: CGFloat
     let footerSpacing: CGFloat
@@ -22,18 +22,18 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @ViewBuilder let footer: () -> Footer
 
     public init(
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
-        self.disablePadding = disablePadding
-        self.showDividers = showDividers
-        self.noBorder = noBorder
+        self.hasPadding = hasPadding
+        self.hasDividers = hasDividers
+        self.hasBorder = hasBorder
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
         self.cornerRadius = cornerRadius
@@ -46,17 +46,17 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == Text {
         self.init(
-            disablePadding: disablePadding,
-            showDividers: showDividers,
-            noBorder: noBorder,
+            hasPadding: hasPadding,
+            hasDividers: hasDividers,
+            hasBorder: hasBorder,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -69,18 +69,18 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     }
     
     public init(
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
     ) where Footer == EmptyView {
         self.init(
-            disablePadding: disablePadding,
-            showDividers: showDividers,
-            noBorder: noBorder,
+            hasPadding: hasPadding,
+            hasDividers: hasDividers,
+            hasBorder: hasBorder,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -94,17 +94,17 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     
     public init(
         _ headerKey: LocalizedStringKey,
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == EmptyView {
         self.init(
-            disablePadding: disablePadding,
-            showDividers: showDividers,
-            noBorder: noBorder,
+            hasPadding: hasPadding,
+            hasDividers: hasDividers,
+            hasBorder: hasBorder,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -115,18 +115,18 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     }
     
     public init(
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder footer: @escaping () -> Footer
     ) where Header == EmptyView {
         self.init(
-            disablePadding: disablePadding,
-            showDividers: showDividers,
-            noBorder: noBorder,
+            hasPadding: hasPadding,
+            hasDividers: hasDividers,
+            hasBorder: hasBorder,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -140,17 +140,17 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     
     public init(
         footerKey: LocalizedStringKey,
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == Text {
         self.init(
-            disablePadding: disablePadding,
-            showDividers: showDividers,
-            noBorder: noBorder,
+            hasPadding: hasPadding,
+            hasDividers: hasDividers,
+            hasBorder: hasBorder,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -161,17 +161,17 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     }
     
     public init(
-        disablePadding: Bool = false,
-        showDividers: Bool = true,
-        noBorder: Bool = false,
+        hasPadding: Bool = true,
+        hasDividers: Bool = true,
+        hasBorder: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == EmptyView {
         self.init(
-            disablePadding: disablePadding,
-            showDividers: showDividers,
-            noBorder: noBorder,
+            hasPadding: hasPadding,
+            hasDividers: hasDividers,
+            hasBorder: hasBorder,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -203,10 +203,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .frame(height: headerSpacing)
             }
             
-            if noBorder {
-                content()
-            } else {
-                DividedVStack(applyMaskToItems: !disablePadding, showDividers: showDividers) {
+            if hasBorder {
+                DividedVStack(applyMaskToItems: hasPadding, showDividers: hasDividers) {
                     content()
                 }
                 .frame(maxWidth: .infinity)
@@ -216,6 +214,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary, lineWidth: 1)
                 }
+            } else {
+                content()
             }
             
             if Footer.self != EmptyView.self {

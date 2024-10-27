@@ -24,39 +24,39 @@ public extension EnvironmentValues {
 
 // MARK: - HoveringOverLuminareItem
 
-public struct HoveringOverLuminareItem: EnvironmentKey {
+public struct HoveringOverLuminareItemEnvironmentKey: EnvironmentKey {
     public static var defaultValue: Bool = false
 }
 
 public extension EnvironmentValues {
     var hoveringOverLuminareItem: Bool {
-        get { self[HoveringOverLuminareItem.self] }
-        set { self[HoveringOverLuminareItem.self] = newValue }
+        get { self[HoveringOverLuminareItemEnvironmentKey.self] }
+        set { self[HoveringOverLuminareItemEnvironmentKey.self] = newValue }
     }
 }
 
 // MARK: - LuminareWindow
 
-public struct LuminareWindowKey: EnvironmentKey {
+public struct LuminareWindowEnvironmentKey: EnvironmentKey {
     public static let defaultValue: NSWindow? = nil
 }
 
 public extension EnvironmentValues {
     var luminareWindow: NSWindow? {
-        get { self[LuminareWindowKey.self] }
-        set { self[LuminareWindowKey.self] = newValue }
+        get { self[LuminareWindowEnvironmentKey.self] }
+        set { self[LuminareWindowEnvironmentKey.self] = newValue }
     }
 }
 
 // MARK: - ClickedOutside (Private)
 
-struct ClickedOutsideFlagKey: EnvironmentKey {
+struct ClickedOutsideFlagEnvironmentKey: EnvironmentKey {
     static let defaultValue: Bool = false
 }
 
 extension EnvironmentValues {
     var clickedOutsideFlag: Bool {
-        get { self[ClickedOutsideFlagKey.self] }
-        set { self[ClickedOutsideFlagKey.self] = newValue }
+        get { self[ClickedOutsideFlagEnvironmentKey.self] }
+        set { self[ClickedOutsideFlagEnvironmentKey.self] = newValue }
     }
 }

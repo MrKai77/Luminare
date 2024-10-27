@@ -88,7 +88,7 @@ where Label: View, Content: View, V: Equatable {
 
     public var body: some View {
         VStack {
-            LuminareCompose(horizontalPadding: horizontalPadding, alignTrailing: true) {
+            LuminareCompose(horizontalPadding: horizontalPadding, reducesTrailingSpace: true) {
                 content(selection)
                     .contentTransition(.numericText())
                     .multilineTextAlignment(.trailing)

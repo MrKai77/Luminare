@@ -352,7 +352,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     }
 
     public var body: some View {
-        LuminareSection(disablePadding: true) {
+        LuminareSection(hasPadding: false) {
             HStack(spacing: 2) {
                 actions()
                     .buttonStyle(LuminareButtonStyle())

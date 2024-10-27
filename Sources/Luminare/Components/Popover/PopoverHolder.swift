@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct PopoverHolder<Content: View>: NSViewRepresentable {
     @Binding var isPresented: Bool
+    
     @ViewBuilder var content: () -> Content
 
     public init(isPresented: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) {

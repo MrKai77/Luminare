@@ -4,13 +4,14 @@
 //
 //  Created by Kai Azim on 2024-04-14.
 //
-// Huge thanks to https://cindori.com/developer/floating-panel :)
+//  Huge thanks to https://cindori.com/developer/floating-panel :)
 
 import SwiftUI
 
 class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     @Binding var isPresented: Bool
-    let closeOnDefocus: Bool
+    
+    let closesOnDefocus: Bool
     let isCompact: Bool
 
     init(
@@ -20,7 +21,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
-        self.closeOnDefocus = closeOnDefocus
+        self.closesOnDefocus = closeOnDefocus
         self.isCompact = isCompact
         super.init(
             contentRect: .zero,
@@ -101,7 +102,7 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     }
 
     override func resignMain() {
-        if closeOnDefocus {
+        if closesOnDefocus {
             close()
         }
     }

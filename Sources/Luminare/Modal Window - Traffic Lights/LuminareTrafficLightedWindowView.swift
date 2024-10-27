@@ -13,12 +13,13 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
 
     let sectionSpacing: CGFloat = 12
     let cornerRadius: CGFloat = 12
-    let content: Content
+    
+    @ViewBuilder let content: () -> Content
 
     var body: some View {
         VStack {
             VStack(spacing: sectionSpacing) {
-                content
+                content()
             }
             .padding(.top, 40) // titlebar
             .fixedSize()
@@ -29,7 +30,7 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
                 )
             }
             .overlay {
-                // The bottom has a smaller corner radius because a compact button will be used there
+                // the bottom has a smaller corner radius because a compact button will be used there
                 UnevenRoundedRectangle(
                     topLeadingRadius: cornerRadius,
                     bottomLeadingRadius: 8 + cornerRadius,
@@ -51,8 +52,7 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
                 GeometryReader { proxy in
                     Color.clear
                         .onChange(of: proxy.size) { _ in
-                            guard let modalWindow = floatingPanel as? LuminareTrafficLightedWindow<Content> else { return }
-                            modalWindow.updateShadow(for: 0.5)
+                            floatingPanel.updateShadow(for: 0.5)
                         }
                 }
             }

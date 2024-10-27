@@ -13,7 +13,8 @@ struct LuminareModalView<Content>: View where Content: View {
 
     let sectionSpacing: CGFloat
     let outerPadding: CGFloat
-    @ViewBuilder var content: () -> Content
+    
+    @ViewBuilder let content: () -> Content
 
     init(isCompact: Bool, @ViewBuilder content: @escaping () -> Content) {
         self.sectionSpacing = isCompact ? 8 : 16

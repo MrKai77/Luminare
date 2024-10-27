@@ -12,7 +12,8 @@ import SwiftUI
 struct LuminareView<Content>: View where Content: View {
     @Environment(\.tintColor) var tintColor
     @Environment(\.luminareWindow) var window
-    let content: () -> Content
+    
+    @ViewBuilder let content: () -> Content
 
     @State private var currentAnimation: LuminareWindowAnimation?
 
@@ -77,8 +78,7 @@ struct LuminareView<Content>: View where Content: View {
 
 // MARK: - NSWindow Animation
 
-// Custom NSWindow resize animation so that it can be stopped midway
-
+// custom `NSWindow` resize animation so that it can be stopped midway
 class LuminareWindowAnimation: NSAnimation {
     let window: NSWindow
     let targetFrame: NSRect
@@ -87,7 +87,7 @@ class LuminareWindowAnimation: NSAnimation {
         self.window = window
         self.targetFrame = targetFrame
         super.init(duration: 0.5, animationCurve: .easeOut)
-        super.animationBlockingMode = .nonblocking // Allows the window to redraw contents while animating
+        super.animationBlockingMode = .nonblocking // allows the window to redraw contents while animating
     }
 
     @available(*, unavailable)
@@ -97,9 +97,9 @@ class LuminareWindowAnimation: NSAnimation {
 
     override var currentProgress: NSAnimation.Progress {
         didSet {
-            // The last frame of this NSAnimation looks a little stuttery,
+            // the last frame of this `NSAnimation` looks a little stuttery,
             // so we multiply the progress by 1.01, and then make sure the last
-            // frame doesn't draw.
+            // frame doesn't draw
             let progress = CGFloat(currentProgress * 1.01)
             guard progress < 1 else {
                 return

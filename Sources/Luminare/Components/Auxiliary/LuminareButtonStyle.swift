@@ -20,7 +20,14 @@ public struct LuminareButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(backgroundForState(isPressed: configuration.isPressed))
+            .background {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    styles: (
+                        .quaternary, .quaternary.opacity(0.7), .quinary
+                    )
+                )
+            }
             .onHover { hover in
                 withAnimation(LuminareConstants.fastAnimation) {
                     isHovering = hover
@@ -29,18 +36,6 @@ public struct LuminareButtonStyle: ButtonStyle {
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
-    }
-
-    @ViewBuilder private func backgroundForState(isPressed: Bool) -> some View {
-        Group {
-            if isPressed, isEnabled {
-                Rectangle().foregroundStyle(.quaternary)
-            } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(.quaternary.opacity(0.7))
-            } else {
-                Rectangle().foregroundStyle(.quinary)
-            }
-        }
     }
 }
 
@@ -57,7 +52,12 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(destructiveBackgroundForState(isPressed: configuration.isPressed))
+            .background {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    style: .red
+                )
+            }
             .onHover { hover in
                 withAnimation(LuminareConstants.fastAnimation) {
                     isHovering = hover
@@ -66,18 +66,6 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .frame(minHeight: elementMinHeight)
             .clipShape(.rect(cornerRadius: innerCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
-    }
-
-    @ViewBuilder private func destructiveBackgroundForState(isPressed: Bool) -> some View {
-        Group {
-            if isPressed, isEnabled {
-                Rectangle().foregroundStyle(.red.opacity(0.4))
-            } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(.red.opacity(0.25))
-            } else {
-                Rectangle().foregroundStyle(.red.opacity(0.15))
-            }
-        }
     }
 }
 
@@ -94,7 +82,12 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(prominentBackgroundForState(isPressed: configuration.isPressed))
+            .background {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    style: .tint
+                )
+            }
             .onHover { hover in
                 withAnimation(LuminareConstants.fastAnimation) {
                     isHovering = hover
@@ -105,18 +98,22 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
     
-    @ViewBuilder private func prominentBackgroundForState(isPressed: Bool) -> some View {
-        LuminareProminentButtonStyle.tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, color: .accentColor)
+    @ViewBuilder static func tintedBackgroundForState<
+        F: ShapeStyle
+    >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, style: F) -> some View {
+        tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, styles: (style, style, style))
     }
     
-    @ViewBuilder static func tintedBackgroundForState(isPressed: Bool, isEnabled: Bool, isHovering: Bool, color: Color) -> some View {
+    @ViewBuilder static func tintedBackgroundForState<
+        F1: ShapeStyle, F2: ShapeStyle, F3: ShapeStyle
+    >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, styles: (F1, F2, F3)) -> some View {
         Group {
             if isPressed, isEnabled {
-                Rectangle().foregroundStyle(color.opacity(0.4))
+                Rectangle().foregroundStyle(styles.0.opacity(0.4))
             } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(color.opacity(0.25))
+                Rectangle().foregroundStyle(styles.1.opacity(0.25))
             } else {
-                Rectangle().foregroundStyle(color.opacity(0.15))
+                Rectangle().foregroundStyle(styles.2.opacity(0.15))
             }
         }
     }
@@ -138,7 +135,14 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(backgroundForState(isPressed: configuration.isPressed))
+            .background {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    styles: (
+                        .quaternary, .quaternary.opacity(0.7), .clear
+                    )
+                )
+            }
             .onHover { hover in
                 withAnimation(LuminareConstants.fastAnimation) {
                     isHovering = hover
@@ -156,16 +160,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 .padding(24)
                 .allowsHitTesting(false)
             }
-    }
-
-    @ViewBuilder private func backgroundForState(isPressed: Bool) -> some View {
-        Group {
-            if isPressed, isEnabled {
-                Rectangle().foregroundStyle(.quaternary)
-            } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(.quaternary.opacity(0.7))
-            }
-        }
     }
 }
 
@@ -187,7 +181,14 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(backgroundForState(isPressed: configuration.isPressed))
+            .background {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    styles: (
+                        .quaternary, .quaternary.opacity(0.7), .quinary
+                    )
+                )
+            }
             .background(border())
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
             .clipShape(.rect(cornerRadius: cornerRadius))
@@ -203,23 +204,9 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @ViewBuilder private func border() -> some View {
         Group {
             if isHovering {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.quaternary, lineWidth: 1)
+                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary, lineWidth: 1)
             } else {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.clear, lineWidth: 1)
-            }
-        }
-    }
-
-    @ViewBuilder private func backgroundForState(isPressed: Bool) -> some View {
-        Group {
-            if isPressed {
-                Rectangle().foregroundStyle(.quaternary)
-            } else if isHovering {
-                Rectangle().foregroundStyle(.quaternary.opacity(0.7))
-            } else {
-                Rectangle().foregroundStyle(.quinary)
+                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
             }
         }
     }

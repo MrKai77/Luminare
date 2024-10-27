@@ -27,7 +27,7 @@ where Content: View, V: Hashable & Equatable {
     let borderless: Bool
     let animation: Animation
     let style: PickerStyle
-    let showDividers: Bool
+    let hasDividers: Bool
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
@@ -41,7 +41,7 @@ where Content: View, V: Hashable & Equatable {
         borderless: Bool = true,
         animation: Animation = .bouncy,
         style: Self.PickerStyle = .menu,
-        showDividers: Bool = true,
+        hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
@@ -51,7 +51,7 @@ where Content: View, V: Hashable & Equatable {
         self.borderless = borderless
         self.animation = animation
         self.style = style
-        self.showDividers = showDividers
+        self.hasDividers = hasDividers
         self.content = content
     }
     
@@ -65,7 +65,7 @@ where Content: View, V: Hashable & Equatable {
                     elementMinHeight: elementMinHeight,
                     cornerRadius: cornerRadius,
                     animation: animation,
-                    showDividers: showDividers,
+                    showDividers: hasDividers,
                     selection: $selection, isHovering: $isHovering
                 ), content: content)
             }
@@ -197,7 +197,7 @@ where Content: View, V: Hashable & Equatable {
                         
                         if showDividers, child.id != children.last?.id {
                             Divider()
-                                .frame(height: elementMinHeight / 2)
+                                .frame(width: 0, height: elementMinHeight / 2)
                                 .zIndex(0)
                         }
                     }
@@ -262,7 +262,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
 
 #Preview {
     LuminareSection {
-        LuminareCompose("Menu picker", alignTrailing: true) {
+        LuminareCompose("Menu picker", reducesTrailingSpace: true) {
             PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
         }
         
@@ -275,7 +275,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }
         
-        LuminareCompose("Button", alignTrailing: true) {
+        LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
                 
             } label: {

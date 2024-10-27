@@ -11,7 +11,7 @@ public struct LuminareInfoPopover<Content, Badge>: View
 where Content: View, Badge: View {
     let delay: CGFloat
     let arrowEdge: Edge
-    let dimWhileActive: Bool
+    let highlight: Bool
     let cornerRadius: CGFloat
     let padding: CGFloat
     let shade: AnyShapeStyle
@@ -26,7 +26,7 @@ where Content: View, Badge: View {
     public init<S: ShapeStyle>(
         delay: CGFloat = 0.5,
         arrowEdge: Edge = .bottom,
-        dimWhileActive: Bool = false,
+        highlight: Bool = true,
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         shade: S = .secondary,
@@ -35,7 +35,7 @@ where Content: View, Badge: View {
     ) {
         self.delay = delay
         self.arrowEdge = arrowEdge
-        self.dimWhileActive = dimWhileActive
+        self.highlight = highlight
         self.cornerRadius = cornerRadius
         self.padding = padding
         self.shade = AnyShapeStyle(shade)
@@ -47,7 +47,7 @@ where Content: View, Badge: View {
         _ key: LocalizedStringKey,
         delay: CGFloat = 0.5,
         arrowEdge: Edge = .bottom,
-        dimWhileActive: Bool = false,
+        highlight: Bool = true,
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         shade: S = .secondary,
@@ -56,7 +56,7 @@ where Content: View, Badge: View {
         self.init(
             delay: delay, 
             arrowEdge: arrowEdge,
-            dimWhileActive: dimWhileActive,
+            highlight: highlight,
             cornerRadius: cornerRadius,
             padding: padding,
             shade: shade
@@ -70,7 +70,7 @@ where Content: View, Badge: View {
     public init(
         delay: CGFloat = 0.5,
         arrowEdge: Edge = .bottom,
-        dimWhileActive: Bool = false,
+        highlight: Bool = true,
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         badgeSize: CGFloat = 4,
@@ -79,7 +79,7 @@ where Content: View, Badge: View {
         self.init(
             delay: delay,
             arrowEdge: arrowEdge,
-            dimWhileActive: dimWhileActive,
+            highlight: highlight,
             cornerRadius: cornerRadius,
             padding: padding,
             shade: .tint,
@@ -97,7 +97,7 @@ where Content: View, Badge: View {
         badge()
             .padding(padding)
             .background {
-                if dimWhileActive && isPopoverPresented {
+                if highlight && isPopoverPresented {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .foregroundStyle(shade.opacity(0.1))
                         .blur(radius: padding)
@@ -122,7 +122,9 @@ where Content: View, Badge: View {
                             hoverTimer = nil
                         }
                     }
-                } else if hoverTimer == nil {
+                } else if hoverTimer == nil || !isPopoverPresented {
+                    hoverTimer?.invalidate()
+                    hoverTimer = nil
                     withAnimation(LuminareConstants.fastAnimation) {
                         isPopoverPresented = false
                     }
@@ -140,7 +142,7 @@ where Content: View, Badge: View {
     LuminareSection {
         LuminareCompose {
         } label: {
-            LuminareInfoPopover(dimWhileActive: true) {
+            LuminareInfoPopover {
                 Text("Here's to the *crazy* ones.")
                     .padding()
             } badge: {
@@ -150,7 +152,7 @@ where Content: View, Badge: View {
         
         LuminareCompose {
         } label: {
-            LuminareInfoPopover(arrowEdge: .trailing, dimWhileActive: true) {
+            LuminareInfoPopover(arrowEdge: .trailing) {
                 VStack(alignment: .leading) {
                     Text("The **misfits.** The ~rebels.~")
                     Text("The [troublemakers](https://apple.com).")
@@ -167,7 +169,7 @@ where Content: View, Badge: View {
                 Text("Pops from a dot ↗")
                 
                 VStack {
-                    LuminareInfoPopover(arrowEdge: .top, dimWhileActive: true) {
+                    LuminareInfoPopover(arrowEdge: .top) {
                         VStack(alignment: .leading) {
                             Text("The round pegs in the square holes.")
                             Text("The ones **who see things differently.**")

@@ -57,7 +57,7 @@ public struct LuminareToggleCompose<Label>: View where Label: View {
     LuminareSection {
         LuminareToggleCompose("Toggle compose", isOn: .constant(true))
         
-        LuminareCompose("Button", alignTrailing: true) {
+        LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
                 
             } label: {

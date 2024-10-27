@@ -29,7 +29,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
     // main view containing all components of the color picker
     var body: some View {
         Group {
-            LuminareSection(disablePadding: true, showDividers: false) {
+            LuminareSection(hasPadding: false, hasDividers: false) {
                 VStack(spacing: 2) {
                     ColorSaturationBrightnessView(selectedColor: $color)
                         .scaledToFill()

@@ -7,9 +7,8 @@
 
 import SwiftUI
 
-// Initialize this window simply by initializing it.
 public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject where Content: View {
-    public init(view: () -> Content) {
+    public init(@ViewBuilder view: @escaping () -> Content) {
         super.init(
             contentRect: .zero,
             styleMask: [.titled, .closable, .fullSizeContentView],
@@ -18,7 +17,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject w
         )
 
         let hostingView = NSHostingView(
-            rootView: LuminareTrafficLightedWindowView(content: view())
+            rootView: LuminareTrafficLightedWindowView(content: view)
                 .environment(\.tintColor, LuminareConstants.tint)
                 .environmentObject(self)
         )
