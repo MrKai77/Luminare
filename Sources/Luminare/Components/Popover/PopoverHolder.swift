@@ -8,11 +8,17 @@
 import SwiftUI
 
 public struct PopoverHolder<Content: View>: NSViewRepresentable {
+    let material: NSVisualEffectView.Material
     @Binding var isPresented: Bool
     
     @ViewBuilder var content: () -> Content
 
-    public init(isPresented: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) {
+    public init(
+        material: NSVisualEffectView.Material = .popover,
+        isPresented: Binding<Bool>,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.material = material
         self._isPresented = isPresented
         self.content = content
     }
@@ -35,7 +41,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
 
     @MainActor
     public class Coordinator: NSObject, NSWindowDelegate {
-        private let parent: PopoverHolder
+        private let holder: PopoverHolder
         private var content: () -> Content
         private var originalYPoint: CGFloat?
         var popover: PopoverPanel?
@@ -43,7 +49,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
         private var monitor: Any?
 
         init(_ parent: PopoverHolder, content: @escaping () -> Content) {
-            self.parent = parent
+            self.holder = parent
             self.content = content
             super.init()
         }
@@ -52,59 +58,57 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
         func setVisible(_ isPresented: Bool, in view: NSView? = nil) {
             // if we're going to be closing the window
             guard isPresented else {
-                Task { @MainActor in
-                    removeMonitor()
-                    parent.isPresented = false
-                    self.popover = nil
-                }
+                popover?.close()
                 return
             }
             
             guard let view else { return }
             
-            if let popover {
-                popover.resignKey()
-            } else {
-                initializePopup()
-                guard let popover else { return }
-                
-                // popover size
-                let targetSize = NSSize(width: 300, height: 300)
-                let extraPadding: CGFloat = 10
-                
-                // get coordinates to place popopver
-                guard let windowFrame = view.window?.frame else { return }
-                let viewBounds = view.bounds
-                var targetPoint = view.convert(viewBounds, to: nil).origin // convert to window coordinates
-                originalYPoint = targetPoint.y
-                
-                // correct popover position
-                targetPoint.y += windowFrame.minY
-                targetPoint.x += windowFrame.minX
-                targetPoint.y -= targetSize.height + extraPadding
-                
-                // set position and show popover
-                popover.setContentSize(targetSize)
-                popover.setFrameOrigin(targetPoint)
-                popover.makeKeyAndOrderFront(nil)
-                
-                if monitor == nil {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                        self?.monitor = NSEvent.addLocalMonitorForEvents(matching: [
-                            .scrollWheel, .leftMouseDown, .rightMouseDown, .otherMouseDown
-                        ]) { [weak self] event in
-                            if event.window != self?.popover {
-                                self?.setVisible(false)
-                            }
-                            return event
+            guard popover == nil else { return }
+            
+            initializePopup()
+            guard let popover else { return }
+            
+            // popover size
+            let targetSize = NSSize(width: 300, height: 300)
+            let extraPadding: CGFloat = 10
+            
+            // get coordinates to place popopver
+            guard let windowFrame = view.window?.frame else { return }
+            let viewBounds = view.bounds
+            var targetPoint = view.convert(viewBounds, to: nil).origin // convert to window coordinates
+            originalYPoint = targetPoint.y
+            
+            // correct popover position
+            targetPoint.y += windowFrame.minY
+            targetPoint.x += windowFrame.minX
+            targetPoint.y -= targetSize.height + extraPadding
+            
+            // set position and show popover
+            popover.setContentSize(targetSize)
+            popover.setFrameOrigin(targetPoint)
+            popover.makeKeyAndOrderFront(nil)
+            
+            if monitor == nil {
+                DispatchQueue.main.async { [weak self] in
+                    self?.monitor = NSEvent.addLocalMonitorForEvents(matching: [
+                        .scrollWheel, .leftMouseDown, .rightMouseDown, .otherMouseDown
+                    ]) { [weak self] event in
+                        if event.window != self?.popover {
+                            self?.setVisible(false)
                         }
+                        return event
                     }
                 }
             }
         }
 
         public func windowWillClose(_: Notification) {
-            setVisible(false)
+            Task { @MainActor in
+                removeMonitor()
+                holder.isPresented = false
+                self.popover = nil
+            }
         }
 
         func initializePopup() {
@@ -114,7 +118,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
             popover.delegate = self
             popover.contentViewController = NSHostingController(
                 rootView: content()
-                    .background(VisualEffectView(material: .popover, blendingMode: .behindWindow))
+                    .background(VisualEffectView(material: holder.material, blendingMode: .behindWindow))
                     .overlay {
                         UnevenRoundedRectangle(
                             topLeadingRadius: PopoverPanel.cornerRadius,

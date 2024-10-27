@@ -24,6 +24,7 @@ public class PopoverPanel: NSPanel, ObservableObject {
         level = .floating
         titleVisibility = .hidden
         titlebarAppearsTransparent = true
+        animationBehavior = .utilityWindow
         
         isOpaque = false
         backgroundColor = .clear
@@ -48,9 +49,5 @@ public class PopoverPanel: NSPanel, ObservableObject {
     override public func close() {
         closeHandler?()
         super.close()
-    }
-
-    override public func resignKey() {
-        close()
     }
 }
