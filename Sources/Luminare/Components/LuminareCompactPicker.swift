@@ -248,7 +248,7 @@ where Content: View, V: Hashable & Equatable {
     }
 }
 
-struct PickerPreview<V>: View where V: Hashable & Equatable {
+private struct PickerPreview<V>: View where V: Hashable & Equatable {
     let elements: [V]
     @State var selection: V
     let style: LuminareCompactPicker<ForEach<[V], V, Text>, V>.PickerStyle

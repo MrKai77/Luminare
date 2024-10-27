@@ -9,7 +9,6 @@ import SwiftUI
 
 public struct LuminareList<Header, ContentA, ContentB, AddView, RemoveView, Footer, V, ID>: View
 where Header: View, ContentA: View, ContentB: View, AddView: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
-    @Environment(\.tintColor) private var tintColor
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
 
     @Binding private var items: [V]
@@ -671,7 +670,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                     bottomTrailingRadius: 0,
                     topTrailingRadius: cornerRadius
                 )
-                .strokeBorder(tintColor(), lineWidth: lineWidth)
+                .strokeBorder(.tint, lineWidth: lineWidth)
 
                 VStack {
                     Color.clear
@@ -701,7 +700,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                 Rectangle()
                     .frame(width: lineWidth)
             }
-            .foregroundStyle(tintColor())
+            .foregroundStyle(.tint)
         }
     }
 
@@ -716,7 +715,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                 Rectangle()
                     .frame(width: lineWidth)
             }
-            .foregroundStyle(tintColor())
+            .foregroundStyle(.tint)
 
             // --- Bottom part ---
 
@@ -727,7 +726,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                     bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
                     topTrailingRadius: 0
                 )
-                .strokeBorder(tintColor(), lineWidth: lineWidth)
+                .strokeBorder(.tint, lineWidth: lineWidth)
 
                 VStack {
                     HStack {
@@ -758,7 +757,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             Rectangle()
                 .frame(width: lineWidth)
         }
-        .foregroundStyle(tintColor())
+        .foregroundStyle(.tint)
     }
 
     func singleSelectionPart(isBottomOfList: Bool) -> some View {
@@ -768,7 +767,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
             topTrailingRadius: cornerRadius
         )
-        .strokeBorder(tintColor(), lineWidth: lineWidth)
+        .strokeBorder(.tint, lineWidth: lineWidth)
     }
 }
 
@@ -779,19 +778,44 @@ extension NSTableView {
     }
 }
 
-#Preview {
-    LuminareList(
-        "Header", "Footer",
-        items: .constant([37, 42, 1, 0]),
-        selection: .constant([1, 0]),
-        id: \.self,
-        addKey: .init("Add"),
-        removeKey: .init("Remove")
-    ) {
-    } content: { num in
-        Text("\(num.wrappedValue)")
-    } emptyView: {
-        Text("Empty")
+private struct ListPreview<V>: View where V: Hashable {
+    @State var items: [V]
+    @State var selection: Set<V>
+    let add: (inout [V]) -> ()
+    
+    var body: some View {
+        LuminareList(
+            "Header", "Footer",
+            items: $items,
+            selection: $selection,
+            id: \.self,
+            addKey: .init("Add"),
+            removeKey: .init("Remove")
+        ) {
+            add(&items)
+        } content: { value in
+            Text("\(value.wrappedValue)")
+                .contextMenu {
+                    Button("Remove") {
+                        items.removeAll { selection.contains($0) }
+                    }
+                }
+        } emptyView: {
+            Text("Empty")
+                .foregroundStyle(.secondary)
+        }
     }
-    .padding()
+}
+
+#Preview {
+    ScrollView {
+        ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
+            guard items.count < 100 else { return }
+            let random = { Int.random(in: 0..<100) }
+            var new = random()
+            while items.contains([new]) { new = random() }
+            items.append(new)
+        }
+        .padding()
+    }
 }

@@ -31,7 +31,7 @@ public struct LuminareButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 
-    private func backgroundForState(isPressed: Bool) -> some View {
+    @ViewBuilder private func backgroundForState(isPressed: Bool) -> some View {
         Group {
             if isPressed, isEnabled {
                 Rectangle().foregroundStyle(.quaternary)
@@ -68,7 +68,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 
-    private func destructiveBackgroundForState(isPressed: Bool) -> some View {
+    @ViewBuilder private func destructiveBackgroundForState(isPressed: Bool) -> some View {
         Group {
             if isPressed, isEnabled {
                 Rectangle().foregroundStyle(.red.opacity(0.4))
@@ -83,7 +83,6 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 
 public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.tintColor) private var tintColor
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -95,7 +94,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(destructiveBackgroundForState(isPressed: configuration.isPressed))
+            .background(prominentBackgroundForState(isPressed: configuration.isPressed))
             .onHover { hover in
                 withAnimation(LuminareConstants.fastAnimation) {
                     isHovering = hover
@@ -106,14 +105,18 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
     
-    private func destructiveBackgroundForState(isPressed: Bool) -> some View {
+    @ViewBuilder private func prominentBackgroundForState(isPressed: Bool) -> some View {
+        LuminareProminentButtonStyle.tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, color: <#T##Color#>)
+    }
+    
+    @ViewBuilder static func tintedBackgroundForState(isPressed: Bool, isEnabled: Bool, isHovering: Bool, color: Color) -> some View {
         Group {
             if isPressed, isEnabled {
-                Rectangle().foregroundStyle(.red.opacity(0.4))
+                Rectangle().foregroundStyle(color.opacity(0.4))
             } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(.red.opacity(0.25))
+                Rectangle().foregroundStyle(color.opacity(0.25))
             } else {
-                Rectangle().foregroundStyle(.red.opacity(0.15))
+                Rectangle().foregroundStyle(color.opacity(0.15))
             }
         }
     }
@@ -155,7 +158,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
     }
 
-    private func backgroundForState(isPressed: Bool) -> some View {
+    @ViewBuilder private func backgroundForState(isPressed: Bool) -> some View {
         Group {
             if isPressed, isEnabled {
                 Rectangle().foregroundStyle(.quaternary)

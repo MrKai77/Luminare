@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-// MARK: - TintColor
+// MARK: - TintColor (Private)
 
-// currently, it is impossible to read the .tint(Color) modifier on a view
+// currently, it is impossible to read the `.tint(Color)` modifier on a view
 // this is a custom environement value as an alternative implementation of it
-public struct TintColorEnvironmentKey: EnvironmentKey {
+struct TintColorEnvironmentKey: EnvironmentKey {
     public static var defaultValue: () -> Color = { .accentColor }
 }
 
-public extension EnvironmentValues {
+extension EnvironmentValues {
     var tintColor: () -> Color {
         get { self[TintColorEnvironmentKey.self] }
         set { self[TintColorEnvironmentKey.self] = newValue }
@@ -35,7 +35,7 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - ClickedOutside
+// MARK: - LuminareWindow
 
 public struct LuminareWindowKey: EnvironmentKey {
     public static let defaultValue: NSWindow? = nil
