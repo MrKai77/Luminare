@@ -8,6 +8,9 @@
 import SwiftUI
 
 public struct ScreenView<Content>: View where Content: View {
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
     @Binding var blurred: Bool
     let screenContent: () -> Content
     @State private var image: NSImage?
@@ -35,7 +38,7 @@ public struct ScreenView<Content>: View where Content: View {
                         .blur(radius: blurred ? 10 : 0)
                         .opacity(blurred ? 0.5 : 1)
                 } else {
-                    LuminareConstants.tint()
+                    tint()
                         .opacity(0.1)
                 }
             }
@@ -77,7 +80,7 @@ public struct ScreenView<Content>: View where Content: View {
         }
 
         if let newImage = NSImage.resize(url, width: 300) {
-            await withAnimation(LuminareConstants.fastAnimation) {
+            withAnimation(animationFast) {
                 image = newImage
             }
         }

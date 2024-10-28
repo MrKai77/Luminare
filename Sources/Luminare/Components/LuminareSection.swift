@@ -8,23 +8,23 @@
 import SwiftUI
 
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
-    let hasPadding: Bool
-    let hasDividers: Bool
-    let hasBorder: Bool
+    private let hasPadding: Bool
+    private let hasDividers: Bool
+    private let isBordered: Bool
     
-    let headerSpacing: CGFloat
-    let footerSpacing: CGFloat
-    let cornerRadius: CGFloat
-    let innerPadding: CGFloat
+    private let headerSpacing: CGFloat
+    private let footerSpacing: CGFloat
+    private let cornerRadius: CGFloat
+    private let innerPadding: CGFloat
     
-    @ViewBuilder let content: () -> Content
-    @ViewBuilder let header: () -> Header
-    @ViewBuilder let footer: () -> Footer
+    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private let header: () -> Header
+    @ViewBuilder private let footer: () -> Footer
 
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
@@ -33,7 +33,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ) {
         self.hasPadding = hasPadding
         self.hasDividers = hasDividers
-        self.hasBorder = hasBorder
+        self.isBordered = isBordered
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
         self.cornerRadius = cornerRadius
@@ -48,7 +48,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         _ footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
@@ -56,7 +56,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            hasBorder: hasBorder,
+            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -71,7 +71,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
@@ -80,7 +80,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            hasBorder: hasBorder,
+            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -96,7 +96,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         _ headerKey: LocalizedStringKey,
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
@@ -104,7 +104,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            hasBorder: hasBorder,
+            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -117,7 +117,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
@@ -126,7 +126,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            hasBorder: hasBorder,
+            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -142,7 +142,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
@@ -150,7 +150,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            hasBorder: hasBorder,
+            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -163,7 +163,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        hasBorder: Bool = true,
+        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
@@ -171,7 +171,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            hasBorder: hasBorder,
+            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             cornerRadius: cornerRadius, innerPadding: innerPadding
         ) {
@@ -203,7 +203,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .frame(height: headerSpacing)
             }
             
-            if hasBorder {
+            if isBordered {
                 DividedVStack(applyMaskToItems: hasPadding, hasDividers: hasDividers) {
                     content()
                 }

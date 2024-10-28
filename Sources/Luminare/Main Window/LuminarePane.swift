@@ -8,10 +8,10 @@
 import SwiftUI
 
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
-    let titlebarHeight: CGFloat = 50
+    private let titlebarHeight: CGFloat = 50
 
-    @ViewBuilder let content: () -> Content
-    @ViewBuilder let header: () -> Header
+    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private let header: () -> Header
 
     @State private var clickedOutsideFlag = false
 
@@ -67,13 +67,15 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 }
 
 struct TabHeaderButtonStyle: ButtonStyle {
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
     @State var isHovering: Bool = false
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundStyle(isHovering ? .primary : .secondary)
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }

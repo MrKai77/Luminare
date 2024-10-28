@@ -9,10 +9,12 @@ import SwiftUI
 
 public struct LuminareTextField<F>: View
 where F: ParseableFormatStyle, F.FormatOutput == String {
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
-    let cornerRadius: CGFloat
-    let borderless: Bool
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
+    private let elementMinHeight: CGFloat
+    private let horizontalPadding: CGFloat
+    private let cornerRadius: CGFloat
+    private let isBordered: Bool
     
     @Binding private var value: F.FormatInput?
     private let format: F
@@ -26,12 +28,12 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
         value: Binding<F.FormatInput?>, format: F,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
-        borderless: Bool = true
+        isBordered: Bool = true
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
-        self.borderless = borderless
+        self.isBordered = isBordered
         self._value = value
         self.format = format
         self.placeholder = placeholder
@@ -42,14 +44,14 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
         text: Binding<String>,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
-        borderless: Bool = true
+        isBordered: Bool = true
     ) where F == StringFormatStyle {
         self.init(
             placeholder,
             value: .init(text), format: StringFormatStyle(),
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
             cornerRadius: cornerRadius,
-            borderless: borderless
+            isBordered: isBordered
         )
     }
 
@@ -59,7 +61,7 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
             .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
@@ -67,12 +69,12 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
                 if isHovering {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary, lineWidth: 1)
-                } else if borderless {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.clear, lineWidth: 1)
-                } else {
+                } else if isBordered {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
+                } else {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(.clear, lineWidth: 1)
                 }
             }
             .background {
@@ -112,9 +114,9 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
 
 #Preview {
     LuminareSection {
-        LuminareTextField("Text Field", text: .constant("Borderless"))
+        LuminareTextField("Text Field", text: .constant("Bordered"))
         
-        LuminareTextField("Text Field", text: .constant("Bordererd"), borderless: false)
+        LuminareTextField("Text Field", text: .constant("Borderless"), isBordered: false)
     }
     .padding()
 }

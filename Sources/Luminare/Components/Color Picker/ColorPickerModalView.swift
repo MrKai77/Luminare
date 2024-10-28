@@ -16,6 +16,8 @@ public typealias RGBColorNames<R, G, B> = (
 
 // view for the color popup as a whole
 struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
     typealias ColorNames = RGBColorNames<R, G, B>
     
     @Binding var color: Color
@@ -94,7 +96,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
 
     // set the color based on the source of change
     private func setColor(_ newColor: Color) {
-        withAnimation(LuminareConstants.fastAnimation) {
+        withAnimation(animationFast) {
             color = newColor
         }
     }

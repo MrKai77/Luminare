@@ -10,8 +10,8 @@ import SwiftUI
 // MARK: - Luminare View
 
 struct LuminareView<Content>: View where Content: View {
-    @Environment(\.tintColor) var tintColor
-    @Environment(\.luminareWindow) var window
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareWindow) private var window
     
     @ViewBuilder let content: () -> Content
 
@@ -29,7 +29,7 @@ struct LuminareView<Content>: View where Content: View {
             .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
             .focusable(false)
             .buttonStyle(LuminareButtonStyle())
-            .tint(tintColor())
+            .tint(tint())
     }
 
     func setSize(size: CGSize, animate: Bool) {

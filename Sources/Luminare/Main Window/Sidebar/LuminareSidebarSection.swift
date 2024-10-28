@@ -9,10 +9,10 @@ import SwiftUI
 
 public struct LuminareSidebarSection<Label, Tab>: View
 where Label: View, Tab: LuminareTabItem, Tab: Hashable {
-    @Binding var selection: Tab
-    let items: [Tab]
+    @Binding private var selection: Tab
+    private let items: [Tab]
     
-    @ViewBuilder let label: () -> Label
+    @ViewBuilder private let label: () -> Label
 
     public init(
         selection: Binding<Tab>,

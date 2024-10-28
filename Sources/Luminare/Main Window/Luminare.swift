@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-public enum LuminareConstants {
-    public static var tint: () -> Color = { .accentColor }
-    public static var animation: Animation = .smooth(duration: 0.2)
-    public static var fastAnimation: Animation = .easeOut(duration: 0.1)
-}
-
 public class LuminareWindow: NSWindow {
     private var initializationTime: Date
 
@@ -31,8 +25,6 @@ public class LuminareWindow: NSWindow {
 
         let view = NSHostingView(
             rootView: LuminareView(content: content)
-                .tint(LuminareConstants.tint())
-                .environment(\.tintColor, LuminareConstants.tint)
                 .environment(\.luminareWindow, self)
         )
 

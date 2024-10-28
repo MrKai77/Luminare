@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
-    @Environment(\.tintColor) var tintColor
     @EnvironmentObject var floatingPanel: LuminareTrafficLightedWindow<Content>
 
     let sectionSpacing: CGFloat = 12
@@ -60,7 +59,6 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
             Spacer()
         }
         .buttonStyle(LuminareButtonStyle())
-        .tint(tintColor())
         .ignoresSafeArea()
     }
 }

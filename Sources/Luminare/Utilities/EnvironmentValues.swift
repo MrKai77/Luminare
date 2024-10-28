@@ -7,22 +7,52 @@
 
 import SwiftUI
 
-// MARK: - TintColor (Private)
+// MARK: - Luminare View
+
+// MARK: LuminareTint
 
 // currently, it is impossible to read the `.tint(Color)` modifier on a view
 // this is a custom environement value as an alternative implementation of it
-public struct TintColorEnvironmentKey: EnvironmentKey {
+public struct LuminareTintEnvironmentKey: EnvironmentKey {
     public static var defaultValue: () -> Color = { .accentColor }
 }
 
 public extension EnvironmentValues {
-    var tintColor: () -> Color {
-        get { self[TintColorEnvironmentKey.self] }
-        set { self[TintColorEnvironmentKey.self] = newValue }
+    var luminareTint: () -> Color {
+        get { self[LuminareTintEnvironmentKey.self] }
+        set { self[LuminareTintEnvironmentKey.self] = newValue }
     }
 }
 
-// MARK: - HoveringOverLuminareItem
+// MARK: LuminareAnimation
+
+public struct LuminareAnimationEnvironmentKey: EnvironmentKey {
+    public static var defaultValue: Animation = .smooth(duration: 0.2)
+}
+
+public extension EnvironmentValues {
+    var luminareAnimation: Animation {
+        get { self[LuminareAnimationEnvironmentKey.self] }
+        set { self[LuminareAnimationEnvironmentKey.self] = newValue }
+    }
+}
+
+// MARK: LuminareAnimationFast
+
+public struct LuminareAnimationFastEnvironmentKey: EnvironmentKey {
+    public static var defaultValue: Animation = .easeInOut(duration: 0.1)
+}
+
+public extension EnvironmentValues {
+    var luminareAnimationFast: Animation {
+        get { self[LuminareAnimationFastEnvironmentKey.self] }
+        set { self[LuminareAnimationFastEnvironmentKey.self] = newValue }
+    }
+}
+
+// MARK: - Luminare Auxiliary
+
+// MARK: HoveringOverLuminareItem
 
 public struct HoveringOverLuminareItemEnvironmentKey: EnvironmentKey {
     public static var defaultValue: Bool = false
@@ -35,7 +65,9 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - LuminareWindow
+// MARK: - Luminare Window
+
+// MARK: LuminareWindow
 
 public struct LuminareWindowEnvironmentKey: EnvironmentKey {
     public static let defaultValue: NSWindow? = nil
@@ -48,7 +80,7 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - ClickedOutside (Private)
+// MARK: ClickedOutside (Private)
 
 struct ClickedOutsideFlagEnvironmentKey: EnvironmentKey {
     static let defaultValue: Bool = false

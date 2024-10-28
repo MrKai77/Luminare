@@ -9,6 +9,8 @@ import SwiftUI
 
 // view for adjusting the lightness of a selected color
 struct ColorSaturationBrightnessView: View {
+    @Environment(\.luminareAnimation) private var animation
+    
     @Binding var selectedColor: Color
 
     @State private var circlePosition: CGPoint = .zero
@@ -91,7 +93,7 @@ struct ColorSaturationBrightnessView: View {
             )
         }
 
-        withAnimation(LuminareConstants.animation) {
+        withAnimation(animation) {
             updateCirclePosition(viewSize)
         }
     }
@@ -115,8 +117,10 @@ struct ColorSaturationBrightnessView: View {
 }
 
 struct ColorPickerCircle: View {
-    @Binding var selectedColor: Color
-    @Binding var isDragging: Bool
+    @Environment(\.luminareAnimation) private var animation
+    
+    @Binding private var selectedColor: Color
+    @Binding private var isDragging: Bool
 
     @State private var isHovering: Bool = false
     private let circleSize: CGFloat
@@ -140,7 +144,7 @@ struct ColorPickerCircle: View {
             .onHover { hovering in
                 isHovering = hovering
             }
-            .animation(LuminareConstants.animation, value: [isHovering, isDragging])
+            .animation(animation, value: [isHovering, isDragging])
     }
 }
 
