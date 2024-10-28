@@ -57,7 +57,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .background {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
-                    style: .red
+                    layered: .red
                 )
             }
             .onHover { hover in
@@ -88,7 +88,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             .background {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
-                    style: .tint
+                    layered: .tint
                 )
             }
             .onHover { hover in
@@ -103,8 +103,12 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     
     @ViewBuilder static func tintedBackgroundForState<
         F: ShapeStyle
-    >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, style: F) -> some View {
-        tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, styles: (style, style, style))
+    >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, layered: F) -> some View {
+        tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, styles: (
+            layered.opacity(0.4),
+            layered.opacity(0.25),
+            layered.opacity(0.15)
+        ))
     }
     
     @ViewBuilder static func tintedBackgroundForState<
@@ -112,11 +116,11 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, styles: (F1, F2, F3)) -> some View {
         Group {
             if isPressed, isEnabled {
-                Rectangle().foregroundStyle(styles.0.opacity(0.4))
+                Rectangle().foregroundStyle(styles.0)
             } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(styles.1.opacity(0.25))
+                Rectangle().foregroundStyle(styles.1)
             } else {
-                Rectangle().foregroundStyle(styles.2.opacity(0.15))
+                Rectangle().foregroundStyle(styles.2)
             }
         }
     }

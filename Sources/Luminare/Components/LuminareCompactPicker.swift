@@ -26,9 +26,9 @@ where Content: View, V: Hashable & Equatable {
     private let elementMinHeight: CGFloat
     private let horizontalPadding: CGFloat
     private let cornerRadius: CGFloat
-    private let hasBorder: Bool
-    private let style: PickerStyle
+    private let isBordered: Bool
     private let hasDividers: Bool
+    private let style: PickerStyle
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
@@ -39,18 +39,18 @@ where Content: View, V: Hashable & Equatable {
         selection: Binding<V>,
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
-        hasBorder: Bool = true,
-        style: Self.PickerStyle = .menu,
+        isBordered: Bool = true,
         hasDividers: Bool = true,
+        style: Self.PickerStyle = .menu,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
-        self.hasBorder = hasBorder
-        self.style = style
+        self.isBordered = isBordered
         self.hasDividers = hasDividers
+        self.style = style
         self.content = content
     }
     
@@ -79,7 +79,7 @@ where Content: View, V: Hashable & Equatable {
             if isHovering {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary, lineWidth: 1)
-            } else if hasBorder {
+            } else if isBordered {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
             } else {
@@ -249,10 +249,12 @@ where Content: View, V: Hashable & Equatable {
 private struct PickerPreview<V>: View where V: Hashable & Equatable {
     let elements: [V]
     @State var selection: V
+    var isBordered: Bool = true
+    var hasDividers: Bool = true
     let style: LuminareCompactPicker<ForEach<[V], V, Text>, V>.PickerStyle
     
     var body: some View {
-        LuminareCompactPicker(selection: $selection, hasBorder: false, style: style) {
+        LuminareCompactPicker(selection: $selection, isBordered: isBordered, hasDividers: hasDividers, style: style) {
             ForEach(elements, id: \.self) { element in
                 Text("\(element)")
             }
@@ -270,7 +272,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             LuminareCompose("Segmented picker") {
             }
             
-            PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", style: .segmented)
+            PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", isBordered: false, hasDividers: false, style: .segmented)
                 .environment(\.luminareAnimation, .bouncy)
             
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)

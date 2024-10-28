@@ -185,13 +185,8 @@ extension Array {
 
 #Preview {
     LuminareSection {
-        Text("Pick Your Lucky Number")
-            .bold()
-            .font(.title3)
-            .padding()
-        
         LuminarePicker(
-            elements: Array(30..<50),
+            elements: Array(32..<50),
             selection: .constant(42)
         ) { num in
             Text("\(num)")

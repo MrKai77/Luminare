@@ -14,7 +14,7 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
     private let elementMinHeight: CGFloat
     private let horizontalPadding: CGFloat
     private let cornerRadius: CGFloat
-    private let hasBorder: Bool
+    private let isBordered: Bool
     
     @Binding private var value: F.FormatInput?
     private let format: F
@@ -28,12 +28,12 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
         value: Binding<F.FormatInput?>, format: F,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
-        hasBorder: Bool = true
+        isBordered: Bool = true
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
-        self.hasBorder = hasBorder
+        self.isBordered = isBordered
         self._value = value
         self.format = format
         self.placeholder = placeholder
@@ -44,14 +44,14 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
         text: Binding<String>,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
-        hasBorder: Bool = true
+        isBordered: Bool = true
     ) where F == StringFormatStyle {
         self.init(
             placeholder,
             value: .init(text), format: StringFormatStyle(),
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
             cornerRadius: cornerRadius,
-            hasBorder: hasBorder
+            isBordered: isBordered
         )
     }
 
@@ -69,7 +69,7 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
                 if isHovering {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary, lineWidth: 1)
-                } else if hasBorder {
+                } else if isBordered {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
                 } else {
@@ -116,7 +116,7 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
     LuminareSection {
         LuminareTextField("Text Field", text: .constant("Bordered"))
         
-        LuminareTextField("Text Field", text: .constant("Borderless"), hasBorder: false)
+        LuminareTextField("Text Field", text: .constant("Borderless"), isBordered: false)
     }
     .padding()
 }
