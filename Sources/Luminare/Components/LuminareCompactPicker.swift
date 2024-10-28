@@ -26,7 +26,7 @@ where Content: View, V: Hashable & Equatable {
     private let elementMinHeight: CGFloat
     private let horizontalPadding: CGFloat
     private let cornerRadius: CGFloat
-    private let borderless: Bool
+    private let hasBorder: Bool
     private let style: PickerStyle
     private let hasDividers: Bool
     
@@ -39,7 +39,7 @@ where Content: View, V: Hashable & Equatable {
         selection: Binding<V>,
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
-        borderless: Bool = true,
+        hasBorder: Bool = true,
         style: Self.PickerStyle = .menu,
         hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -48,7 +48,7 @@ where Content: View, V: Hashable & Equatable {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
-        self.borderless = borderless
+        self.hasBorder = hasBorder
         self.style = style
         self.hasDividers = hasDividers
         self.content = content
@@ -79,12 +79,12 @@ where Content: View, V: Hashable & Equatable {
             if isHovering {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary, lineWidth: 1)
-            } else if borderless {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.clear, lineWidth: 1)
-            } else {
+            } else if hasBorder {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
+            } else {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.clear, lineWidth: 1)
             }
         }
         .background {
@@ -252,7 +252,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     let style: LuminareCompactPicker<ForEach<[V], V, Text>, V>.PickerStyle
     
     var body: some View {
-        LuminareCompactPicker(selection: $selection, borderless: false, style: style) {
+        LuminareCompactPicker(selection: $selection, hasBorder: false, style: style) {
             ForEach(elements, id: \.self) { element in
                 Text("\(element)")
             }
