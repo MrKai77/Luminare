@@ -8,18 +8,18 @@
 import SwiftUI
 
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
-    let hasPadding: Bool
-    let hasDividers: Bool
-    let hasBorder: Bool
+    private let hasPadding: Bool
+    private let hasDividers: Bool
+    private let hasBorder: Bool
     
-    let headerSpacing: CGFloat
-    let footerSpacing: CGFloat
-    let cornerRadius: CGFloat
-    let innerPadding: CGFloat
+    private let headerSpacing: CGFloat
+    private let footerSpacing: CGFloat
+    private let cornerRadius: CGFloat
+    private let innerPadding: CGFloat
     
-    @ViewBuilder let content: () -> Content
-    @ViewBuilder let header: () -> Header
-    @ViewBuilder let footer: () -> Footer
+    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private let header: () -> Header
+    @ViewBuilder private let footer: () -> Footer
 
     public init(
         hasPadding: Bool = true,

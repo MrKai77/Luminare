@@ -9,6 +9,8 @@ import SwiftUI
 
 public struct LuminareSliderPickerCompose<Label, Content, V>: View
 where Label: View, Content: View, V: Equatable {
+    @Environment(\.luminareAnimation) private var animation
+    
     private let height: CGFloat
     private let horizontalPadding: CGFloat
     
@@ -126,7 +128,7 @@ where Label: View, Content: View, V: Equatable {
         }
         .padding(.horizontal, horizontalPadding)
         .frame(height: height)
-        .animation(LuminareConstants.animation, value: selection)
+        .animation(animation, value: selection)
     }
 }
 

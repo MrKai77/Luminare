@@ -9,12 +9,14 @@ import SwiftUI
 
 public struct LuminareInfoPopover<Content, Badge>: View
 where Content: View, Badge: View {
-    let delay: CGFloat
-    let arrowEdge: Edge
-    let highlight: Bool
-    let cornerRadius: CGFloat
-    let padding: CGFloat
-    let shade: AnyShapeStyle
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
+    private let delay: CGFloat
+    private let arrowEdge: Edge
+    private let highlight: Bool
+    private let cornerRadius: CGFloat
+    private let padding: CGFloat
+    private let shade: AnyShapeStyle
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let badge: () -> Badge
@@ -104,18 +106,18 @@ where Content: View, Badge: View {
                 }
             }
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
                 
                 if isHovering {
                     hoverTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { _ in
-                        withAnimation(LuminareConstants.fastAnimation) {
+                        withAnimation(animationFast) {
                             isPopoverPresented = true
                         }
                         
                         hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                            withAnimation(LuminareConstants.fastAnimation) {
+                            withAnimation(animationFast) {
                                 isPopoverPresented = isHovering
                             }
                             hoverTimer?.invalidate()
@@ -125,7 +127,7 @@ where Content: View, Badge: View {
                 } else if hoverTimer == nil || !isPopoverPresented {
                     hoverTimer?.invalidate()
                     hoverTimer = nil
-                    withAnimation(LuminareConstants.fastAnimation) {
+                    withAnimation(animationFast) {
                         isPopoverPresented = false
                     }
                 }

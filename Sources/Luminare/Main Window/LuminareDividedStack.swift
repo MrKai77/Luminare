@@ -13,8 +13,9 @@ public struct LuminareDividedStack<Content: View>: View {
         case horizontal
     }
 
-    let orientation: StackOrientation
-    @ViewBuilder let content: () -> Content
+    private let orientation: StackOrientation
+    
+    @ViewBuilder private let content: () -> Content
     
     public init(orientation: StackOrientation = .horizontal, @ViewBuilder content: @escaping () -> Content) {
         self.orientation = orientation

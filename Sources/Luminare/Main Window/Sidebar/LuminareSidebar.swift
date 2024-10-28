@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct LuminareSidebar<Content>: View where Content: View {
-    let content: () -> Content
+    private let content: () -> Content
 
     public init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content

@@ -13,19 +13,22 @@ public protocol LuminarePickerData {
 
 public struct LuminarePicker<Content, V>: View 
 where Content: View, V: Equatable {
-    let cornerRadius: CGFloat = 12
-    let innerPadding: CGFloat = 4
-    let innerCornerRadius: CGFloat = 2
+    @Environment(\.luminareAnimation) private var animation
+    
+    private let cornerRadius: CGFloat = 12
+    private let innerPadding: CGFloat = 4
+    private let innerCornerRadius: CGFloat = 2
 
-    let elements2D: [[V]]
-    let rowsIndex: Int
-    let columnsIndex: Int
+    private let elements2D: [[V]]
+    private let rowsIndex: Int
+    private let columnsIndex: Int
 
-    @Binding var selectedItem: V
-    @State var internalSelection: V
+    @Binding private var selectedItem: V
+    @State private var internalSelection: V
 
     private let roundTop: Bool
     private let roundBottom: Bool
+    
     @ViewBuilder private let content: (V) -> Content
 
     public init(
@@ -75,7 +78,7 @@ where Content: View, V: Equatable {
         }
         // this improves animation performance
         .onChange(of: internalSelection) { _ in
-            withAnimation(LuminareConstants.animation) {
+            withAnimation(animation) {
                 selectedItem = internalSelection
             }
         }
@@ -86,7 +89,7 @@ where Content: View, V: Equatable {
         if let element = getElement(i: i, j: j) {
             Button {
                 guard !isDisabled(element) else { return }
-                withAnimation(LuminareConstants.animation) {
+                withAnimation(animation) {
                     internalSelection = element
                 }
             } label: {

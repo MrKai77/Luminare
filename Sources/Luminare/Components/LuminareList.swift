@@ -10,6 +10,7 @@ import SwiftUI
 public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View
 where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
+    @Environment(\.luminareAnimation) private var animation
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
@@ -403,7 +404,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
                     // TODO: `deleteItems` crashes Loop, need to be investigated further
                     // .onDelete(perform: deleteItems)
                     .onMove { indices, newOffset in
-                        withAnimation(LuminareConstants.animation) {
+                        withAnimation(animation) {
                             items.move(fromOffsets: indices, toOffset: newOffset)
                         }
                     }
@@ -424,7 +425,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer()
         }
         .onChange(of: clickedOutsideFlag) { _ in
-            withAnimation(LuminareConstants.animation) {
+            withAnimation(animation) {
                 selection = []
             }
         }
@@ -473,7 +474,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             let kVK_Escape: CGKeyCode = 0x35
 
             if event.keyCode == kVK_Escape {
-                withAnimation(LuminareConstants.animation) {
+                withAnimation(animation) {
                     selection = []
                 }
                 return nil
@@ -491,7 +492,9 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 }
 
 struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
-    @Environment(\.tintColor) private var tintColor
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
 
     @Binding private var item: V
     @ViewBuilder private let content: (Binding<V>) -> Content
@@ -539,7 +542,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             }
             .tag(item)
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
@@ -565,7 +568,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             .onChange(of: selection) { _ in
                 guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
-                    withAnimation(LuminareConstants.animation) {
+                    withAnimation(animation) {
                         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
                         lineWidth = selection.contains(item) ? maxLineWidth : .zero
                     }
@@ -575,7 +578,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
 
     @ViewBuilder func getItemBackground() -> some View {
         Group {
-            tintColor()
+            tint()
                 .opacity(tintOpacity)
 
             if isHovering {

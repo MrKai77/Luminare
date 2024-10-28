@@ -22,8 +22,10 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
     }
     
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
 
-    let horizontalPadding: CGFloat
+    private let horizontalPadding: CGFloat
 
     private let formatter: NumberFormatter
     private var totalRange: V {
@@ -195,8 +197,8 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
         }
         .padding(.horizontal, horizontalPadding)
         .frame(height: controlSize.height)
-        .animation(LuminareConstants.animation, value: value)
-        .animation(LuminareConstants.animation, value: isShowingTextBox)
+        .animation(animation, value: value)
+        .animation(animation, value: isShowingTextBox)
     }
 
     func slider() -> some View {
@@ -239,7 +241,7 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
                     formatter: formatter
                 )
                 .onSubmit {
-                    withAnimation(LuminareConstants.fastAnimation) {
+                    withAnimation(animationFast) {
                         isShowingTextBox.toggle()
                     }
                 }
@@ -250,7 +252,7 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
                 .padding(.leading, -4)
             } else {
                 Button {
-                    withAnimation(LuminareConstants.fastAnimation) {
+                    withAnimation(animationFast) {
                         isShowingTextBox.toggle()
                         focusedField = .textbox
                     }

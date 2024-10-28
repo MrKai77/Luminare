@@ -9,10 +9,14 @@
 import SwiftUI
 
 class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
-    @Binding var isPresented: Bool
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
     
-    let closesOnDefocus: Bool
-    let isCompact: Bool
+    @Binding private var isPresented: Bool
+    
+    private let closesOnDefocus: Bool
+    private let isCompact: Bool
 
     init(
         isPresented: Binding<Bool>,
@@ -32,7 +36,9 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
         let hostingView = NSHostingView(
             rootView: LuminareModalView(isCompact: isCompact, content: content)
-                .environment(\.tintColor, LuminareConstants.tint)
+                .environment(\.luminareTint, tint)
+                .environment(\.luminareAnimation, animation)
+                .environment(\.luminareAnimationFast, animationFast)
                 .environmentObject(self)
         )
 

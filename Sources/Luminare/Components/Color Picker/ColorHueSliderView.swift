@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct ColorHueSliderView: View {
-    @Binding var selectedColor: Color
+    @Environment(\.luminareAnimation) private var animation
+    
+    @Binding private var selectedColor: Color
     @State private var selectionPosition: CGFloat = 0
     @State private var selectionOffset: CGFloat = 0
     @State private var selectionCornerRadius: CGFloat = 0
@@ -47,7 +49,7 @@ struct ColorHueSliderView: View {
                 .foregroundColor(.white)
                 .shadow(radius: 3)
                 .onChange(of: selectionPosition) { _ in
-                    withAnimation(LuminareConstants.animation) {
+                    withAnimation(animation) {
                         selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
                         selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
                         selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
@@ -82,7 +84,7 @@ struct ColorHueSliderView: View {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
 
-        withAnimation(LuminareConstants.animation) {
+        withAnimation(animation) {
             selectedColor = Color(
                 hue: percentage,
                 saturation: max(0.0001, currenthsb.saturation),

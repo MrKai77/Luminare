@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -29,7 +30,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 )
             }
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
@@ -41,6 +42,7 @@ public struct LuminareButtonStyle: ButtonStyle {
 
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -59,7 +61,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
                 )
             }
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
@@ -71,6 +73,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 
 public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -89,7 +92,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
                 )
             }
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
@@ -121,6 +124,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
 
 public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     let innerCornerRadius: CGFloat = 2
     let elementMinHeight: CGFloat = 34
@@ -144,7 +148,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 )
             }
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
@@ -165,6 +169,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     let elementMinHeight: CGFloat = 34
     let elementExtraMinHeight: CGFloat = 25
@@ -193,7 +198,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
             .clipShape(.rect(cornerRadius: cornerRadius))
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }

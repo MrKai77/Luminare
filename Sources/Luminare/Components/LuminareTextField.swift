@@ -9,10 +9,12 @@ import SwiftUI
 
 public struct LuminareTextField<F>: View
 where F: ParseableFormatStyle, F.FormatOutput == String {
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
-    let cornerRadius: CGFloat
-    let borderless: Bool
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
+    private let elementMinHeight: CGFloat
+    private let horizontalPadding: CGFloat
+    private let cornerRadius: CGFloat
+    private let borderless: Bool
     
     @Binding private var value: F.FormatInput?
     private let format: F
@@ -59,7 +61,7 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
             .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }

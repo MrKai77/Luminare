@@ -21,25 +21,25 @@ where Content: View, V: Hashable & Equatable {
         }
     }
     
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
-    let cornerRadius: CGFloat
-    let borderless: Bool
-    let animation: Animation
-    let style: PickerStyle
-    let hasDividers: Bool
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
+    private let elementMinHeight: CGFloat
+    private let horizontalPadding: CGFloat
+    private let cornerRadius: CGFloat
+    private let borderless: Bool
+    private let style: PickerStyle
+    private let hasDividers: Bool
     
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
     
-    @State var isHovering: Bool = false
+    @State private var isHovering: Bool = false
     
     public init(
         selection: Binding<V>,
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
         borderless: Bool = true,
-        animation: Animation = .bouncy,
         style: Self.PickerStyle = .menu,
         hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -49,7 +49,6 @@ where Content: View, V: Hashable & Equatable {
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.borderless = borderless
-        self.animation = animation
         self.style = style
         self.hasDividers = hasDividers
         self.content = content
@@ -64,14 +63,13 @@ where Content: View, V: Hashable & Equatable {
                 _VariadicView.Tree(SegmentedLayout(
                     elementMinHeight: elementMinHeight,
                     cornerRadius: cornerRadius,
-                    animation: animation,
-                    showDividers: hasDividers,
+                    hasDividers: hasDividers,
                     selection: $selection, isHovering: $isHovering
                 ), content: content)
             }
         }
         .onHover { hover in
-            withAnimation(LuminareConstants.fastAnimation) {
+            withAnimation(animationFast) {
                 isHovering = hover
             }
         }
@@ -99,7 +97,7 @@ where Content: View, V: Hashable & Equatable {
             }
         }
         .clipShape(.rect(cornerRadius: cornerRadius))
-        .animation(LuminareConstants.fastAnimation, value: isHovering)
+        .animation(animationFast, value: isHovering)
     }
     
     @ViewBuilder private func variadic<Layout>(
@@ -125,10 +123,11 @@ where Content: View, V: Hashable & Equatable {
     }
     
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
+        @Environment(\.luminareAnimationFast) private var animationFast
+        
         let elementMinHeight: CGFloat
         let cornerRadius: CGFloat
-        let animation: Animation
-        let showDividers: Bool
+        let hasDividers: Bool
         
         @Binding var selection: V
         @Binding var isHovering: Bool
@@ -145,7 +144,6 @@ where Content: View, V: Hashable & Equatable {
                     if let value = child.id(as: V.self) {
                         SegmentedKnob(
                             cornerRadius: cornerRadius,
-                            animation: animation,
                             selection: $selection, value: value,
                             view: child
                         )
@@ -177,7 +175,7 @@ where Content: View, V: Hashable & Equatable {
                         }
                         .onHover { hover in
                             if selection == value {
-                                withAnimation(LuminareConstants.fastAnimation) {
+                                withAnimation(animationFast) {
                                     if hover {
                                         hoveringKnobOffset = index
                                     } else {
@@ -188,14 +186,14 @@ where Content: View, V: Hashable & Equatable {
                         }
                         .onChange(of: selection) { newValue in
                             if newValue == value {
-                                withAnimation(LuminareConstants.fastAnimation) {
+                                withAnimation(animationFast) {
                                     hoveringKnobOffset = index
                                 }
                             }
                         }
                         .zIndex(1)
                         
-                        if showDividers, child.id != children.last?.id {
+                        if hasDividers, child.id != children.last?.id {
                             Divider()
                                 .frame(width: 0, height: elementMinHeight / 2)
                                 .zIndex(0)
@@ -207,8 +205,10 @@ where Content: View, V: Hashable & Equatable {
         }
         
         struct SegmentedKnob: View {
+            @Environment(\.luminareAnimation) private var animation
+            @Environment(\.luminareAnimationFast) private var animationFast
+            
             let cornerRadius: CGFloat
-            let animation: Animation
             
             @Binding var selection: V
             let value: V
@@ -228,7 +228,7 @@ where Content: View, V: Hashable & Equatable {
                 }
                 .buttonStyle(.borderless)
                 .onHover { hover in
-                    withAnimation(LuminareConstants.fastAnimation) {
+                    withAnimation(animationFast) {
                         isHovering = hover
                     }
                 }
@@ -271,6 +271,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             }
             
             PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", style: .segmented)
+                .environment(\.luminareAnimation, .bouncy)
             
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }

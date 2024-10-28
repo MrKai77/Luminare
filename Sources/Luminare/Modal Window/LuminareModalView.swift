@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct LuminareModalView<Content>: View where Content: View {
-    @Environment(\.tintColor) var tintColor
-    @EnvironmentObject var floatingPanel: LuminareModal<Content>
+    @Environment(\.luminareTint) private var tint
+    @EnvironmentObject private var floatingPanel: LuminareModal<Content>
 
-    let sectionSpacing: CGFloat
-    let outerPadding: CGFloat
+    private let sectionSpacing: CGFloat
+    private let outerPadding: CGFloat
     
-    @ViewBuilder let content: () -> Content
+    @ViewBuilder private let content: () -> Content
 
     init(isCompact: Bool, @ViewBuilder content: @escaping () -> Content) {
         self.sectionSpacing = isCompact ? 8 : 16
@@ -63,7 +63,7 @@ struct LuminareModalView<Content>: View where Content: View {
                 }
             }
             .buttonStyle(LuminareButtonStyle())
-            .tint(tintColor())
+            .tint(tint())
             .ignoresSafeArea()
         }
         .frame(maxHeight: .infinity, alignment: .top)

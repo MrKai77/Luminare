@@ -8,10 +8,12 @@
 import SwiftUI
 
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
-    @Environment(\.tintColor) var tintColor
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
 
-    @Binding var activeTab: Tab
-    let tab: Tab
+    @Binding private var activeTab: Tab
+    private let tab: Tab
 
     @State private var isActive = false
 
@@ -36,11 +38,11 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                                 .foregroundStyle(.tint)
                                 .frame(width: 4, height: 4)
                                 .padding(.leading, 4)
-                                .shadow(color: tintColor(), radius: 4)
+                                .shadow(color: tint(), radius: 4)
 
                             Spacer()
                         }
-                        .transition(.opacity.animation(LuminareConstants.animation))
+                        .transition(.opacity.animation(animation))
                     }
                 }
                 .fixedSize()
@@ -64,13 +66,15 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     }
 
     func processActiveTab() {
-        withAnimation(LuminareConstants.fastAnimation) {
+        withAnimation(animationFast) {
             isActive = activeTab == tab
         }
     }
 }
 
 struct SidebarButtonStyle: ButtonStyle {
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
     let cornerRadius: CGFloat = 12
     @State var isHovering: Bool = false
     @Binding var isActive: Bool
@@ -88,7 +92,7 @@ struct SidebarButtonStyle: ButtonStyle {
             .onHover { hover in
                 isHovering = hover
             }
-            .animation(LuminareConstants.fastAnimation, value: [isHovering, isActive, configuration.isPressed])
+            .animation(animationFast, value: [isHovering, isActive, configuration.isPressed])
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }

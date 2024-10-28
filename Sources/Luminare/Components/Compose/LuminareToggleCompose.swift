@@ -8,12 +8,14 @@
 import SwiftUI
 
 public struct LuminareToggleCompose<Label>: View where Label: View {
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
+    @Environment(\.luminareAnimation) private var animation
+    
+    private let elementMinHeight: CGFloat
+    private let horizontalPadding: CGFloat
     
     @ViewBuilder private let label: () -> Label
     
-    @Binding var value: Bool
+    @Binding private var value: Bool
 
     public init(
         isOn value: Binding<Bool>,
@@ -43,7 +45,7 @@ public struct LuminareToggleCompose<Label>: View where Label: View {
         LuminareCompose(
             elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding
         ) {
-            Toggle("", isOn: $value.animation(LuminareConstants.animation))
+            Toggle("", isOn: $value.animation(animation))
                 .labelsHidden()
                 .controlSize(.small)
                 .toggleStyle(.switch)

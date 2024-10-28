@@ -28,7 +28,7 @@ public class PopoverPanel: NSPanel, ObservableObject {
         
         isOpaque = false
         backgroundColor = .clear
-        isMovableByWindowBackground = true
+        isMovable = false
         
         ignoresMouseEvents = false
         becomesKeyOnlyIfNeeded = true
