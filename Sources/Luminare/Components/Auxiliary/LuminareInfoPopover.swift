@@ -11,7 +11,10 @@ public struct LuminareInfoPopover<Content, Badge>: View
 where Content: View, Badge: View {
     public enum Trigger {
         case onHover(delay: CGFloat = 0.5)
-        case onForceTouch(threshold: CGFloat = 0.5)
+        case onForceTouch(
+            threshold: CGFloat = 0.5,
+            onPressureChange: (CGFloat) -> () = { _ in }
+        )
     }
     
     public enum Shade {
@@ -47,7 +50,7 @@ where Content: View, Badge: View {
     @State private var hoverTimer: Timer?
     
     @State private var forceTouchState: ForceTouchView.GestureState = .ended
-    @State private var forceTouchPressure: CGFloat = 1
+    @State private var forceTouchPressure: CGFloat = 0
     @State private var forceTouchRecognized: Bool = false
     
     public init(
@@ -114,94 +117,129 @@ where Content: View, Badge: View {
             )
         }
     }
-
+    
     public var body: some View {
         Group {
             switch trigger {
             case .onHover(_):
                 badge()
-            case .onForceTouch(let threshold):
+            case .onForceTouch(let threshold, let onPressureChange):
                 ForceTouchView(threshold: threshold, state: $forceTouchState) {
                     badge()
                 } onPressureChange: { event in
                     let stage = event.stage
                     
                     if stage == 1 {
-                        withAnimation(animationFast) {
+                        if !forceTouchRecognized {
                             forceTouchPressure = CGFloat(event.pressure)
                         }
+                    }
+                    
+                    if stage == 2 {
+                        forceTouchRecognized = true
+                        forceTouchPressure = 1
                     }
                 }
                 .onChange(of: forceTouchState) { state in
                     switch state {
                     case .began:
-                        withAnimation(animationFast) {
-                            isPopoverPresented = true
-                        }
-                    case .recognized:
-                        withAnimation(animationFast) {
-                            forceTouchPressure = 1
-                        }
+                        isPopoverPresented = true
+                    case .ended:
+                        let recognized = forceTouchRecognized
+                        forceTouchRecognized = false
+                        isPopoverPresented = recognized
                     default:
                         break
                     }
                 }
+                .onChange(of: forceTouchPressure) { pressure in
+                    onPressureChange(pressure)
+                }
             }
         }
-            .padding(padding)
-            .background {
-                if let style = shade.style, isPopoverPresented {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .foregroundStyle(style.opacity(0.1))
-                        .blur(radius: padding)
-                }
-            }
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-                
-                switch trigger {
-                case .onHover(let delay):
-                    if isHovering {
-                        hoverTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { _ in
-                            withAnimation(animationFast) {
-                                isPopoverPresented = true
-                            }
-                            
-                            hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                                withAnimation(animationFast) {
-                                    isPopoverPresented = isHovering
-                                }
-                                hoverTimer?.invalidate()
-                                hoverTimer = nil
-                            }
-                        }
-                    } else if hoverTimer == nil || !isPopoverPresented {
-                        hoverTimer?.invalidate()
-                        hoverTimer = nil
-                        withAnimation(animationFast) {
-                            isPopoverPresented = false
-                        }
-                    }
-                default: 
-                    break
-                }
-                
-            }
-            .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
+        .padding(padding)
+        .background {
+            if let style = shade.style, isPopoverPresented {
                 Group {
                     switch trigger {
-                    case .onHover(_):
-                        content()
-                    case .onForceTouch(_):
-                        content()
-                            .scaleEffect(0.25 + forceTouchPressure * 0.75, anchor: arrowEdge.opposite.unitPoint)
+                    case .onHover:
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                    case .onForceTouch:
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .opacity(forceTouchPressure)
                     }
                 }
-                .multilineTextAlignment(.center)
+                .foregroundStyle(style.opacity(0.1))
+                .blur(radius: padding)
             }
-            .padding(-padding)
+        }
+        .onHover { hover in
+            isHovering = hover
+            
+            switch trigger {
+            case .onHover(let delay):
+                if isHovering {
+                    hoverTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { _ in
+                        isPopoverPresented = true
+                        
+                        hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            isPopoverPresented = isHovering
+                            hoverTimer?.invalidate()
+                            hoverTimer = nil
+                        }
+                    }
+                } else if hoverTimer == nil || !isPopoverPresented {
+                    hoverTimer?.invalidate()
+                    hoverTimer = nil
+                    isPopoverPresented = false
+                }
+            default:
+                break
+            }
+            
+        }
+        .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
+            Group {
+                switch trigger {
+                case .onHover:
+                    content()
+                case .onForceTouch:
+                    content()
+                        .opacity(0.5 + forceTouchPressure * 0.5)
+                }
+            }
+            .multilineTextAlignment(.center)
+        }
+        .padding(-padding)
+        .animation(animationFast, value: isPopoverPresented)
+    }
+}
+
+struct InfoPopoverForceTouchPreview<Content, Badge>: View where Content: View, Badge: View {
+    var arrowEdge: Edge = .bottom
+    var cornerRadius: CGFloat = 8
+    var padding: CGFloat = 4
+    var shade: LuminareInfoPopover<Content, Badge>.Shade = .styled()
+    
+    @ViewBuilder var content: (CGFloat) -> Content
+    @ViewBuilder var badge: () -> Badge
+    
+    @State private var pressure: CGFloat = 0
+
+    var body: some View {
+        LuminareInfoPopover(
+            arrowEdge: arrowEdge,
+            trigger: .onForceTouch { pressure in
+                self.pressure = pressure
+            },
+            cornerRadius: cornerRadius,
+            padding: padding,
+            shade: shade
+        ) {
+            content(pressure)
+        } badge: {
+            badge()
+        }
     }
 }
 
@@ -226,7 +264,7 @@ where Content: View, Badge: View {
                 }
                 .padding()
             } badge: {
-                Text("Pops to trailing (hover me)")
+                Text("Pops to trailing with highlight (hover me)")
             }
         }
         
@@ -252,10 +290,11 @@ where Content: View, Badge: View {
         
         LuminareCompose {
         } label: {
-            LuminareInfoPopover(arrowEdge: .top, trigger: .onForceTouch()) {
+            InfoPopoverForceTouchPreview(arrowEdge: .top) { pressure in
                 VStack(alignment: .leading) {
-                    Text("The **misfits.** The ~rebels.~")
-                    Text("The [troublemakers](https://apple.com).")
+                    Text("**Think different.**")
+                    
+                    ProgressView(value: pressure)
                 }
                 .padding()
             } badge: {
@@ -264,15 +303,4 @@ where Content: View, Badge: View {
         }
     }
     .padding()
-}
-
-extension Edge {
-    var unitPoint: UnitPoint {
-        switch self {
-        case .top: .top
-        case .leading: .leading
-        case .bottom: .bottom
-        case .trailing: .trailing
-        }
-    }
 }
