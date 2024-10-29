@@ -13,8 +13,8 @@ public struct ForceTouchView<Content: View>: NSViewRepresentable {
     
     private let configuration: NSPressureConfiguration
     private let threshold: CGFloat
+    private let onPressureChange: (NSEvent) -> ()
     @Binding private var state: GestureState
-    @Binding private var pressure: CGFloat
     
     @ViewBuilder private let content: () -> Content
     
@@ -22,25 +22,27 @@ public struct ForceTouchView<Content: View>: NSViewRepresentable {
         configuration: NSPressureConfiguration = .init(pressureBehavior: .primaryDefault),
         threshold: CGFloat = 0.5,
         state: Binding<GestureState>,
-        pressure: Binding<CGFloat>,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content,
+        onPressureChange: @escaping (NSEvent) -> ()
     ) {
         self.configuration = configuration
         self.threshold = threshold
+        self.onPressureChange = onPressureChange
         self._state = state
-        self._pressure = pressure
         self.content = content
     }
     
     public func makeNSView(context: Context) -> NSView {
-        var view = NSHostingView(rootView: content())
+        let view = NSHostingView(rootView: content())
+        view.translatesAutoresizingMaskIntoConstraints = false
+
         let gesture = ForceTouchGestureRecognizer(
             configuration,
             threshold: threshold
         ) { state in
             self.state = state
-        } onPressureChange: { pressure in
-            self.pressure = pressure
+        } onPressureChange: { event in
+            self.onPressureChange(event)
         }
         
         gesture.allowedTouchTypes = .direct // enable pressure-sensitive events
@@ -55,13 +57,13 @@ public struct ForceTouchView<Content: View>: NSViewRepresentable {
 class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
     private let threshold: CGFloat
     private let onStateChange: (NSPressGestureRecognizer.State) -> ()
-    private let onPressureChange: (CGFloat) -> ()
+    private let onPressureChange: (NSEvent) -> ()
     
     init(
         _ configuration: NSPressureConfiguration,
         threshold: CGFloat,
         onStateChange: @escaping (NSPressGestureRecognizer.State) -> (),
-        onPressureChange: @escaping (CGFloat) -> ()
+        onPressureChange: @escaping (NSEvent) -> ()
     ) {
         self.threshold = threshold
         self.onStateChange = onStateChange
@@ -82,24 +84,19 @@ class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
     }
     
     override func pressureChange(with event: NSEvent) {
-        onPressureChange(CGFloat(event.pressure))
+        onPressureChange(event)
     }
 }
 
 private struct ForceTouchPreview<Content: View>: View {
     let threshold: CGFloat = 0.5
     @State var state: ForceTouchView.GestureState = .ended
-    @State var pressure: CGFloat = 0
     @ViewBuilder let content: () -> Content
     
     var body: some View {
-        ForceTouchView(threshold: threshold, state: $state, pressure: $pressure, content: content)
-            .onChange(of: state) { state in
-                print(state)
-            }
-            .onChange(of: pressure) { pressure in
-                print(pressure)
-            }
+        ForceTouchView(threshold: threshold, state: $state, content: content) { event in
+            print(event)
+        }
     }
 }
 

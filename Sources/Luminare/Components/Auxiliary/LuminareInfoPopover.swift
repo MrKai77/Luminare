@@ -11,7 +11,7 @@ public struct LuminareInfoPopover<Content, Badge>: View
 where Content: View, Badge: View {
     public enum Trigger {
         case onHover(delay: CGFloat = 0.5)
-        case onLongPress
+        case onForceTouch(threshold: CGFloat = 0.5)
     }
     
     public enum Shade {
@@ -42,8 +42,13 @@ where Content: View, Badge: View {
     @ViewBuilder private let badge: () -> Badge
     
     @State private var isPopoverPresented: Bool = false
+    
     @State private var isHovering: Bool = false
     @State private var hoverTimer: Timer?
+    
+    @State private var forceTouchState: ForceTouchView.GestureState = .ended
+    @State private var forceTouchPressure: CGFloat = 1
+    @State private var forceTouchRecognized: Bool = false
     
     public init(
         arrowEdge: Edge = .bottom,
@@ -111,7 +116,38 @@ where Content: View, Badge: View {
     }
 
     public var body: some View {
-        badge()
+        Group {
+            switch trigger {
+            case .onHover(_):
+                badge()
+            case .onForceTouch(let threshold):
+                ForceTouchView(threshold: threshold, state: $forceTouchState) {
+                    badge()
+                } onPressureChange: { event in
+                    let stage = event.stage
+                    
+                    if stage == 1 {
+                        withAnimation(animationFast) {
+                            forceTouchPressure = CGFloat(event.pressure)
+                        }
+                    }
+                }
+                .onChange(of: forceTouchState) { state in
+                    switch state {
+                    case .began:
+                        withAnimation(animationFast) {
+                            isPopoverPresented = true
+                        }
+                    case .recognized:
+                        withAnimation(animationFast) {
+                            forceTouchPressure = 1
+                        }
+                    default:
+                        break
+                    }
+                }
+            }
+        }
             .padding(padding)
             .background {
                 if let style = shade.style, isPopoverPresented {
@@ -148,14 +184,22 @@ where Content: View, Badge: View {
                             isPopoverPresented = false
                         }
                     }
-                case .onLongPress:
-                    return
+                default: 
+                    break
                 }
                 
             }
             .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
-                content()
-                    .multilineTextAlignment(.center)
+                Group {
+                    switch trigger {
+                    case .onHover(_):
+                        content()
+                    case .onForceTouch(_):
+                        content()
+                            .scaleEffect(0.25 + forceTouchPressure * 0.75, anchor: arrowEdge.opposite.unitPoint)
+                    }
+                }
+                .multilineTextAlignment(.center)
             }
             .padding(-padding)
     }
@@ -208,16 +252,27 @@ where Content: View, Badge: View {
         
         LuminareCompose {
         } label: {
-            LuminareInfoPopover(arrowEdge: .top, trigger: .onLongPress) {
+            LuminareInfoPopover(arrowEdge: .top, trigger: .onForceTouch()) {
                 VStack(alignment: .leading) {
                     Text("The **misfits.** The ~rebels.~")
                     Text("The [troublemakers](https://apple.com).")
                 }
                 .padding()
             } badge: {
-                Text("Pops to top (long press me)")
+                Text("Pops to top (force touch me)")
             }
         }
     }
     .padding()
+}
+
+extension Edge {
+    var unitPoint: UnitPoint {
+        switch self {
+        case .top: .top
+        case .leading: .leading
+        case .bottom: .bottom
+        case .trailing: .trailing
+        }
+    }
 }
