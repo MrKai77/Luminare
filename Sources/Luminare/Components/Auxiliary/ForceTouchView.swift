@@ -8,49 +8,160 @@
 import SwiftUI
 import AppKit
 
-public struct ForceTouchView<Content: View>: NSViewRepresentable {
-    public typealias GestureState = NSPressGestureRecognizer.State
+public enum ForceTouchGesture: Equatable {
+    case inactive
+    case active(Event)
     
+    public struct Event: Equatable {
+        public var state: NSPressGestureRecognizer.State
+        public var stage: Int
+        public var stageTransition: CGFloat
+        public var pressure: CGFloat
+        public var pressureBehavior: NSEvent.PressureBehavior
+        public var modifierFlags: NSEvent.ModifierFlags
+        
+        public init(
+            state: NSPressGestureRecognizer.State,
+            stage: Int,
+            stageTransition: CGFloat,
+            pressure: CGFloat,
+            pressureBehavior: NSEvent.PressureBehavior,
+            modifierFlags: NSEvent.ModifierFlags
+        ) {
+            self.state = state
+            self.stage = stage
+            self.stageTransition = stageTransition
+            self.pressure = pressure
+            self.pressureBehavior = pressureBehavior
+            self.modifierFlags = modifierFlags
+        }
+        
+        public init(_ state: NSPressGestureRecognizer.State, event: NSEvent) {
+            self.init(
+                state: state,
+                stage: event.stage,
+                stageTransition: event.stageTransition,
+                pressure: CGFloat(event.pressure),
+                pressureBehavior: event.pressureBehavior,
+                modifierFlags: event.modifierFlags
+            )
+        }
+        
+        public init() {
+            self.init(
+                state: .ended,
+                stage: 0,
+                stageTransition: 0.0,
+                pressure: 0.0,
+                pressureBehavior: .primaryDefault,
+                modifierFlags: []
+            )
+        }
+    }
+}
+
+public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
     private let configuration: NSPressureConfiguration
     private let threshold: CGFloat
-    private let onPressureChange: (NSEvent) -> ()
-    @Binding private var state: GestureState
+    @Binding private var gesture: ForceTouchGesture
     
     @ViewBuilder private let content: () -> Content
+    
+    @State private var timestamp: Date?
+    @State private var state: NSPressGestureRecognizer.State = .ended
+    
+    @State private var timer: Timer?
+    @State private var monitor: Any?
     
     public init(
         configuration: NSPressureConfiguration = .init(pressureBehavior: .primaryDefault),
         threshold: CGFloat = 0.5,
-        state: Binding<GestureState>,
-        @ViewBuilder content: @escaping () -> Content,
-        onPressureChange: @escaping (NSEvent) -> ()
+        gesture: Binding<ForceTouchGesture>,
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.configuration = configuration
         self.threshold = threshold
-        self.onPressureChange = onPressureChange
-        self._state = state
+        self._gesture = gesture
         self.content = content
     }
     
     public func makeNSView(context: Context) -> NSView {
-        let view = NSHostingView(rootView: content())
+        let view = NSHostingView(
+            rootView: content()
+        )
         view.translatesAutoresizingMaskIntoConstraints = false
 
-        let gesture = ForceTouchGestureRecognizer(
+        let recognizer = ForceTouchGestureRecognizer(
             configuration,
             threshold: threshold
         ) { state in
             self.state = state
+            
+            switch state {
+            case .began:
+                timestamp = .now
+            case .ended, .cancelled, .failed:
+                timestamp = nil
+                gesture = .inactive
+            default:
+                break
+            }
         } onPressureChange: { event in
-            self.onPressureChange(event)
+            terminateLongPressDelegate()
+            gesture = .active(ForceTouchGesture.Event(state, event: event))
         }
         
-        gesture.allowedTouchTypes = .direct // enable pressure-sensitive events
-        view.addGestureRecognizer(gesture)
+        monitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .leftMouseUp]) { event in
+            let locationInView = view.convert(event.locationInWindow, from: nil)
+            guard view.bounds.contains(locationInView) else { return event }
+            
+            switch event.type {
+            case .leftMouseDown:
+                prepareLongPressDelegate(event)
+            case .leftMouseUp:
+                terminateLongPressDelegate()
+                timestamp = nil
+                gesture = .inactive
+            default:
+                break
+            }
+            return event
+        }
+        
+        recognizer.allowedTouchTypes = .direct // enable pressure-sensitive events
+        view.addGestureRecognizer(recognizer)
         return view
     }
     
     public func updateNSView(_ nsView: NSView, context: Context) {
+    }
+    
+    private func prepareLongPressDelegate(_ event: NSEvent) {
+        let modifierFlags = event.modifierFlags
+        var event = ForceTouchGesture.Event()
+        event.modifierFlags = modifierFlags
+        
+        timer = .scheduledTimer(withTimeInterval: threshold + 0.1, repeats: false) { _ in
+            timestamp = .now
+            event.stage = 1
+            
+            timer = .scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+                let pressure = event.pressure + 0.1
+                let isOverflowing = pressure > 1
+                
+                event.pressure = pressure.truncatingRemainder(dividingBy: 1)
+                if isOverflowing {
+                    event.stage += 1
+                }
+                
+                gesture = .active(event)
+            }
+        }
+    }
+    
+    private func terminateLongPressDelegate() {
+        timer?.invalidate()
+        timer = nil
     }
 }
 
@@ -88,15 +199,16 @@ class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
     }
 }
 
-private struct ForceTouchPreview<Content: View>: View {
+private struct ForceTouchPreview<Content>: View where Content: View {
     let threshold: CGFloat = 0.5
-    @State var state: ForceTouchView.GestureState = .ended
+    @State var gesture: ForceTouchGesture = .inactive
     @ViewBuilder let content: () -> Content
     
     var body: some View {
-        ForceTouchView(threshold: threshold, state: $state, content: content) { event in
-            print(event)
-        }
+        ForceTouchView(threshold: threshold, gesture: $gesture, content: content)
+            .onChange(of: gesture) { gesture in
+                print(gesture)
+            }
     }
 }
 
