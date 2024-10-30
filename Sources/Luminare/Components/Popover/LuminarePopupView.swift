@@ -1,5 +1,5 @@
 //
-//  PopoverHolder.swift
+//  LuminarePopupView.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-08-25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct PopoverHolder<Content: View>: NSViewRepresentable {
+public struct LuminarePopupView<Content: View>: NSViewRepresentable {
     let material: NSVisualEffectView.Material
     @Binding var isPresented: Bool
     
@@ -41,14 +41,14 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
 
     @MainActor
     public class Coordinator: NSObject, NSWindowDelegate {
-        private let holder: PopoverHolder
+        private let holder: LuminarePopupView
         private var content: () -> Content
         private var originalYPoint: CGFloat?
-        var popover: PopoverPanel?
+        var popover: LuminarePopupPanel?
         
         private var monitor: Any?
 
-        init(_ parent: PopoverHolder, content: @escaping () -> Content) {
+        init(_ parent: LuminarePopupView, content: @escaping () -> Content) {
             self.holder = parent
             self.content = content
             super.init()
@@ -121,19 +121,19 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
                     .background(VisualEffectView(material: holder.material, blendingMode: .behindWindow))
                     .overlay {
                         UnevenRoundedRectangle(
-                            topLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomTrailingRadius: PopoverPanel.cornerRadius,
-                            topTrailingRadius: PopoverPanel.cornerRadius
+                            topLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomTrailingRadius: LuminarePopupPanel.cornerRadius,
+                            topTrailingRadius: LuminarePopupPanel.cornerRadius
                         )
                         .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                     }
                     .clipShape(
                         UnevenRoundedRectangle(
-                            topLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomTrailingRadius: PopoverPanel.cornerRadius,
-                            topTrailingRadius: PopoverPanel.cornerRadius
+                            topLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomTrailingRadius: LuminarePopupPanel.cornerRadius,
+                            topTrailingRadius: LuminarePopupPanel.cornerRadius
                         )
                     )
                     .ignoresSafeArea()
@@ -165,7 +165,7 @@ private struct PopoverPreview<Label, Content>: View where Label: View, Content: 
         .background {
             Color.clear
                 .background {
-                    PopoverHolder(isPresented: $isPresented) {
+                    LuminarePopupView(isPresented: $isPresented) {
                         content()
                     }
                 }
