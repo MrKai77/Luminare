@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjusterCompose<Label, Suffix, V>: View
-where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjusterCompose<Label, Content, V>: View
+where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public enum ControlSize {
         case regular
         case compact
@@ -40,8 +40,8 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
 
     @FocusState private var focusedField: FocusedField?
 
+    @ViewBuilder private let content: (AnyView) -> Content
     @ViewBuilder private let label: () -> Label
-    @ViewBuilder private let suffix: () -> Suffix
     
     @Binding private var value: V
     private let sliderRange: ClosedRange<V>
@@ -63,11 +63,11 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
         upperClamp: Bool = false,
         controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
-        @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder suffix: @escaping () -> Suffix
+        @ViewBuilder content: @escaping (AnyView) -> Content,
+        @ViewBuilder label: @escaping () -> Label
     ) {
+        self.content = content
         self.label = label
-        self.suffix = suffix
         
         self._value = value
         self.sliderRange = sliderRange
@@ -99,7 +99,7 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
         upperClamp: Bool = false,
         controlSize: Self.ControlSize = .regular,
         decimalPlaces: Int = 0,
-        @ViewBuilder suffix: @escaping () -> Suffix
+        @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
             value: value,
@@ -109,63 +109,8 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
             lowerClamp: lowerClamp,
             upperClamp: upperClamp,
             controlSize: controlSize,
-            decimalPlaces: decimalPlaces
-        ) {
-            Text(key)
-        } suffix: {
-            suffix()
-        }
-    }
-    
-    public init(
-        suffixKey: LocalizedStringKey,
-        value: Binding<V>,
-        sliderRange: ClosedRange<V>,
-        horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
-        controlSize: Self.ControlSize = .regular,
-        decimalPlaces: Int = 0,
-        @ViewBuilder label: @escaping () -> Label
-    ) where Suffix == Text {
-        self.init(
-            value: value,
-            sliderRange: sliderRange,
-            horizontalPadding: horizontalPadding,
-            step: step,
-            lowerClamp: lowerClamp,
-            upperClamp: upperClamp,
-            controlSize: controlSize,
             decimalPlaces: decimalPlaces,
-            label: label
-        ) {
-            Text(suffixKey)
-        }
-    }
-    
-    public init(
-        _ key: LocalizedStringKey,
-        _ suffixKey: LocalizedStringKey,
-        value: Binding<V>,
-        sliderRange: ClosedRange<V>,
-        horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
-        controlSize: Self.ControlSize = .regular,
-        decimalPlaces: Int = 0
-    ) where Label == Text, Suffix == Text {
-        self.init(
-            suffixKey: suffixKey,
-            value: value,
-            sliderRange: sliderRange,
-            horizontalPadding: horizontalPadding,
-            step: step,
-            lowerClamp: lowerClamp,
-            upperClamp: upperClamp,
-            controlSize: controlSize,
-            decimalPlaces: decimalPlaces
+            content: content
         ) {
             Text(key)
         }
@@ -175,7 +120,7 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
         VStack {
             if controlSize == .regular {
                 LuminareCompose(horizontalPadding: horizontalPadding) {
-                    content()
+                    text()
                 } label: {
                     label()
                 }
@@ -187,7 +132,7 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
                     HStack(spacing: 12) {
                         slider()
                         
-                        content()
+                        text()
                     }
                     .frame(width: 270)
                 } label: {
@@ -217,60 +162,58 @@ where Label: View, Suffix: View, V: Strideable & BinaryFloatingPoint, V.Stride: 
     }
 
     @ViewBuilder
-    func content() -> some View {
+    func text() -> some View {
         HStack {
-            if isShowingTextBox {
-                TextField(
-                    "",
-                    value: Binding(
-                        get: {
-                            value
-                        },
-                        set: {
-                            if lowerClamp, upperClamp {
-                                value = $0.clamped(to: sliderRange)
-                            } else if lowerClamp {
-                                value = max(sliderRange.lowerBound, $0)
-                            } else if upperClamp {
-                                value = min(sliderRange.upperBound, $0)
-                            } else {
-                                value = $0
+            let view = Group {
+                if isShowingTextBox {
+                    TextField(
+                        "",
+                        value: Binding(
+                            get: {
+                                value
+                            },
+                            set: {
+                                if lowerClamp, upperClamp {
+                                    value = $0.clamped(to: sliderRange)
+                                } else if lowerClamp {
+                                    value = max(sliderRange.lowerBound, $0)
+                                } else if upperClamp {
+                                    value = min(sliderRange.upperBound, $0)
+                                } else {
+                                    value = $0
+                                }
                             }
+                        ),
+                        formatter: formatter
+                    )
+                    .onSubmit {
+                        withAnimation(animationFast) {
+                            isShowingTextBox.toggle()
                         }
-                    ),
-                    formatter: formatter
-                )
-                .onSubmit {
-                    withAnimation(animationFast) {
-                        isShowingTextBox.toggle()
                     }
-                }
-                .focused($focusedField, equals: .textbox)
-                .multilineTextAlignment(.trailing)
-                .labelsHidden()
-                .textFieldStyle(.plain)
-                .padding(.leading, -4)
-            } else {
-                Button {
-                    withAnimation(animationFast) {
-                        isShowingTextBox.toggle()
-                        focusedField = .textbox
+                    .focused($focusedField, equals: .textbox)
+                    .multilineTextAlignment(.trailing)
+                    .labelsHidden()
+                    .textFieldStyle(.plain)
+                    .padding(.leading, -4)
+                } else {
+                    Button {
+                        withAnimation(animationFast) {
+                            isShowingTextBox.toggle()
+                            focusedField = .textbox
+                        }
+                    } label: {
+                        Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
+                            .contentTransition(.numericText())
+                            .multilineTextAlignment(.trailing)
                     }
-                } label: {
-                    Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
-                        .contentTransition(.numericText())
-                        .multilineTextAlignment(.trailing)
+                    .buttonStyle(PlainButtonStyle())
                 }
-                .buttonStyle(PlainButtonStyle())
             }
-
-            if Suffix.self != EmptyView.self {
-                suffix()
-                    .padding(.leading, -6)
-            }
+            
+            content(.init(view))
         }
         .frame(maxWidth: 150)
-        .monospaced()
         .padding(4)
         .padding(.horizontal, 4)
         .background {
@@ -358,10 +301,14 @@ private extension Comparable {
             step: 1,
             lowerClamp: true, 
             upperClamp: false
-        ) {
+        ) { view in
+            HStack {
+                view
+                Text("suffix")
+            }
+            .monospaced()
+        } label: {
             Text("Value adjuster")
-        } suffix: {
-            Text("suffix")
         }
         
         
@@ -372,10 +319,14 @@ private extension Comparable {
             lowerClamp: true,
             upperClamp: false,
             controlSize: .compact
-        ) {
-            Text("Value adjuster compact")
-        } suffix: {
-            Text("suffix")
+        ) { button in
+            HStack {
+                button
+                Text("suffix")
+            }
+            .monospaced()
+        } label: {
+            Text("Value adjuster")
         }
     }
     .padding()

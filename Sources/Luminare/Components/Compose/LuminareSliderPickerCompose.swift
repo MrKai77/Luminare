@@ -94,7 +94,6 @@ where Label: View, Content: View, V: Equatable {
                 content(selection)
                     .contentTransition(.numericText())
                     .multilineTextAlignment(.trailing)
-                    .monospaced()
                     .padding(4)
                     .padding(.horizontal, 4)
                     .background {
@@ -139,6 +138,7 @@ where Label: View, Content: View, V: Equatable {
             ["0", "1", "e", "i", "π"], selection: .constant("i")
         ) { value in
             Text("\(value)")
+                .monospaced()
         }
     }
     .padding()

@@ -15,18 +15,24 @@ public typealias RGBColorNames<R, G, B> = (
 
 
 // view for the color popup as a whole
-struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
-    @Environment(\.luminareAnimationFast) private var animationFast
-    
+struct ColorPickerModalView<R, G, B, Done>: View
+where R: View, G: View, B: View, Done: View {
     typealias ColorNames = RGBColorNames<R, G, B>
+    
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     @Binding var color: Color
     @Binding var hexColor: String
+
+    let colorNames: ColorNames
+    @ViewBuilder let done: () -> Done
+    
     @State private var redComponent: Double = 0
     @State private var greenComponent: Double = 0
     @State private var blueComponent: Double = 0
-
-    let colorNames: ColorNames
+    
+    private let colorSampler = NSColorSampler()
 
     // main view containing all components of the color picker
     var body: some View {
@@ -59,6 +65,30 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
             }
 
             RGBInputFields
+            
+            HStack {
+                Button {
+                    colorSampler.show { nsColor in
+                        if let nsColor {
+                            setColor(.init(nsColor: nsColor))
+                            updateComponents(newValue: color)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "eyedropper.halffull")
+                        .padding(-4)
+                }
+                .aspectRatio(1, contentMode: .fit)
+                .fixedSize()
+                .buttonStyle(LuminareCompactButtonStyle())
+                
+                Button {
+                    dismiss()
+                } label: {
+                    done()
+                }
+                .buttonStyle(LuminareCompactButtonStyle())
+            }
         }
         .onAppear {
             updateComponents(newValue: color)
@@ -114,6 +144,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
     private func updateComponents(newValue: Color) {
         hexColor = newValue.toHex()
         let rgb = newValue.toRGB()
+        
         redComponent = rgb.red
         greenComponent = rgb.green
         blueComponent = rgb.blue
@@ -122,15 +153,20 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
 
 #Preview {
     LuminareSection {
-        ColorPickerModalView(
-            color: .constant(.accentColor),
-            hexColor: .constant("ffffff"),
-            colorNames: (
-                red: Text("Red"),
-                green: Text("Green"),
-                blue: Text("Blue")
-            ))
+        VStack {
+            ColorPickerModalView(
+                color: .constant(.accentColor),
+                hexColor: .constant("ffffff"),
+                colorNames: (
+                    red: Text("Red"),
+                    green: Text("Green"),
+                    blue: Text("Blue")
+                )
+            ) {
+                Text("Done")
+            }
+        }
     }
     .padding()
-    .frame(width: 300, height: 375)
+    .frame(width: 300, height: 400)
 }
