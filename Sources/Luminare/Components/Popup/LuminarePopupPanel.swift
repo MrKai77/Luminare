@@ -1,5 +1,5 @@
 //
-//  PopoverPanel.swift
+//  LuminarePopupPanel.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-08-25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public class PopoverPanel: NSPanel, ObservableObject {
+public class LuminarePopupPanel: NSPanel, ObservableObject {
     public static let cornerRadius: CGFloat = 12
     public static let contentPadding: CGFloat = 6
     public static let sectionPadding: CGFloat = 8

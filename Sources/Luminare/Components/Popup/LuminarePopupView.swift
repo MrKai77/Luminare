@@ -1,5 +1,5 @@
 //
-//  PopoverHolder.swift
+//  LuminarePopupView.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-08-25.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-public struct PopoverHolder<Content: View>: NSViewRepresentable {
-    let material: NSVisualEffectView.Material
-    @Binding var isPresented: Bool
+public struct LuminarePopupView<Content: View>: NSViewRepresentable {
+    private let material: NSVisualEffectView.Material
+    @Binding private var isPresented: Bool
     
-    @ViewBuilder var content: () -> Content
+    @ViewBuilder private let content: () -> Content
 
     public init(
         material: NSVisualEffectView.Material = .popover,
@@ -41,15 +41,15 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
 
     @MainActor
     public class Coordinator: NSObject, NSWindowDelegate {
-        private let holder: PopoverHolder
+        private let view: LuminarePopupView
         private var content: () -> Content
         private var originalYPoint: CGFloat?
-        var popover: PopoverPanel?
+        var popover: LuminarePopupPanel?
         
         private var monitor: Any?
 
-        init(_ parent: PopoverHolder, content: @escaping () -> Content) {
-            self.holder = parent
+        init(_ parent: LuminarePopupView, content: @escaping () -> Content) {
+            self.view = parent
             self.content = content
             super.init()
         }
@@ -106,7 +106,7 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
         public func windowWillClose(_: Notification) {
             Task { @MainActor in
                 removeMonitor()
-                holder.isPresented = false
+                view.isPresented = false
                 self.popover = nil
             }
         }
@@ -118,22 +118,22 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
             popover.delegate = self
             popover.contentViewController = NSHostingController(
                 rootView: content()
-                    .background(VisualEffectView(material: holder.material, blendingMode: .behindWindow))
+                    .background(VisualEffectView(material: view.material, blendingMode: .behindWindow))
                     .overlay {
                         UnevenRoundedRectangle(
-                            topLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomTrailingRadius: PopoverPanel.cornerRadius,
-                            topTrailingRadius: PopoverPanel.cornerRadius
+                            topLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomTrailingRadius: LuminarePopupPanel.cornerRadius,
+                            topTrailingRadius: LuminarePopupPanel.cornerRadius
                         )
                         .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                     }
                     .clipShape(
                         UnevenRoundedRectangle(
-                            topLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomLeadingRadius: PopoverPanel.cornerRadius,
-                            bottomTrailingRadius: PopoverPanel.cornerRadius,
-                            topTrailingRadius: PopoverPanel.cornerRadius
+                            topLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomLeadingRadius: LuminarePopupPanel.cornerRadius,
+                            bottomTrailingRadius: LuminarePopupPanel.cornerRadius,
+                            topTrailingRadius: LuminarePopupPanel.cornerRadius
                         )
                     )
                     .ignoresSafeArea()
@@ -150,7 +150,21 @@ public struct PopoverHolder<Content: View>: NSViewRepresentable {
     }
 }
 
-private struct PopoverPreview<Label, Content>: View where Label: View, Content: View {
+public extension View {
+    @ViewBuilder func luminarePopup(
+        material: NSVisualEffectView.Material = .popover,
+        isPresented: Binding<Bool>
+    ) -> some View {
+        LuminarePopupView(
+            material: material,
+            isPresented: isPresented
+        ) {
+            self
+        }
+    }
+}
+
+private struct PopupPreview<Label, Content>: View where Label: View, Content: View {
     @State var isPresented: Bool = false
     
     @ViewBuilder let content: () -> Content
@@ -165,7 +179,7 @@ private struct PopoverPreview<Label, Content>: View where Label: View, Content: 
         .background {
             Color.clear
                 .background {
-                    PopoverHolder(isPresented: $isPresented) {
+                    LuminarePopupView(isPresented: $isPresented) {
                         content()
                     }
                 }
@@ -175,12 +189,12 @@ private struct PopoverPreview<Label, Content>: View where Label: View, Content: 
 
 // preview as app
 #Preview {
-    PopoverPreview {
+    PopupPreview {
         Text("Test")
             .padding()
             .frame(width: 75, height: 175)
     } label: {
-        Text("Toggle Popover")
+        Text("Toggle Popup")
             .padding()
     }
     .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))

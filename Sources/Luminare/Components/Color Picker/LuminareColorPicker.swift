@@ -7,14 +7,16 @@
 
 import SwiftUI
 
-public struct LuminareColorPicker<R, G, B, F>: View
-where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+public struct LuminareColorPicker<R, G, B, F, Done>: View
+where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
     
     @Binding var currentColor: Color
     
     private let colorNames: ColorNames
     private let format: F
+    
+    @ViewBuilder private let done: () -> Done
 
     @State private var text: String
     @State private var isColorPickerPresented = false
@@ -22,24 +24,58 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     public init(
         color: Binding<Color>,
         colorNames: ColorNames,
-        format: F
+        format: F,
+        @ViewBuilder done: @escaping () -> Done
     ) {
         self._currentColor = color
         self._text = State(initialValue: color.wrappedValue.toHex())
         self.colorNames = colorNames
         self.format = format
+        self.done = done
     }
     
     public init(
         color: Binding<Color>,
         colorNames: ColorNames,
-        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
+        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell),
+        @ViewBuilder done: @escaping () -> Done
     ) where F == StringFormatStyle {
         self.init(
             color: color,
             colorNames: colorNames,
-            format: .init(parseStrategy: parseStrategy)
+            format: .init(parseStrategy: parseStrategy),
+            done: done
         )
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        color: Binding<Color>,
+        colorNames: ColorNames,
+        format: F
+    ) where Done == Text {
+        self.init(
+            color: color,
+            colorNames: colorNames,
+            format: format
+        ) {
+            Text(key)
+        }
+    }
+    
+    public init(
+        _ key: LocalizedStringKey,
+        color: Binding<Color>,
+        colorNames: ColorNames,
+        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
+    ) where F == StringFormatStyle, Done == Text {
+        self.init(
+            color: color,
+            colorNames: colorNames,
+            parseStrategy: parseStrategy
+        ) {
+            Text(key)
+        }
     }
 
     public var body: some View {
@@ -71,8 +107,13 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
             }
             .buttonStyle(PlainButtonStyle())
             .luminareModal(isPresented: $isColorPickerPresented, closeOnDefocus: true, isCompact: true) {
-                ColorPickerModalView(color: $currentColor, hexColor: $text, colorNames: colorNames)
-                    .frame(width: 280)
+                ColorPickerModalView(
+                    color: $currentColor,
+                    hexColor: $text,
+                    colorNames: colorNames,
+                    done: done
+                )
+                .frame(width: 280)
             }
         }
         .onChange(of: currentColor) { _ in
@@ -81,17 +122,28 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     }
 }
 
-// preview this as app to show the modal panel
+private struct ColorPickerPreview<F>: View
+where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+    let format: F
+    @State var color: Color = .accentColor
+    
+    var body: some View {
+        LuminareColorPicker(
+            "Done",
+            color: $color,
+            colorNames: (
+                red: Text("Red"),
+                green: Text("Green"),
+                blue: Text("Blue")
+            ),
+            format: format
+        )
+    }
+}
+
+// preview as app
 #Preview {
-    LuminareColorPicker(
-        color: .constant(.accentColor),
-        colorNames: (
-            red: Text("Red"),
-            green: Text("Green"),
-            blue: Text("Blue")
-        ),
-        parseStrategy: .hex(.custom(true, "$"))
-    )
+    ColorPickerPreview(format: StringFormatStyle(parseStrategy: .hex(.custom(true, "$"))))
     .monospaced()
     .padding()
 }

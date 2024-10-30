@@ -216,7 +216,29 @@ where Content: View, Badge: View {
     }
 }
 
-struct InfoPopoverForceTouchPreview<Content, Badge>: View where Content: View, Badge: View {
+public extension View {
+    @ViewBuilder func luminarePopover<Content>(
+        arrowEdge: Edge = .bottom,
+        trigger: LuminarePopoverTrigger = .onHover(),
+        cornerRadius: CGFloat = 8,
+        padding: CGFloat = 4,
+        shade: LuminarePopoverShade = .styled(),
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View where Content: View {
+        LuminarePopoverView(
+            arrowEdge: arrowEdge,
+            trigger: trigger,
+            cornerRadius: cornerRadius,
+            padding: padding,
+            shade: shade,
+            content: content
+        ) {
+            self
+        }
+    }
+}
+
+private struct PopoverForceTouchPreview<Content, Badge>: View where Content: View, Badge: View {
     var arrowEdge: Edge = .bottom
     var cornerRadius: CGFloat = 8
     var padding: CGFloat = 4
@@ -293,7 +315,7 @@ struct InfoPopoverForceTouchPreview<Content, Badge>: View where Content: View, B
         
         LuminareCompose {
         } label: {
-            InfoPopoverForceTouchPreview(arrowEdge: .top) { gesture, recognized in
+            PopoverForceTouchPreview(arrowEdge: .top) { gesture, recognized in
                 VStack(alignment: .leading) {
                     Text("**Think different.**")
                     
