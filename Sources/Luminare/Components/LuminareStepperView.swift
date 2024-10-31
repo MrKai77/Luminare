@@ -176,8 +176,8 @@ struct LuminareStepperView: View {
     private let indicatorSpacing: CGFloat = 25
     private let maxSize: CGFloat = 70
     private let padding: CGFloat = 8
+    private let hasMask: Bool = true
     
-    @State private var length: CGFloat = 1000
     @State private var containerSize: CGSize = .zero
     @State private var position: CGPoint = .zero
     
@@ -196,21 +196,25 @@ struct LuminareStepperView: View {
         }
         .mask {
             let halfContainerLength = containerLength / 2
-            Rectangle()
+            Color.white
                 .padding(direction.paddingSpan.start, max(0, halfContainerLength - offset() - 1))
                 .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset()) - 1))
         }
         .mask {
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: -0.2),
-                    .init(color: .white, location: 0.4),
-                    .init(color: .white, location: 0.6),
-                    .init(color: .clear, location: 1.2)
-                ],
-                startPoint: direction.unitSpan.start,
-                endPoint: direction.unitSpan.end
-            )
+            if hasMask{
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: -0.2),
+                        .init(color: .white, location: 0.4),
+                        .init(color: .white, location: 0.6),
+                        .init(color: .clear, location: 1.2)
+                    ],
+                    startPoint: direction.unitSpan.start,
+                    endPoint: direction.unitSpan.end
+                )
+            } else {
+                Color.white
+            }
         }
         .overlay {
             ScrollView(.horizontal) {
@@ -247,6 +251,10 @@ struct LuminareStepperView: View {
         }
         .frame(width: frame.width, height: frame.height)
         .offset(x: offsetFrame.width ?? 0, y: offsetFrame.height ?? 0)
+    }
+    
+    private var length: CGFloat {
+        1000
     }
     
     private var minFrame: (width: CGFloat?, height: CGFloat?) {
