@@ -565,12 +565,13 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                     .padding(.trailing, -0.5)
                 }
             }
-            .onChange(of: selection) { _ in
+            .onChange(of: selection) { newSelection in
                 guard canRefreshSelection else { return }
+                let currentSelection = newSelection
                 DispatchQueue.main.async {
                     withAnimation(animation) {
-                        tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
-                        lineWidth = selection.contains(item) ? maxLineWidth : .zero
+                        tintOpacity = currentSelection.contains(item) ? maxTintOpacity : .zero
+                        lineWidth = currentSelection.contains(item) ? maxLineWidth : .zero
                     }
                 }
             }
