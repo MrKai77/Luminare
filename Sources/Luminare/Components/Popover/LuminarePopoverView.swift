@@ -206,7 +206,7 @@ where Content: View, Badge: View {
                     content()
                 case .onForceTouch:
                     content()
-                        .opacity(0.5 + forceTouchProgress * 0.5)
+                        .opacity(0.5 + 0.5 * forceTouchProgress)
                 }
             }
             .multilineTextAlignment(.center)
