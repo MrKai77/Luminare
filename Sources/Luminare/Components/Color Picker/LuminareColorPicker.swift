@@ -13,8 +13,9 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     
     @Binding var currentColor: Color
     
-    private let colorNames: ColorNames
     private let format: F
+    private let isBordered: Bool
+    private let colorNames: ColorNames
     
     @ViewBuilder private let done: () -> Done
 
@@ -23,27 +24,31 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
 
     public init(
         color: Binding<Color>,
-        colorNames: ColorNames,
         format: F,
+        isBordered: Bool = true,
+        colorNames: ColorNames,
         @ViewBuilder done: @escaping () -> Done
     ) {
         self._currentColor = color
         self._text = State(initialValue: color.wrappedValue.toHex())
-        self.colorNames = colorNames
         self.format = format
+        self.isBordered = isBordered
+        self.colorNames = colorNames
         self.done = done
     }
     
     public init(
         color: Binding<Color>,
-        colorNames: ColorNames,
         parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell),
+        isBordered: Bool = true,
+        colorNames: ColorNames,
         @ViewBuilder done: @escaping () -> Done
     ) where F == StringFormatStyle {
         self.init(
             color: color,
-            colorNames: colorNames,
             format: .init(parseStrategy: parseStrategy),
+            isBordered: isBordered,
+            colorNames: colorNames,
             done: done
         )
     }
@@ -51,13 +56,15 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     public init(
         _ key: LocalizedStringKey,
         color: Binding<Color>,
-        colorNames: ColorNames,
-        format: F
+        format: F,
+        isBordered: Bool = true,
+        colorNames: ColorNames
     ) where Done == Text {
         self.init(
             color: color,
-            colorNames: colorNames,
-            format: format
+            format: format,
+            isBordered: isBordered,
+            colorNames: colorNames
         ) {
             Text(key)
         }
@@ -66,13 +73,15 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     public init(
         _ key: LocalizedStringKey,
         color: Binding<Color>,
-        colorNames: ColorNames,
-        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
+        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell),
+        isBordered: Bool = true,
+        colorNames: ColorNames
     ) where F == StringFormatStyle, Done == Text {
         self.init(
             color: color,
-            colorNames: colorNames,
-            parseStrategy: parseStrategy
+            parseStrategy: parseStrategy,
+            isBordered: isBordered,
+            colorNames: colorNames
         ) {
             Text(key)
         }
@@ -83,7 +92,8 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
             LuminareTextField(
                 "Hex Color",
                 value: .init($text),
-                format: format
+                format: format,
+                isBordered: isBordered
             )
             .onSubmit {
                 if let newColor = Color(hex: text) {
@@ -94,7 +104,6 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
                     text = currentColor.toHex()
                 }
             }
-            .modifier(LuminareBordered())
 
             Button {
                 isColorPickerPresented.toggle()
@@ -131,12 +140,12 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
         LuminareColorPicker(
             "Done",
             color: $color,
+            format: format,
             colorNames: (
                 red: Text("Red"),
                 green: Text("Green"),
                 blue: Text("Blue")
-            ),
-            format: format
+            )
         )
     }
 }
