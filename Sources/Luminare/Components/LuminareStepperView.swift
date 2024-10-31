@@ -310,7 +310,10 @@ struct LuminareStepperView: View {
     
     private func magnifyFactor(at index: Int) -> CGFloat {
         let diff = CGFloat(centerIndicatorIndex - index) + indicatorOffset / indicatorSpacing
-        return bellCurve(x: diff, standardDeviation: 1)
+        let sd = 0.25
+        let value = bellCurve(x: diff, standardDeviation: sd)
+        let maxValue = bellCurve(x: 0, standardDeviation: sd)
+        return value / maxValue
     }
     
     /// Generates a bell curve value for a given x, mean, standard deviation, and amplitude.
