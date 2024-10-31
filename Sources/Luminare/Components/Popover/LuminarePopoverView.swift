@@ -329,6 +329,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                     }
                 }
                 .padding()
+                .frame(height: 100)
             } badge: {
                 Text("Pops to top (force touch me)")
             }

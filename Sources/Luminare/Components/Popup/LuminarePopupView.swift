@@ -44,7 +44,7 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
         private let view: LuminarePopupView
         private var content: () -> Content
         private var originalYPoint: CGFloat?
-        var popover: LuminarePopupPanel?
+        var panel: LuminarePopupPanel?
         
         private var monitor: Any?
 
@@ -58,18 +58,18 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
         func setVisible(_ isPresented: Bool, in view: NSView? = nil) {
             // if we're going to be closing the window
             guard isPresented else {
-                popover?.close()
+                panel?.close()
                 return
             }
             
             guard let view else { return }
             
-            guard popover == nil else { return }
+            guard panel == nil else { return }
             
             initializePopup()
-            guard let popover else { return }
+            guard let panel else { return }
             
-            // popover size
+            // panel size
             let targetSize = NSSize(width: 300, height: 300)
             let extraPadding: CGFloat = 10
             
@@ -79,22 +79,22 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
             var targetPoint = view.convert(viewBounds, to: nil).origin // convert to window coordinates
             originalYPoint = targetPoint.y
             
-            // correct popover position
+            // correct panel position
             targetPoint.y += windowFrame.minY
             targetPoint.x += windowFrame.minX
             targetPoint.y -= targetSize.height + extraPadding
             
-            // set position and show popover
-            popover.setContentSize(targetSize)
-            popover.setFrameOrigin(targetPoint)
-            popover.makeKeyAndOrderFront(nil)
+            // set position and show panel
+            panel.setContentSize(targetSize)
+            panel.setFrameOrigin(targetPoint)
+            panel.makeKeyAndOrderFront(nil)
             
             if monitor == nil {
                 DispatchQueue.main.async { [weak self] in
                     self?.monitor = NSEvent.addLocalMonitorForEvents(matching: [
                         .scrollWheel, .leftMouseDown, .rightMouseDown, .otherMouseDown
                     ]) { [weak self] event in
-                        if event.window != self?.popover {
+                        if event.window != self?.panel {
                             self?.setVisible(false)
                         }
                         return event
@@ -107,16 +107,16 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
             Task { @MainActor in
                 removeMonitor()
                 view.isPresented = false
-                self.popover = nil
+                self.panel = nil
             }
         }
 
         func initializePopup() {
-            self.popover = .init()
-            guard let popover else { return }
+            self.panel = .init()
+            guard let panel else { return }
 
-            popover.delegate = self
-            popover.contentViewController = NSHostingController(
+            panel.delegate = self
+            panel.contentViewController = NSHostingController(
                 rootView: content()
                     .background(VisualEffectView(material: view.material, blendingMode: .behindWindow))
                     .overlay {
@@ -137,7 +137,7 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
                         )
                     )
                     .ignoresSafeArea()
-                    .environmentObject(popover)
+                    .environmentObject(panel)
             )
         }
 

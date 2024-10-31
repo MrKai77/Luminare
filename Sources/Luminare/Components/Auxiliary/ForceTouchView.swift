@@ -116,9 +116,9 @@ public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
             guard view.bounds.contains(locationInView) else { return event }
             
             switch event.type {
-            case .leftMouseDown, .mouseMoved, .mouseExited:
+            case .leftMouseDown:
                 prepareLongPressDelegate(event)
-            case .leftMouseUp:
+            case .leftMouseUp, .mouseMoved, .mouseExited:
                 terminateLongPressDelegate()
                 timestamp = nil
                 gesture = .inactive
@@ -209,6 +209,14 @@ private struct ForceTouchPreview<Content>: View where Content: View {
             .onChange(of: gesture) { gesture in
                 print(gesture)
             }
+            .background {
+                switch gesture {
+                case .inactive:
+                    Color.clear
+                case .active(let event):
+                    Color.red.opacity(event.pressure)
+                }
+            }
     }
 }
 
@@ -216,6 +224,5 @@ private struct ForceTouchPreview<Content>: View where Content: View {
     ForceTouchPreview {
         Text("Touch me!")
             .padding()
-            .background(.red)
     }
 }
