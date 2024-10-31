@@ -244,7 +244,7 @@ struct LuminareStepperView: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
-                        .foregroundStyle(.secondary.opacity(pow(0.5 + 0.5 * magnifyFactor, 2.0)))
+                        .foregroundStyle(.primary.opacity(pow(0.5 + 0.5 * magnifyFactor, 2.0)))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), padding)
                 .padding(alignment.softPaddingEdges(of: direction), padding * (1 - magnifyFactor))
