@@ -7,19 +7,21 @@
 
 import SwiftUI
 
-public struct LuminareCompactPicker<Content, V>: View
-where Content: View, V: Hashable & Equatable {
-    public enum PickerStyle {
-        case menu
-        case segmented
-        
-        var style: any SwiftUI.PickerStyle {
-            switch self {
-            case .menu: .menu
-            case .segmented: .segmented
-            }
+public enum LuminareCompactPickerStyle {
+    case menu
+    case segmented
+    
+    var style: any SwiftUI.PickerStyle {
+        switch self {
+        case .menu: .menu
+        case .segmented: .segmented
         }
     }
+}
+
+public struct LuminareCompactPicker<Content, V>: View
+where Content: View, V: Hashable & Equatable {
+    public typealias PickerStyle = LuminareCompactPickerStyle
     
     @Environment(\.luminareAnimationFast) private var animationFast
     
@@ -41,7 +43,7 @@ where Content: View, V: Hashable & Equatable {
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true,
         hasDividers: Bool = true,
-        style: Self.PickerStyle = .menu,
+        style: PickerStyle = .menu,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
@@ -251,7 +253,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     @State var selection: V
     var isBordered: Bool = true
     var hasDividers: Bool = true
-    let style: LuminareCompactPicker<ForEach<[V], V, Text>, V>.PickerStyle
+    let style: LuminareCompactPickerStyle
     
     var body: some View {
         LuminareCompactPicker(selection: $selection, isBordered: isBordered, hasDividers: hasDividers, style: style) {
