@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
+public struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     @Environment(\.isEnabled) private var isEnabled
     
     let elementMinHeight: CGFloat
@@ -51,7 +51,7 @@ struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
         }
     }
     
-    var body: some View {
+    public var body: some View {
         HStack(spacing: spacing) {
             HStack(spacing: 0) {
                 label()
