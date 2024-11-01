@@ -167,9 +167,41 @@ public enum LuminareStepperDirection {
 }
 
 @available(macOS 15.0, *)
-struct LuminareStepperView: View {
+public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    case finite(range: ClosedRange<V>, stride: V)
+    case infinite(stride: V)
+    
+    var isFinite: Bool {
+        switch self {
+        case .finite:
+            true
+        case .infinite:
+            false
+        }
+    }
+    
+    var count: Int? {
+        switch self {
+        case .finite(let range, let stride):
+            Int(((range.upperBound - range.lowerBound) / stride).rounded())
+        case .infinite:
+            nil
+        }
+    }
+}
+
+@available(macOS 15.0, *)
+public struct LuminareStepperProminentIndicators<Modifier, V> where Modifier: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    public var values: [V]
+    @ViewBuilder public var modifier: (AnyView) -> Modifier
+}
+
+@available(macOS 15.0, *)
+public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias Alignment = LuminareStepperAlignment
     public typealias Direction = LuminareStepperDirection
+    public typealias Source = LuminareStepperSource<V>
+    public typealias ProminentIndicators = LuminareStepperProminentIndicators<Modifier, V>
     
     private let alignment: Alignment = .trailing
     private let direction: Direction = .horizontal
@@ -181,10 +213,13 @@ struct LuminareStepperView: View {
     private let hasMask: Bool = true
     private let hasBlur: Bool = true
     
+    private let source: Source = .finite(range: 0...100, stride: 1)
+    var prominentIndicators: ProminentIndicators
+    
     @State private var containerSize: CGSize = .zero
     @State private var position: CGPoint = .zero
     
-    var body: some View {
+    public var body: some View {
         direction.stack(spacing: indicatorSpacing) {
             ForEach(0..<indicatorCount, id: \.self) { index in
                 indicator(at: index)
@@ -224,6 +259,11 @@ struct LuminareStepperView: View {
                 Color.clear
                     .frame(width: scrollableLength)
             }
+            .scrollIndicators(.never)
+            .scrollTargetBehavior(SteppingScrollTargetBehavior(
+                spacing: indicatorSpacing,
+                direction: direction
+            ))
             .onScrollGeometryChange(for: CGPoint.self) { proxy in
                 proxy.contentOffset
             } action: { oldValue, newValue in
@@ -344,10 +384,31 @@ struct LuminareStepperView: View {
 }
 
 @available(macOS 15.0, *)
+struct SteppingScrollTargetBehavior: ScrollTargetBehavior {
+    var spacing: CGFloat?
+    var direction: LuminareStepperDirection
+    var isFinite: Bool = true
+    
+    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
+        if isFinite {
+            if let spacing {
+                target.rect.origin.x -= target.rect.origin.x.remainder(dividingBy: spacing)
+                target.rect.origin.y -= target.rect.origin.y.remainder(dividingBy: spacing)
+            }
+        } else {
+            // infinite
+        }
+    }
+}
+
+@available(macOS 15.0, *)
 #Preview {
     LuminareSection {
-        LuminareStepperView()
-            .tint(.primary)
+        LuminareStepperView(prominentIndicators: .init(values: [42]) { view in
+            view
+                .tint(.accentColor)
+        })
+        .tint(.primary)
     }
     .padding()
 }
