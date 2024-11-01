@@ -176,7 +176,10 @@ struct LuminareStepperView: View {
     private let indicatorSpacing: CGFloat = 25
     private let maxSize: CGFloat = 70
     private let padding: CGFloat = 8
+    
+    private let hasHierarchy: Bool = true
     private let hasMask: Bool = true
+    private let hasBlur: Bool = true
     
     @State private var containerSize: CGSize = .zero
     @State private var position: CGPoint = .zero
@@ -201,7 +204,7 @@ struct LuminareStepperView: View {
                 .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset()) - 1))
         }
         .mask {
-            if hasMask{
+            if hasMask {
                 LinearGradient(
                     stops: [
                         .init(color: .clear, location: -0.2),
@@ -244,17 +247,18 @@ struct LuminareStepperView: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
-                        .foregroundStyle(.primary.opacity(pow(0.5 + 0.5 * magnifyFactor, 2.0)))
+                        .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor, 2.0) : 1))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), padding)
                 .padding(alignment.softPaddingEdges(of: direction), padding * (1 - magnifyFactor))
+                .blur(radius: hasBlur ? indicatorSpacing * blurFactor(at: index) : 0)
         }
         .frame(width: frame.width, height: frame.height)
         .offset(x: offsetFrame.width ?? 0, y: offsetFrame.height ?? 0)
     }
     
     private var length: CGFloat {
-        1000
+        indicatorSpacing * 40
     }
     
     private var minFrame: (width: CGFloat?, height: CGFloat?) {
@@ -308,12 +312,22 @@ struct LuminareStepperView: View {
         offset().truncatingRemainder(dividingBy: indicatorSpacing)
     }
     
+    private func diff(at index: Int) -> CGFloat {
+        CGFloat(centerIndicatorIndex - index) + indicatorOffset / indicatorSpacing
+    }
+    
     private func magnifyFactor(at index: Int) -> CGFloat {
-        let diff = CGFloat(centerIndicatorIndex - index) + indicatorOffset / indicatorSpacing
-        let sd = 0.25
-        let value = bellCurve(x: diff, standardDeviation: sd)
+        let sd = 0.5
+        let value = bellCurve(x: diff(at: index), standardDeviation: sd)
         let maxValue = bellCurve(x: 0, standardDeviation: sd)
         return value / maxValue
+    }
+    
+    private func blurFactor(at index: Int) -> CGFloat {
+        let sd = CGFloat(indicatorCount - 2)
+        let value = bellCurve(x: diff(at: index), standardDeviation: sd)
+        let maxValue = bellCurve(x: 0, standardDeviation: sd)
+        return 1 - value / maxValue
     }
     
     /// Generates a bell curve value for a given x, mean, standard deviation, and amplitude.
@@ -333,6 +347,7 @@ struct LuminareStepperView: View {
 #Preview {
     LuminareSection {
         LuminareStepperView()
+            .tint(.primary)
     }
     .padding()
 }
