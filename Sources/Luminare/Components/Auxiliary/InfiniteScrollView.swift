@@ -8,9 +8,27 @@
 import SwiftUI
 import AppKit
 
-public enum InfiniteScrollDirection {
+public enum InfiniteScrollDirection: Equatable {
     case horizontal
     case vertical
+    
+    public init(axis: Axis) {
+        switch axis {
+        case .horizontal:
+                self = .horizontal
+        case .vertical:
+                self = .vertical
+        }
+    }
+    
+    public var axis: Axis {
+        switch self {
+        case .horizontal:
+                .horizontal
+        case .vertical:
+                .vertical
+        }
+    }
     
     @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
         switch self {
@@ -52,12 +70,13 @@ public enum InfiniteScrollDirection {
 public struct InfiniteScrollView: NSViewRepresentable {
     public typealias Direction = InfiniteScrollDirection
     
-    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
     
     public var direction: Direction
     public var size: CGSize
     public var spacing: CGFloat
     public var snapping: Bool
+    var debug: Bool = false
     @Binding public var offset: CGFloat
     
     var length: CGFloat {
@@ -72,10 +91,32 @@ public struct InfiniteScrollView: NSViewRepresentable {
         .init(origin: direction.point(from: (scrollableLength - length) / 2), size: size)
     }
     
+    @ViewBuilder private func sideView() -> some View {
+        Group {
+            if debug {
+                Color.red
+            } else {
+                Color.clear
+            }
+        }
+        .frame(width: size.width, height: size.height)
+    }
+    
+    @ViewBuilder private func centerView() -> some View {
+        Group {
+            if debug {
+                Color.white
+            } else {
+                Color.clear
+            }
+        }
+        .frame(width: size.width, height: size.height)
+    }
+    
     func onOffsetChange(_ bounds: CGRect, animate: Bool = false) {
         let offset = direction.offset(of: bounds.origin) - direction.offset(of: centerRect.origin)
         if animate {
-            withAnimation(animation) {
+            withAnimation(animationFast) {
                 self.offset = offset
             }
         } else {
@@ -91,17 +132,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
         
         let documentView = NSHostingView(
             rootView: direction.stack(spacing: 0) {
-//                Color.red
-                Color.clear
-                    .frame(width: size.width, height: size.height)
-                
-//                Color.white
-                Color.clear
-                    .frame(width: size.width, height: size.height)
-                
-//                Color.red
-                Color.clear
-                    .frame(width: size.width, height: size.height)
+                sideView()
+                centerView()
+                sideView()
             }
         )
         scrollView.documentView = documentView
@@ -192,8 +225,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
         }
         
         private func snapScrollViewPosition(_ clipView: NSClipView) {
-            let center = parent.centerRect.origin.y
-            let diff = center - clipView.bounds.origin.y
+            let center = parent.direction.offset(of: parent.centerRect.origin)
+            let diff = center - parent.direction.offset(of: clipView.bounds.origin)
+            
             let offset: CGFloat = switch diff {
             case diff where diff >= -spacing && diff < -spacing / 2:
                 -spacing
@@ -204,6 +238,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             default:
                     .zero
             }
+            
             resetScrollViewPosition(clipView, offset: parent.direction.point(from: -offset), animate: true)
         }
     }
@@ -215,7 +250,7 @@ private struct InfiniteScrollPreview: View {
     var size: CGSize = .init(width: 500, height: 100)
     
     var body: some View {
-        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, offset: $offset)
+        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, offset: $offset)
             .frame(width: size.width, height: size.height)
         
         Text(String(format: "%.1f", offset))
@@ -234,4 +269,5 @@ private struct InfiniteScrollPreview: View {
             .border(.red)
     }
     .padding()
+    .contentTransition(.numericText())
 }

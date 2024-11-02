@@ -84,6 +84,15 @@ public enum LuminareStepperDirection {
     case vertical // the growth direction is typically up
     case verticalAlternate // opposite to `vertical`
     
+    var axis: Axis {
+        switch self {
+        case .horizontal, .horizontalAlternate:
+                .horizontal
+        case .vertical, .verticalAlternate:
+                .vertical
+        }
+    }
+    
     var unitSpan: (start: UnitPoint, end: UnitPoint) {
         switch self {
         case .horizontal:
@@ -209,6 +218,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     private let maxSize: CGFloat = 70
     private let padding: CGFloat = 8
     
+    private let snapping: Bool = true
     private let hasHierarchy: Bool = true
     private let hasMask: Bool = true
     private let hasBlur: Bool = true
@@ -217,7 +227,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     var prominentIndicators: ProminentIndicators
     
     @State private var containerSize: CGSize = .zero
-    @State private var position: CGPoint = .zero
+    @State private var offset: CGFloat = .zero
     
     public var body: some View {
         direction.stack(spacing: indicatorSpacing) {
@@ -232,52 +242,17 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         } action: { oldValue, newValue in
             containerSize = newValue
         }
-        .mask {
-            let halfContainerLength = containerLength / 2
-            Color.white
-                .padding(direction.paddingSpan.start, max(0, halfContainerLength - offset() - 1))
-                .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset()) - 1))
-        }
-        .mask {
-            if hasMask {
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: -0.2),
-                        .init(color: .white, location: 0.4),
-                        .init(color: .white, location: 0.6),
-                        .init(color: .clear, location: 1.2)
-                    ],
-                    startPoint: direction.unitSpan.start,
-                    endPoint: direction.unitSpan.end
-                )
-            } else {
-                Color.white
-            }
-        }
-        .overlay {
-            ScrollView(.horizontal) {
-                Color.clear
-                    .frame(width: scrollableLength)
-            }
-            .scrollIndicators(.never)
-            .scrollTargetBehavior(SteppingScrollTargetBehavior(
-                spacing: indicatorSpacing,
-                direction: direction
-            ))
-            .onScrollGeometryChange(for: CGPoint.self) { proxy in
-                proxy.contentOffset
-            } action: { oldValue, newValue in
-                position = newValue
-            }
-        }
-        .onChange(of: position) { _ in
-            print(percentage())
+        .mask(bleedingMask)
+        .mask(visualMask)
+        .overlay(content: scrollOverlay)
+        .onChange(of: offset) { _ in
+            print(offset)
         }
     }
     
     @ViewBuilder private func indicator(at index: Int) -> some View {
         let frame = direction.frame(0)
-        let offsetFrame = direction.frame(-indicatorOffset)
+        let offsetFrame = direction.frame(-sigmoidOffset)
         
         Group {
             let frame = direction.frame(2)
@@ -297,8 +272,48 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         .offset(x: offsetFrame.width ?? 0, y: offsetFrame.height ?? 0)
     }
     
-    private var length: CGFloat {
-        indicatorSpacing * 40
+    @ViewBuilder private func bleedingMask() -> some View {
+        let halfContainerLength = containerLength / 2
+        Color.white
+        //                    .padding(direction.paddingSpan.start, max(0, halfContainerLength - offset - 1))
+        //                    .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset) - 1))
+    }
+    
+    @ViewBuilder private func visualMask() -> some View {
+        if hasMask {
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: -0.2),
+                    .init(color: .white, location: 0.4),
+                    .init(color: .white, location: 0.6),
+                    .init(color: .clear, location: 1.2)
+                ],
+                startPoint: direction.unitSpan.start,
+                endPoint: direction.unitSpan.end
+            )
+        } else {
+            Color.white
+        }
+    }
+    
+    @ViewBuilder private func scrollOverlay() -> some View {
+        GeometryReader { proxy in
+            Color.clear
+                .overlay {
+                    InfiniteScrollView(
+                        direction: .init(axis: direction.axis),
+                        size: proxy.size,
+                        spacing: indicatorSpacing,
+                        snapping: snapping,
+                        offset: $offset)
+                }
+        }
+    }
+    
+    private var sigmoidOffset: CGFloat {
+        let progress = offset / indicatorSpacing
+        let bent = bentSigmoid(progress)
+        return bent * indicatorSpacing
     }
     
     private var minFrame: (width: CGFloat?, height: CGFloat?) {
@@ -309,10 +324,6 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         direction.frame(.infinity, fallback: maxSize)
     }
     
-    private var overflowed: Bool {
-        offset() < 0 || offset() > 1
-    }
-    
     private var indicatorCount: Int {
         let possibleCount = Int(floor(containerLength / indicatorSpacing))
         let oddCount = if possibleCount.isMultiple(of: 2) {
@@ -320,7 +331,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         } else {
             possibleCount
         }
-        return max(3, oddCount)
+        return max(3, oddCount) + 4 // 4 is abundant for edged indicators to appear continuously
     }
     
     private var centerIndicatorIndex: Int {
@@ -332,28 +343,11 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     }
     
     private var scrollableLength: CGFloat {
-        containerLength + length
-    }
-    
-    private func offset(overflowing: Bool = true) -> CGFloat {
-        let result = direction.offset(of: position)
-        return if overflowing {
-            result
-        } else {
-            max(0, min(length, result))
-        }
-    }
-    
-    private func percentage(overflowing: Bool = true) -> CGFloat {
-        direction.percentage(in: length, at: offset(overflowing: overflowing))
-    }
-    
-    private var indicatorOffset: CGFloat {
-        offset().truncatingRemainder(dividingBy: indicatorSpacing)
+        containerLength * 3
     }
     
     private func diff(at index: Int) -> CGFloat {
-        CGFloat(centerIndicatorIndex - index) + indicatorOffset / indicatorSpacing
+        CGFloat(centerIndicatorIndex - index) + sigmoidOffset / indicatorSpacing
     }
     
     private func magnifyFactor(at index: Int) -> CGFloat {
@@ -381,25 +375,40 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         let exponent = -pow(x - mean, 2) / (2 * pow(standardDeviation, 2))
         return amplitude * exp(exponent)
     }
-}
-
-@available(macOS 15.0, *)
-struct SteppingScrollTargetBehavior: ScrollTargetBehavior {
-    var spacing: CGFloat?
-    var direction: LuminareStepperDirection
-    var isFinite: Bool = true
     
-    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
-        if isFinite {
-            if let spacing {
-                target.rect.origin.x -= target.rect.origin.x.remainder(dividingBy: spacing)
-                target.rect.origin.y -= target.rect.origin.y.remainder(dividingBy: spacing)
-            }
+    /// Sigmoid-like function that bends the input curve around 0.5.
+    /// - Parameters:
+    ///   - x: The input value, expected to be in the range [0, 1].
+    ///   - curvature: A parameter to control the curvature. Higher values create a sharper bend.
+    /// - Returns: The transformed output in the range [0, 1].
+    func bentSigmoid(_ x: Double, curvature: Double = 10) -> Double {
+        guard x >= -1 && x <= 1 else { return x }
+        
+        return if x >= 0 {
+            1 / (1 + exp(-curvature * (x - 0.5)))
         } else {
-            // infinite
+            -bentSigmoid(-x)
         }
     }
 }
+
+//@available(macOS 15.0, *)
+//struct SteppingScrollTargetBehavior: ScrollTargetBehavior {
+//    var spacing: CGFloat?
+//    var direction: LuminareStepperDirection
+//    var isFinite: Bool = true
+//    
+//    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
+//        if isFinite {
+//            if let spacing {
+//                target.rect.origin.x -= target.rect.origin.x.remainder(dividingBy: spacing)
+//                target.rect.origin.y -= target.rect.origin.y.remainder(dividingBy: spacing)
+//            }
+//        } else {
+//            // infinite
+//        }
+//    }
+//}
 
 @available(macOS 15.0, *)
 #Preview {
