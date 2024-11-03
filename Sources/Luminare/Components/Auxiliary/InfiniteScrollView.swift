@@ -243,7 +243,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         }
         
         @objc func willStartLiveScroll(_ notification: Notification) {
-            guard let scrollView = notification.object as? NSScrollView else { return }
+            guard let _ = notification.object as? NSScrollView else { return }
         }
         
         @objc func didEndLiveScroll(_ notification: Notification) {
@@ -331,7 +331,7 @@ private struct InfiniteScrollPreview: View {
     var size: CGSize = .init(width: 500, height: 100)
     
     var body: some View {
-        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, wrapping: .constant(true), offset: $offset, diff: $diff)
+        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, wrapping: .constant(false), offset: $offset, diff: $diff)
             .frame(width: size.width, height: size.height)
         
         Text(String(format: "%.1f", offset))

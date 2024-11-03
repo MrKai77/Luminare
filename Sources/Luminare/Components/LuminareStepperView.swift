@@ -84,6 +84,15 @@ public enum LuminareStepperDirection {
     case vertical // the growth direction is typically up
     case verticalAlternate // opposite to `vertical`
     
+    var isAlternate: Bool {
+        switch self {
+        case .horizontal, .vertical:
+            false
+        case .horizontalAlternate, .verticalAlternate:
+            true
+        }
+    }
+    
     var axis: Axis {
         switch self {
         case .horizontal, .horizontalAlternate:
@@ -273,12 +282,46 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             value
         }
     }
+    
+    func offsetBy(_ value: V, direction: LuminareStepperDirection, nonAlternateOffset offset: V, wrap: Bool = true) -> V {
+        let result = if direction.isAlternate {
+            value - offset
+        } else {
+            value + offset
+        }
+        
+        return if wrap {
+            self.wrap(result)
+        } else {
+            result
+        }
+    }
+    
+    func offsetBy(_ value: CGFloat, direction: LuminareStepperDirection, nonAlternateOffset offset: CGFloat) -> CGFloat {
+        if direction.isAlternate {
+            value - offset
+        } else {
+            value + offset
+        }
+    }
 }
 
 @available(macOS 15.0, *)
 public struct LuminareStepperProminentIndicators<Modifier, V> where Modifier: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    public var values: [V]
-    @ViewBuilder public var modifier: (AnyView) -> Modifier
+    let values: [V]
+    @ViewBuilder let modifier: (V, AnyView) -> Modifier
+    
+    public init(
+        values: [V],
+        @ViewBuilder modifier: @escaping (V, AnyView) -> Modifier
+    ) {
+        self.values = values
+        self.modifier = modifier
+    }
+    
+    public init() where Modifier == AnyView {
+        self.init(values: []) { _, view in view }
+    }
 }
 
 @available(macOS 15.0, *)
@@ -288,21 +331,23 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     public typealias Source = LuminareStepperSource<V>
     public typealias ProminentIndicators = LuminareStepperProminentIndicators<Modifier, V>
     
-    @Binding var value: V
-    var source: Source
+    @Environment(\.luminareAnimationFast) private var animationFast
     
-    private let alignment: Alignment = .trailing
-    private let direction: Direction = .horizontal
-    private let indicatorSpacing: CGFloat = 25
-    private let maxSize: CGFloat = 70
-    private let padding: CGFloat = 8
+    @Binding private var value: V
+    private let source: Source
     
-    private let hasHierarchy: Bool = true
-    private let hasMask: Bool = true
-    private let hasBlur: Bool = true
+    private let alignment: Alignment
+    private let direction: Direction
+    private let indicatorSpacing: CGFloat
+    private let maxSize: CGFloat
+    private let margin: CGFloat
     
-    var prominentIndicators: ProminentIndicators
-    private let feedback: (V) -> SensoryFeedback? = { _ in .alignment }
+    private let hasHierarchy: Bool
+    private let hasMask: Bool
+    private let hasBlur: Bool
+    
+    private let prominentIndicators: ProminentIndicators
+    private let feedback: (V) -> SensoryFeedback?
     
     @State private var containerSize: CGSize = .zero
     @State private var offset: CGFloat = .zero
@@ -313,13 +358,109 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     public init(
         value: Binding<V>,
         source: Source,
-        prominentIndicators: ProminentIndicators
+        
+        alignment: Alignment = .trailing,
+        direction: Direction = .horizontal,
+        indicatorSpacing: CGFloat = 25,
+        maxSize: CGFloat = 70,
+        margin: CGFloat = 8,
+        
+        hasHierarchy: Bool = true,
+        hasMask: Bool = true,
+        hasBlur: Bool = true,
+        
+        prominentIndicators: ProminentIndicators,
+        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
     ) {
         self._value = value
         self.source = source
+        
+        self.alignment = alignment
+        self.direction = direction
+        self.indicatorSpacing = indicatorSpacing
+        self.maxSize = maxSize
+        self.margin = margin
+        
+        self.hasHierarchy = hasHierarchy
+        self.hasMask = hasMask
+        self.hasBlur = hasBlur
+        
         self.prominentIndicators = prominentIndicators
+        self.feedback = feedback
         
         self.roundedValue = value.wrappedValue
+    }
+    
+    public init(
+        value: Binding<V>,
+        source: Source,
+        
+        alignment: Alignment = .trailing,
+        direction: Direction = .horizontal,
+        indicatorSpacing: CGFloat = 25,
+        maxSize: CGFloat = 70,
+        margin: CGFloat = 8,
+        
+        hasHierarchy: Bool = true,
+        hasMask: Bool = true,
+        hasBlur: Bool = true,
+        
+        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
+    ) where Modifier == AnyView {
+        self.init(
+            value: value,
+            source: source,
+            
+            alignment: alignment,
+            direction: direction,
+            indicatorSpacing: indicatorSpacing,
+            maxSize: maxSize,
+            margin: margin,
+            
+            hasHierarchy: hasHierarchy,
+            hasMask: hasMask,
+            hasBlur: hasBlur,
+            
+            prominentIndicators: .init(),
+            feedback: feedback
+        )
+    }
+    
+    public init(
+        value: Binding<V>,
+        source: Source,
+        
+        alignment: Alignment = .trailing,
+        direction: Direction = .horizontal,
+        indicatorSpacing: CGFloat = 25,
+        maxSize: CGFloat = 70,
+        margin: CGFloat = 8,
+        
+        hasHierarchy: Bool = true,
+        hasMask: Bool = true,
+        hasBlur: Bool = true,
+        
+        prominentValues: [V],
+        @ViewBuilder prominentModifier: @escaping (V, AnyView) -> Modifier,
+        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
+    ) {
+        self.init(
+            value: value,
+            source: source,
+            
+            alignment: alignment,
+            direction: direction,
+            indicatorSpacing: indicatorSpacing,
+            maxSize: maxSize,
+            margin: margin,
+            
+            hasHierarchy: hasHierarchy,
+            hasMask: hasMask,
+            hasBlur: hasBlur,
+            
+            prominentIndicators: .init(values: prominentValues, modifier: prominentModifier),
+            feedback: feedback
+        )
     }
     
     public var body: some View {
@@ -338,6 +479,24 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         .mask(bleedingMask)
         .mask(visualMask)
         .overlay(content: scrollOverlay)
+//        .gesture(
+//            TapGesture()
+//                .simultaneously(
+//                    with:
+//                        DragGesture(minimumDistance: 0)
+//                        .onEnded { value in
+//                            let cursorOffset = direction.offset(of: value.location)
+//                            let nonAlternateShouldGrowth = cursorOffset > containerLength / 2
+//                            let nonAlternateSign: CGFloat = nonAlternateShouldGrowth ? 1 : -1
+//                            
+//                            setValue(source.offsetBy(
+//                                self.value,
+//                                direction: direction,
+//                                nonAlternateOffset: V(nonAlternateSign) * source.stride
+//                            ))
+//                        }
+//                )
+//        )
         .sensoryFeedback(trigger: roundedValue) { oldValue, newValue in
             guard oldValue != newValue else { return nil }
             return feedback(newValue)
@@ -347,7 +506,8 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     @ViewBuilder private func indicator(at index: Int) -> some View {
         let frame = direction.frame(0)
         let offsetFrame = direction.frame(-sigmoidOffset)
-        let isProminent = prominentIndicators.values.contains(referencingValue(at: index))
+        let referencingValue = referencingValue(at: index)
+        let isProminent = prominentIndicators.values.contains(referencingValue)
         
         Group {
             let frame = direction.frame(2)
@@ -357,7 +517,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
                 .overlay {
                     Group {
                         if isProminent {
-                            prominentIndicators.modifier(AnyView(
+                            prominentIndicators.modifier(referencingValue, AnyView(
                                 RoundedRectangle(cornerRadius: 1)))
                         } else {
                             RoundedRectangle(cornerRadius: 1)
@@ -366,8 +526,8 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
                     .frame(width: frame.width, height: frame.height)
                     .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
                 }
-                .padding(alignment.hardPaddingEdges(of: direction), padding)
-                .padding(alignment.softPaddingEdges(of: direction), padding * (1 - sizeFactor))
+                .padding(alignment.hardPaddingEdges(of: direction), margin)
+                .padding(alignment.softPaddingEdges(of: direction), margin * (1 - sizeFactor))
                 .blur(radius: hasBlur ? indicatorSpacing * blurFactor(at: index) : 0)
         }
         .frame(width: frame.width, height: frame.height)
@@ -423,21 +583,37 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
                         diff: $diff
                     )
                     .onChange(of: diff) { oldValue, newValue in
-                        let roundedValue = self.roundedValue + V(newValue - oldValue) * source.stride
-                        self.roundedValue = source.wrap(roundedValue)
+                        setRoundedValue(source.offsetBy(
+                            roundedValue,
+                            direction: direction,
+                            nonAlternateOffset: V(newValue - oldValue) * source.stride
+                        ))
                     }
                     .onChange(of: offset) { oldValue, newValue in
                         let offset = newValue / indicatorSpacing
                         let valueOffset = V(offset) * source.stride
-                        let value = roundedValue + valueOffset.truncatingRemainder(dividingBy: source.stride)
-                        self.value = source.wrap(value)
+                        setValue(source.offsetBy(
+                            roundedValue,
+                            direction: direction,
+                            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
+                        ), sync: false)
                     }
                 }
         }
     }
     
+    private var indicatorOffset: CGFloat {
+        if source.reachedUpperBound(value) {
+            offset - indicatorSpacing
+        } else if source.reachedLowerBound(value) {
+            offset + indicatorSpacing
+        } else {
+            offset
+        }
+    }
+    
     private var sigmoidOffset: CGFloat {
-        let progress = offset / indicatorSpacing
+        let progress = indicatorOffset / indicatorSpacing
         let bent = bentSigmoid(progress)
         return bent * indicatorSpacing
     }
@@ -466,6 +642,21 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     
     private var containerLength: CGFloat {
         direction.length(of: containerSize)
+    }
+    
+    private func setRoundedValue(_ newValue: V, sync: Bool = true) {
+        let oldValue = roundedValue
+        roundedValue = newValue
+        if sync {
+            value += newValue - oldValue
+        }
+    }
+    
+    private func setValue(_ newValue: V, sync: Bool = true) {
+        value = newValue
+        if sync {
+            roundedValue = newValue - newValue.truncatingRemainder(dividingBy: source.stride)
+        }
     }
     
     private func shift(at index: Int) -> CGFloat {
@@ -539,12 +730,11 @@ private struct StepperPreview: View {
     var body: some View {
         LuminareStepperView(
             value: $value,
-            source: .finite(range: -100.0...50.0, stride: 2),
-            prominentIndicators: .init(values: [42.0]) { view in
-                view
-                    .tint(.accentColor)
-            }
-        )
+            source: .finite(range: -100...50, stride: 2),
+            prominentValues: [42]
+        ) { _, view in
+            view.tint(.accentColor)
+        }
         .tint(.primary)
         
         Text(String(format: "%.1f", value))
