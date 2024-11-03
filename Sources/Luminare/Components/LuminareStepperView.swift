@@ -265,8 +265,16 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
-    func reachedBound(_ value: V, padding: V = .zero) -> Bool {
-        reachedLowerBound(value, padding: padding) || reachedUpperBound(value, padding: padding)
+    func isEdgeCase(_ value: V) -> Bool {
+        switch self {
+        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+            let min = range.lowerBound + stride
+            let max = range.upperBound - stride
+            
+            return value < min || value > max
+        case .infinite, .infiniteContinuous:
+            return false
+        }
     }
     
     func reachedUpperBound(_ value: V, padding: V = .zero) -> Bool {
@@ -364,6 +372,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     
     @Binding private var value: V
     @State private var roundedValue: V
+    @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
     private let source: Source
     
     private let alignment: Alignment
@@ -379,13 +388,10 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
     
-    @State private var offset: CGFloat
     @State private var containerSize: CGSize = .zero
     @State private var diff: Int = .zero
-    
     @State private var offset: CGFloat
-    @State private var roundedValue: V
-    @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
+    
     @State private var shouldScrollViewReset: Bool = true
     
     public init(
@@ -592,6 +598,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                         diff: $diff
                     )
                     .onChange(of: diff) { oldValue, newValue in
+                        // do not use `+=`, otherwise causing multiple assignments
                         roundedValue = source.offsetBy(
                             roundedValue,
                             direction: direction,
@@ -621,38 +628,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                     }
                 }
         }
-    }
-    
-    @ViewBuilder func valueObserver(_ view: () -> some View) -> some View {
-        view()
-            .onChange(of: diff) { oldValue, newValue in
-                roundedValue += source.offsetBy(
-                    direction: direction,
-                    nonAlternateOffset: V(newValue - oldValue) * source.stride
-                )
-            }
-        
-            // value propagation
-            .onChange(of: value) { oldValue, newValue in
-                // check if value is changed externally
-                guard newValue != internalValue else { return }
-                
-                roundedValue = source.round(newValue).value
-                offset = CGFloat(source.round(newValue).offset)
-            }
-            .onChange(of: internalValue) { oldValue, newValue in
-                guard newValue != value else { return }
-                value = newValue
-            }
-    }
-    
-    private var internalValue: V {
-        let valueOffset = V(offset / indicatorSpacing) * source.stride
-        return source.offsetBy(
-            roundedValue,
-            direction: direction,
-            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
-        )
     }
     
     private var indicatorOffset: CGFloat {
