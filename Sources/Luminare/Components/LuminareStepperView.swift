@@ -328,19 +328,23 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
 @available(macOS 15.0, *)
 public struct LuminareStepperProminentIndicators<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    let values: [V]
     @ViewBuilder let color: (V) -> Color?
     
     public init(
-        values: [V],
-        color: @escaping (V) -> Color?
+        values: [V]? = nil,
+        color: @escaping (V) -> Color? = { _ in nil}
     ) {
-        self.values = values
-        self.color = color
-    }
-    
-    public init() {
-        self.init(values: []) { _ in .accentColor }
+        if let values {
+            self.color = { value in
+                if values.contains(value) {
+                    color(value)
+                } else {
+                    nil
+                }
+            }
+        } else {
+            self.color = color
+        }
     }
 }
 
@@ -375,6 +379,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     
     @State private var diff: Int = 0
     @State private var roundedValue: V
+    @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
     @State private var shouldScrollViewReset: Bool = true
     
     public init(
@@ -411,6 +416,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         self.feedback = feedback
         
         self.roundedValue = value.wrappedValue
+        self.internalValue = value.wrappedValue
     }
     
     public init(
@@ -427,8 +433,8 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         hasMask: Bool = true,
         hasBlur: Bool = true,
         
-        prominentValues: [V],
-        prominentColor: @escaping (V) -> Color?,
+        prominentValues: [V]? = nil,
+        prominentColor: @escaping (V) -> Color? = { _ in nil},
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
     ) {
         self.init(
@@ -471,24 +477,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         .mask(bleedingMask)
         .mask(visualMask)
         .overlay(content: scrollOverlay)
-//        .gesture(
-//            TapGesture()
-//                .simultaneously(
-//                    with:
-//                        DragGesture(minimumDistance: 0)
-//                        .onEnded { value in
-//                            let cursorOffset = direction.offset(of: value.location)
-//                            let nonAlternateShouldGrowth = cursorOffset > containerLength / 2
-//                            let nonAlternateSign: CGFloat = nonAlternateShouldGrowth ? 1 : -1
-//                            
-//                            setValue(source.offsetBy(
-//                                self.value,
-//                                direction: direction,
-//                                nonAlternateOffset: V(nonAlternateSign) * source.stride
-//                            ))
-//                        }
-//                )
-//        )
         .sensoryFeedback(trigger: roundedValue) { oldValue, newValue in
             guard oldValue != newValue else { return nil }
             return feedback(newValue)
@@ -499,18 +487,18 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         let frame = direction.frame(0)
         let offsetFrame = direction.frame(-sigmoidOffset)
         let referencingValue = referencingValue(at: index)
-        let isProminent = prominentIndicators.values.contains(referencingValue)
         
         Group {
             let frame = direction.frame(2)
+            let tint = prominentIndicators.color(referencingValue)
+            let isProminent = tint != nil
             let sizeFactor = isProminent ? 1 : magnifyFactor(at: index)
-            let tint = isProminent ? prominentIndicators.color(value) : self.tint()
             
             Color.clear
                 .overlay {
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
-                        .tint(tint)
+                        .tint(tint ?? self.tint())
                         .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), margin)
@@ -579,14 +567,14 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                         
                         shouldReset: $shouldScrollViewReset,
                         wrapping: .init {
-                            !source.isEdgeCase(value)
+                            !source.isEdgeCase(internalValue)
                         } set: { _ in
                             // do nothing
                         },
                         initialOffset: .init {
-                            if source.reachedEndingBound(value, direction: direction) {
+                            if source.reachedEndingBound(internalValue, direction: direction) {
                                 indicatorSpacing
-                            } else if source.reachedStartingBound(value, direction: direction) {
+                            } else if source.reachedStartingBound(internalValue, direction: direction) {
                                 -indicatorSpacing
                             } else {
                                 0
@@ -598,29 +586,29 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                         diff: $diff
                     )
                     .onChange(of: diff) { oldValue, newValue in
-                        setRoundedValue(source.offsetBy(
+                        roundedValue = source.offsetBy(
                             roundedValue,
                             direction: direction,
                             nonAlternateOffset: V(newValue - oldValue) * source.stride
-                        ))
+                        )
                     }
                     .onChange(of: offset) { oldValue, newValue in
                         let offset = newValue / indicatorSpacing
                         let valueOffset = V(offset) * source.stride
-                        setValue(source.offsetBy(
+                        internalValue = source.offsetBy(
                             roundedValue,
                             direction: direction,
                             nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
-                        ), sync: false)
+                        )
                     }
                 }
         }
     }
     
     private var indicatorOffset: CGFloat {
-        if source.reachedUpperBound(value) {
+        if source.reachedUpperBound(internalValue) {
             direction.offsetBy(offset, nonAlternateOffset: -indicatorSpacing)
-        } else if source.reachedLowerBound(value) {
+        } else if source.reachedLowerBound(internalValue) {
             direction.offsetBy(offset, nonAlternateOffset: indicatorSpacing)
         } else {
             offset
@@ -657,21 +645,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     
     private var containerLength: CGFloat {
         direction.length(of: containerSize)
-    }
-    
-    private func setRoundedValue(_ newValue: V, sync: Bool = true) {
-        let oldValue = roundedValue
-        roundedValue = newValue
-        if sync {
-            value += (newValue - oldValue)
-        }
-    }
-    
-    private func setValue(_ newValue: V, sync: Bool = true) {
-        value = newValue
-        if sync {
-            roundedValue = newValue - newValue.truncatingRemainder(dividingBy: source.stride)
-        }
     }
     
     private func shift(at index: Int) -> CGFloat {
@@ -763,7 +736,13 @@ private struct StepperPreview<Label, V>: View where Label: View, V: Strideable &
             .environment(\.luminareTint) { .primary }
             .background(.quinary)
             
-            Text(String(format: "%.1f", CGFloat(value)))
+            HStack {
+                Text(String(format: "%.1f", CGFloat(value)))
+                
+                Button("42") {
+                    value = 42
+                }
+            }
         }
         .padding()
     }
@@ -775,19 +754,25 @@ private struct StepperPopoverPreview: View {
     @State private var value: CGFloat = 42
     
     var body: some View {
-        Button("Toggle Popover") {
-            isPresented.toggle()
-        }
-        .popover(isPresented: $isPresented) {
-            LuminareStepperView(
-                value: $value,
-                source: .finite(range: 0...100, stride: 1),
-                direction: .horizontal,
-                indicatorSpacing: 10,
-                maxSize: 32
-            )
-            .environment(\.luminareTint) { .primary }
-            .frame(width: 100, height: 32)
+        HStack {
+            Button("Toggle Popover") {
+                isPresented.toggle()
+            }
+            .popover(isPresented: $isPresented) {
+                LuminareStepperView(
+                    value: $value,
+                    source: .finite(range: 0...100, stride: 1),
+                    direction: .horizontal,
+                    indicatorSpacing: 10,
+                    maxSize: 32
+                )
+                .environment(\.luminareTint) { .primary }
+                .frame(width: 100, height: 32)
+            }
+            
+            Button("42") {
+                value = 42
+            }
         }
         
         Text(String(format: "%.1f", value))
