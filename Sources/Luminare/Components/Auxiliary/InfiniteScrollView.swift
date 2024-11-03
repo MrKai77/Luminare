@@ -190,7 +190,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
         
         private var didReset: Bool = false // indicates whether the view is initialized to center
         private var offsetObservation: NSKeyValueObservation?
-        private var offsetOrigin: CGFloat = .zero
         private var diffOrigin: Int = .zero
         
         init(_ parent: InfiniteScrollView, spacing: CGFloat, snapping: Bool) {
@@ -207,8 +206,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 parent.onOffsetChange(bounds)
             }
             
-            let offset = parent.direction.offset(of: scrollView.contentView.bounds.origin)
             let center = parent.direction.offset(of: parent.centerRect.origin)
+            let offset = parent.direction.offset(of: scrollView.contentView.bounds.origin)
+            let relativeOffset = offset - center
             
             if !didReset {
                 resetScrollViewPosition(scrollView.contentView)
@@ -216,7 +216,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
             }
             
             if parent.wrapping {
-                let relativeOffset = offset - center
                 if abs(relativeOffset) >= spacing {
                     resetScrollViewPosition(scrollView.contentView)
                     
@@ -231,9 +230,13 @@ public struct InfiniteScrollView: NSViewRepresentable {
                     accumulateDiff(diffOffset)
                 }
             } else {
-                let offset = max(0, min(2 * spacing, offset))
-                let relativeOffset = offset - offsetOrigin
-                let diffOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
+                let diffOffset: Int = if relativeOffset >= spacing {
+                    +1
+                } else if relativeOffset <= -spacing {
+                    -1
+                } else {
+                    0
+                }
                 
                 overrideDiff(diffOffset)
             }
@@ -241,9 +244,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
         
         @objc func willStartLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
-            
-            offsetOrigin = parent.direction.offset(of: scrollView.contentView.bounds.origin)
-            diffOrigin = parent.diff
         }
         
         @objc func didEndLiveScroll(_ notification: Notification) {
@@ -275,12 +275,11 @@ public struct InfiniteScrollView: NSViewRepresentable {
             parent.onOffsetChange(clipView.bounds, animate: animate)
             
             didReset = true
-            offsetOrigin = parent.direction.offset(of: clipView.bounds.origin)
         }
         
         private func snapScrollViewPosition(_ clipView: NSClipView) {
-            let offset = parent.direction.offset(of: clipView.bounds.origin)
             let center = parent.direction.offset(of: parent.centerRect.origin)
+            let offset = parent.direction.offset(of: clipView.bounds.origin)
             
             let relativeOffset = offset - center
             
@@ -295,21 +294,17 @@ public struct InfiniteScrollView: NSViewRepresentable {
                     .zero
             }
             
+            let diffOffset: Int = if localOffset > 0 {
+                +1
+            } else if localOffset < 0 {
+                -1
+            } else {
+                0
+            }
+            
             if parent.wrapping {
-                let diffOffset: Int = if localOffset > 0 {
-                    +1
-                } else if localOffset < 0 {
-                    -1
-                } else {
-                    0
-                }
-                
                 accumulateDiff(diffOffset)
             } else {
-                let relativeOffsetOrigin = offsetOrigin - center
-                let relativeOffset = localOffset - relativeOffsetOrigin
-                let diffOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
-                
                 overrideDiff(diffOffset)
             }
             
