@@ -182,6 +182,15 @@ public enum LuminareStepperDirection {
             1 - percentage
         }
     }
+    
+    func offsetBy<Value: Numeric>(_ value: Value = .zero, nonAlternateOffset offset: Value) -> Value {
+        switch self {
+        case .horizontal, .verticalAlternate:
+            value + offset
+        case .vertical, .horizontalAlternate:
+            value - offset
+        }
+    }
 }
 
 @available(macOS 15.0, *)
@@ -274,6 +283,24 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
+    func reachedStartingBound(_ value: V, direction: LuminareStepperDirection) -> Bool {
+        switch direction {
+        case .horizontal, .vertical:
+            reachedLowerBound(value)
+        case .horizontalAlternate, .verticalAlternate:
+            reachedUpperBound(value)
+        }
+    }
+    
+    func reachedEndingBound(_ value: V, direction: LuminareStepperDirection) -> Bool {
+        switch direction {
+        case .horizontal, .vertical:
+            reachedUpperBound(value)
+        case .horizontalAlternate, .verticalAlternate:
+            reachedLowerBound(value)
+        }
+    }
+    
     func wrap(_ value: V) -> V {
         switch self {
         case .finite(let range, _), .finiteContinuous(let range, _):
@@ -283,25 +310,18 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
-    func offsetBy(_ value: V, direction: LuminareStepperDirection, nonAlternateOffset offset: V, wrap: Bool = true) -> V {
-        let result = if direction.isAlternate {
-            value - offset
-        } else {
+    func offsetBy(_ value: V = .zero, direction: LuminareStepperDirection, nonAlternateOffset offset: V, wrap: Bool = true) -> V {
+        let result = switch direction {
+        case .horizontal, .verticalAlternate:
             value + offset
+        case .vertical, .horizontalAlternate:
+            value - offset
         }
         
         return if wrap {
             self.wrap(result)
         } else {
             result
-        }
-    }
-    
-    func offsetBy(_ value: CGFloat, direction: LuminareStepperDirection, nonAlternateOffset offset: CGFloat) -> CGFloat {
-        if direction.isAlternate {
-            value - offset
-        } else {
-            value + offset
         }
     }
 }
@@ -466,6 +486,11 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     public var body: some View {
         direction.stack(spacing: indicatorSpacing) {
             ForEach(0..<indicatorCount, id: \.self) { index in
+                let relativeIndex = index - centerIndicatorIndex
+                let index = direction.offsetBy(
+                    centerIndicatorIndex,
+                    nonAlternateOffset: relativeIndex
+                )
                 indicator(at: index)
             }
         }
@@ -539,12 +564,28 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
             let indexSpanStart = max(0, CGFloat(centerIndicatorIndex) - 1 - CGFloat(index))
             let indexSpanEnd = max(0, CGFloat(centerIndicatorIndex) - 1 - (CGFloat(count) - 1 - CGFloat(index)))
             
-            let offsetStart = source.reachedLowerBound(value) || source.reachedUpperBound(value) ? offset + indicatorSpacing : 0
-            let offsetEnd = source.reachedLowerBound(value) || source.reachedUpperBound(value) ? -offset + indicatorSpacing : 0
+            let offsetStart: CGFloat = if source.reachedStartingBound(value, direction: direction) {
+                direction.offsetBy(
+                    nonAlternateOffset: direction.offsetBy(
+                        offset,
+                        nonAlternateOffset: indicatorSpacing
+                    )
+                )
+            } else { 0 }
+            let offsetEnd: CGFloat = if source.reachedEndingBound(value, direction: direction) {
+                direction.offsetBy(
+                    nonAlternateOffset: direction.offsetBy(
+                        -offset,
+                         nonAlternateOffset: indicatorSpacing
+                    )
+                )
+            } else { 0 }
             
             Color.white
                 .padding(direction.paddingSpan.start, indexSpanStart * indicatorSpacing - offsetStart - 1)
                 .padding(direction.paddingSpan.end, indexSpanEnd * indicatorSpacing - offsetEnd - 1)
+        } else {
+            Color.white
         }
     }
     
@@ -604,9 +645,9 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     
     private var indicatorOffset: CGFloat {
         if source.reachedUpperBound(value) {
-            offset - indicatorSpacing
+            direction.offsetBy(offset, nonAlternateOffset: -indicatorSpacing)
         } else if source.reachedLowerBound(value) {
-            offset + indicatorSpacing
+            direction.offsetBy(offset, nonAlternateOffset: indicatorSpacing)
         } else {
             offset
         }
@@ -648,7 +689,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         let oldValue = roundedValue
         roundedValue = newValue
         if sync {
-            value += newValue - oldValue
+            value += (newValue - oldValue)
         }
     }
     
@@ -660,7 +701,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     }
     
     private func shift(at index: Int) -> CGFloat {
-        CGFloat(centerIndicatorIndex - index) + sigmoidOffset / indicatorSpacing
+        direction.offsetBy(CGFloat(centerIndicatorIndex - index), nonAlternateOffset: sigmoidOffset / indicatorSpacing)
     }
     
     private func referencingValue(at index: Int) -> V {
@@ -724,27 +765,102 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
 //}
 
 @available(macOS 15.0, *)
-private struct StepperPreview: View {
-    @State private var value: CGFloat = 42
+private struct StepperPreview<Label, V>: View where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    @State var value: V
+    var source: LuminareStepperSource<V>
+    var direction: LuminareStepperDirection = .horizontal
+    var prominentValues: [V]
+    @ViewBuilder var label: () -> Label
     
     var body: some View {
-        LuminareStepperView(
-            value: $value,
-            source: .finite(range: -100...50, stride: 2),
-            prominentValues: [42]
-        ) { _, view in
-            view.tint(.accentColor)
+        LuminareSection {
+            label()
+            
+            LuminareStepperView(
+                value: $value,
+                source: source,
+                direction: direction,
+                prominentValues: prominentValues
+            ) { _, view in
+                view.tint(.accentColor)
+            }
+            .tint(.primary)
+            .background(.quinary)
+            
+            Text(String(format: "%.1f", CGFloat(value)))
         }
-        .tint(.primary)
-        
-        Text(String(format: "%.1f", value))
+        .padding()
     }
 }
 
 @available(macOS 15.0, *)
 #Preview {
-    LuminareSection {
-        StepperPreview()
+    HStack {
+        VStack {
+            StepperPreview(
+                value: 42,
+                source: .finite(range: -100...50, stride: 2),
+                prominentValues: [0, 42]
+            ) {
+                VStack {
+                    Text("Horizontal")
+                        .bold()
+                    
+                    Text("Snapping Enabled")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
+            StepperPreview(
+                value: 42,
+                source: .infiniteContinuous(stride: 2),
+                prominentValues: [0, 42]
+            ) {
+                VStack {
+                    Text("Horizontal")
+                        .bold()
+                    
+                    Text("Infinite Continuous")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        
+        HStack {
+            StepperPreview(
+                value: 42,
+                source: .finite(range: -100...50, stride: 2),
+                direction: .vertical,
+                prominentValues: [0, 42]
+            ) {
+                VStack {
+                    Text("Vertical")
+                        .bold()
+                    
+                    Text("Snapping Enabled")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
+            
+            StepperPreview(
+                value: 42,
+                source: .finiteContinuous(range: -100...50, stride: 2),
+                direction: .vertical,
+                prominentValues: [0, 42]
+            ) {
+                VStack {
+                    Text("Vertical")
+                        .bold()
+                    
+                    Text("Finite Continuous")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
     }
-    .padding()
 }
