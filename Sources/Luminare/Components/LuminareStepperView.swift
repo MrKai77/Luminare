@@ -177,14 +177,25 @@ public enum LuminareStepperDirection {
 
 @available(macOS 15.0, *)
 public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    case finite(range: ClosedRange<V>, stride: V)
-    case infinite(stride: V)
+    case finite(range: ClosedRange<V>, stride: V = V(1))
+    case finiteContinuous(range: ClosedRange<V>, stride: V = V(1))
+    case infinite(stride: V = V(1))
+    case infiniteContinuous(stride: V = V(1))
     
     var isFinite: Bool {
         switch self {
-        case .finite:
+        case .finite, .finiteContinuous:
             true
-        case .infinite:
+        case .infinite, .infiniteContinuous:
+            false
+        }
+    }
+    
+    var isContinuous: Bool {
+        switch self {
+        case .finiteContinuous, .infiniteContinuous:
+            true
+        case .finite, .infinite:
             false
         }
     }
@@ -193,8 +204,46 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         switch self {
         case .finite(let range, let stride):
             Int(((range.upperBound - range.lowerBound) / stride).rounded())
-        case .infinite:
+        default:
             nil
+        }
+    }
+    
+    var total: V? {
+        switch self {
+        case .finite(let range, _), .finiteContinuous(let range, _):
+            range.upperBound - range.lowerBound
+        case .infinite, .infiniteContinuous:
+            nil
+        }
+    }
+    
+    var stride: V {
+        switch self {
+        case .finite(_, let stride), .finiteContinuous(_, let stride),
+                .infinite(let stride), .infiniteContinuous(let stride):
+            stride
+        }
+    }
+    
+    func isEdgeCase(_ value: V) -> Bool {
+        switch self {
+        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+            let min = range.lowerBound + stride
+            let max = range.upperBound - stride
+            
+            return value < min || value > max
+        case .infinite, .infiniteContinuous:
+            return false
+        }
+    }
+    
+    func wrap(_ value: V) -> V {
+        switch self {
+        case .finite(let range, _), .finiteContinuous(let range, _):
+            max(range.lowerBound, min(range.upperBound, value))
+        case .infinite, .infiniteContinuous:
+            value
         }
     }
 }
@@ -212,22 +261,38 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     public typealias Source = LuminareStepperSource<V>
     public typealias ProminentIndicators = LuminareStepperProminentIndicators<Modifier, V>
     
+    @Binding var value: V
+    var source: Source
+    
     private let alignment: Alignment = .trailing
     private let direction: Direction = .horizontal
     private let indicatorSpacing: CGFloat = 25
     private let maxSize: CGFloat = 70
     private let padding: CGFloat = 8
     
-    private let snapping: Bool = true
     private let hasHierarchy: Bool = true
     private let hasMask: Bool = true
     private let hasBlur: Bool = true
     
-    private let source: Source = .finite(range: 0...100, stride: 1)
     var prominentIndicators: ProminentIndicators
     
     @State private var containerSize: CGSize = .zero
     @State private var offset: CGFloat = .zero
+    
+    @State private var diff: Int = 0
+    @State private var roundedValue: V
+    
+    public init(
+        value: Binding<V>,
+        source: Source,
+        prominentIndicators: ProminentIndicators
+    ) {
+        self._value = value
+        self.source = source
+        self.prominentIndicators = prominentIndicators
+        
+        self.roundedValue = value.wrappedValue
+    }
     
     public var body: some View {
         direction.stack(spacing: indicatorSpacing) {
@@ -273,10 +338,13 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     }
     
     @ViewBuilder private func bleedingMask() -> some View {
-        let halfContainerLength = containerLength / 2
-        Color.white
-        //                    .padding(direction.paddingSpan.start, max(0, halfContainerLength - offset - 1))
-        //                    .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset) - 1))
+        if source.isFinite {
+            let halfContainerLength = containerLength / 2
+            
+            Color.white
+            //                    .padding(direction.paddingSpan.start, max(0, halfContainerLength - offset - 1))
+            //                    .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset) - 1))
+        }
     }
     
     @ViewBuilder private func visualMask() -> some View {
@@ -304,8 +372,25 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
                         direction: .init(axis: direction.axis),
                         size: proxy.size,
                         spacing: indicatorSpacing,
-                        snapping: snapping,
-                        offset: $offset)
+                        snapping: !source.isContinuous,
+                        wrapping: .init {
+                            !source.isEdgeCase(value)
+                        } set: { _ in
+                            // do nothing
+                        },
+                        offset: $offset,
+                        diff: $diff
+                    )
+                    .onChange(of: diff) { oldValue, newValue in
+                        let roundedValue = self.roundedValue + V(newValue - oldValue) * source.stride
+                        self.roundedValue = source.wrap(roundedValue)
+                    }
+                    .onChange(of: offset) { oldValue, newValue in
+                        let offset = newValue / indicatorSpacing
+                        let valueOffset = V(offset) * source.stride
+                        let value = roundedValue + valueOffset.truncatingRemainder(dividingBy: source.stride)
+                        self.value = source.wrap(value)
+                    }
                 }
         }
     }
@@ -340,10 +425,6 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     
     private var containerLength: CGFloat {
         direction.length(of: containerSize)
-    }
-    
-    private var scrollableLength: CGFloat {
-        containerLength * 3
     }
     
     private func diff(at index: Int) -> CGFloat {
@@ -381,7 +462,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     ///   - x: The input value, expected to be in the range [0, 1].
     ///   - curvature: A parameter to control the curvature. Higher values create a sharper bend.
     /// - Returns: The transformed output in the range [0, 1].
-    func bentSigmoid(_ x: Double, curvature: Double = 10) -> Double {
+    func bentSigmoid(_ x: Double, curvature: Double = 7.5) -> Double {
         guard x >= -1 && x <= 1 else { return x }
         
         return if x >= 0 {
@@ -396,28 +477,38 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
 //struct SteppingScrollTargetBehavior: ScrollTargetBehavior {
 //    var spacing: CGFloat?
 //    var direction: LuminareStepperDirection
-//    var isFinite: Bool = true
 //    
 //    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
-//        if isFinite {
-//            if let spacing {
-//                target.rect.origin.x -= target.rect.origin.x.remainder(dividingBy: spacing)
-//                target.rect.origin.y -= target.rect.origin.y.remainder(dividingBy: spacing)
-//            }
-//        } else {
-//            // infinite
+//        if let spacing {
+//            target.rect.origin.x -= target.rect.origin.x.remainder(dividingBy: spacing)
+//            target.rect.origin.y -= target.rect.origin.y.remainder(dividingBy: spacing)
 //        }
 //    }
 //}
 
 @available(macOS 15.0, *)
+private struct StepperPreview: View {
+    @State private var value: CGFloat = 42
+    
+    var body: some View {
+        LuminareStepperView(
+            value: $value,
+            source: .finite(range: -100.0...100.0, stride: 1),
+            prominentIndicators: .init(values: [42.0]) { view in
+                view
+                    .tint(.accentColor)
+            }
+        )
+        .tint(.primary)
+        
+        Text(String(format: "%.1f", value))
+    }
+}
+
+@available(macOS 15.0, *)
 #Preview {
     LuminareSection {
-        LuminareStepperView(prominentIndicators: .init(values: [42]) { view in
-            view
-                .tint(.accentColor)
-        })
-        .tint(.primary)
+        StepperPreview()
     }
     .padding()
 }

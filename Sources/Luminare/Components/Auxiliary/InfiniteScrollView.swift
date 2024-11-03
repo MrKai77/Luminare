@@ -65,6 +65,15 @@ public enum InfiniteScrollDirection: Equatable {
                 .init(x: 0, y: offset)
         }
     }
+    
+    func size(from length: CGFloat, fallback: CGFloat) -> CGSize {
+        switch self {
+        case .horizontal:
+                .init(width: length, height: fallback)
+        case .vertical:
+                .init(width: fallback, height: length)
+        }
+    }
 }
 
 public struct InfiniteScrollView: NSViewRepresentable {
@@ -76,15 +85,19 @@ public struct InfiniteScrollView: NSViewRepresentable {
     public var size: CGSize
     public var spacing: CGFloat
     public var snapping: Bool
+    
     var debug: Bool = false
+    
+    @Binding public var wrapping: Bool
     @Binding public var offset: CGFloat
+    @Binding public var diff: Int
     
     var length: CGFloat {
         direction.length(of: size)
     }
     
     var scrollableLength: CGFloat {
-        length * 3
+        length + spacing * 2
     }
     
     var centerRect: CGRect {
@@ -92,6 +105,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
     
     @ViewBuilder private func sideView() -> some View {
+        let size = direction.size(from: spacing, fallback: direction.length(of: size))
+        
         Group {
             if debug {
                 Color.red
@@ -103,14 +118,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
     
     @ViewBuilder private func centerView() -> some View {
-        Group {
-            if debug {
-                Color.white
-            } else {
-                Color.clear
-            }
-        }
-        .frame(width: size.width, height: size.height)
+        Color.clear
+            .frame(width: size.width, height: size.height)
     }
     
     func onOffsetChange(_ bounds: CGRect, animate: Bool = false) {
@@ -179,7 +188,10 @@ public struct InfiniteScrollView: NSViewRepresentable {
         var spacing: CGFloat
         var snapping: Bool
         
+        private var didReset: Bool = false // indicates whether the view is initialized to center
         private var offsetObservation: NSKeyValueObservation?
+        private var offsetOrigin: CGFloat = .zero
+        private var diffOrigin: Int = .zero
         
         init(_ parent: InfiniteScrollView, spacing: CGFloat, snapping: Bool) {
             self.parent = parent
@@ -197,13 +209,41 @@ public struct InfiniteScrollView: NSViewRepresentable {
             
             let offset = parent.direction.offset(of: scrollView.contentView.bounds.origin)
             let center = parent.direction.offset(of: parent.centerRect.origin)
-            if abs(center - offset) >= spacing {
+            
+            if !didReset {
                 resetScrollViewPosition(scrollView.contentView)
+                diffOrigin = parent.diff
+            }
+            
+            if parent.wrapping {
+                let relativeOffset = offset - center
+                if abs(relativeOffset) >= spacing {
+                    resetScrollViewPosition(scrollView.contentView)
+                    
+                    let diffOffset: Int = if relativeOffset >= spacing {
+                        +1
+                    } else if relativeOffset <= -spacing {
+                        -1
+                    } else {
+                        0
+                    }
+                    
+                    accumulateDiff(diffOffset)
+                }
+            } else {
+                let offset = max(0, min(2 * spacing, offset))
+                let relativeOffset = offset - offsetOrigin
+                let diffOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
+                
+                overrideDiff(diffOffset)
             }
         }
         
         @objc func willStartLiveScroll(_ notification: Notification) {
-            guard let _ = notification.object as? NSScrollView else { return }
+            guard let scrollView = notification.object as? NSScrollView else { return }
+            
+            offsetOrigin = parent.direction.offset(of: scrollView.contentView.bounds.origin)
+            diffOrigin = parent.diff
         }
         
         @objc func didEndLiveScroll(_ notification: Notification) {
@@ -214,46 +254,84 @@ public struct InfiniteScrollView: NSViewRepresentable {
                     context.allowsImplicitAnimation = true
                     self.snapScrollViewPosition(scrollView.contentView)
                 } completionHandler: {
-                    self.resetScrollViewPosition(scrollView.contentView)
+                    if self.parent.wrapping {
+                        self.resetScrollViewPosition(scrollView.contentView)
+                    }
                 }
             }
+        }
+        
+        private func accumulateDiff(_ offset: Int) {
+            parent.diff += offset
+            diffOrigin = parent.diff
+        }
+        
+        private func overrideDiff(_ offset: Int) {
+            parent.diff = diffOrigin + offset
         }
         
         private func resetScrollViewPosition(_ clipView: NSClipView, offset: CGPoint = .zero, animate: Bool = false) {
             clipView.setBoundsOrigin(parent.centerRect.origin.applying(.init(translationX: offset.x, y: offset.y)))
             parent.onOffsetChange(clipView.bounds, animate: animate)
+            
+            didReset = true
+            offsetOrigin = parent.direction.offset(of: clipView.bounds.origin)
         }
         
         private func snapScrollViewPosition(_ clipView: NSClipView) {
+            let offset = parent.direction.offset(of: clipView.bounds.origin)
             let center = parent.direction.offset(of: parent.centerRect.origin)
-            let diff = center - parent.direction.offset(of: clipView.bounds.origin)
             
-            let offset: CGFloat = switch diff {
-            case diff where diff >= -spacing && diff < -spacing / 2:
+            let relativeOffset = offset - center
+            
+            let localOffset: CGFloat = switch relativeOffset {
+            case relativeOffset where relativeOffset >= -spacing && relativeOffset < -spacing / 2:
                 -spacing
-            case diff where diff >= -spacing / 2 && diff < spacing / 2:
+            case relativeOffset where relativeOffset >= -spacing / 2 && relativeOffset < spacing / 2:
                     .zero
-            case diff where diff >= spacing / 2:
-                spacing
+            case relativeOffset where relativeOffset >= spacing / 2:
+                +spacing
             default:
                     .zero
             }
             
-            resetScrollViewPosition(clipView, offset: parent.direction.point(from: -offset), animate: true)
+            if parent.wrapping {
+                let diffOffset: Int = if localOffset > 0 {
+                    +1
+                } else if localOffset < 0 {
+                    -1
+                } else {
+                    0
+                }
+                
+                accumulateDiff(diffOffset)
+            } else {
+                let relativeOffsetOrigin = offsetOrigin - center
+                let relativeOffset = localOffset - relativeOffsetOrigin
+                let diffOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
+                
+                overrideDiff(diffOffset)
+            }
+            
+            resetScrollViewPosition(clipView, offset: parent.direction.point(from: localOffset), animate: true)
         }
     }
 }
 
 private struct InfiniteScrollPreview: View {
     @State private var offset: CGFloat = 0
+    @State private var diff: Int = 0
     var direction: InfiniteScrollDirection = .horizontal
     var size: CGSize = .init(width: 500, height: 100)
     
     var body: some View {
-        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, offset: $offset)
+        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, wrapping: .constant(false), offset: $offset, diff: $diff)
             .frame(width: size.width, height: size.height)
         
         Text(String(format: "%.1f", offset))
+            .frame(height: 12)
+        
+        Text("\(diff)")
             .frame(height: 12)
     }
 }
