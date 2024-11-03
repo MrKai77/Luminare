@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  InfiniteScrollView.swift
 //  
 //
 //  Created by KrLite on 2024/11/2.
@@ -85,6 +85,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
     public var size: CGSize
     public var spacing: CGFloat
     public var snapping: Bool
+    public var initialOffset: CGFloat = 0
     
     var debug: Bool = false
     
@@ -177,6 +178,10 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
     
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
+        DispatchQueue.main.async {
+            // the view is loaded now
+            context.coordinator.initializeScroll(nsView.contentView)
+        }
     }
     
     public func makeCoordinator() -> Coordinator {
@@ -198,6 +203,13 @@ public struct InfiniteScrollView: NSViewRepresentable {
             self.snapping = snapping
         }
         
+        func initializeScroll(_ clipView: NSClipView) {
+            if !didReset {
+                resetScrollViewPosition(clipView, offset: parent.direction.point(from: parent.initialOffset))
+                diffOrigin = parent.diff
+            }
+        }
+        
         @objc func didLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
             
@@ -209,11 +221,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
             let center = parent.direction.offset(of: parent.centerRect.origin)
             let offset = parent.direction.offset(of: scrollView.contentView.bounds.origin)
             let relativeOffset = offset - center
-            
-            if !didReset {
-                resetScrollViewPosition(scrollView.contentView)
-                diffOrigin = parent.diff
-            }
             
             if parent.wrapping {
                 if abs(relativeOffset) >= spacing {

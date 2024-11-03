@@ -10,7 +10,7 @@ import SwiftUI
 @available(macOS 15.0, *)
 public enum LuminareStepperAlignment {
     case none
-    case centered
+    case center
     case leading // the left side of the growth direction, typically the top if horizontal and the left if vertical
     case trailing // opposite to `leading`
     
@@ -18,7 +18,7 @@ public enum LuminareStepperAlignment {
         switch self {
         case .none:
             direction.paddingEdges
-        case .centered:
+        case .center:
             []
         case .leading:
             switch direction {
@@ -49,7 +49,7 @@ public enum LuminareStepperAlignment {
         switch self {
         case .none:
             []
-        case .centered:
+        case .center:
             direction.paddingEdges
         case .leading:
             switch direction {
@@ -327,30 +327,31 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 }
 
 @available(macOS 15.0, *)
-public struct LuminareStepperProminentIndicators<Modifier, V> where Modifier: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareStepperProminentIndicators<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     let values: [V]
-    @ViewBuilder let modifier: (V, AnyView) -> Modifier
+    @ViewBuilder let color: (V) -> Color?
     
     public init(
         values: [V],
-        @ViewBuilder modifier: @escaping (V, AnyView) -> Modifier
+        color: @escaping (V) -> Color?
     ) {
         self.values = values
-        self.modifier = modifier
+        self.color = color
     }
     
-    public init() where Modifier == AnyView {
-        self.init(values: []) { _, view in view }
+    public init() {
+        self.init(values: []) { _ in .accentColor }
     }
 }
 
 @available(macOS 15.0, *)
-public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias Alignment = LuminareStepperAlignment
     public typealias Direction = LuminareStepperDirection
     public typealias Source = LuminareStepperSource<V>
-    public typealias ProminentIndicators = LuminareStepperProminentIndicators<Modifier, V>
+    public typealias ProminentIndicators = LuminareStepperProminentIndicators<V>
     
+    @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
     
     @Binding private var value: V
@@ -389,7 +390,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         hasMask: Bool = true,
         hasBlur: Bool = true,
         
-        prominentIndicators: ProminentIndicators,
+        prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
     ) {
         self._value = value
@@ -425,43 +426,8 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         hasMask: Bool = true,
         hasBlur: Bool = true,
         
-        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
-    ) where Modifier == AnyView {
-        self.init(
-            value: value,
-            source: source,
-            
-            alignment: alignment,
-            direction: direction,
-            indicatorSpacing: indicatorSpacing,
-            maxSize: maxSize,
-            margin: margin,
-            
-            hasHierarchy: hasHierarchy,
-            hasMask: hasMask,
-            hasBlur: hasBlur,
-            
-            prominentIndicators: .init(),
-            feedback: feedback
-        )
-    }
-    
-    public init(
-        value: Binding<V>,
-        source: Source,
-        
-        alignment: Alignment = .trailing,
-        direction: Direction = .horizontal,
-        indicatorSpacing: CGFloat = 25,
-        maxSize: CGFloat = 70,
-        margin: CGFloat = 8,
-        
-        hasHierarchy: Bool = true,
-        hasMask: Bool = true,
-        hasBlur: Bool = true,
-        
         prominentValues: [V],
-        @ViewBuilder prominentModifier: @escaping (V, AnyView) -> Modifier,
+        prominentColor: @escaping (V) -> Color?,
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
     ) {
         self.init(
@@ -478,7 +444,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
             hasMask: hasMask,
             hasBlur: hasBlur,
             
-            prominentIndicators: .init(values: prominentValues, modifier: prominentModifier),
+            prominentIndicators: .init(values: prominentValues, color: prominentColor),
             feedback: feedback
         )
     }
@@ -537,19 +503,14 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         Group {
             let frame = direction.frame(2)
             let sizeFactor = isProminent ? 1 : magnifyFactor(at: index)
+            let tint = isProminent ? prominentIndicators.color(value) : self.tint()
             
             Color.clear
                 .overlay {
-                    Group {
-                        if isProminent {
-                            prominentIndicators.modifier(referencingValue, AnyView(
-                                RoundedRectangle(cornerRadius: 1)))
-                        } else {
-                            RoundedRectangle(cornerRadius: 1)
-                        }
-                    }
-                    .frame(width: frame.width, height: frame.height)
-                    .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
+                    RoundedRectangle(cornerRadius: 1)
+                        .frame(width: frame.width, height: frame.height)
+                        .tint(tint)
+                        .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), margin)
                 .padding(alignment.softPaddingEdges(of: direction), margin * (1 - sizeFactor))
@@ -560,30 +521,28 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     }
     
     @ViewBuilder private func bleedingMask() -> some View {
-        if let count = source.count, let index = source.continuousIndex(of: value), source.isFinite {
-            let indexSpanStart = max(0, CGFloat(centerIndicatorIndex) - 1 - CGFloat(index))
-            let indexSpanEnd = max(0, CGFloat(centerIndicatorIndex) - 1 - (CGFloat(count) - 1 - CGFloat(index)))
+        if let count = source.count, let index = source.continuousIndex(of: roundedValue), source.isFinite {
+            let indexSpanStart = max(0, CGFloat(centerIndicatorIndex) - CGFloat(index))
+            let indexSpanEnd = max(0, CGFloat(centerIndicatorIndex) - (CGFloat(count) - 1 - CGFloat(index)))
             
-            let offsetStart: CGFloat = if source.reachedStartingBound(value, direction: direction) {
-                direction.offsetBy(
+            let offsetStart = direction.offsetBy(
                     nonAlternateOffset: direction.offsetBy(
-                        offset,
+                        sigmoidOffset,
                         nonAlternateOffset: indicatorSpacing
                     )
                 )
-            } else { 0 }
-            let offsetEnd: CGFloat = if source.reachedEndingBound(value, direction: direction) {
-                direction.offsetBy(
+            let offsetEnd = direction.offsetBy(
                     nonAlternateOffset: direction.offsetBy(
-                        -offset,
+                        -sigmoidOffset,
                          nonAlternateOffset: indicatorSpacing
                     )
                 )
-            } else { 0 }
+            
+            let offsetCompensate = -indicatorSpacing / 2
             
             Color.white
-                .padding(direction.paddingSpan.start, indexSpanStart * indicatorSpacing - offsetStart - 1)
-                .padding(direction.paddingSpan.end, indexSpanEnd * indicatorSpacing - offsetEnd - 1)
+                .padding(direction.paddingSpan.start, indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate)
+                .padding(direction.paddingSpan.end, indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate)
         } else {
             Color.white
         }
@@ -610,11 +569,21 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         GeometryReader { proxy in
             Color.clear
                 .overlay {
+                    let initialOffset: CGFloat = if source.reachedEndingBound(value, direction: direction) {
+                        indicatorSpacing
+                    } else if source.reachedStartingBound(value, direction: direction) {
+                        -indicatorSpacing
+                    } else {
+                        0
+                    }
+                    
                     InfiniteScrollView(
                         direction: .init(axis: direction.axis),
                         size: proxy.size,
                         spacing: indicatorSpacing,
                         snapping: !source.isContinuous,
+                        initialOffset: initialOffset,
+                        
                         wrapping: .init {
                             !source.isEdgeCase(value)
                         } set: { _ in
@@ -768,6 +737,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
 private struct StepperPreview<Label, V>: View where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @State var value: V
     var source: LuminareStepperSource<V>
+    var alignment: LuminareStepperAlignment = .trailing
     var direction: LuminareStepperDirection = .horizontal
     var prominentValues: [V]
     @ViewBuilder var label: () -> Label
@@ -779,12 +749,13 @@ private struct StepperPreview<Label, V>: View where Label: View, V: Strideable &
             LuminareStepperView(
                 value: $value,
                 source: source,
+                alignment: alignment,
                 direction: direction,
                 prominentValues: prominentValues
-            ) { _, view in
-                view.tint(.accentColor)
+            ) { _ in
+                    .accentColor
             }
-            .tint(.primary)
+            .environment(\.luminareTint) { .primary }
             .background(.quinary)
             
             Text(String(format: "%.1f", CGFloat(value)))
@@ -794,73 +765,108 @@ private struct StepperPreview<Label, V>: View where Label: View, V: Strideable &
 }
 
 @available(macOS 15.0, *)
-#Preview {
-    HStack {
-        VStack {
-            StepperPreview(
-                value: 42,
-                source: .finite(range: -100...50, stride: 2),
-                prominentValues: [0, 42]
-            ) {
-                VStack {
-                    Text("Horizontal")
-                        .bold()
-                    
-                    Text("Snapping Enabled")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            
-            StepperPreview(
-                value: 42,
-                source: .infiniteContinuous(stride: 2),
-                prominentValues: [0, 42]
-            ) {
-                VStack {
-                    Text("Horizontal")
-                        .bold()
-                    
-                    Text("Infinite Continuous")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+private struct StepperPopoverPreview: View {
+    @State private var isPresented: Bool = false
+    @State private var value: CGFloat = 42
+    
+    var body: some View {
+        Button("Toggle Popover") {
+            isPresented.toggle()
+        }
+        .popover(isPresented: $isPresented) {
+            LuminareStepperView(
+                value: $value,
+                source: .finite(range: 0...100, stride: 1),
+                direction: .horizontal,
+                indicatorSpacing: 10,
+                maxSize: 32
+            )
+            .environment(\.luminareTint) { .primary }
+            .frame(width: 100, height: 32)
         }
         
+        Text(String(format: "%.1f", value))
+    }
+}
+
+@available(macOS 15.0, *)
+#Preview("Section") {
+    VStack {
         HStack {
-            StepperPreview(
-                value: 42,
-                source: .finite(range: -100...50, stride: 2),
-                direction: .vertical,
-                prominentValues: [0, 42]
-            ) {
-                VStack {
-                    Text("Vertical")
-                        .bold()
-                    
-                    Text("Snapping Enabled")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            VStack {
+                StepperPreview(
+                    value: 42,
+                    source: .finite(range: -100...50, stride: 2),
+                    direction: .horizontal,
+                    prominentValues: [0, 42]
+                ) {
+                    VStack {
+                        Text("Horizontal")
+                            .bold()
+                        
+                        Text("Snapping Enabled")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                StepperPreview(
+                    value: 42,
+                    source: .infiniteContinuous(stride: 2),
+                    direction: .horizontalAlternate,
+                    prominentValues: [0, 42]
+                ) {
+                    VStack {
+                        Text("Horizontal Alternate")
+                            .bold()
+                        
+                        Text("Infinite Continuous")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             
-            
-            StepperPreview(
-                value: 42,
-                source: .finiteContinuous(range: -100...50, stride: 2),
-                direction: .vertical,
-                prominentValues: [0, 42]
-            ) {
-                VStack {
-                    Text("Vertical")
-                        .bold()
-                    
-                    Text("Finite Continuous")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            HStack {
+                StepperPreview(
+                    value: 42,
+                    source: .finite(range: -100...50, stride: 2),
+                    alignment: .center,
+                    direction: .vertical,
+                    prominentValues: [0, 42]
+                ) {
+                    VStack {
+                        Text("Vertical Center Aligned")
+                            .bold()
+                        
+                        Text("Snapping Enabled")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                
+                StepperPreview(
+                    value: 42,
+                    source: .finiteContinuous(range: -100...50, stride: 2),
+                    direction: .verticalAlternate,
+                    prominentValues: [0, 42]
+                ) {
+                    VStack {
+                        Text("Vertical Alternate")
+                            .bold()
+                        
+                        Text("Finite Continuous")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }
+        .multilineTextAlignment(.center)
+        
+        StepperPopoverPreview()
     }
+    .padding()
+    .frame(width: 650, height: 500)
 }
