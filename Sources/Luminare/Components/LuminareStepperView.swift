@@ -244,6 +244,18 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
+    func round(_ value: V) -> (value: V, offset: V) {
+        switch self {
+        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+            let diff = value - range.lowerBound
+            let remainder = diff.truncatingRemainder(dividingBy: stride)
+            return (value - remainder, remainder)
+        case .infinite(let stride), .infiniteContinuous(let stride):
+            let remainder = value.truncatingRemainder(dividingBy: stride)
+            return (value - remainder, remainder)
+        }
+    }
+    
     func continuousIndex(of value: V) -> V? {
         switch self {
         case .finite(let range, let stride), .finiteContinuous(let range, let stride):
@@ -375,9 +387,9 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     private let feedback: (V) -> SensoryFeedback?
     
     @State private var containerSize: CGSize = .zero
-    @State private var offset: CGFloat = .zero
+    @State private var diff: Int = .zero
     
-    @State private var diff: Int = 0
+    @State private var offset: CGFloat
     @State private var roundedValue: V
     @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
     @State private var shouldScrollViewReset: Bool = true
@@ -415,7 +427,9 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
         
-        self.roundedValue = value.wrappedValue
+        let rounded = source.round(value.wrappedValue)
+        self.offset = CGFloat(rounded.offset)
+        self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
     }
     
@@ -563,8 +577,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                         size: proxy.size,
                         spacing: indicatorSpacing,
                         snapping: !source.isContinuous,
-                        debug: true,
-                        
                         shouldReset: $shouldScrollViewReset,
                         wrapping: .init {
                             !source.isEdgeCase(internalValue)
@@ -600,6 +612,18 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                             direction: direction,
                             nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
                         )
+                    }
+                    .onChange(of: internalValue) { oldValue, newValue in
+                        value = internalValue
+                    }
+                    .onChange(of: value) { oldValue, newValue in
+                        // check if changed externally
+                        guard newValue != internalValue else { return }
+                        internalValue = newValue
+                        
+                        let rounded = source.round(newValue)
+                        roundedValue = rounded.value
+                        offset = CGFloat(rounded.offset)
                     }
                 }
         }
