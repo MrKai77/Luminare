@@ -227,6 +227,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             if parent.wrapping {
                 if abs(relativeOffset) >= spacing {
                     resetScrollViewPosition(scrollView.contentView)
+                    print(1)
                     
                     let diffOffset: Int = if relativeOffset >= spacing {
                         +1

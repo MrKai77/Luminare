@@ -363,7 +363,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     @Environment(\.luminareAnimationFast) private var animationFast
     
     @Binding private var value: V
-    @State private var internalValue: V
     @State private var roundedValue: V
     private let source: Source
     
@@ -419,7 +418,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
         
-        self.internalValue = value.wrappedValue
         self.roundedValue = source.round(value.wrappedValue).value
         self.offset = CGFloat(source.round(value.wrappedValue).offset)
     }
@@ -482,24 +480,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         .mask(bleedingMask)
         .mask(visualMask)
         .overlay(content: scrollOverlay)
-//        .gesture(
-//            TapGesture()
-//                .simultaneously(
-//                    with:
-//                        DragGesture(minimumDistance: 0)
-//                        .onEnded { value in
-//                            let cursorOffset = direction.offset(of: value.location)
-//                            let nonAlternateShouldGrowth = cursorOffset > containerLength / 2
-//                            let nonAlternateSign: CGFloat = nonAlternateShouldGrowth ? 1 : -1
-//                            
-//                            setValue(source.offsetBy(
-//                                self.value,
-//                                direction: direction,
-//                                nonAlternateOffset: V(nonAlternateSign) * source.stride
-//                            ))
-//                        }
-//                )
-//        )
         .sensoryFeedback(trigger: roundedValue) { oldValue, newValue in
             guard oldValue != newValue else { return nil }
             return feedback(newValue)
@@ -581,41 +561,31 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         GeometryReader { proxy in
             Color.clear
                 .overlay {
-                    let valueOffset = V(offset / indicatorSpacing) * source.stride
-                    let value = source.offsetBy(
-                        roundedValue,
-                        direction: direction,
-                        nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
-                    )
-                    
-                    let wrapping: Binding<Bool> = .init {
-                        !source.reachedBound(value, padding: source.stride)
-                    } set: { _ in
-                        // do nothing
-                    }
-                    
-                    let initialOffset: Binding<CGFloat> = .init {
-                        return if source.reachedEndingBound(internalValue, direction: direction) {
-                            indicatorSpacing
-                        } else if source.reachedStartingBound(internalValue, direction: direction) {
-                            -indicatorSpacing
-                        } else {
-                            0
-                        }
-                    } set: { _ in
-                        // do nothing
-                    }
-                    
                     valueObserver {
                         InfiniteScrollView(
                             direction: .init(axis: direction.axis),
                             size: proxy.size,
                             spacing: indicatorSpacing,
                             snapping: !source.isContinuous,
+                            debug: true,
                             
                             shouldReset: $shouldScrollViewReset,
-                            wrapping: wrapping,
-                            initialOffset: initialOffset,
+                            wrapping: .init {
+                                !source.reachedBound(internalValue, padding: source.stride)
+                            } set: { _ in
+                                // do nothing
+                            },
+                            initialOffset: .init {
+                                return if source.reachedEndingBound(internalValue, direction: direction) {
+                                    indicatorSpacing
+                                } else if source.reachedStartingBound(internalValue, direction: direction) {
+                                    -indicatorSpacing
+                                } else {
+                                    0
+                                }
+                            } set: { _ in
+                                // do nothing
+                            },
                             offset: $offset,
                             diff: $diff
                         )
@@ -632,31 +602,28 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                     nonAlternateOffset: V(newValue - oldValue) * source.stride
                 )
             }
-            .onChange(of: offset) { oldValue, newValue in
-                let offset = newValue / indicatorSpacing
-                let valueOffset = V(offset) * source.stride
-                internalValue = source.offsetBy(
-                    roundedValue,
-                    direction: direction,
-                    nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
-                )
-            }
         
             // value propagation
             .onChange(of: value) { oldValue, newValue in
                 // check if value is changed externally
                 guard newValue != internalValue else { return }
                 
-                internalValue = newValue
                 roundedValue = source.round(newValue).value
                 offset = CGFloat(source.round(newValue).offset)
             }
             .onChange(of: internalValue) { oldValue, newValue in
+                guard newValue != value else { return }
                 value = newValue
             }
-            .onChange(of: roundedValue) { oldValue, newValue in
-                
-            }
+    }
+    
+    private var internalValue: V {
+        let valueOffset = V(offset / indicatorSpacing) * source.stride
+        return source.offsetBy(
+            roundedValue,
+            direction: direction,
+            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
+        )
     }
     
     private var indicatorOffset: CGFloat {
