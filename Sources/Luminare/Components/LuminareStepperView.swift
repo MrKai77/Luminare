@@ -302,6 +302,7 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     private let hasBlur: Bool = true
     
     var prominentIndicators: ProminentIndicators
+    private let feedback: (V) -> SensoryFeedback? = { _ in .alignment }
     
     @State private var containerSize: CGSize = .zero
     @State private var offset: CGFloat = .zero
@@ -337,8 +338,9 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         .mask(bleedingMask)
         .mask(visualMask)
         .overlay(content: scrollOverlay)
-        .onChange(of: offset) { _ in
-            print(offset)
+        .sensoryFeedback(trigger: roundedValue) { oldValue, newValue in
+            guard oldValue != newValue else { return nil }
+            return feedback(newValue)
         }
     }
     
