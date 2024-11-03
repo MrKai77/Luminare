@@ -253,10 +253,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 NSAnimationContext.runAnimationGroup { context in
                     context.allowsImplicitAnimation = true
                     self.snapScrollViewPosition(scrollView.contentView)
-                } completionHandler: {
-                    if self.parent.wrapping {
-                        self.resetScrollViewPosition(scrollView.contentView)
-                    }
                 }
             }
         }
@@ -308,7 +304,22 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 overrideDiff(diffOffset)
             }
             
-            resetScrollViewPosition(clipView, offset: parent.direction.point(from: localOffset), animate: true)
+            if parent.wrapping {
+                if localOffset != 0 {
+                    resetScrollViewPosition(
+                        clipView,
+                        offset: parent.direction.point(from: relativeOffset - localOffset)
+                    )
+                }
+                
+                resetScrollViewPosition(clipView, animate: true)
+            } else {
+                resetScrollViewPosition(
+                    clipView,
+                    offset: parent.direction.point(from: localOffset),
+                    animate: true
+                )
+            }
         }
     }
 }
@@ -320,7 +331,7 @@ private struct InfiniteScrollPreview: View {
     var size: CGSize = .init(width: 500, height: 100)
     
     var body: some View {
-        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, wrapping: .constant(false), offset: $offset, diff: $diff)
+        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, wrapping: .constant(true), offset: $offset, diff: $diff)
             .frame(width: size.width, height: size.height)
         
         Text(String(format: "%.1f", offset))

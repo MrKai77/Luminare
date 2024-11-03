@@ -235,19 +235,33 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
-    func isEdgeCase(_ value: V, strict: Bool = false) -> Bool {
+    func isEdgeCase(_ value: V) -> Bool {
         switch self {
         case .finite(let range, let stride), .finiteContinuous(let range, let stride):
-            if strict {
-                return value <= range.lowerBound || value >= range.upperBound
-            } else {
-                let min = range.lowerBound + stride
-                let max = range.upperBound - stride
-                
-                return value < min || value > max
-            }
+            let min = range.lowerBound + stride
+            let max = range.upperBound - stride
+            
+            return value < min || value > max
         case .infinite, .infiniteContinuous:
             return false
+        }
+    }
+    
+    func reachedUpperBound(_ value: V) -> Bool {
+        switch self {
+        case .finite(let range, _), .finiteContinuous(let range, _):
+            value >= range.upperBound
+        case .infinite, .infiniteContinuous:
+            false
+        }
+    }
+    
+    func reachedLowerBound(_ value: V) -> Bool {
+        switch self {
+        case .finite(let range, _), .finiteContinuous(let range, _):
+            value <= range.lowerBound
+        case .infinite, .infiniteContinuous:
+            false
         }
     }
     
@@ -331,19 +345,27 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     @ViewBuilder private func indicator(at index: Int) -> some View {
         let frame = direction.frame(0)
         let offsetFrame = direction.frame(-sigmoidOffset)
+        let isProminent = prominentIndicators.values.contains(referencingValue(at: index))
         
         Group {
             let frame = direction.frame(2)
-            let magnifyFactor = magnifyFactor(at: index)
+            let sizeFactor = isProminent ? 1 : magnifyFactor(at: index)
             
             Color.clear
                 .overlay {
-                    RoundedRectangle(cornerRadius: 1)
-                        .frame(width: frame.width, height: frame.height)
-                        .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor, 2.0) : 1))
+                    Group {
+                        if isProminent {
+                            prominentIndicators.modifier(AnyView(
+                                RoundedRectangle(cornerRadius: 1)))
+                        } else {
+                            RoundedRectangle(cornerRadius: 1)
+                        }
+                    }
+                    .frame(width: frame.width, height: frame.height)
+                    .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), padding)
-                .padding(alignment.softPaddingEdges(of: direction), padding * (1 - magnifyFactor))
+                .padding(alignment.softPaddingEdges(of: direction), padding * (1 - sizeFactor))
                 .blur(radius: hasBlur ? indicatorSpacing * blurFactor(at: index) : 0)
         }
         .frame(width: frame.width, height: frame.height)
@@ -351,15 +373,16 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     }
     
     @ViewBuilder private func bleedingMask() -> some View {
-        if let count = source.count, let index = source.continuousIndex(of: roundedValue), source.isFinite {
+        if let count = source.count, let index = source.continuousIndex(of: value), source.isFinite {
             let indexSpanStart = max(0, CGFloat(centerIndicatorIndex) - 1 - CGFloat(index))
             let indexSpanEnd = max(0, CGFloat(centerIndicatorIndex) - 1 - (CGFloat(count) - 1 - CGFloat(index)))
             
-            let indexOffset: CGFloat = source.isEdgeCase(value, strict: true) ? -1 : 0
+            let offsetStart = source.reachedLowerBound(value) || source.reachedUpperBound(value) ? offset + indicatorSpacing : 0
+            let offsetEnd = source.reachedLowerBound(value) || source.reachedUpperBound(value) ? -offset + indicatorSpacing : 0
             
             Color.white
-                .padding(direction.paddingSpan.start, (indexSpanStart + indexOffset) * indicatorSpacing - offset - 1)
-                .padding(direction.paddingSpan.end, (indexSpanEnd + indexOffset) * indicatorSpacing + offset - 1)
+                .padding(direction.paddingSpan.start, indexSpanStart * indicatorSpacing - offsetStart - 1)
+                .padding(direction.paddingSpan.end, indexSpanEnd * indicatorSpacing - offsetEnd - 1)
         }
     }
     
@@ -443,20 +466,25 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
         direction.length(of: containerSize)
     }
     
-    private func diff(at index: Int) -> CGFloat {
+    private func shift(at index: Int) -> CGFloat {
         CGFloat(centerIndicatorIndex - index) + sigmoidOffset / indicatorSpacing
+    }
+    
+    private func referencingValue(at index: Int) -> V {
+        let relativeIndex = index - centerIndicatorIndex
+        return roundedValue + V(relativeIndex) * source.stride
     }
     
     private func magnifyFactor(at index: Int) -> CGFloat {
         let sd = 0.5
-        let value = bellCurve(x: diff(at: index), standardDeviation: sd)
+        let value = bellCurve(x: shift(at: index), standardDeviation: sd)
         let maxValue = bellCurve(x: 0, standardDeviation: sd)
         return value / maxValue
     }
     
     private func blurFactor(at index: Int) -> CGFloat {
         let sd = CGFloat(indicatorCount - 2)
-        let value = bellCurve(x: diff(at: index), standardDeviation: sd)
+        let value = bellCurve(x: shift(at: index), standardDeviation: sd)
         let maxValue = bellCurve(x: 0, standardDeviation: sd)
         return 1 - value / maxValue
     }
@@ -509,7 +537,7 @@ private struct StepperPreview: View {
     var body: some View {
         LuminareStepperView(
             value: $value,
-            source: .finite(range: -100.0...100.0, stride: 1),
+            source: .finite(range: -100.0...50.0, stride: 2),
             prominentIndicators: .init(values: [42.0]) { view in
                 view
                     .tint(.accentColor)
