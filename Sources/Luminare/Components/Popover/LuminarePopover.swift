@@ -1,5 +1,5 @@
 //
-//  LuminarePopoverView.swift
+//  LuminarePopover.swift
 //
 //
 //  Created by Kai Azim on 2024-06-02.
@@ -31,7 +31,7 @@ public enum LuminarePopoverShade {
     }
 }
 
-public struct LuminarePopoverView<Content, Badge>: View
+public struct LuminarePopover<Content, Badge>: View
 where Content: View, Badge: View {
     public typealias Trigger = LuminarePopoverTrigger
     public typealias Shade = LuminarePopoverShade
@@ -127,7 +127,7 @@ where Content: View, Badge: View {
             case .onHover(_):
                 badge()
             case .onForceTouch(let threshold, let onGesture):
-                ForceTouchView(threshold: threshold, gesture: $forceTouchGesture) {
+                ForceTouch(threshold: threshold, gesture: $forceTouchGesture) {
                     badge()
                 }
                 .onChange(of: forceTouchGesture) { gesture in
@@ -138,17 +138,17 @@ where Content: View, Badge: View {
                         forceTouchRecognized = false
                         isPopoverPresented = recognized
                     case .active(let event):
-                        isPopoverPresented = true
-                        
                         let stage = event.stage
                         
                         if stage == 1 {
+                            isPopoverPresented = event.pressure >= 0.25
                             if !forceTouchRecognized {
                                 forceTouchProgress = event.pressure
                             }
                         }
                         
                         if stage == 2 {
+                            isPopoverPresented = true
                             forceTouchRecognized = true
                             forceTouchProgress = 1
                         }
@@ -206,35 +206,13 @@ where Content: View, Badge: View {
                     content()
                 case .onForceTouch:
                     content()
-                        .opacity(0.5 + forceTouchProgress * 0.5)
+                        .opacity(0.5 + 0.5 * forceTouchProgress)
                 }
             }
             .multilineTextAlignment(.center)
         }
         .padding(-padding)
         .animation(animationFast, value: isPopoverPresented)
-    }
-}
-
-public extension View {
-    @ViewBuilder func luminarePopover<Content>(
-        arrowEdge: Edge = .bottom,
-        trigger: LuminarePopoverTrigger = .onHover(),
-        cornerRadius: CGFloat = 8,
-        padding: CGFloat = 4,
-        shade: LuminarePopoverShade = .styled(),
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View where Content: View {
-        LuminarePopoverView(
-            arrowEdge: arrowEdge,
-            trigger: trigger,
-            cornerRadius: cornerRadius,
-            padding: padding,
-            shade: shade,
-            content: content
-        ) {
-            self
-        }
     }
 }
 
@@ -251,7 +229,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
     @State private var recognized: Bool = false
 
     var body: some View {
-        LuminarePopoverView(
+        LuminarePopover(
             arrowEdge: arrowEdge,
             trigger: .onForceTouch { gesture, recognized in
                 self.gesture = gesture
@@ -272,7 +250,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
     LuminareSection {
         LuminareCompose {
         } label: {
-            LuminarePopoverView(shade: .none) {
+            LuminarePopover(shade: .none) {
                 Text("Here's to the *crazy* ones.")
                     .padding()
             } badge: {
@@ -282,7 +260,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
         
         LuminareCompose {
         } label: {
-            LuminarePopoverView(arrowEdge: .trailing) {
+            LuminarePopover(arrowEdge: .trailing) {
                 VStack(alignment: .leading) {
                     Text("The **misfits.** The ~rebels.~")
                     Text("The [troublemakers](https://apple.com).")
@@ -299,7 +277,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                 Text("Pops from a dot ↗")
                 
                 VStack {
-                    LuminarePopoverView(arrowEdge: .top) {
+                    LuminarePopover(arrowEdge: .top) {
                         VStack(alignment: .leading) {
                             Text("The round pegs in the square holes.")
                             Text("The ones **who see things differently.**")
@@ -329,6 +307,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                     }
                 }
                 .padding()
+                .frame(height: 100)
             } badge: {
                 Text("Pops to top (force touch me)")
             }

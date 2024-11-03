@@ -1,5 +1,5 @@
 //
-//  ForceTouchView.swift
+//  ForceTouch.swift
 //
 //
 //  Created by KrLite on 2024/10/29.
@@ -60,7 +60,7 @@ public enum ForceTouchGesture: Equatable {
     }
 }
 
-public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
+public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     private let configuration: NSPressureConfiguration
     private let threshold: CGFloat
     @Binding private var gesture: ForceTouchGesture
@@ -70,7 +70,7 @@ public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
     @State private var timestamp: Date?
     @State private var state: NSPressGestureRecognizer.State = .ended
     
-    @State private var timer: Timer?
+    @State private var longPressTimer: Timer?
     @State private var monitor: Any?
     
     public init(
@@ -116,9 +116,9 @@ public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
             guard view.bounds.contains(locationInView) else { return event }
             
             switch event.type {
-            case .leftMouseDown, .mouseMoved, .mouseExited:
+            case .leftMouseDown:
                 prepareLongPressDelegate(event)
-            case .leftMouseUp:
+            case .leftMouseUp, .mouseMoved, .mouseExited:
                 terminateLongPressDelegate()
                 timestamp = nil
                 gesture = .inactive
@@ -141,11 +141,11 @@ public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
         var event = ForceTouchGesture.Event()
         event.modifierFlags = modifierFlags
         
-        timer = .scheduledTimer(withTimeInterval: threshold + 0.1, repeats: false) { _ in
+        longPressTimer = .scheduledTimer(withTimeInterval: threshold + 0.1, repeats: false) { _ in
             timestamp = .now
             event.stage = 1
             
-            timer = .scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            longPressTimer = .scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
                 let pressure = event.pressure + 0.1
                 let isOverflowing = pressure > 1
                 
@@ -160,8 +160,8 @@ public struct ForceTouchView<Content>: NSViewRepresentable where Content: View {
     }
     
     private func terminateLongPressDelegate() {
-        timer?.invalidate()
-        timer = nil
+        longPressTimer?.invalidate()
+        longPressTimer = nil
     }
 }
 
@@ -205,9 +205,17 @@ private struct ForceTouchPreview<Content>: View where Content: View {
     @ViewBuilder let content: () -> Content
     
     var body: some View {
-        ForceTouchView(threshold: threshold, gesture: $gesture, content: content)
+        ForceTouch(threshold: threshold, gesture: $gesture, content: content)
             .onChange(of: gesture) { gesture in
                 print(gesture)
+            }
+            .background {
+                switch gesture {
+                case .inactive:
+                    Color.clear
+                case .active(let event):
+                    Color.red.opacity(event.pressure)
+                }
             }
     }
 }
@@ -216,6 +224,5 @@ private struct ForceTouchPreview<Content>: View where Content: View {
     ForceTouchPreview {
         Text("Touch me!")
             .padding()
-            .background(.red)
     }
 }

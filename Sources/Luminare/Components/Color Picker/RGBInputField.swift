@@ -10,35 +10,50 @@ import SwiftUI
 // custom input field for RGB values
 struct RGBInputField<Label>: View where Label: View {
     @Binding var value: Double
-    @ViewBuilder let label: () -> Label
+    @ViewBuilder var label: () -> Label
+    var color: (Double) -> Color? = { _ in nil }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             label()
                 .foregroundStyle(.secondary)
 
-            Color.clear
-                .frame(height: 34)
-                .overlay {
-                    TextField("", value: $value, formatter: NumberFormatter())
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .padding(8)
+            if #available(macOS 15.0, *) {
+                LuminarePopover(arrowEdge: .top, trigger: .onForceTouch()) {
+                    LuminareStepper(
+                        value: $value,
+                        source: .finiteContinuous(range: 0...255, stride: 5),
+                        indicatorSpacing: 20,
+                        prominentIndicators: .init(color: color)
+                    )
+                    .frame(width: 135, height: 32)
+                    .padding(.vertical, 2)
+                    .environment(\.luminareTint) { .primary }
+                } badge: {
+                    LuminareTextField("", value: .init($value), format: .number.precision(.integerAndFractionLength(integerLimits: 0...3, fractionLimits: 0...1)))
                 }
-                .background(.quinary.opacity(0.5))
-                .clipShape(.rect(cornerRadius: 8))
-                .background {
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
-                }
+            } else {
+                LuminareTextField("", value: .init($value), format: .number.precision(.integerAndFractionLength(integerLimits: 0...3, fractionLimits: 0...1)))
+            }
+        }
+    }
+}
+
+private struct RGBInputFieldPreview: View {
+    @State private var value: Double = 42
+    
+    var body: some View {
+        RGBInputField(value: $value) {
+            Text("Red")
+        } color: { value in
+                .init(red: value / 255.0, green: 0, blue: 0)
         }
     }
 }
 
 #Preview {
     LuminareSection {
-        RGBInputField(value: .constant(42.0)) {
-            Text("Red")
-        }
+        RGBInputFieldPreview()
     }
     .padding()
 }

@@ -7,19 +7,21 @@
 
 import SwiftUI
 
-public struct LuminareValueAdjusterCompose<Label, Content, V>: View
-where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    public enum ControlSize {
-        case regular
-        case compact
-
-        var height: CGFloat {
-            switch self {
-            case .regular: 70
-            case .compact: 34
-            }
+public enum LuminareValueAdjusterControlSize {
+    case regular
+    case compact
+    
+    var height: CGFloat {
+        switch self {
+        case .regular: 70
+        case .compact: 34
         }
     }
+}
+
+public struct LuminareValueAdjusterCompose<Label, Content, V>: View
+where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    public typealias ControlSize = LuminareValueAdjusterControlSize
     
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
@@ -48,7 +50,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
     private var step: V
     private let upperClamp: Bool
     private let lowerClamp: Bool
-    private let controlSize: LuminareValueAdjusterCompose.ControlSize
+    private let controlSize: ControlSize
     private let decimalPlaces: Int
     
     @State var eventMonitor: AnyObject?
@@ -61,7 +63,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: Self.ControlSize = .regular,
+        controlSize: ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
@@ -97,7 +99,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         step: V? = nil,
         lowerClamp: Bool = false,
         upperClamp: Bool = false,
-        controlSize: Self.ControlSize = .regular,
+        controlSize: ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
