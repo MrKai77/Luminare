@@ -1,6 +1,6 @@
 //
 //  InfiniteScrollView.swift
-//  
+//
 //
 //  Created by KrLite on 2024/11/2.
 //
@@ -15,9 +15,9 @@ public enum InfiniteScrollDirection: Equatable {
     public init(axis: Axis) {
         switch axis {
         case .horizontal:
-                self = .horizontal
+            self = .horizontal
         case .vertical:
-                self = .vertical
+            self = .vertical
         }
     }
     
