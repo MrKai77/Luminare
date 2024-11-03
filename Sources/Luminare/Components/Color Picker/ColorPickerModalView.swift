@@ -108,11 +108,12 @@ where R: View, G: View, B: View, Done: View {
             RGBInputField(value: $redComponent) {
                 colorNames.red
             } color: { value in
-                    .init(
-                        red: value / 255.0,
-                        green: greenComponent / 255.0,
-                        blue: blueComponent / 255.0
-                    )
+                let progress = value / 255.0
+                return .init(
+                    red: progress,
+                    green: 1 - progress,
+                    blue: 1 - progress
+                )
             }
             .onChange(of: redComponent) { _ in
                 setColor(internalColor)
@@ -121,11 +122,12 @@ where R: View, G: View, B: View, Done: View {
             RGBInputField(value: $greenComponent) {
                 colorNames.green
             } color: { value in
-                    .init(
-                        red: redComponent / 255.0,
-                        green: value / 255.0,
-                        blue: blueComponent / 255.0
-                    )
+                let progress = value / 255.0
+                return .init(
+                    red: 1 - progress,
+                    green: progress,
+                    blue: 1 - progress
+                )
             }
             .onChange(of: greenComponent) { _ in
                 setColor(internalColor)
@@ -134,11 +136,12 @@ where R: View, G: View, B: View, Done: View {
             RGBInputField(value: $blueComponent) {
                 colorNames.blue
             } color: { value in
-                    .init(
-                        red: redComponent / 255.0,
-                        green: greenComponent / 255.0,
-                        blue: value / 255.0
-                    )
+                let progress = value / 255.0
+                return .init(
+                    red: 1 - progress,
+                    green: 1 - progress,
+                    blue: progress
+                )
             }
             .onChange(of: blueComponent) { _ in
                 setColor(internalColor)
