@@ -1,5 +1,5 @@
 //
-//  LuminareStepperView.swift
+//  LuminareStepper.swift
 //
 //
 //  Created by KrLite on 2024/10/31.
@@ -361,7 +361,7 @@ public struct LuminareStepperProminentIndicators<V> where V: Strideable & Binary
 }
 
 @available(macOS 15.0, *)
-public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias Alignment = LuminareStepperAlignment
     public typealias Direction = LuminareStepperDirection
     public typealias Source = LuminareStepperSource<V>
@@ -506,7 +506,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
             let frame = direction.frame(2)
             let prominentTint = prominentIndicators.color(referencingValue)
             let isProminent = prominentTint != nil
-            let sizeFactor = isProminent ? 1 : magnifyFactor(at: index)
             
             Color.clear
                 .overlay {
@@ -516,7 +515,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
                         .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), margin)
-                .padding(alignment.softPaddingEdges(of: direction), margin * (1 - sizeFactor))
+                .padding(alignment.softPaddingEdges(of: direction), margin * (1 - magnifyFactor(at: index)))
                 .blur(radius: hasBlur ? indicatorSpacing * blurFactor(at: index) : 0)
         }
         .frame(width: frame.width, height: frame.height)
@@ -749,7 +748,7 @@ private struct StepperPreview<Label, V>: View where Label: View, V: Strideable &
         LuminareSection {
             label()
             
-            LuminareStepperView(
+            LuminareStepper(
                 value: $value,
                 source: source,
                 alignment: alignment,
@@ -784,7 +783,7 @@ private struct StepperPopoverPreview: View {
                 isPresented.toggle()
             }
             .popover(isPresented: $isPresented) {
-                LuminareStepperView(
+                LuminareStepper(
                     value: $value,
                     source: .finite(range: 0...100, stride: 1),
                     direction: .horizontal,

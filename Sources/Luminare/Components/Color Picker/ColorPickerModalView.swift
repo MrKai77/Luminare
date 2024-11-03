@@ -32,6 +32,10 @@ where R: View, G: View, B: View, Done: View {
     @State private var greenComponent: Double = 0
     @State private var blueComponent: Double = 0
     
+    @State private var isRedStepperPresented: Bool = false
+    @State private var isGreenStepperPresented: Bool = false
+    @State private var isBlueStepperPresented: Bool = false
+    
     private let colorSampler = NSColorSampler()
 
     // main view containing all components of the color picker
@@ -71,7 +75,7 @@ where R: View, G: View, B: View, Done: View {
                     colorSampler.show { nsColor in
                         if let nsColor {
                             setColor(.init(nsColor: nsColor))
-                            updateComponents(newValue: color)
+                            updateComponents(color)
                         }
                     }
                 } label: {
@@ -91,10 +95,10 @@ where R: View, G: View, B: View, Done: View {
             }
         }
         .onAppear {
-            updateComponents(newValue: color)
+            updateComponents(color)
         }
         .onChange(of: color) { _ in
-            updateComponents(newValue: color)
+            updateComponents(color)
         }
     }
 
@@ -103,25 +107,51 @@ where R: View, G: View, B: View, Done: View {
         HStack(spacing: 8) {
             RGBInputField(value: $redComponent) {
                 colorNames.red
+            } color: { value in
+                    .init(
+                        red: value / 255.0,
+                        green: greenComponent / 255.0,
+                        blue: blueComponent / 255.0
+                    )
             }
             .onChange(of: redComponent) { _ in
-                setColor(updateColorFromRGB())
+                setColor(internalColor)
             }
             
             RGBInputField(value: $greenComponent) {
                 colorNames.green
+            } color: { value in
+                    .init(
+                        red: redComponent / 255.0,
+                        green: value / 255.0,
+                        blue: blueComponent / 255.0
+                    )
             }
             .onChange(of: greenComponent) { _ in
-                setColor(updateColorFromRGB())
+                setColor(internalColor)
             }
             
             RGBInputField(value: $blueComponent) {
                 colorNames.blue
+            } color: { value in
+                    .init(
+                        red: redComponent / 255.0,
+                        green: greenComponent / 255.0,
+                        blue: value / 255.0
+                    )
             }
             .onChange(of: blueComponent) { _ in
-                setColor(updateColorFromRGB())
+                setColor(internalColor)
             }
         }
+    }
+    
+    private var internalColor: Color {
+        Color(
+            red: redComponent / 255.0,
+            green: greenComponent / 255.0,
+            blue: blueComponent / 255.0
+        )
     }
 
     // set the color based on the source of change
@@ -131,18 +161,12 @@ where R: View, G: View, B: View, Done: View {
         }
     }
 
-    // update the color from RGB components
-    private func updateColorFromRGB() -> Color {
-        Color(
-            red: redComponent / 255.0,
-            green: greenComponent / 255.0,
-            blue: blueComponent / 255.0
-        )
-    }
-
     // update components when the color changes
-    private func updateComponents(newValue: Color) {
+    private func updateComponents(_ newValue: Color) {
         hexColor = newValue.toHex()
+        
+        // check if changed externally
+        guard newValue != internalColor else { return }
         let rgb = newValue.toRGB()
         
         redComponent = rgb.red
@@ -151,22 +175,29 @@ where R: View, G: View, B: View, Done: View {
     }
 }
 
-#Preview {
-    LuminareSection {
-        VStack {
-            ColorPickerModalView(
-                color: .constant(.accentColor),
-                hexColor: .constant("ffffff"),
-                colorNames: (
-                    red: Text("Red"),
-                    green: Text("Green"),
-                    blue: Text("Blue")
-                )
-            ) {
-                Text("Done")
-            }
+private struct ColorPickerModalPreview: View {
+    @State private var color: Color = .accentColor
+    @State private var hexColor: String = ""
+    
+    var body: some View {
+        ColorPickerModalView(
+            color: $color,
+            hexColor: $hexColor,
+            colorNames: (
+                red: Text("Red"),
+                green: Text("Green"),
+                blue: Text("Blue")
+            )
+        ) {
+            Text("Done")
         }
     }
+}
+
+#Preview {
+    LuminareSection {
+        ColorPickerModalPreview()
+    }
     .padding()
-    .frame(width: 300, height: 400)
+    .frame(width: 300)
 }
