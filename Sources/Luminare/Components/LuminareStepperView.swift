@@ -244,6 +244,18 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
+    func round(_ value: V) -> (value: V, offset: V) {
+        switch self {
+        case .infinite(let stride), .infiniteContinuous(let stride):
+            let remainder = value.truncatingRemainder(dividingBy: stride)
+            return (value - remainder, remainder)
+        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+            let diff = value - range.lowerBound
+            let remainder = diff.truncatingRemainder(dividingBy: stride)
+            return (value - remainder, remainder)
+        }
+    }
+    
     func continuousIndex(of value: V) -> V? {
         switch self {
         case .finite(let range, let stride), .finiteContinuous(let range, let stride):
@@ -253,51 +265,43 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
-    func isEdgeCase(_ value: V) -> Bool {
-        switch self {
-        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
-            let min = range.lowerBound + stride
-            let max = range.upperBound - stride
-            
-            return value < min || value > max
-        case .infinite, .infiniteContinuous:
-            return false
-        }
+    func reachedBound(_ value: V, padding: V = .zero) -> Bool {
+        reachedLowerBound(value, padding: padding) || reachedUpperBound(value, padding: padding)
     }
     
-    func reachedUpperBound(_ value: V) -> Bool {
+    func reachedUpperBound(_ value: V, padding: V = .zero) -> Bool {
         switch self {
         case .finite(let range, _), .finiteContinuous(let range, _):
-            value >= range.upperBound
+            value + padding >= range.upperBound
         case .infinite, .infiniteContinuous:
             false
         }
     }
     
-    func reachedLowerBound(_ value: V) -> Bool {
+    func reachedLowerBound(_ value: V, padding: V = .zero) -> Bool {
         switch self {
         case .finite(let range, _), .finiteContinuous(let range, _):
-            value <= range.lowerBound
+            value - padding <= range.lowerBound
         case .infinite, .infiniteContinuous:
             false
         }
     }
     
-    func reachedStartingBound(_ value: V, direction: LuminareStepperDirection) -> Bool {
+    func reachedStartingBound(_ value: V, padding: V = .zero, direction: LuminareStepperDirection) -> Bool {
         switch direction {
         case .horizontal, .vertical:
-            reachedLowerBound(value)
+            reachedLowerBound(value, padding: padding)
         case .horizontalAlternate, .verticalAlternate:
-            reachedUpperBound(value)
+            reachedUpperBound(value, padding: padding)
         }
     }
     
-    func reachedEndingBound(_ value: V, direction: LuminareStepperDirection) -> Bool {
+    func reachedEndingBound(_ value: V, padding: V = .zero, direction: LuminareStepperDirection) -> Bool {
         switch direction {
         case .horizontal, .vertical:
-            reachedUpperBound(value)
+            reachedUpperBound(value, padding: padding)
         case .horizontalAlternate, .verticalAlternate:
-            reachedLowerBound(value)
+            reachedLowerBound(value, padding: padding)
         }
     }
     
@@ -328,19 +332,23 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
 @available(macOS 15.0, *)
 public struct LuminareStepperProminentIndicators<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    let values: [V]
     @ViewBuilder let color: (V) -> Color?
     
     public init(
-        values: [V],
-        color: @escaping (V) -> Color?
+        _ values: [V]? = nil,
+        color: @escaping (V) -> Color? = { _ in nil }
     ) {
-        self.values = values
-        self.color = color
-    }
-    
-    public init() {
-        self.init(values: []) { _ in .accentColor }
+        if let values {
+            self.color = { value in
+                if values.contains(value) {
+                    color(value)
+                } else {
+                    nil
+                }
+            }
+        } else {
+            self.color = color
+        }
     }
 }
 
@@ -355,6 +363,8 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     @Environment(\.luminareAnimationFast) private var animationFast
     
     @Binding private var value: V
+    @State private var internalValue: V
+    @State private var roundedValue: V
     private let source: Source
     
     private let alignment: Alignment
@@ -370,11 +380,11 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
     
+    @State private var offset: CGFloat
     @State private var containerSize: CGSize = .zero
-    @State private var offset: CGFloat = .zero
     
-    @State private var diff: Int = 0
-    @State private var roundedValue: V
+    @State private var diff: Int = .zero
+    @State private var shouldScrollViewReset: Bool = true
     
     public init(
         value: Binding<V>,
@@ -409,7 +419,9 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
         
-        self.roundedValue = value.wrappedValue
+        self.internalValue = value.wrappedValue
+        self.roundedValue = source.round(value.wrappedValue).value
+        self.offset = CGFloat(source.round(value.wrappedValue).offset)
     }
     
     public init(
@@ -426,8 +438,8 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         hasMask: Bool = true,
         hasBlur: Bool = true,
         
-        prominentValues: [V],
-        prominentColor: @escaping (V) -> Color?,
+        prominentValues: [V]? = nil,
+        prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
     ) {
         self.init(
@@ -444,7 +456,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
             hasMask: hasMask,
             hasBlur: hasBlur,
             
-            prominentIndicators: .init(values: prominentValues, color: prominentColor),
+            prominentIndicators: .init(prominentValues, color: prominentColor),
             feedback: feedback
         )
     }
@@ -498,18 +510,18 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         let frame = direction.frame(0)
         let offsetFrame = direction.frame(-sigmoidOffset)
         let referencingValue = referencingValue(at: index)
-        let isProminent = prominentIndicators.values.contains(referencingValue)
         
         Group {
             let frame = direction.frame(2)
+            let prominentTint = prominentIndicators.color(referencingValue)
+            let isProminent = prominentTint != nil
             let sizeFactor = isProminent ? 1 : magnifyFactor(at: index)
-            let tint = isProminent ? prominentIndicators.color(value) : self.tint()
             
             Color.clear
                 .overlay {
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
-                        .tint(tint)
+                        .tint(prominentTint ?? tint())
                         .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), margin)
@@ -569,53 +581,88 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         GeometryReader { proxy in
             Color.clear
                 .overlay {
-                    let initialOffset: CGFloat = if source.reachedEndingBound(value, direction: direction) {
-                        indicatorSpacing
-                    } else if source.reachedStartingBound(value, direction: direction) {
-                        -indicatorSpacing
-                    } else {
-                        0
+                    let valueOffset = V(offset / indicatorSpacing) * source.stride
+                    let value = source.offsetBy(
+                        roundedValue,
+                        direction: direction,
+                        nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
+                    )
+                    
+                    let wrapping: Binding<Bool> = .init {
+                        !source.reachedBound(value, padding: source.stride)
+                    } set: { _ in
+                        // do nothing
                     }
                     
-                    InfiniteScrollView(
-                        direction: .init(axis: direction.axis),
-                        size: proxy.size,
-                        spacing: indicatorSpacing,
-                        snapping: !source.isContinuous,
-                        initialOffset: initialOffset,
-                        
-                        wrapping: .init {
-                            !source.isEdgeCase(value)
-                        } set: { _ in
-                            // do nothing
-                        },
-                        offset: $offset,
-                        diff: $diff
-                    )
-                    .onChange(of: diff) { oldValue, newValue in
-                        setRoundedValue(source.offsetBy(
-                            roundedValue,
-                            direction: direction,
-                            nonAlternateOffset: V(newValue - oldValue) * source.stride
-                        ))
+                    let initialOffset: Binding<CGFloat> = .init {
+                        return if source.reachedEndingBound(internalValue, direction: direction) {
+                            indicatorSpacing
+                        } else if source.reachedStartingBound(internalValue, direction: direction) {
+                            -indicatorSpacing
+                        } else {
+                            0
+                        }
+                    } set: { _ in
+                        // do nothing
                     }
-                    .onChange(of: offset) { oldValue, newValue in
-                        let offset = newValue / indicatorSpacing
-                        let valueOffset = V(offset) * source.stride
-                        setValue(source.offsetBy(
-                            roundedValue,
-                            direction: direction,
-                            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
-                        ), sync: false)
+                    
+                    valueObserver {
+                        InfiniteScrollView(
+                            direction: .init(axis: direction.axis),
+                            size: proxy.size,
+                            spacing: indicatorSpacing,
+                            snapping: !source.isContinuous,
+                            
+                            shouldReset: $shouldScrollViewReset,
+                            wrapping: wrapping,
+                            initialOffset: initialOffset,
+                            offset: $offset,
+                            diff: $diff
+                        )
                     }
                 }
         }
     }
     
+    @ViewBuilder func valueObserver(_ view: () -> some View) -> some View {
+        view()
+            .onChange(of: diff) { oldValue, newValue in
+                roundedValue += source.offsetBy(
+                    direction: direction,
+                    nonAlternateOffset: V(newValue - oldValue) * source.stride
+                )
+            }
+            .onChange(of: offset) { oldValue, newValue in
+                let offset = newValue / indicatorSpacing
+                let valueOffset = V(offset) * source.stride
+                internalValue = source.offsetBy(
+                    roundedValue,
+                    direction: direction,
+                    nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
+                )
+            }
+        
+            // value propagation
+            .onChange(of: value) { oldValue, newValue in
+                // check if value is changed externally
+                guard newValue != internalValue else { return }
+                
+                internalValue = newValue
+                roundedValue = source.round(newValue).value
+                offset = CGFloat(source.round(newValue).offset)
+            }
+            .onChange(of: internalValue) { oldValue, newValue in
+                value = newValue
+            }
+            .onChange(of: roundedValue) { oldValue, newValue in
+                
+            }
+    }
+    
     private var indicatorOffset: CGFloat {
-        if source.reachedUpperBound(value) {
+        if source.reachedUpperBound(roundedValue) {
             direction.offsetBy(offset, nonAlternateOffset: -indicatorSpacing)
-        } else if source.reachedLowerBound(value) {
+        } else if source.reachedLowerBound(roundedValue) {
             direction.offsetBy(offset, nonAlternateOffset: indicatorSpacing)
         } else {
             offset
@@ -652,21 +699,6 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     
     private var containerLength: CGFloat {
         direction.length(of: containerSize)
-    }
-    
-    private func setRoundedValue(_ newValue: V, sync: Bool = true) {
-        let oldValue = roundedValue
-        roundedValue = newValue
-        if sync {
-            value += (newValue - oldValue)
-        }
-    }
-    
-    private func setValue(_ newValue: V, sync: Bool = true) {
-        value = newValue
-        if sync {
-            roundedValue = newValue - newValue.truncatingRemainder(dividingBy: source.stride)
-        }
     }
     
     private func shift(at index: Int) -> CGFloat {
@@ -758,7 +790,13 @@ private struct StepperPreview<Label, V>: View where Label: View, V: Strideable &
             .environment(\.luminareTint) { .primary }
             .background(.quinary)
             
-            Text(String(format: "%.1f", CGFloat(value)))
+            HStack {
+                Text(String(format: "%.1f", CGFloat(value)))
+                
+                Button("42") {
+                    value = 42
+                }
+            }
         }
         .padding()
     }
@@ -770,19 +808,25 @@ private struct StepperPopoverPreview: View {
     @State private var value: CGFloat = 42
     
     var body: some View {
-        Button("Toggle Popover") {
-            isPresented.toggle()
-        }
-        .popover(isPresented: $isPresented) {
-            LuminareStepperView(
-                value: $value,
-                source: .finite(range: 0...100, stride: 1),
-                direction: .horizontal,
-                indicatorSpacing: 10,
-                maxSize: 32
-            )
-            .environment(\.luminareTint) { .primary }
-            .frame(width: 100, height: 32)
+        HStack {
+            Button("Toggle Popover") {
+                isPresented.toggle()
+            }
+            .popover(isPresented: $isPresented) {
+                LuminareStepperView(
+                    value: $value,
+                    source: .finite(range: 0...100, stride: 1),
+                    direction: .horizontal,
+                    indicatorSpacing: 10,
+                    maxSize: 32
+                )
+                .environment(\.luminareTint) { .primary }
+                .frame(width: 100, height: 32)
+            }
+            
+            Button("Reset") {
+                value = 42
+            }
         }
         
         Text(String(format: "%.1f", value))
@@ -790,7 +834,7 @@ private struct StepperPopoverPreview: View {
 }
 
 @available(macOS 15.0, *)
-#Preview("Section") {
+#Preview {
     VStack {
         HStack {
             VStack {
