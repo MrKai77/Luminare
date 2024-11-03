@@ -1,6 +1,6 @@
 //
 //  InfiniteScrollView.swift
-//  
+//
 //
 //  Created by KrLite on 2024/11/2.
 //
@@ -15,9 +15,9 @@ public enum InfiniteScrollDirection: Equatable {
     public init(axis: Axis) {
         switch axis {
         case .horizontal:
-                self = .horizontal
+            self = .horizontal
         case .vertical:
-                self = .vertical
+            self = .vertical
         }
     }
     
@@ -85,11 +85,12 @@ public struct InfiniteScrollView: NSViewRepresentable {
     public var size: CGSize
     public var spacing: CGFloat
     public var snapping: Bool
-    public var initialOffset: CGFloat = 0
     
     var debug: Bool = false
     
+    @Binding public var shouldReset: Bool
     @Binding public var wrapping: Bool
+    @Binding public var initialOffset: CGFloat
     @Binding public var offset: CGFloat
     @Binding public var diff: Int
     
@@ -179,7 +180,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
     
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
         DispatchQueue.main.async {
-            // the view is loaded now
             context.coordinator.initializeScroll(nsView.contentView)
         }
     }
@@ -193,9 +193,11 @@ public struct InfiniteScrollView: NSViewRepresentable {
         var spacing: CGFloat
         var snapping: Bool
         
-        private var didReset: Bool = false // indicates whether the view is initialized to center
         private var offsetObservation: NSKeyValueObservation?
+        private var offsetOrigin: CGFloat = .zero
         private var diffOrigin: Int = .zero
+        
+        private var lastOffset: CGFloat = .zero
         
         init(_ parent: InfiniteScrollView, spacing: CGFloat, snapping: Bool) {
             self.parent = parent
@@ -204,7 +206,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         }
         
         func initializeScroll(_ clipView: NSClipView) {
-            if !didReset {
+            if parent.shouldReset {
                 resetScrollViewPosition(clipView, offset: parent.direction.point(from: parent.initialOffset))
                 diffOrigin = parent.diff
             }
@@ -225,6 +227,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             if parent.wrapping {
                 if abs(relativeOffset) >= spacing {
                     resetScrollViewPosition(scrollView.contentView)
+                    print(1)
                     
                     let diffOffset: Int = if relativeOffset >= spacing {
                         +1
@@ -237,20 +240,22 @@ public struct InfiniteScrollView: NSViewRepresentable {
                     accumulateDiff(diffOffset)
                 }
             } else {
-                let diffOffset: Int = if relativeOffset >= spacing {
-                    +1
-                } else if relativeOffset <= -spacing {
-                    -1
-                } else {
-                    0
-                }
+                let offset = max(0, min(2 * spacing, offset))
+                let relativeOffset = offset - offsetOrigin
+                let diffOffset = Int((relativeOffset / parent.spacing).rounded(offset - lastOffset > 0 ? .down : .up))
+                lastOffset = offset
                 
                 overrideDiff(diffOffset)
             }
         }
         
         @objc func willStartLiveScroll(_ notification: Notification) {
-            guard let _ = notification.object as? NSScrollView else { return }
+            guard let scrollView = notification.object as? NSScrollView else { return }
+            
+            offsetOrigin = parent.direction.offset(of: scrollView.contentView.bounds.origin)
+            diffOrigin = parent.diff
+            
+            lastOffset = offsetOrigin
         }
         
         @objc func didEndLiveScroll(_ notification: Notification) {
@@ -277,7 +282,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
             clipView.setBoundsOrigin(parent.centerRect.origin.applying(.init(translationX: offset.x, y: offset.y)))
             parent.onOffsetChange(clipView.bounds, animate: animate)
             
-            didReset = true
+            parent.shouldReset = false
+            offsetOrigin = parent.direction.offset(of: clipView.bounds.origin)
         }
         
         private func snapScrollViewPosition(_ clipView: NSClipView) {
@@ -297,17 +303,21 @@ public struct InfiniteScrollView: NSViewRepresentable {
                     .zero
             }
             
-            let diffOffset: Int = if localOffset > 0 {
-                +1
-            } else if localOffset < 0 {
-                -1
-            } else {
-                0
-            }
-            
             if parent.wrapping {
+                let diffOffset: Int = if localOffset > 0 {
+                    +1
+                } else if localOffset < 0 {
+                    -1
+                } else {
+                    0
+                }
+                
                 accumulateDiff(diffOffset)
             } else {
+                let relativeOffsetOrigin = offsetOrigin - center
+                let relativeOffset = localOffset - relativeOffsetOrigin
+                let diffOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
+                
                 overrideDiff(diffOffset)
             }
             
@@ -332,14 +342,32 @@ public struct InfiniteScrollView: NSViewRepresentable {
 }
 
 private struct InfiniteScrollPreview: View {
-    @State private var offset: CGFloat = 0
-    @State private var diff: Int = 0
     var direction: InfiniteScrollDirection = .horizontal
     var size: CGSize = .init(width: 500, height: 100)
     
+    @State private var offset: CGFloat = 0
+    @State private var diff: Int = 0
+    @State private var shouldReset: Bool = true
+    
     var body: some View {
-        InfiniteScrollView(direction: direction, size: size, spacing: 50, snapping: true, debug: true, wrapping: .constant(false), offset: $offset, diff: $diff)
-            .frame(width: size.width, height: size.height)
+        InfiniteScrollView(
+            direction: direction,
+            size: size,
+            spacing: 50,
+            snapping: true,
+            debug: true,
+            shouldReset: $shouldReset,
+            wrapping: .constant(false),
+            initialOffset: .constant(0),
+            offset: $offset,
+            diff: $diff
+        )
+        .frame(width: size.width, height: size.height)
+        
+        Button("Reset") {
+            shouldReset = true
+        }
+        .frame(maxWidth: .infinity)
         
         Text(String(format: "%.1f", offset))
             .frame(height: 12)

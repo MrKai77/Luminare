@@ -375,6 +375,7 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
     
     @State private var diff: Int = 0
     @State private var roundedValue: V
+    @State private var shouldScrollViewReset: Bool = true
     
     public init(
         value: Binding<V>,
@@ -569,23 +570,27 @@ public struct LuminareStepperView<V>: View where V: Strideable & BinaryFloatingP
         GeometryReader { proxy in
             Color.clear
                 .overlay {
-                    let initialOffset: CGFloat = if source.reachedEndingBound(value, direction: direction) {
-                        indicatorSpacing
-                    } else if source.reachedStartingBound(value, direction: direction) {
-                        -indicatorSpacing
-                    } else {
-                        0
-                    }
-                    
                     InfiniteScrollView(
                         direction: .init(axis: direction.axis),
                         size: proxy.size,
                         spacing: indicatorSpacing,
                         snapping: !source.isContinuous,
-                        initialOffset: initialOffset,
+                        debug: true,
                         
+                        shouldReset: $shouldScrollViewReset,
                         wrapping: .init {
                             !source.isEdgeCase(value)
+                        } set: { _ in
+                            // do nothing
+                        },
+                        initialOffset: .init {
+                            if source.reachedEndingBound(value, direction: direction) {
+                                indicatorSpacing
+                            } else if source.reachedStartingBound(value, direction: direction) {
+                                -indicatorSpacing
+                            } else {
+                                0
+                            }
                         } set: { _ in
                             // do nothing
                         },
