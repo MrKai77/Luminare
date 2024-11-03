@@ -202,8 +202,8 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     
     var count: Int? {
         switch self {
-        case .finite(let range, let stride):
-            Int(((range.upperBound - range.lowerBound) / stride).rounded())
+        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+            Int(((range.upperBound - range.lowerBound) / stride).rounded(.down)) + 1
         default:
             nil
         }
@@ -226,13 +226,26 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
     
-    func isEdgeCase(_ value: V) -> Bool {
+    func continuousIndex(of value: V) -> V? {
         switch self {
         case .finite(let range, let stride), .finiteContinuous(let range, let stride):
-            let min = range.lowerBound + stride
-            let max = range.upperBound - stride
-            
-            return value < min || value > max
+            (value - range.lowerBound) / stride
+        default:
+            nil
+        }
+    }
+    
+    func isEdgeCase(_ value: V, strict: Bool = false) -> Bool {
+        switch self {
+        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+            if strict {
+                return value <= range.lowerBound || value >= range.upperBound
+            } else {
+                let min = range.lowerBound + stride
+                let max = range.upperBound - stride
+                
+                return value < min || value > max
+            }
         case .infinite, .infiniteContinuous:
             return false
         }
@@ -338,12 +351,15 @@ public struct LuminareStepperView<Modifier, V>: View where Modifier: View, V: St
     }
     
     @ViewBuilder private func bleedingMask() -> some View {
-        if source.isFinite {
-            let halfContainerLength = containerLength / 2
+        if let count = source.count, let index = source.continuousIndex(of: roundedValue), source.isFinite {
+            let indexSpanStart = max(0, CGFloat(centerIndicatorIndex) - 1 - CGFloat(index))
+            let indexSpanEnd = max(0, CGFloat(centerIndicatorIndex) - 1 - (CGFloat(count) - 1 - CGFloat(index)))
+            
+            let indexOffset: CGFloat = source.isEdgeCase(value, strict: true) ? -1 : 0
             
             Color.white
-            //                    .padding(direction.paddingSpan.start, max(0, halfContainerLength - offset - 1))
-            //                    .padding(direction.paddingSpan.end, max(0, halfContainerLength - (length - offset) - 1))
+                .padding(direction.paddingSpan.start, (indexSpanStart + indexOffset) * indicatorSpacing - offset - 1)
+                .padding(direction.paddingSpan.end, (indexSpanEnd + indexOffset) * indicatorSpacing + offset - 1)
         }
     }
     
