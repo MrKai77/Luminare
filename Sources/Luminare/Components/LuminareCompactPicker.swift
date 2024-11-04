@@ -21,8 +21,7 @@ public enum LuminareCompactPickerStyle {
 
 // MARK: - Compact Picker
 
-public struct LuminareCompactPicker<Content, V>: View
-where Content: View, V: Hashable & Equatable {
+public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Hashable & Equatable {
     public typealias PickerStyle = LuminareCompactPickerStyle
     
     // MARK: Environments
