@@ -31,12 +31,17 @@ public enum LuminarePopoverShade {
     }
 }
 
-public struct LuminarePopover<Content, Badge>: View
-where Content: View, Badge: View {
+// MARK: - Popover
+
+public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: View {
     public typealias Trigger = LuminarePopoverTrigger
     public typealias Shade = LuminarePopoverShade
     
+    // MARK: Environments
+    
     @Environment(\.luminareAnimationFast) private var animationFast
+    
+    // MARK: Fields
     
     private let arrowEdge: Edge
     private let trigger: Trigger
@@ -55,6 +60,8 @@ where Content: View, Badge: View {
     @State private var forceTouchGesture: ForceTouchGesture = .inactive
     @State private var forceTouchRecognized: Bool = false
     @State private var forceTouchProgress: CGFloat = 0
+    
+    // MARK: Initializers
     
     public init(
         arrowEdge: Edge = .bottom,
@@ -120,6 +127,8 @@ where Content: View, Badge: View {
             )
         }
     }
+    
+    // MARK: Body
     
     public var body: some View {
         Group {
@@ -215,6 +224,8 @@ where Content: View, Badge: View {
         .animation(animationFast, value: isPopoverPresented)
     }
 }
+
+// MARK: - Preview
 
 private struct PopoverForceTouchPreview<Content, Badge>: View where Content: View, Badge: View {
     var arrowEdge: Edge = .bottom
