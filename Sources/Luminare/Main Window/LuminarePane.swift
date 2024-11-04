@@ -7,13 +7,19 @@
 
 import SwiftUI
 
+// MARK: - Pane
+
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
+    // MARK: Fields
+    
     private let titlebarHeight: CGFloat = 50
 
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let header: () -> Header
 
     @State private var clickedOutsideFlag = false
+
+    // MARK: Initializers
 
     public init(
         @ViewBuilder content: @escaping () -> Content,
@@ -31,6 +37,8 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             Text(key)
         }
     }
+    
+    // MARK: Body
 
     public var body: some View {
         ZStack {
@@ -65,6 +73,8 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         .luminareBackground()
     }
 }
+
+// MARK: - Button Style (Tab Header)
 
 struct TabHeaderButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
