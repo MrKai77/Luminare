@@ -7,11 +7,17 @@
 
 import SwiftUI
 
-// custom input field for RGB values
+// MARK: - RGB Inout Field
+
+// custom input field for rgb values
 struct RGBInputField<Label>: View where Label: View {
+    // MARK: Fields
+    
     @Binding var value: Double
     @ViewBuilder var label: () -> Label
     var color: (Double) -> Color? = { _ in nil }
+
+    // MARK: Body
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -38,6 +44,8 @@ struct RGBInputField<Label>: View where Label: View {
         }
     }
 }
+
+// MARK: - Preview
 
 private struct RGBInputFieldPreview: View {
     @State private var value: Double = 42
