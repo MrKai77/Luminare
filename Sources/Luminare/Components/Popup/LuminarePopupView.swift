@@ -1,5 +1,5 @@
 //
-//  LuminarePopupView.swift
+//  LuminarePopup.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-08-25.
@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-public struct LuminarePopupView<Content: View>: NSViewRepresentable {
+// MARK: - Popup
+
+public struct LuminarePopup<Content: View>: NSViewRepresentable {
     private let material: NSVisualEffectView.Material
     @Binding private var isPresented: Bool
     
@@ -38,17 +40,19 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
     public func makeCoordinator() -> Coordinator {
         Coordinator(self, content: content)
     }
+    
+    // MARK: Coordinator
 
     @MainActor
     public class Coordinator: NSObject, NSWindowDelegate {
-        private let view: LuminarePopupView
+        private let view: LuminarePopup
         private var content: () -> Content
         private var originalYPoint: CGFloat?
         var panel: LuminarePopupPanel?
         
         private var monitor: Any?
 
-        init(_ parent: LuminarePopupView, content: @escaping () -> Content) {
+        init(_ parent: LuminarePopup, content: @escaping () -> Content) {
             self.view = parent
             self.content = content
             super.init()
@@ -150,19 +154,7 @@ public struct LuminarePopupView<Content: View>: NSViewRepresentable {
     }
 }
 
-public extension View {
-    @ViewBuilder func luminarePopup(
-        material: NSVisualEffectView.Material = .popover,
-        isPresented: Binding<Bool>
-    ) -> some View {
-        LuminarePopupView(
-            material: material,
-            isPresented: isPresented
-        ) {
-            self
-        }
-    }
-}
+// MARK: - Preview
 
 private struct PopupPreview<Label, Content>: View where Label: View, Content: View {
     @State var isPresented: Bool = false
@@ -179,7 +171,7 @@ private struct PopupPreview<Label, Content>: View where Label: View, Content: Vi
         .background {
             Color.clear
                 .background {
-                    LuminarePopupView(isPresented: $isPresented) {
+                    LuminarePopup(isPresented: $isPresented) {
                         content()
                     }
                 }
