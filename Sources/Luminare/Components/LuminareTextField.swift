@@ -7,8 +7,11 @@
 
 import SwiftUI
 
-public struct LuminareTextField<F>: View
-where F: ParseableFormatStyle, F.FormatOutput == String {
+// MARK: - Text Field
+
+public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
+    // MARK: Environments
+    
     @Environment(\.luminareAnimationFast) private var animationFast
     
     private let elementMinHeight: CGFloat
@@ -22,6 +25,8 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
 
     @State private var monitor: Any?
     @State private var isHovering: Bool = false
+
+    // MARK: Initializers
 
     public init(
         _ placeholder: LocalizedStringKey,
@@ -54,6 +59,8 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
             isBordered: isBordered
         )
     }
+    
+    // MARK: Body
 
     public var body: some View {
         TextField(placeholder, value: $value, format: format)
@@ -111,6 +118,8 @@ where F: ParseableFormatStyle, F.FormatOutput == String {
             }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
