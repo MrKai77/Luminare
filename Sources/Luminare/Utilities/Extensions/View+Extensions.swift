@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Popover
+
 public extension View {
     @ViewBuilder func luminarePopover<Content>(
         arrowEdge: Edge = .bottom,
@@ -23,6 +25,22 @@ public extension View {
             padding: padding,
             shade: shade,
             content: content
+        ) {
+            self
+        }
+    }
+}
+
+// MARK: - Popup
+
+public extension View {
+    @ViewBuilder func luminarePopup(
+        material: NSVisualEffectView.Material = .popover,
+        isPresented: Binding<Bool>
+    ) -> some View {
+        LuminarePopup(
+            material: material,
+            isPresented: isPresented
         ) {
             self
         }
