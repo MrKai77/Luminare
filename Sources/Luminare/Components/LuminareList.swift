@@ -7,10 +7,16 @@
 
 import SwiftUI
 
+// MARK: - List
+
 public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View
 where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
+    // MARK: Environments
+    
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
     @Environment(\.luminareAnimation) private var animation
+    
+    // MARK: Fields
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
@@ -28,6 +34,8 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
     @State private var canRefreshSelection = true
     @State private var eventMonitor: AnyObject?
+
+    // MARK: Initializers
 
     public init(
         items: Binding<[V]>,
@@ -351,6 +359,8 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
+    
+    // MARK: Body
 
     public var body: some View {
         LuminareSection(hasPadding: false) {
@@ -447,6 +457,8 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             removeEventMonitor()
         }
     }
+    
+    // MARK: Functions
 
     // TODO: investigate this
     // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
@@ -491,31 +503,39 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     }
 }
 
-struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
+// MARK: - List Item
+
+public struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
+    // MARK: Environments
+    
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
+    
+    // MARK: Fields
 
     @Binding private var item: V
     @ViewBuilder private let content: (Binding<V>) -> Content
 
-    @Binding var items: [V]
-    @Binding var selection: Set<V>
+    @Binding private var items: [V]
+    @Binding private var selection: Set<V>
 
-    @Binding var firstItem: V?
-    @Binding var lastItem: V?
-    @Binding var canRefreshSelection: Bool
+    @Binding private var firstItem: V?
+    @Binding private var lastItem: V?
+    @Binding private var canRefreshSelection: Bool
 
     @State private var isHovering = false
 
-    let cornerRadius: CGFloat = 2
-    let maxLineWidth: CGFloat = 1.5
+    private let cornerRadius: CGFloat = 2
+    private let maxLineWidth: CGFloat = 1.5
     @State private var lineWidth: CGFloat = .zero
 
-    let maxTintOpacity: CGFloat = 0.15
+    private let maxTintOpacity: CGFloat = 0.15
     @State private var tintOpacity: CGFloat = .zero
+    
+    // MARK: Initializers
 
-    init(
+    public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
         item: Binding<V>,
@@ -532,8 +552,10 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
         self._canRefreshSelection = canRefreshSelection
         self.content = content
     }
+    
+    // MARK: Body
 
-    var body: some View {
+    public var body: some View {
         Color.clear
             .frame(height: 50)
             .overlay {
@@ -604,6 +626,8 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             doubleLinePart()
         }
     }
+    
+    // MARK: Functions
 
     func isFirstInSelection() -> Bool {
         if let firstIndex = items.firstIndex(of: item),
@@ -741,6 +765,8 @@ extension NSTableView {
         selectionHighlightStyle = .none
     }
 }
+
+// MARK: - Preview
 
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
