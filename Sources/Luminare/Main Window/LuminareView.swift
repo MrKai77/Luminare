@@ -10,12 +10,18 @@ import SwiftUI
 // MARK: - Luminare View
 
 struct LuminareView<Content>: View where Content: View {
+    // MARK: Environments
+    
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareWindow) private var window
+    
+    // MARK: Fields
     
     @ViewBuilder let content: () -> Content
 
     @State private var currentAnimation: LuminareWindowAnimation?
+
+    // MARK: Body
 
     var body: some View {
         content()
@@ -31,6 +37,8 @@ struct LuminareView<Content>: View where Content: View {
             .buttonStyle(LuminareButtonStyle())
             .tint(tint())
     }
+    
+    // MARK: Functions
 
     func setSize(size: CGSize, animate: Bool) {
         guard let window else {
