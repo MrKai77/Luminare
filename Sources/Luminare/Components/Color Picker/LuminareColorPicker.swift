@@ -7,9 +7,12 @@
 
 import SwiftUI
 
-public struct LuminareColorPicker<R, G, B, F, Done>: View
-where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
+// MARK: - Color Picker
+
+public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
+    
+    // MARK: Fields
     
     @Binding var currentColor: Color
     
@@ -21,6 +24,8 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
 
     @State private var text: String
     @State private var isColorPickerPresented = false
+
+    // MARK: Initializers
 
     public init(
         color: Binding<Color>,
@@ -86,6 +91,8 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
             Text(key)
         }
     }
+    
+    // MARK: Body
 
     public var body: some View {
         HStack {
@@ -131,8 +138,9 @@ where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == Strin
     }
 }
 
-private struct ColorPickerPreview<F>: View
-where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+// MARK: - Preview
+
+private struct ColorPickerPreview<F>: View where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     let format: F
     @State var color: Color = .accentColor
     
