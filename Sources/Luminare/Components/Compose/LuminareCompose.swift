@@ -7,8 +7,14 @@
 
 import SwiftUI
 
+// MARK: - Compose
+
 public struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
+    // MARK: Environments
+    
     @Environment(\.isEnabled) private var isEnabled
+    
+    // MARK: Fields
     
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
@@ -17,6 +23,8 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let label: () -> Label
+    
+    // MARK: Initializers
     
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
@@ -51,6 +59,8 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         }
     }
     
+    // MARK: Body
+    
     public var body: some View {
         HStack(spacing: spacing) {
             HStack(spacing: 0) {
@@ -70,6 +80,8 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         .frame(minHeight: elementMinHeight)
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
