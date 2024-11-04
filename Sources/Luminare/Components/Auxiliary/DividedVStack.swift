@@ -8,12 +8,18 @@
 
 import SwiftUI
 
+// MARK: - Divided Vertical Stack
+
 public struct DividedVStack<Content>: View where Content: View {
-    let spacing: CGFloat?
-    let applyMaskToItems: Bool
-    let hasDividers: Bool
+    // MARK: Fields
     
-    @ViewBuilder let content: () -> Content
+    private let spacing: CGFloat?
+    private let applyMaskToItems: Bool
+    private let hasDividers: Bool
+    
+    @ViewBuilder private let content: () -> Content
+
+    // MARK: Initializers
 
     public init(
         spacing: CGFloat? = nil,
@@ -26,6 +32,8 @@ public struct DividedVStack<Content>: View where Content: View {
         self.hasDividers = hasDividers
         self.content = content
     }
+    
+    // MARK: Body
 
     public var body: some View {
         _VariadicView.Tree(
@@ -39,6 +47,8 @@ public struct DividedVStack<Content>: View where Content: View {
         }
     }
 }
+
+// MARK: - Layouts
 
 struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     let spacing: CGFloat
@@ -88,26 +98,34 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     }
 }
 
+// MARK: - Cropped Section Item
+
 public struct LuminareCroppedSectionItem: ViewModifier {
+    // MARK: Fields
+    
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
 
     private let isFirstChild: Bool
     private let isLastChild: Bool
+    
+    // MARK: Initializers
 
     public init(isFirstChild: Bool, isLastChild: Bool) {
         self.isFirstChild = isFirstChild
         self.isLastChild = isLastChild
     }
+    
+    // MARK: Body
 
     public func body(content: Content) -> some View {
         content
-            .mask(getMask())
+            .mask(mask())
             .padding(.horizontal, innerPadding)
     }
 
-    func getMask() -> some View {
+    @ViewBuilder private func mask() -> some View {
         if isFirstChild, isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
@@ -139,6 +157,8 @@ public struct LuminareCroppedSectionItem: ViewModifier {
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
