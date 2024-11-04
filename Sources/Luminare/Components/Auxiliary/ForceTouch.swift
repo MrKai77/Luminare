@@ -202,6 +202,8 @@ class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
     }
 }
 
+// MARK: - Preview
+
 private struct ForceTouchPreview<Content>: View where Content: View {
     let threshold: CGFloat = 0.5
     @State var gesture: ForceTouchGesture = .inactive
