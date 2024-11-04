@@ -76,6 +76,8 @@ public enum InfiniteScrollDirection: Equatable {
     }
 }
 
+// MARK: - Infinite Scroll
+
 public struct InfiniteScrollView: NSViewRepresentable {
     public typealias Direction = InfiniteScrollDirection
     
@@ -187,6 +189,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
     public func makeCoordinator() -> Coordinator {
         Coordinator(self, spacing: spacing, snapping: snapping)
     }
+    
+    // MARK: - Coordinator
     
     public class Coordinator: NSObject {
         var parent: InfiniteScrollView
@@ -340,6 +344,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
         }
     }
 }
+
+// MARK: - Preview
 
 private struct InfiniteScrollPreview: View {
     var direction: InfiniteScrollDirection = .horizontal
