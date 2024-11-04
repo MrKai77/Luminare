@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - RGB Inout Field
 
-// custom input field for rgb values
+// custom input field for RGB values
 struct RGBInputField<Label>: View where Label: View {
     // MARK: Fields
     

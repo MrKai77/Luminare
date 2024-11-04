@@ -44,7 +44,7 @@ extension Color {
         )
     }
 
-    // converts to rgb values
+    // converts to RGB values
     func toRGB() -> (red: Double, green: Double, blue: Double) {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return (
@@ -53,7 +53,7 @@ extension Color {
         )
     }
 
-    // converts color to hsb values
+    // converts color to HSB values
     func toHSB() -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
         var hue: CGFloat = 0
@@ -80,7 +80,7 @@ extension Color {
         )
     }
 
-    // extracts rgba components
+    // extracts RGBA components
     var components: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         let nsColor = NSColor(self)
         var red: CGFloat = 0

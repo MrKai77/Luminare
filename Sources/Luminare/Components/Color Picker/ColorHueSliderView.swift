@@ -90,7 +90,7 @@ struct ColorHueSliderView: View {
         let clampedX = max(5.5, min(value.location.x, viewSize - 5.5))
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
-        let currenthsb = selectedColor.toHSB()
+        let currentHSB = selectedColor.toHSB()
 
         if percentage != lastPercentage, percentage == 5.5 / viewSize || percentage == (viewSize - 5.5) / viewSize {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
@@ -99,8 +99,8 @@ struct ColorHueSliderView: View {
         withAnimation(animation) {
             selectedColor = Color(
                 hue: percentage,
-                saturation: max(0.0001, currenthsb.saturation),
-                brightness: currenthsb.brightness
+                saturation: max(0.0001, currentHSB.saturation),
+                brightness: currentHSB.brightness
             )
         }
     }
