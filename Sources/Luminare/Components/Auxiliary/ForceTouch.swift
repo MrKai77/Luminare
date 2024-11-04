@@ -60,6 +60,8 @@ public enum ForceTouchGesture: Equatable {
     }
 }
 
+// MARK: - Force Touxh
+
 public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     private let configuration: NSPressureConfiguration
     private let threshold: CGFloat
@@ -133,8 +135,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         return view
     }
     
-    public func updateNSView(_ nsView: NSView, context: Context) {
-    }
+    public func updateNSView(_ nsView: NSView, context: Context) {}
     
     private func prepareLongPressDelegate(_ event: NSEvent) {
         let modifierFlags = event.modifierFlags
@@ -164,6 +165,8 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         longPressTimer = nil
     }
 }
+
+// MARK: - Force Touch Gesture Recognizer
 
 class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
     private let threshold: CGFloat
