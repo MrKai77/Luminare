@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Button Style
+
 public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -40,6 +42,8 @@ public struct LuminareButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Button Style (Destructive)
+
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -70,6 +74,8 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 }
+
+// MARK: - Button Style (Prominent)
 
 public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
@@ -126,6 +132,8 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Button Style (Cosmetic)
+
 public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -170,6 +178,8 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
     }
 }
+
+// MARK: - Button Style (Compact)
 
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
@@ -220,6 +230,8 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         }
     }
 }
+
+// MARK: - Bordered
 
 public struct LuminareBordered: ViewModifier {
     @Binding var highlight: Bool
