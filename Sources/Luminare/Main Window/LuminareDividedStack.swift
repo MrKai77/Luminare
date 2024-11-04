@@ -7,20 +7,33 @@
 
 import SwiftUI
 
-public struct LuminareDividedStack<Content: View>: View {
-    public enum StackOrientation {
-        case vertical
-        case horizontal
-    }
+public enum LuminareDividedStackOrientation {
+    case vertical
+    case horizontal
+}
 
-    private let orientation: StackOrientation
+// MARK: - Divided Stack
+
+public struct LuminareDividedStack<Content>: View where Content: View {
+    public typealias Orientation = LuminareDividedStackOrientation
+
+    // MARK: Fields
+
+    private let orientation: Orientation
     
     @ViewBuilder private let content: () -> Content
     
-    public init(orientation: StackOrientation = .horizontal, @ViewBuilder content: @escaping () -> Content) {
+    // MARK: Initializers
+    
+    public init(
+        orientation: Orientation = .horizontal, 
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.orientation = orientation
         self.content = content
     }
+    
+    // MARK: Body
 
     public var body: some View {
         switch orientation {
@@ -46,6 +59,10 @@ public struct LuminareDividedStack<Content: View>: View {
     }
 }
 
+// MARK: - Layouts
+
+// MARK: Horizontal
+
 struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
     @ViewBuilder
     func body(children: _VariadicView.Children) -> some View {
@@ -63,6 +80,8 @@ struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
         }
     }
 }
+
+// MARK: Vertical
 
 struct LuminareDividedVStackLayout: _VariadicView_UnaryViewRoot {
     @ViewBuilder
