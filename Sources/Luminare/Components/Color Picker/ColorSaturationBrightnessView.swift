@@ -7,9 +7,15 @@
 
 import SwiftUI
 
+// MARK: - Color Saturation Brightness
+
 // view for adjusting the lightness of a selected color
 struct ColorSaturationBrightnessView: View {
+    // MARK: Environments
+    
     @Environment(\.luminareAnimation) private var animation
+    
+    // MARK: Fields
     
     @Binding var selectedColor: Color
 
@@ -19,6 +25,8 @@ struct ColorSaturationBrightnessView: View {
     @State private var isDragging: Bool = false
 
     private let circleSize: CGFloat = 12
+
+    // MARK: Body
 
     var body: some View {
         GeometryReader { geo in
@@ -75,6 +83,8 @@ struct ColorSaturationBrightnessView: View {
             }
         }
     }
+    
+    // MARK: Functions
 
     // update the position of the circle based on user interaction
     private func updateColor(_ location: CGPoint, _ viewSize: CGSize) {
@@ -116,8 +126,14 @@ struct ColorSaturationBrightnessView: View {
     }
 }
 
+// MARK: - Color Picker Circle
+
 struct ColorPickerCircle: View {
+    // MARK: Environments
+    
     @Environment(\.luminareAnimation) private var animation
+    
+    // MARK: Fields
     
     @Binding private var selectedColor: Color
     @Binding private var isDragging: Bool
@@ -125,11 +141,15 @@ struct ColorPickerCircle: View {
     @State private var isHovering: Bool = false
     private let circleSize: CGFloat
 
+    // MARK: Initializers
+
     init(selectedColor: Binding<Color>, isDragging: Binding<Bool>, circleSize: CGFloat) {
         self._selectedColor = selectedColor
         self._isDragging = isDragging
         self.circleSize = circleSize
     }
+    
+    // MARK: Body
 
     var body: some View {
         Circle()
@@ -147,6 +167,8 @@ struct ColorPickerCircle: View {
             .animation(animation, value: [isHovering, isDragging])
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
