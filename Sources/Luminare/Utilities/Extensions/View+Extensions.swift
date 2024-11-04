@@ -46,3 +46,11 @@ public extension View {
         }
     }
 }
+
+// MARK: - Background
+
+public extension View {
+    func luminareBackground() -> some View {
+        modifier(LuminareBackgroundEffect())
+    }
+}
