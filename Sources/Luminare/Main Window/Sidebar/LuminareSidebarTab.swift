@@ -15,8 +15,7 @@ import SwiftUI
 ///
 /// ### Related Views
 ///
-/// - ``LuminareSidebar``
-/// - ``LuminareSidebarSection``
+/// - ``LuminareTabItem``
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Environments
     

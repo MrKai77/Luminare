@@ -15,7 +15,6 @@ import SwiftUI
 ///
 /// ### Related Views
 ///
-/// - ``LuminareSidebar``
 /// - ``LuminareSidebarTab``
 public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: LuminareTabItem, Tab: Hashable {
     // MARK: Fields
@@ -44,7 +43,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     
     /// Initializes a ``LuminareSidebarSection`` where the label is a localized text.
     ///
-    /// - Parameter key: the ``LocalizedStringKey`` to look up the label text.
+    /// - Parameter key: the `LocalizedStringKey` to look up the label text.
     /// - Parameter selection: the selected ``LuminareTabItem`` binding.
     /// - Parameter items: the list of available ``LuminareTabItem``.
     ///

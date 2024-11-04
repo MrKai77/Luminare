@@ -27,7 +27,6 @@ import SwiftUI
 ///
 /// ### Related Views
 ///
-/// - ``LuminareWindow``
 /// - ``LuminareSidebarSection``
 /// - ``LuminareSidebarTab``
 public struct LuminareSidebar<Content>: View where Content: View {

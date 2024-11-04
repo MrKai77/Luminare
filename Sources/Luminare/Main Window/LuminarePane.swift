@@ -10,14 +10,6 @@ import SwiftUI
 // MARK: - Pane
 
 /// A stylized pane that well distributes its content in the way ``Luminare`` is expected to do.
-///
-/// ## Topics
-///
-/// ### Related Views
-///
-/// - ``LuminareWindow``
-/// - ``LuminareDividedStack``
-/// - ``LuminareSidebar``
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     // MARK: Fields
     
@@ -44,7 +36,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     
     /// Initializes a ``LuminarePane`` where the header is a localized text.
     ///
-    /// - Parameter key: the ``LocalizedStringKey`` to look up the header text.
+    /// - Parameter key: the `LocalizedStringKey` to look up the header text.
     /// - Parameter content: the content view.
     ///
     /// ## Topics

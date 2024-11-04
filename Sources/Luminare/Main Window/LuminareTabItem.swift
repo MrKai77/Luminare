@@ -12,16 +12,13 @@ import SwiftUI
 /// ## Topics
 ///
 /// ### Related Views
-///
-/// - ``LuminareSidebar``
-/// - ``LuminareSidebarTab``
 public protocol LuminareTabItem: Equatable, Hashable, Identifiable where ID: Identifiable {
     /// The unique id of the tab.
     var id: ID { get }
 
     /// The title of the tab.
     var title: String { get }
-    /// The ``Image`` that will be displayed next to the leading edge of the ``title``.
+    /// The `Image` that will be displayed next to the leading edge of the ``title``.
     var icon: Image { get }
     /// Whether this tab displays an indicator at the trailing top edge of the title.
     /// This is typically used to attract user's attention to some updates.
