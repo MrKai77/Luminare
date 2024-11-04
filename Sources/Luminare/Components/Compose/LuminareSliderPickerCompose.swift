@@ -7,9 +7,14 @@
 
 import SwiftUI
 
-public struct LuminareSliderPickerCompose<Label, Content, V>: View
-where Label: View, Content: View, V: Equatable {
+// MARK: - Slider Picker (Compose)
+
+public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: View, Content: View, V: Equatable {
+    // MARK: Environments
+    
     @Environment(\.luminareAnimation) private var animation
+    
+    // MARK: Fields
     
     private let height: CGFloat
     private let horizontalPadding: CGFloat
@@ -19,6 +24,8 @@ where Label: View, Content: View, V: Equatable {
 
     private let options: [V]
     @Binding private var selection: V
+
+    // MARK: Initializers
 
     public init(
         _ options: [V], selection: Binding<V>,
@@ -87,6 +94,8 @@ where Label: View, Content: View, V: Equatable {
             Text(key)
         }
     }
+    
+    // MARK: Body
 
     public var body: some View {
         VStack {
@@ -130,6 +139,8 @@ where Label: View, Content: View, V: Equatable {
         .animation(animation, value: selection)
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
