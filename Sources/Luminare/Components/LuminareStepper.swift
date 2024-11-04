@@ -360,6 +360,8 @@ public struct LuminareStepperProminentIndicators<V> where V: Strideable & Binary
     }
 }
 
+// MARK: - Stepper
+
 @available(macOS 15.0, *)
 public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias Alignment = LuminareStepperAlignment
@@ -367,8 +369,12 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     public typealias Source = LuminareStepperSource<V>
     public typealias ProminentIndicators = LuminareStepperProminentIndicators<V>
     
+    // MARK: Environments
+    
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
+    
+    // MARK: Fields
     
     @Binding private var value: V
     @State private var roundedValue: V
@@ -393,6 +399,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     @State private var offset: CGFloat
     
     @State private var shouldScrollViewReset: Bool = true
+    
+    // MARK: Initializers
     
     public init(
         value: Binding<V>,
@@ -469,6 +477,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             feedback: feedback
         )
     }
+    
+    // MARK: Body
     
     public var body: some View {
         direction.stack(spacing: indicatorSpacing) {
@@ -671,6 +681,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         direction.length(of: containerSize)
     }
     
+    // MARK: Functions
+    
     private func shift(at index: Int) -> CGFloat {
         direction.offsetBy(CGFloat(centerIndicatorIndex - index), nonAlternateOffset: sigmoidOffset / indicatorSpacing)
     }
@@ -701,7 +713,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - standardDeviation: The standard deviation (width) of the bell curve. Higher values result in a wider curve.
     ///   - amplitude: The peak (height) of the bell curve.
     /// - Returns: The y-value of the bell curve at the given x.
-    func bellCurve(x: CGFloat, mean: CGFloat = .zero, standardDeviation: CGFloat, amplitude: CGFloat = 1) -> CGFloat {
+    private func bellCurve(x: CGFloat, mean: CGFloat = .zero, standardDeviation: CGFloat, amplitude: CGFloat = 1) -> CGFloat {
         let exponent = -pow(x - mean, 2) / (2 * pow(standardDeviation, 2))
         return amplitude * exp(exponent)
     }
@@ -711,7 +723,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - x: The input value, expected to be in the range [0, 1].
     ///   - curvature: A parameter to control the curvature. Higher values create a sharper bend.
     /// - Returns: The transformed output in the range [0, 1].
-    func bentSigmoid(_ x: Double, curvature: Double = 7.5) -> Double {
+    private func bentSigmoid(_ x: Double, curvature: Double = 7.5) -> Double {
         guard x >= -1 && x <= 1 else { return x }
         
         return if x >= 0 {
@@ -722,18 +734,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     }
 }
 
-//@available(macOS 15.0, *)
-//struct SteppingScrollTargetBehavior: ScrollTargetBehavior {
-//    var spacing: CGFloat?
-//    var direction: LuminareStepperDirection
-//    
-//    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
-//        if let spacing {
-//            target.rect.origin.x -= target.rect.origin.x.remainder(dividingBy: spacing)
-//            target.rect.origin.y -= target.rect.origin.y.remainder(dividingBy: spacing)
-//        }
-//    }
-//}
+// MARK: - Preview
 
 @available(macOS 15.0, *)
 private struct StepperPreview<Label, V>: View where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
