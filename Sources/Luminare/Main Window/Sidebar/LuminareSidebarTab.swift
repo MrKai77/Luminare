@@ -7,20 +7,30 @@
 
 import SwiftUI
 
+// MARK: - Sidebar Tab
+
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
+    // MARK: Environments
+    
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
+
+    // MARK: Fields
 
     @Binding private var activeTab: Tab
     private let tab: Tab
 
     @State private var isActive = false
+    
+    // MARK: Initializers
 
     public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
         self._activeTab = activeTab
         self.tab = tab
     }
+    
+    // MARK: Body
 
     public var body: some View {
         Button {
@@ -64,13 +74,17 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             processActiveTab()
         }
     }
+    
+    // MARK: Functions
 
-    func processActiveTab() {
+    private func processActiveTab() {
         withAnimation(animationFast) {
             isActive = activeTab == tab
         }
     }
 }
+
+// MARK: - Button Style (Sidebar)
 
 struct SidebarButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
