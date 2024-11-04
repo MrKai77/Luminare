@@ -9,6 +9,14 @@ import SwiftUI
 
 // MARK: - Sidebar Tab
 
+/// A stylized tab that can be selected, typically used in ``LuminareSidebar``.
+///
+/// ## Topics
+///
+/// ### Related Views
+///
+/// - ``LuminareSidebar``
+/// - ``LuminareSidebarSection``
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Environments
     
@@ -25,6 +33,10 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     
     // MARK: Initializers
 
+    /// Initializes a ``LuminareSidebarTab``.
+    ///
+    /// - Parameter tab: the associated ``LuminareTabItem``.
+    /// - Parameter activeTab: the activated ``LuminareTabItem`` binding.
     public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
         self._activeTab = activeTab
         self.tab = tab

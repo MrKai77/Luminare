@@ -9,6 +9,14 @@ import SwiftUI
 
 // MARK: - Sidebar Section
 
+/// A stylized section that is typically used in ``LuminareSidebar``.
+///
+/// ## Topics
+///
+/// ### Related Views
+///
+/// - ``LuminareSidebar``
+/// - ``LuminareSidebarTab``
 public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: LuminareTabItem, Tab: Hashable {
     // MARK: Fields
     
@@ -19,6 +27,11 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareSidebarSection``.
+    ///
+    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
+    /// - Parameter items: the list of available ``LuminareTabItem``.
+    /// - Parameter label: the label that is located at the very top of the containing tabs.
     public init(
         selection: Binding<Tab>,
         items: [Tab],
@@ -29,6 +42,15 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
         self.label = label
     }
     
+    /// Initializes a ``LuminareSidebarSection`` where the label is a localized text.
+    ///
+    /// - Parameter key: the ``LocalizedStringKey`` to look up the label text.
+    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
+    /// - Parameter items: the list of available ``LuminareTabItem``.
+    ///
+    /// ## Topics
+    ///
+    /// - ``init(selection:items:label:)``
     public init(
         _ key: LocalizedStringKey,
         selection: Binding<Tab>,

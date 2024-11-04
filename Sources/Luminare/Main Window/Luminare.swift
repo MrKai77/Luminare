@@ -7,11 +7,17 @@
 
 import SwiftUI
 
-/// A window that is customized for **Luminare** with a stylized, materialized
+/// A window that is customized for ``Luminare`` with a stylized, materialized
 /// appearance.
+///
+/// This provides an out-of-the-box experience for marching your design coherently using ``Luminare``.
 public class LuminareWindow: NSWindow {
     private var initializationTime: Date
 
+    /// Initializes a ``LuminareWindow``.
+    ///
+    /// - Parameter blurRadius: the blur radius of the window background.
+    /// - Parameter content: the content view of the window, wrapped in a ``LuminareView``.
     public init(
         blurRadius: CGFloat? = nil,
         content: @escaping () -> some View
@@ -45,6 +51,8 @@ public class LuminareWindow: NSWindow {
         alphaValue = 0
     }
 
+    /// Shows this window.
+    /// This action activates the current application and orders the window to the frontmost.
     public func show() {
         orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)

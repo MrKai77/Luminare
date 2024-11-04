@@ -7,14 +7,22 @@
 
 import SwiftUI
 
+/// The orientation of a ``LuminareDividedStack``.
 public enum LuminareDividedStackOrientation {
+    /// Stacks elements vertically.
     case vertical
+    /// Stacks elements horizontally.
     case horizontal
 }
 
 // MARK: - Divided Stack
 
+/// A stylized stack that divides its content into groups, separated by division lines.
+///
+/// This is typically acting as the root view of a ``LuminareWindow``.
+/// Typically, you are likely to wrap a ``LuminareSidebar`` inside along with a ``LuminarePane`` to create a tabbed content.
 public struct LuminareDividedStack<Content>: View where Content: View {
+    /// A local typealias identical to ``LuminareDividedStackOrientation``.
     public typealias Orientation = LuminareDividedStackOrientation
 
     // MARK: Fields
@@ -25,6 +33,10 @@ public struct LuminareDividedStack<Content>: View where Content: View {
     
     // MARK: Initializers
     
+    /// Initializes a ``LuminareDividedStack``.
+    ///
+    /// - Parameter orientation: the ``Orientation`` that configures the way to stack elements.
+    /// - Parameter content: the content view of the stack.
     public init(
         orientation: Orientation = .horizontal, 
         @ViewBuilder content: @escaping () -> Content

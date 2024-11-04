@@ -9,7 +9,10 @@ import SwiftUI
 
 // MARK: - Luminare View
 
-struct LuminareView<Content>: View where Content: View {
+/// The root view of a ``LuminareWindow``.
+///
+/// This view automatically overrides the content's tint by the one specified with `\.luminareTint` environment value.
+public struct LuminareView<Content>: View where Content: View {
     // MARK: Environments
     
     @Environment(\.luminareTint) private var tint
@@ -17,13 +20,13 @@ struct LuminareView<Content>: View where Content: View {
     
     // MARK: Fields
     
-    @ViewBuilder let content: () -> Content
+    @ViewBuilder public let content: () -> Content
 
     @State private var currentAnimation: LuminareWindowAnimation?
 
     // MARK: Body
 
-    var body: some View {
+    public var body: some View {
         content()
             .background {
                 GeometryReader { proxy in
