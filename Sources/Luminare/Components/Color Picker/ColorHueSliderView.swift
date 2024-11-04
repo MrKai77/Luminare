@@ -7,8 +7,14 @@
 
 import SwiftUI
 
+// MARK: - Color Hue Slider
+
 struct ColorHueSliderView: View {
+    // MARK: Environments
+    
     @Environment(\.luminareAnimation) private var animation
+    
+    // MARK: Fields
     
     @Binding private var selectedColor: Color
     @State private var selectionPosition: CGFloat = 0
@@ -23,10 +29,14 @@ struct ColorHueSliderView: View {
                 Color(hue: $0, saturation: 1, brightness: 1)
             }
     )
+    
+    // MARK: Initializers
 
     init(selectedColor: Binding<Color>) {
         self._selectedColor = selectedColor
     }
+    
+    // MARK: Body
 
     var body: some View {
         GeometryReader { geo in
@@ -71,6 +81,8 @@ struct ColorHueSliderView: View {
         }
         .frame(height: 16)
     }
+    
+    // MARK: Functions
 
     private func handleDragChange(_ value: DragGesture.Value, _ viewSize: CGFloat) {
         let lastPercentage = selectionPosition / viewSize
@@ -111,6 +123,8 @@ struct ColorHueSliderView: View {
         return 15 * edgeFactor
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
