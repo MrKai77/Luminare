@@ -41,7 +41,7 @@ public struct LuminarePopup<Content: View>: NSViewRepresentable {
         Coordinator(self, content: content)
     }
     
-    // MARK: Coordinator
+    // MARK: - Coordinator
 
     @MainActor
     public class Coordinator: NSObject, NSWindowDelegate {
