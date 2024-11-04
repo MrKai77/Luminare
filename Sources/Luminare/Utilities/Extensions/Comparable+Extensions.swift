@@ -2,7 +2,7 @@
 //  Comparable+Extensions.swift
 //  
 //
-//  Created by KrLite on 2024/11/3.
+//  Created by KrLite on 2024/11/4.
 //
 
 import SwiftUI
