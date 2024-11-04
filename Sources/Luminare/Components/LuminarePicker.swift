@@ -11,9 +11,15 @@ public protocol LuminarePickerData {
     var selectable: Bool { get }
 }
 
+// MARK: - Picker
+
 public struct LuminarePicker<Content, V>: View 
 where Content: View, V: Equatable {
+    // MARK: Environments
+    
     @Environment(\.luminareAnimation) private var animation
+    
+    // MARK: Fields
     
     private let cornerRadius: CGFloat = 12
     private let innerPadding: CGFloat = 4
@@ -30,6 +36,8 @@ where Content: View, V: Equatable {
     private let roundBottom: Bool
     
     @ViewBuilder private let content: (V) -> Content
+    
+    // MARK: Initializers
 
     public init(
         elements: [V],
@@ -49,10 +57,8 @@ where Content: View, V: Equatable {
         self._selectedItem = selection
         self._internalSelection = State(initialValue: selection.wrappedValue)
     }
-
-    var isCompact: Bool {
-        rowsIndex == 0
-    }
+    
+    // MARK: Body
 
     public var body: some View {
         Group {
@@ -115,17 +121,23 @@ where Content: View, V: Equatable {
                 .strokeBorder(.quaternary, lineWidth: 1)
         }
     }
+    
+    private var isCompact: Bool {
+        rowsIndex == 0
+    }
+    
+    // MARK: Functions
 
-    func isDisabled(_ element: V) -> Bool {
+    private func isDisabled(_ element: V) -> Bool {
         (element as? LuminarePickerData)?.selectable == false
     }
 
-    func getElement(i: Int, j: Int) -> V? {
+    private func getElement(i: Int, j: Int) -> V? {
         guard j < elements2D[i].count else { return nil }
         return elements2D[i][j]
     }
 
-    func getShape(i: Int, j: Int) -> some InsettableShape {
+    private func getShape(i: Int, j: Int) -> some InsettableShape {
         // top left
         if j == 0, i == 0, roundTop {
             UnevenRoundedRectangle(
@@ -174,14 +186,7 @@ where Content: View, V: Equatable {
     }
 }
 
-extension Array {
-    func slice(size: Int) -> [[Element]] {
-        (0 ..< (count / size + (count % size == 0 ? 0 : 1)))
-            .map {
-                Array(self[($0 * size) ..< (Swift.min($0 * size + size, count))])
-            }
-    }
-}
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
