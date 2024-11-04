@@ -8,11 +8,11 @@
 import AppKit
 import SwiftUI
 
-// Extension to add functionality to SwiftUI's Color type
-public extension Color {
+// adds functionality to SwiftUI's Color type
+extension Color {
     static let violet = Color(red: 0.56, green: 0, blue: 1)
 
-    // Initialize with HEX value, supporting both 3 and 6 characters
+    // initializes with a hex value, supporting both 3 and 6 characters
     init?(hex: String) {
         let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")
         let expandedHex: String = if hexSanitized.count == 3 {
@@ -35,7 +35,7 @@ public extension Color {
         )
     }
 
-    // Convert to HEX representation
+    // converts to hex representation
     func toHex() -> String {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return String(
@@ -44,7 +44,7 @@ public extension Color {
         )
     }
 
-    // Convert to RGB values
+    // converts to rgb values
     func toRGB() -> (red: Double, green: Double, blue: Double) {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return (
@@ -53,7 +53,18 @@ public extension Color {
         )
     }
 
-    // Mix with another color
+    // converts color to hsb values
+    func toHSB() -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
+        let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+        nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+        return (hue, saturation, brightness)
+    }
+
+    // mixes with another color
     func mixed(with other: Color, amount: CGFloat) -> Color {
         guard amount >= 0, amount <= 1 else {
             NSLog("Invalid mix amount: \(amount). Amount must be between 0 and 1.")
@@ -69,7 +80,7 @@ public extension Color {
         )
     }
 
-    // Extract RGBA components
+    // extracts rgba components
     var components: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         let nsColor = NSColor(self)
         var red: CGFloat = 0
@@ -80,7 +91,7 @@ public extension Color {
         return (red, green, blue, alpha)
     }
 
-    // Adjust the brightness of the color
+    // adjusts the brightness of the color
     func brightnessAdjustment(brightness: Double) -> Color {
         let hsb = toHSB()
         // Ensure the new brightness is within the range [0, 1]
@@ -88,16 +99,5 @@ public extension Color {
         return Color(
             hue: Double(hsb.hue), saturation: Double(hsb.saturation), brightness: adjustedBrightness
         )
-    }
-
-    // Convert color to HSB values
-    func toHSB() -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
-        let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
-        var hue: CGFloat = 0
-        var saturation: CGFloat = 0
-        var brightness: CGFloat = 0
-        var alpha: CGFloat = 0
-        nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-        return (hue, saturation, brightness)
     }
 }
