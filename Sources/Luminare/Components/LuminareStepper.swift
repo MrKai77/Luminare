@@ -515,7 +515,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         Group {
             let frame = direction.frame(2)
             let prominentTint = prominentIndicators.color(referencingValue)
-            let isProminent = prominentTint != nil
             
             Color.clear
                 .overlay {

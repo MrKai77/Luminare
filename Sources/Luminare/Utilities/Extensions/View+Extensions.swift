@@ -47,6 +47,26 @@ public extension View {
     }
 }
 
+// MARK: - Modal
+
+public extension View {
+    func luminareModal(
+        isPresented: Binding<Bool>,
+        closesOnDefocus: Bool = false,
+        isCompact: Bool = false,
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
+        modifier(
+            LuminareModalModifier(
+                isPresented: isPresented,
+                closesOnDefocus: closesOnDefocus,
+                isCompact: isCompact,
+                content: content
+            )
+        )
+    }
+}
+
 // MARK: - Background
 
 public extension View {

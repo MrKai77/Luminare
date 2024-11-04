@@ -20,12 +20,12 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
     init(
         isPresented: Binding<Bool>,
-        closeOnDefocus: Bool,
+        closesOnDefocus: Bool,
         isCompact: Bool,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
-        self.closesOnDefocus = closeOnDefocus
+        self.closesOnDefocus = closesOnDefocus
         self.isCompact = isCompact
         super.init(
             contentRect: .zero,
@@ -118,7 +118,7 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     @State private var panel: LuminareModal<PanelContent>?
 
     @Binding var isPresented: Bool
-    let closeOnDefocus: Bool
+    let closesOnDefocus: Bool
     let isCompact: Bool
     @ViewBuilder var content: () -> PanelContent
 
@@ -141,7 +141,7 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
         guard panel == nil else { return }
         panel = LuminareModal(
             isPresented: $isPresented,
-            closeOnDefocus: closeOnDefocus,
+            closesOnDefocus: closesOnDefocus,
             isCompact: isCompact,
             content: content
         )
@@ -156,23 +156,5 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     private func close() {
         panel?.close()
         panel = nil
-    }
-}
-
-public extension View {
-    func luminareModal(
-        isPresented: Binding<Bool>,
-        closeOnDefocus: Bool = false,
-        isCompact: Bool = false,
-        @ViewBuilder content: @escaping () -> some View
-    ) -> some View {
-        modifier(
-            LuminareModalModifier(
-                isPresented: isPresented,
-                closeOnDefocus: closeOnDefocus,
-                isCompact: isCompact,
-                content: content
-            )
-        )
     }
 }

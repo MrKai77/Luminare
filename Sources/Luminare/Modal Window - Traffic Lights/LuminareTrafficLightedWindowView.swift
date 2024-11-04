@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
-    @EnvironmentObject var floatingPanel: LuminareTrafficLightedWindow<Content>
+    @EnvironmentObject private var floatingPanel: LuminareTrafficLightedWindow<Content>
 
     let sectionSpacing: CGFloat = 12
     let cornerRadius: CGFloat = 12

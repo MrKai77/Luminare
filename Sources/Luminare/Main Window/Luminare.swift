@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// A window that is customized for **Luminare** with a stylized, materialized
+/// appearance.
 public class LuminareWindow: NSWindow {
     private var initializationTime: Date
 
