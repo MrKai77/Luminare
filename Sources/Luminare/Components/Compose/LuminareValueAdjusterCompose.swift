@@ -19,13 +19,22 @@ public enum LuminareValueAdjusterControlSize {
     }
 }
 
-public struct LuminareValueAdjusterCompose<Label, Content, V>: View
-where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+// MARK: - Value Adjuster (Compose)
+
+public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias ControlSize = LuminareValueAdjusterControlSize
+    
+    private enum FocusedField {
+        case textbox
+    }
+    
+    // MARK: Environments
     
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
+
+    // MARK: Fields
 
     private let horizontalPadding: CGFloat
 
@@ -35,10 +44,6 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
     }
 
     @State private var isShowingTextBox = false
-
-    enum FocusedField {
-        case textbox
-    }
 
     @FocusState private var focusedField: FocusedField?
 
@@ -54,6 +59,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
     private let decimalPlaces: Int
     
     @State var eventMonitor: AnyObject?
+    
+    // MARK: Initializers
 
     // TODO: max digit spacing for label
     public init(
@@ -117,6 +124,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
             Text(key)
         }
     }
+    
+    // MARK: Body
 
     public var body: some View {
         VStack {
@@ -148,7 +157,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         .animation(animation, value: isShowingTextBox)
     }
 
-    func slider() -> some View {
+    @ViewBuilder private func slider() -> some View {
         Slider(
             value: Binding(
                 get: {
@@ -163,8 +172,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         )
     }
 
-    @ViewBuilder
-    func text() -> some View {
+    @ViewBuilder private func text() -> some View {
         HStack {
             let view = Group {
                 if isShowingTextBox {
@@ -245,6 +253,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         }
         .opacity(isEnabled ? 1 : 0.5)
     }
+    
+    // MARK: Functions
 
     func addEventMonitor() {
         if eventMonitor != nil {
@@ -289,11 +299,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
     }
 }
 
-private extension Comparable {
-    func clamped(to limits: ClosedRange<Self>) -> Self {
-        min(max(self, limits.lowerBound), limits.upperBound)
-    }
-}
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
