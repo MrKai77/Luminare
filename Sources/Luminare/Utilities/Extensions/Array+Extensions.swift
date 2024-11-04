@@ -1,3 +1,12 @@
+//
+//  Array+Extensions.swift
+//  
+//
+//  Created by KrLite on 2024/11/4.
+//
+
+import SwiftUI
+
 extension Array {
     func slice(size: Int) -> [[Element]] {
         (0 ..< (count / size + (count % size == 0 ? 0 : 1)))
