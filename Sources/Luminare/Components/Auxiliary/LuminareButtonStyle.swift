@@ -13,8 +13,8 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    let innerCornerRadius: CGFloat = 2
-    let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat = 2
+    private let elementMinHeight: CGFloat = 34
     
     @State private var isHovering: Bool = false
 
@@ -48,10 +48,10 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    let innerCornerRadius: CGFloat = 2
-    let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat = 2
+    private let elementMinHeight: CGFloat = 34
     
-    @State var isHovering: Bool = false
+    @State private var isHovering: Bool = false
 
     public init() {}
 
@@ -81,10 +81,10 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    let innerCornerRadius: CGFloat = 2
-    let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat = 2
+    private let elementMinHeight: CGFloat = 34
     
-    @State var isHovering: Bool = false
+    @State private var isHovering: Bool = false
     
     public init() {}
     
@@ -138,14 +138,21 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    let innerCornerRadius: CGFloat = 2
-    let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat = 2
+    private let elementMinHeight: CGFloat = 34
     
-    @State var isHovering: Bool = false
-    let icon: Image
+    @State private var isHovering: Bool
+    private let icon: Image
 
     public init(_ icon: Image) {
         self.icon = icon
+        self.isHovering = false
+    }
+    
+    // debug
+    init(_ icon: Image, isHovering: Bool = false) {
+        self.icon = icon
+        self.isHovering = isHovering
     }
 
     public func makeBody(configuration: Configuration) -> some View {

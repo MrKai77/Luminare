@@ -259,7 +259,24 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .frame(height: 32)
                 .foregroundStyle(.secondary)
         }
-        .frame(height: 200)
+        .frame(height: 100)
+        
+        LuminareCompose("Button", reducesTrailingSpace: true) {
+            Button {
+            } label: {
+                Text("Click Me!")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+        }
+        
+        Text(
+"""
+Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. Proident non est aliquip consectetur quis dolor. Incididunt aute do ea fugiat dolor. Cillum cillum enim exercitation dolor do. Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse et.
+"""
+        )
+        .padding(8)
+        .foregroundStyle(.secondary)
     } header: {
         HStack(alignment: .bottom) {
             Text("Section Header")
@@ -287,5 +304,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             Spacer()
         }
     }
+    .frame(width: 450)
+    .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
     .padding()
 }
