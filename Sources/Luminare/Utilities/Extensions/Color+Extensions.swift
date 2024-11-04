@@ -94,7 +94,7 @@ extension Color {
     // adjusts the brightness of the color
     func brightnessAdjustment(brightness: Double) -> Color {
         let hsb = toHSB()
-        // Ensure the new brightness is within the range [0, 1]
+        // ensures the new brightness is within the range [0, 1]
         let adjustedBrightness = max(0.0, min(brightness, 1.0))
         return Color(
             hue: Double(hsb.hue), saturation: Double(hsb.saturation), brightness: adjustedBrightness
