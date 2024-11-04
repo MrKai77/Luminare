@@ -11,7 +11,7 @@ public enum LuminareCompactPickerStyle {
     case menu
     case segmented
     
-    var style: any SwiftUI.PickerStyle {
+    var style: any PickerStyle {
         switch self {
         case .menu: .menu
         case .segmented: .segmented
@@ -19,11 +19,17 @@ public enum LuminareCompactPickerStyle {
     }
 }
 
+// MARK: - Compact Picker
+
 public struct LuminareCompactPicker<Content, V>: View
 where Content: View, V: Hashable & Equatable {
     public typealias PickerStyle = LuminareCompactPickerStyle
     
+    // MARK: Environments
+    
     @Environment(\.luminareAnimationFast) private var animationFast
+    
+    // MARK: Fields
     
     private let elementMinHeight: CGFloat
     private let horizontalPadding: CGFloat
@@ -36,6 +42,8 @@ where Content: View, V: Hashable & Equatable {
     @ViewBuilder private let content: () -> Content
     
     @State private var isHovering: Bool = false
+    
+    // MARK: Initializers
     
     public init(
         selection: Binding<V>,
@@ -55,6 +63,8 @@ where Content: View, V: Hashable & Equatable {
         self.style = style
         self.content = content
     }
+    
+    // MARK: Body
     
     public var body: some View {
         Group {
@@ -107,6 +117,8 @@ where Content: View, V: Hashable & Equatable {
     ) -> some View where Layout: _VariadicView.ViewRoot {
         _VariadicView.Tree(layout, content: content)
     }
+    
+    // MARK: Layouts
     
     struct MenuLayout: _VariadicView.UnaryViewRoot {
         @Binding var selection: V
@@ -247,6 +259,8 @@ where Content: View, V: Hashable & Equatable {
         }
     }
 }
+
+// MARK: - Preview
 
 private struct PickerPreview<V>: View where V: Hashable & Equatable {
     let elements: [V]
