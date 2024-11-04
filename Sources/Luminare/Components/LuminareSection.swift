@@ -7,7 +7,11 @@
 
 import SwiftUI
 
+// MARK: - Section
+
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
+    // MARK: Fields
+    
     private let hasPadding: Bool
     private let hasDividers: Bool
     private let isBordered: Bool
@@ -20,6 +24,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let header: () -> Header
     @ViewBuilder private let footer: () -> Footer
+
+    // MARK: Initializers
 
     public init(
         hasPadding: Bool = true,
@@ -182,6 +188,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             EmptyView()
         }
     }
+    
+    // MARK: Body
 
     public var body: some View {
         VStack(spacing: 0) {
@@ -239,6 +247,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     LuminareSection {
