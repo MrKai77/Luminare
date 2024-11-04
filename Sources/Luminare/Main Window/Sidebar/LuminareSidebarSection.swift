@@ -7,12 +7,17 @@
 
 import SwiftUI
 
-public struct LuminareSidebarSection<Label, Tab>: View
-where Label: View, Tab: LuminareTabItem, Tab: Hashable {
+// MARK: - Sidebar Section
+
+public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: LuminareTabItem, Tab: Hashable {
+    // MARK: Fields
+    
     @Binding private var selection: Tab
     private let items: [Tab]
     
     @ViewBuilder private let label: () -> Label
+
+    // MARK: Initializers
 
     public init(
         selection: Binding<Tab>,
@@ -36,6 +41,8 @@ where Label: View, Tab: LuminareTabItem, Tab: Hashable {
             Text(key)
         }
     }
+    
+    // MARK: Body
 
     public var body: some View {
         VStack {
