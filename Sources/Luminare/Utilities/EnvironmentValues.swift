@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Luminare View
+// MARK: - Luminare
 
 // MARK: LuminareTint
 
