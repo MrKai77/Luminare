@@ -13,14 +13,18 @@ public typealias RGBColorNames<R, G, B> = (
     blue: B
 )
 
+// MARK: - Color Picker (Modal)
 
 // view for the color popup as a whole
-struct ColorPickerModalView<R, G, B, Done>: View
-where R: View, G: View, B: View, Done: View {
+struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View, Done: View {
     typealias ColorNames = RGBColorNames<R, G, B>
+    
+    // MARK: Environments
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.luminareAnimationFast) private var animationFast
+    
+    // MARK: Fields
     
     @Binding var color: Color
     @Binding var hexColor: String
@@ -37,6 +41,8 @@ where R: View, G: View, B: View, Done: View {
     @State private var isBlueStepperPresented: Bool = false
     
     private let colorSampler = NSColorSampler()
+
+    // MARK: Body
 
     // main view containing all components of the color picker
     var body: some View {
@@ -103,7 +109,7 @@ where R: View, G: View, B: View, Done: View {
     }
 
     // view for RGB input fields
-    private var RGBInputFields: some View {
+    @ViewBuilder private var RGBInputFields: some View {
         HStack(spacing: 8) {
             RGBInputField(value: $redComponent) {
                 colorNames.red
@@ -153,6 +159,8 @@ where R: View, G: View, B: View, Done: View {
             blue: blueComponent / 255.0
         )
     }
+    
+    // MARK: Functions
 
     // set the color based on the source of change
     private func setColor(_ newColor: Color) {
@@ -174,6 +182,8 @@ where R: View, G: View, B: View, Done: View {
         blueComponent = rgb.blue
     }
 }
+
+// MARK: - Preview
 
 private struct ColorPickerModalPreview: View {
     @State private var color: Color = .accentColor
