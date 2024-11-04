@@ -759,13 +759,6 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
     }
 }
 
-extension NSTableView {
-    override open func viewDidMoveToWindow() {
-        super.viewWillDraw()
-        selectionHighlightStyle = .none
-    }
-}
-
 // MARK: - Preview
 
 private struct ListPreview<V>: View where V: Hashable & Comparable {
