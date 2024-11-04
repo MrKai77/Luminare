@@ -13,11 +13,10 @@ import SwiftUI
             Button {
             } label: {
                 HStack {
-                    Image(systemName: "globe.americas.fill")
+                    Image(systemName: "app.gift.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 60)
-                        .foregroundStyle(.tertiary)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Cosmetic")
@@ -38,11 +37,10 @@ import SwiftUI
             Button {
             } label: {
                 HStack {
-                    Image(systemName: "globe.central.south.asia.fill")
+                    Image(systemName: "app.gift.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 60)
-                        .foregroundStyle(.tertiary)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Cosmetic Hovering")
