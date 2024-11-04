@@ -17,9 +17,3 @@ public struct LuminareBackgroundEffect: ViewModifier {
             }
     }
 }
-
-public extension View {
-    func luminareBackground() -> some View {
-        modifier(LuminareBackgroundEffect())
-    }
-}
