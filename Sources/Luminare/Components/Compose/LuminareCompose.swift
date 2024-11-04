@@ -83,13 +83,13 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 
 // MARK: - Preview
 
-#Preview {
+#Preview("LuminareCompose") {
     LuminareSection {
         LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
                 
             } label: {
-                Text("Test")
+                Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
             }
@@ -101,7 +101,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
             Button {
                 
             } label: {
-                Text("Test")
+                Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
             }

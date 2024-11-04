@@ -122,7 +122,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
                     .modifier(LuminareBordered())
             }
             .buttonStyle(PlainButtonStyle())
-            .luminareModal(isPresented: $isColorPickerPresented, closeOnDefocus: true, isCompact: true) {
+            .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true, isCompact: true) {
                 ColorPickerModalView(
                     color: $currentColor,
                     hexColor: $text,
@@ -159,8 +159,8 @@ private struct ColorPickerPreview<F>: View where F: ParseableFormatStyle, F.Form
 }
 
 // preview as app
-#Preview {
-    ColorPickerPreview(format: StringFormatStyle(parseStrategy: .hex(.custom(true, "$"))))
+#Preview("LuminareColorPicker") {
+    ColorPickerPreview(format: StringFormatStyle(parseStrategy: .hex(.custom(true, "#"))))
     .monospaced()
     .padding()
 }

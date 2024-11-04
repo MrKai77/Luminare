@@ -277,31 +277,30 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     }
 }
 
-#Preview {
+#Preview("LuminareCompactPicker") {
     LuminareSection {
-        LuminareCompose("Menu picker", reducesTrailingSpace: true) {
+        LuminareCompose("Button", reducesTrailingSpace: true) {
+            Button {
+                
+            } label: {
+                Text("42")
+                    .frame(height: 30)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+        }
+        
+        LuminareCompose("Pick from a menu", reducesTrailingSpace: true) {
             PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
         }
         
         VStack {
-            LuminareCompose("Segmented picker") {
-            }
+            LuminareCompose("Pick from segments") {}
             
             PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", isBordered: false, hasDividers: false, style: .segmented)
                 .environment(\.luminareAnimation, .bouncy)
             
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
-        }
-        
-        LuminareCompose("Button", reducesTrailingSpace: true) {
-            Button {
-                
-            } label: {
-                Text("Test")
-                    .frame(height: 30)
-                    .padding(.horizontal, 8)
-            }
-            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
     }
     .padding()

@@ -301,7 +301,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
 
 // MARK: - Preview
 
-#Preview {
+#Preview("LuminareValueAdjusterCompose") {
     LuminareSection {
         LuminareValueAdjusterCompose(
             value: .constant(42),
@@ -310,13 +310,19 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
             lowerClamp: true, 
             upperClamp: false
         ) { view in
-            HStack {
+            HStack(spacing: 0) {
+                Text("#")
                 view
-                Text("suffix")
             }
             .monospaced()
         } label: {
-            Text("Value adjuster")
+            VStack(alignment: .leading) {
+                Text("Slide to stride")
+                
+                Text("Composed")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         
         
@@ -328,13 +334,19 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
             upperClamp: false,
             controlSize: .compact
         ) { button in
-            HStack {
+            HStack(spacing: 0) {
+                Text("#")
                 button
-                Text("suffix")
             }
             .monospaced()
         } label: {
-            Text("Value adjuster")
+            VStack(alignment: .leading) {
+                Text("Slide to stride")
+                
+                Text("Composed, Compact")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
     .padding()

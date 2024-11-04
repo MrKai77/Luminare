@@ -59,7 +59,7 @@ private struct RGBInputFieldPreview: View {
     }
 }
 
-#Preview {
+#Preview("RGBInputField") {
     LuminareSection {
         RGBInputFieldPreview()
     }

@@ -170,7 +170,7 @@ struct ColorPickerCircle: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("ColorSaturationBrightnessView") {
     LuminareSection {
         ColorSaturationBrightnessView(selectedColor: .constant(.accentColor))
     }

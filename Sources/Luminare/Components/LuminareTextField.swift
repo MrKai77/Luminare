@@ -121,11 +121,17 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
 
 // MARK: - Preview
 
-#Preview {
+#Preview("LuminareTextField") {
     LuminareSection {
-        LuminareTextField("Text Field", text: .constant("Bordered"))
-        
-        LuminareTextField("Text Field", text: .constant("Borderless"), isBordered: false)
+        VStack {
+            LuminareTextField("Text Field", text: .constant("Bordered"))
+            
+            LuminareTextField("Text Field", text: .constant("Borderless"), isBordered: false)
+            
+            
+            LuminareTextField("Text Field", text: .constant("Disabled"))
+                .disabled(true)
+        }
     }
     .padding()
 }

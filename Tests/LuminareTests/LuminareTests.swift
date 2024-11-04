@@ -1,12 +1,8 @@
 @testable import Luminare
-import XCTest
+import Testing
 
-final class LuminareTests: XCTestCase {
-    func testExample() throws {
-        // XCTest Documentation
-        // https://developer.apple.com/documentation/xctest
-
-        // Defining Test Cases and Test Methods
-        // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
+struct LuminareTests {
+    @Test func test() throws {
+        // https://developer.apple.com/xcode/swift-testing/
     }
 }

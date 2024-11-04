@@ -91,7 +91,7 @@ where Content: View, V: Equatable {
         .buttonStyle(LuminareButtonStyle())
     }
 
-    @ViewBuilder func pickerButton(i: Int, j: Int) -> some View {
+    @ViewBuilder private func pickerButton(i: Int, j: Int) -> some View {
         if let element = getElement(i: i, j: j) {
             Button {
                 guard !isDisabled(element) else { return }
@@ -147,6 +147,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
             )
         }
+        
         // bottom left
         else if j == 0, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
@@ -156,6 +157,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: innerCornerRadius
             )
         }
+        
         // top right
         else if j == columnsIndex, i == 0, roundTop {
             UnevenRoundedRectangle(
@@ -165,6 +167,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
+        
         // bottom right
         else if j == columnsIndex, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
@@ -174,6 +177,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: innerCornerRadius
             )
         }
+        
         // regular
         else {
             UnevenRoundedRectangle(
@@ -188,7 +192,7 @@ where Content: View, V: Equatable {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("LuminarePicker") {
     LuminareSection {
         LuminarePicker(
             elements: Array(32..<50),

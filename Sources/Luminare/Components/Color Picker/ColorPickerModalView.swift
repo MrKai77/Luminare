@@ -204,7 +204,7 @@ private struct ColorPickerModalPreview: View {
     }
 }
 
-#Preview {
+#Preview("ColorPickerModalView") {
     LuminareSection {
         ColorPickerModalPreview()
     }

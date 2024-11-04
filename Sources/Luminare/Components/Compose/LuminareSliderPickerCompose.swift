@@ -142,14 +142,21 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
 // MARK: - Preview
 
-#Preview {
+#Preview("LuminareSliderPickerCompose") {
     LuminareSection {
         LuminareSliderPickerCompose(
-            "Slider picker",
-            ["0", "1", "e", "i", "π"], selection: .constant("i")
+            [0, 1, 2, 3, 4], selection: .constant(3)
         ) { value in
-            Text("\(value)")
+            Text("\(value) is Chosen")
                 .monospaced()
+        } label: {
+            VStack(alignment: .leading) {
+                Text("Slide to pick a value")
+                
+                Text("Composed")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
     .padding()

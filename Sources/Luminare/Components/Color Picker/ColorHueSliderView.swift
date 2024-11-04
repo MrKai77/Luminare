@@ -126,7 +126,7 @@ struct ColorHueSliderView: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("ColorHueSliderView") {
     LuminareSection {
         ColorHueSliderView(selectedColor: .constant(.accentColor))
     }

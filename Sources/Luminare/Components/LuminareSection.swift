@@ -250,29 +250,39 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
 // MARK: - Preview
 
-#Preview {
+#Preview("LuminareSection") {
     LuminareSection {
-        Text("Content")
-            .frame(height: 200)
+        VStack {
+            Image(systemName: "apple.logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 32)
+                .foregroundStyle(.secondary)
+        }
+        .frame(height: 200)
     } header: {
         HStack(alignment: .bottom) {
-            Text("Header")
+            Text("Section Header")
             
             Spacer()
             
-            Button {
+            HStack(alignment: .bottom) {
+                Button {
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundStyle(.tint)
+                }
                 
-            } label: {
-                Text("Action")
-                    .font(.caption)
-                    .frame(height: 24)
-                    .padding(.horizontal, 8)
+                Button {
+                } label: {
+                    Image(systemName: "location")
+                }
             }
-            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+            .buttonStyle(.borderless)
         }
     } footer: {
         HStack {
-            Text("Footer")
+            Text("Section Footer")
             
             Spacer()
         }

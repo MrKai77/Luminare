@@ -758,14 +758,14 @@ private struct StepperPreview<Label, V>: View where Label: View, V: Strideable &
                     .accentColor
             }
             .environment(\.luminareTint) { .primary }
-            .background(.quinary)
+//            .background(.quinary)
             
             HStack {
                 Text(String(format: "%.1f", CGFloat(value)))
                 
-                Button("42") {
-                    value = 42
-                }
+//                Button("42") {
+//                    value = 42
+//                }
             }
         }
         .padding()
@@ -794,9 +794,9 @@ private struct StepperPopoverPreview: View {
                 .frame(width: 100, height: 32)
             }
             
-            Button("42") {
-                value = 42
-            }
+//            Button("42") {
+//                value = 42
+//            }
         }
         
         Text(String(format: "%.1f", value))
@@ -804,7 +804,7 @@ private struct StepperPopoverPreview: View {
 }
 
 @available(macOS 15.0, *)
-#Preview {
+#Preview("LuminareStepper") {
     VStack {
         HStack {
             VStack {
@@ -812,7 +812,7 @@ private struct StepperPopoverPreview: View {
                     value: 42,
                     source: .finite(range: -100...50, stride: 2),
                     direction: .horizontal,
-                    prominentValues: [0, 42]
+                    prominentValues: [0, 42, 50]
                 ) {
                     VStack {
                         Text("Horizontal")
@@ -840,6 +840,7 @@ private struct StepperPopoverPreview: View {
                     }
                 }
             }
+            .frame(width: 500)
             
             HStack {
                 StepperPreview(
@@ -847,7 +848,7 @@ private struct StepperPopoverPreview: View {
                     source: .finite(range: -100...50, stride: 2),
                     alignment: .center,
                     direction: .vertical,
-                    prominentValues: [0, 42]
+                    prominentValues: [0, 38, 40, 42]
                 ) {
                     VStack {
                         Text("Vertical Center Aligned")
@@ -864,7 +865,7 @@ private struct StepperPopoverPreview: View {
                     value: 42,
                     source: .finiteContinuous(range: -100...50, stride: 2),
                     direction: .verticalAlternate,
-                    prominentValues: [0, 42]
+                    prominentValues: [0, 38, 40, 42]
                 ) {
                     VStack {
                         Text("Vertical Alternate")
@@ -876,11 +877,11 @@ private struct StepperPopoverPreview: View {
                     }
                 }
             }
+            .frame(width: 300)
         }
         .multilineTextAlignment(.center)
         
-        StepperPopoverPreview()
+//        StepperPopoverPreview()
     }
     .padding()
-    .frame(width: 650, height: 500)
 }

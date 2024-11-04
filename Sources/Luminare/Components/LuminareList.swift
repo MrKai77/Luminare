@@ -20,6 +20,8 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
+    private let id: KeyPath<V, ID>
+    private let actionsMaxHeight: CGFloat?
     
     @ViewBuilder private let content: (Binding<V>) -> ContentA
     @ViewBuilder private let emptyView: () -> ContentB
@@ -30,7 +32,6 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
     @State private var firstItem: V?
     @State private var lastItem: V?
-    private let id: KeyPath<V, ID>
 
     @State private var canRefreshSelection = true
     @State private var eventMonitor: AnyObject?
@@ -40,6 +41,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
         @ViewBuilder actions: @escaping () -> Actions,
@@ -50,6 +52,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self._items = items
         self._selection = selection
         self.id = id
+        self.actionsMaxHeight = actionsMaxHeight
         self.content = content
         self.emptyView = emptyView
         self.actions = actions
@@ -63,6 +66,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         _ footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
@@ -71,6 +75,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: emptyView,
             actions: actions,
@@ -89,6 +94,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions,
         @ViewBuilder removeView: @escaping () -> RemoveView,
@@ -98,6 +104,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: {
                 EmptyView()
@@ -114,6 +121,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         _ footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions
@@ -121,6 +129,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             actions: actions,
             removeView: {
@@ -138,6 +147,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
         @ViewBuilder actions: @escaping () -> Actions,
@@ -147,6 +157,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: emptyView,
             actions: actions,
@@ -162,6 +173,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
@@ -170,6 +182,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: emptyView,
             actions: actions,
@@ -185,6 +198,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions,
         @ViewBuilder removeView: @escaping () -> RemoveView,
@@ -193,6 +207,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: {
                 EmptyView()
@@ -207,6 +222,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions
@@ -214,6 +230,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             actions: actions,
             removeView: {
@@ -228,6 +245,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
         @ViewBuilder actions: @escaping () -> Actions,
@@ -237,6 +255,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: emptyView,
             actions: actions,
@@ -252,6 +271,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
@@ -260,6 +280,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: emptyView,
             actions: actions,
@@ -275,6 +296,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions,
         @ViewBuilder removeView: @escaping () -> RemoveView,
@@ -283,6 +305,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: {
                 EmptyView()
@@ -297,6 +320,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions
@@ -304,6 +328,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             actions: actions,
             removeView: {
@@ -318,6 +343,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
         @ViewBuilder actions: @escaping () -> Actions,
@@ -326,6 +352,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: emptyView,
             actions: actions,
@@ -342,6 +369,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
         removeKey: LocalizedStringKey,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder actions: @escaping () -> Actions
@@ -349,6 +377,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.init(
             items: items,
             selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
             content: content,
             emptyView: {
                 EmptyView()
@@ -385,6 +414,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
                 .buttonStyle(LuminareDestructiveButtonStyle())
                 .disabled(selection.isEmpty)
             }
+            .frame(maxHeight: actionsMaxHeight)
             .modifier(
                 LuminareCroppedSectionItem(
                     isFirstChild: true,
@@ -479,9 +509,8 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
     }
 
     func addEventMonitor() {
-        if eventMonitor != nil {
-            return
-        }
+        guard eventMonitor == nil else { return }
+        
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let kVK_Escape: CGKeyCode = 0x35
 
@@ -589,11 +618,17 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             }
             .onChange(of: selection) { newSelection in
                 guard canRefreshSelection else { return }
-                let currentSelection = newSelection
                 DispatchQueue.main.async {
                     withAnimation(animation) {
-                        tintOpacity = currentSelection.contains(item) ? maxTintOpacity : .zero
-                        lineWidth = currentSelection.contains(item) ? maxLineWidth : .zero
+                        updateSelection(selection: newSelection)
+                    }
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.async {
+                    withAnimation(animation) {
+                        // initialize selection
+                        updateSelection(selection: selection)
                     }
                 }
             }
@@ -627,29 +662,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         }
     }
     
-    // MARK: Functions
-
-    func isFirstInSelection() -> Bool {
-        if let firstIndex = items.firstIndex(of: item),
-           firstIndex > 0,
-           !selection.contains(items[firstIndex - 1]) {
-            return true
-        }
-
-        return item == firstItem
-    }
-
-    func isLastInSelection() -> Bool {
-        if let firstIndex = items.firstIndex(of: item),
-           firstIndex < items.count - 1,
-           !selection.contains(items[firstIndex + 1]) {
-            return true
-        }
-
-        return item == lastItem
-    }
-
-    func firstItemPart() -> some View {
+    @ViewBuilder private func firstItemPart() -> some View {
         VStack(spacing: 0) {
             ZStack {
                 UnevenRoundedRectangle(
@@ -659,54 +672,54 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     topTrailingRadius: cornerRadius
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
-
+                
                 VStack {
                     Color.clear
                     HStack {
                         Spacer()
                             .frame(width: lineWidth)
-
+                        
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
-
+                        
                         Spacer()
                             .frame(width: lineWidth)
                     }
                 }
             }
             .compositingGroup()
-
+            
             // --- bottom part ---
-
+            
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
-
+                
                 Spacer()
-
+                
                 Rectangle()
                     .frame(width: lineWidth)
             }
             .foregroundStyle(.tint)
         }
     }
-
-    func lastItemPart(isBottomOfList: Bool) -> some View {
+    
+    @ViewBuilder private func lastItemPart(isBottomOfList: Bool) -> some View {
         VStack(spacing: 0) {
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
-
+                
                 Spacer()
-
+                
                 Rectangle()
                     .frame(width: lineWidth)
             }
             .foregroundStyle(.tint)
-
+            
             // --- bottom part ---
-
+            
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
@@ -715,16 +728,16 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     topTrailingRadius: 0
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
-
+                
                 VStack {
                     HStack {
                         Spacer()
                             .frame(width: lineWidth)
-
+                        
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
-
+                        
                         Spacer()
                             .frame(width: lineWidth)
                     }
@@ -734,21 +747,21 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             .compositingGroup()
         }
     }
-
-    func doubleLinePart() -> some View {
+    
+    @ViewBuilder private func doubleLinePart() -> some View {
         HStack {
             Rectangle()
                 .frame(width: lineWidth)
-
+            
             Spacer()
-
+            
             Rectangle()
                 .frame(width: lineWidth)
         }
         .foregroundStyle(.tint)
     }
-
-    func singleSelectionPart(isBottomOfList: Bool) -> some View {
+    
+    @ViewBuilder private func singleSelectionPart(isBottomOfList: Bool) -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: cornerRadius,
             bottomLeadingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
@@ -756,6 +769,33 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             topTrailingRadius: cornerRadius
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
+    }
+    
+    // MARK: Functions
+    
+    private func updateSelection(selection: Set<V>) {
+        tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
+        lineWidth = selection.contains(item) ? maxLineWidth : .zero
+    }
+
+    private func isFirstInSelection() -> Bool {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex > 0,
+           !selection.contains(items[firstIndex - 1]) {
+            return true
+        }
+
+        return item == firstItem
+    }
+
+    private func isLastInSelection() -> Bool {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex < items.count - 1,
+           !selection.contains(items[firstIndex + 1]) {
+            return true
+        }
+
+        return item == lastItem
     }
 }
 
@@ -768,7 +808,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     
     var body: some View {
         LuminareList(
-            "Header", "Footer",
+            "List Header", "List Footer",
             items: $items,
             selection: $selection,
             id: \.self,
@@ -801,15 +841,13 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     }
 }
 
-#Preview {
-    ScrollView {
-        ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
-            guard items.count < 100 else { return }
-            let random = { Int.random(in: 0..<100) }
-            var new = random()
-            while items.contains([new]) { new = random() }
-            items.append(new)
-        }
-        .padding()
+#Preview("LuminareList") {
+    ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
+        guard items.count < 100 else { return }
+        let random = { Int.random(in: 0..<100) }
+        var new = random()
+        while items.contains([new]) { new = random() }
+        items.append(new)
     }
+    .padding()
 }
