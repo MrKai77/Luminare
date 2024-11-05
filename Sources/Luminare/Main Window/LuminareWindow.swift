@@ -8,8 +8,6 @@
 import SwiftUI
 
 /// A stylized window with a materialized appearance.
-///
-/// This provides an out-of-the-box experience for marching your design coherently using ``Luminare``.
 public class LuminareWindow: NSWindow {
     private var initializationTime: Date
 

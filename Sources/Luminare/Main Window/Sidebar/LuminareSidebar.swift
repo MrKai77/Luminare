@@ -8,27 +8,6 @@
 import SwiftUI
 
 /// A stylized sidebar for ``LuminareWindow``.
-///
-/// Typically, the content is consisted of multiple ``LuminareSidebarTab`` organized by ``LuminareSidebarSection``:
-///
-/// ```swift
-/// LuminareSidebar {
-///     LuminareSidebarSection("Application", selection: $selection, items: [...])
-///     LuminareSidebarSection("About", selection: $selection, items: [...])
-///     ...
-/// }
-/// ```
-///
-/// ### Inadequacies
-///
-/// This view isn't currently scrollable, so please be aware of the content height.
-///
-/// ## Topics
-///
-/// ### Related Views
-///
-/// - ``LuminareSidebarSection``
-/// - ``LuminareSidebarTab``
 public struct LuminareSidebar<Content>: View where Content: View {
     @ViewBuilder private let content: () -> Content
 
@@ -63,7 +42,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
             LuminareSidebar {
                 ForEach(0..<100) { num in
                     Text("\(num)")
-                        .frame(width: 75, height: 35)
+                        .frame(width: 150, height: 35)
                         .modifier(LuminareBordered())
                 }
             }
@@ -75,7 +54,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
             LuminareSidebar {
                 ForEach(0..<5) { num in
                     Text("\(num)")
-                        .frame(width: 75, height: 35)
+                        .frame(width: 150, height: 35)
                         .modifier(LuminareBordered())
                 }
             }

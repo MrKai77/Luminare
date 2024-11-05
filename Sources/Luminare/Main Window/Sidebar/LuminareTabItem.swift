@@ -9,9 +9,36 @@ import SwiftUI
 
 /// The content of a ``LuminareSidebarTab``.
 ///
-/// ## Topics
+/// It's convenient to implement your own tab instances:
 ///
-/// ### Related Views
+/// ```swift
+/// enum Tab: LuminareTabItem, CaseIterable, Identifiable {
+///     case general
+///     case about
+///
+///     // in this case, `String` is extended to conform to `Identifiable`
+///     var id: String {
+///         switch self {
+///         case .general: "general"
+///         case .about: "about"
+///         }
+///     }
+///
+///     var title: String {
+///         switch self {
+///         case .general: .init(localized: "General")
+///         case .about: .init(localized: "About")
+///         }
+///     }
+///
+///     var icon: Image {
+///         switch self {
+///         case .general: .init(systemName: "gear")
+///         case .about: .init(systemName: "app.gift")
+///         }
+///     }
+/// }
+/// ```
 public protocol LuminareTabItem: Equatable, Hashable, Identifiable where ID: Identifiable {
     /// The unique id of the tab.
     var id: ID { get }

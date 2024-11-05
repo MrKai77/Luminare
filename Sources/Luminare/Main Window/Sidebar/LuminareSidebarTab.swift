@@ -9,13 +9,7 @@ import SwiftUI
 
 // MARK: - Sidebar Tab
 
-/// A stylized tab that can be selected, typically used in ``LuminareSidebar``.
-///
-/// ## Topics
-///
-/// ### Related Protocols
-///
-/// - ``LuminareTabItem``
+/// A stylized tab for ``LuminareSidebar`` that is designed to be selectable.
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Environments
     
@@ -120,4 +114,34 @@ struct SidebarButtonStyle: ButtonStyle {
             .animation(animationFast, value: [isHovering, isActive, configuration.isPressed])
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
+}
+
+// MARK: - Previews
+
+private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
+    case about
+    
+    var id: String {
+        switch self {
+        case .about: "about"
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .about: .init(localized: "About")
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .about: .init(systemName: "app.gift")
+        }
+    }
+}
+
+#Preview("LuminareSidebarTab") {
+    LuminareSidebarTab(Tab.about, .constant(Tab.about))
+        .frame(width: 225)
+        .padding()
 }

@@ -1,12 +1,18 @@
 # ``Luminare/LuminareWindow``
 
+@Row {
+    @Column {
+        This provides an out-of-the-box experience for marching your design coherently using ``Luminare``.
+        
+        It has traffic lights but without a title bar section, while the window content are wrapped within a ``LuminareView``.
 
-It holds a ``LuminareView`` that wraps the window content.
-It has traffic lights but without a title bar section.
+        Typically, you are likely to put a ``LuminareDividedStack`` inside, resulting in a vertically divided layout:
+    }
 
-Typically, you are likely to put a ``LuminareDividedStack`` inside, resulting in a vertically divided layout:
-
-![`LuminareWindow`](LuminareWindow)
+    @Column {
+        ![`LuminareWindow`](LuminareWindow)
+    }
+}
 
 ## Topics
 

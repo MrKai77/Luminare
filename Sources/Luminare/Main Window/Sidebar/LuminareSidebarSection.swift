@@ -9,13 +9,7 @@ import SwiftUI
 
 // MARK: - Sidebar Section
 
-/// A stylized section that is typically used in ``LuminareSidebar``.
-///
-/// ## Topics
-///
-/// ### Related Views
-///
-/// - ``LuminareSidebarTab``
+/// A stylized section for ``LuminareSidebar``.
 public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: LuminareTabItem, Tab: Hashable {
     // MARK: Fields
     
@@ -94,4 +88,73 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             }
         }
     }
+}
+
+// MARK: - Previews
+
+private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
+    case lorem
+    case ipsum
+    case fundamental
+    case advanced
+    case expert
+    case about
+    
+    var id: String {
+        switch self {
+        case .lorem: "lorem"
+        case .ipsum: "ipsum"
+        case .fundamental: "fundamental"
+        case .advanced: "advanced"
+        case .expert: "expert"
+        case .about: "about"
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .lorem: .init(localized: "Lorem")
+        case .ipsum: .init(localized: "Ipsum")
+        case .fundamental: .init(localized: "Fundamental")
+        case .advanced: .init(localized: "Advanced")
+        case .expert: .init(localized: "Expert")
+        case .about: .init(localized: "About")
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .lorem: .init(systemName: "paragraphsign")
+        case .ipsum: .init(systemName: "strikethrough")
+        case .fundamental: .init(systemName: "apple.meditate")
+        case .advanced: .init(systemName: "airplane.departure")
+        case .expert: .init(systemName: "flag.checkered.2.crossed")
+        case .about: .init(systemName: "app.gift")
+        }
+    }
+    
+    var hasIndicator: Bool {
+        switch self {
+        case .expert:
+            true
+        default:
+            false
+        }
+    }
+    
+    @ViewBuilder func view() -> some View {
+        EmptyView()
+    }
+}
+
+#Preview("LuminareSidebarSection") {
+    LuminareSection {
+        VStack(spacing: 24) {
+            LuminareSidebarSection(selection: .constant(Tab.about), items: [Tab.lorem, .ipsum])
+            LuminareSidebarSection("Settings Graph", selection: .constant(Tab.about), items: [Tab.fundamental, .advanced, .expert])
+            LuminareSidebarSection("Application", selection: .constant(Tab.about), items: [Tab.about])
+        }
+    }
+    .frame(width: 225)
+    .padding()
 }
