@@ -100,15 +100,8 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case expert
     case about
     
-    var id: String {
-        switch self {
-        case .lorem: "lorem"
-        case .ipsum: "ipsum"
-        case .fundamental: "fundamental"
-        case .advanced: "advanced"
-        case .expert: "expert"
-        case .about: "about"
-        }
+    var id: Self {
+        self
     }
     
     var title: String {

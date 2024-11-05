@@ -121,10 +121,8 @@ struct SidebarButtonStyle: ButtonStyle {
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case about
     
-    var id: String {
-        switch self {
-        case .about: "about"
-        }
+    var id: Self {
+        self
     }
     
     var title: String {
