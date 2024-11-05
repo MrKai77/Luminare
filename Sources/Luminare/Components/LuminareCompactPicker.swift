@@ -124,7 +124,10 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
             Picker("", selection: $selection) {
-                ForEach(Array(children.enumerated()), id: \.offset) { _, child in
+                ForEach(Array(zip(
+                    children,
+                    getValues(from: children)
+                )), id: \.1) { child, _ in
                     child
                 }
             }
@@ -132,6 +135,12 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             .pickerStyle(.menu)
             .buttonStyle(.borderless)
             .padding(.trailing, -2)
+        }
+        
+        private func getValues(from children: _VariadicView.Children) -> [V] {
+            children.compactMap { child in
+                child.id(as: V.self)
+            }
         }
     }
     
