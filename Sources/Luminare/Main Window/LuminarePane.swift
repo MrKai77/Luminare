@@ -38,10 +38,6 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     ///
     /// - Parameter key: the `LocalizedStringKey` to look up the header text.
     /// - Parameter content: the content view.
-    ///
-    /// ## Topics
-    ///
-    /// - ``init(content:header:)``
     public init(
         _ key: LocalizedStringKey,
         @ViewBuilder content: @escaping () -> Content

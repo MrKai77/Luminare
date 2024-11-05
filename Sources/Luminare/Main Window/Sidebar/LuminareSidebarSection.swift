@@ -46,10 +46,6 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     /// - Parameter key: the `LocalizedStringKey` to look up the label text.
     /// - Parameter selection: the selected ``LuminareTabItem`` binding.
     /// - Parameter items: the list of available ``LuminareTabItem``.
-    ///
-    /// ## Topics
-    ///
-    /// - ``init(selection:items:label:)``
     public init(
         _ key: LocalizedStringKey,
         selection: Binding<Tab>,
@@ -60,6 +56,22 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             items: items
         ) {
             Text(key)
+        }
+    }
+    
+    /// Initializes a ``LuminareSidebarSection`` without a label.
+    ///
+    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
+    /// - Parameter items: the list of available ``LuminareTabItem``.
+    public init(
+        selection: Binding<Tab>,
+        items: [Tab]
+    ) where Label == EmptyView {
+        self.init(
+            selection: selection,
+            items: items
+        ) {
+            EmptyView()
         }
     }
     
