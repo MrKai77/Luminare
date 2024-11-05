@@ -64,7 +64,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     // MARK: Initializers
     
     public init(
-        arrowEdge: Edge = .bottom,
+        arrowEdge: Edge = .top,
         trigger: Trigger = .onHover(),
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
@@ -83,7 +83,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     
     public init(
         _ key: LocalizedStringKey,
-        arrowEdge: Edge = .bottom,
+        arrowEdge: Edge = .top,
         trigger: Trigger = .onHover(),
         highlight: Bool = true,
         cornerRadius: CGFloat = 8,
@@ -105,7 +105,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     }
     
     public init(
-        arrowEdge: Edge = .bottom,
+        arrowEdge: Edge = .top,
         trigger: Trigger = .onHover(),
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
