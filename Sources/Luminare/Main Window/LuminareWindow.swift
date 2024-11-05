@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-/// A window that is customized for ``Luminare`` with a stylized, materialized
-/// appearance.
+/// A stylized window with a materialized appearance.
 ///
 /// This provides an out-of-the-box experience for marching your design coherently using ``Luminare``.
 public class LuminareWindow: NSWindow {

@@ -29,9 +29,11 @@ import SwiftUI
                     
                     Spacer()
                 }
-                .padding(4)
+                .padding(8)
             }
-            .buttonStyle(LuminareCosmeticButtonStyle(.init(systemName: "star.fill")))
+            .buttonStyle(LuminareCosmeticButtonStyle {
+                Image(systemName: "star.fill")
+            })
             .frame(height: 72)
             
             Button {
@@ -53,9 +55,11 @@ import SwiftUI
                     
                     Spacer()
                 }
-                .padding(4)
+                .padding(8)
             }
-            .buttonStyle(LuminareCosmeticButtonStyle(.init(systemName: "star.fill"), isHovering: true))
+            .buttonStyle(LuminareCosmeticButtonStyle(isHovering: true) {
+                Image(systemName: "star.fill")
+            })
             .frame(height: 72)
         }
         

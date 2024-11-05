@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A tab item for ``LuminareSidebarTab``.
+/// The content of a ``LuminareSidebarTab``.
 ///
 /// ## Topics
 ///

@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Pane
 
-/// A stylized pane that well distributes its content in the way ``Luminare`` is expected to do.
+/// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     // MARK: Fields
     

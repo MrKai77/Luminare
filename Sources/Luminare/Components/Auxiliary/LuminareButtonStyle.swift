@@ -13,12 +13,31 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    private let innerCornerRadius: CGFloat = 2
-    private let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat
+    private let elementMinHeight: CGFloat
     
-    @State private var isHovering: Bool = false
-
-    public init() {}
+    @State private var isHovering: Bool
+    
+    public init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
+        self.isHovering = false
+    }
+    
+#if DEBUG
+    init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34,
+        isHovering: Bool = false
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
+        self.isHovering = isHovering
+    }
+#endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -81,12 +100,31 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    private let innerCornerRadius: CGFloat = 2
-    private let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat
+    private let elementMinHeight: CGFloat
     
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
     
-    public init() {}
+    public init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
+        self.isHovering = false
+    }
+    
+#if DEBUG
+    init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34,
+        isHovering: Bool = false
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
+        self.isHovering = isHovering
+    }
+#endif
     
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -138,22 +176,36 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    private let innerCornerRadius: CGFloat = 2
-    private let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat
+    private let elementMinHeight: CGFloat
+    @ViewBuilder private let icon: () -> Image
     
     @State private var isHovering: Bool
-    private let icon: Image
 
-    public init(_ icon: Image) {
+    public init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34,
+        @ViewBuilder icon: @escaping () -> Image
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
         self.icon = icon
         self.isHovering = false
     }
     
-    // debug
-    init(_ icon: Image, isHovering: Bool = false) {
+#if DEBUG
+    init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34,
+        isHovering: Bool = false,
+        @ViewBuilder icon: @escaping () -> Image
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
         self.icon = icon
         self.isHovering = isHovering
     }
+#endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -177,7 +229,8 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             .overlay {
                 HStack {
                     Spacer()
-                    icon
+                    
+                    icon()
                         .opacity(isHovering ? 1 : 0)
                 }
                 .padding(24)
@@ -192,16 +245,41 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
     
-    let elementMinHeight: CGFloat = 34
-    let elementExtraMinHeight: CGFloat = 25
-    let extraCompact: Bool
+    private let elementMinHeight: CGFloat
+    private let elementExtraMinHeight: CGFloat
+    private let extraCompact: Bool
+    private let cornerRadius: CGFloat
     
-    @State var isHovering: Bool = false
-    let cornerRadius: CGFloat = 8
+    @State var isHovering: Bool
 
-    public init(extraCompact: Bool = false) {
+    public init(
+        elementMinHeight: CGFloat = 34,
+        elementExtraMinHeight: CGFloat = 25,
+        extraCompact: Bool = false,
+        cornerRadius: CGFloat = 8
+    ) {
+        self.elementMinHeight = elementMinHeight
+        self.elementExtraMinHeight = elementExtraMinHeight
         self.extraCompact = extraCompact
+        self.cornerRadius = cornerRadius
+        self.isHovering = false
     }
+    
+#if DEBUG
+    init(
+        elementMinHeight: CGFloat = 34,
+        elementExtraMinHeight: CGFloat = 25,
+        extraCompact: Bool = false,
+        cornerRadius: CGFloat = 8,
+        isHovering: Bool = false
+    ) {
+        self.elementMinHeight = elementMinHeight
+        self.elementExtraMinHeight = elementExtraMinHeight
+        self.extraCompact = extraCompact
+        self.cornerRadius = cornerRadius
+        self.isHovering = isHovering
+    }
+#endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -241,17 +319,21 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 // MARK: - Bordered
 
 public struct LuminareBordered: ViewModifier {
-    @Binding var highlight: Bool
-    let cornerRadius: CGFloat = 8
+    private let isHighlighted: Bool
+    private let cornerRadius: CGFloat
 
-    public init(highlight: Binding<Bool> = .constant(false)) {
-        self._highlight = highlight
+    public init(
+        highlighted: Bool = false,
+        cornerRadius: CGFloat = 8
+    ) {
+        self.isHighlighted = highlighted
+        self.cornerRadius = cornerRadius
     }
 
     public func body(content: Content) -> some View {
         content
             .background {
-                if highlight {
+                if isHighlighted {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 } else {
                     Rectangle().foregroundStyle(.quinary)

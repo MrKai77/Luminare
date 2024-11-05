@@ -13,7 +13,7 @@ import SwiftUI
 ///
 /// ## Topics
 ///
-/// ### Related Views
+/// ### Related Protocols
 ///
 /// - ``LuminareTabItem``
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
