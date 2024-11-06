@@ -134,7 +134,6 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
             )
             .padding(.horizontal, horizontalPadding)
         }
-        .padding(.horizontal, horizontalPadding)
         .frame(height: height)
         .animation(animation, value: selection)
     }
