@@ -151,7 +151,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                 }
             }
         }
-        .padding(.horizontal, horizontalPadding)
         .frame(height: controlSize.height)
         .animation(animation, value: value)
         .animation(animation, value: isShowingTextBox)
