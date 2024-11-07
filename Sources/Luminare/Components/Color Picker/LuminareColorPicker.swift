@@ -9,10 +9,8 @@ import SwiftUI
 
 // MARK: - Color Picker
 
-public struct LuminareColorPicker<R, G, B, F, Done>: View
-where R: View, G: View, B: View,
-        F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
-        Done: View {
+/// A stylized color picker.
+public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
 
     // MARK: Fields
@@ -29,7 +27,14 @@ where R: View, G: View, B: View,
     @State private var isColorPickerPresented = false
 
     // MARK: Initializers
-
+    
+    /// The most flexible option to initialize a ``LuminareColorPicker``.
+    /// - Parameters:
+    ///   - color: the color to be edited.
+    ///   - format: the format of the hex color.
+    ///   - isBordered: whether the text field should be bordered.
+    ///   - colorNames: names for the RGB components. Used for localization.
+    ///   - done: view to be displayed in the modal's done button.
     public init(
         color: Binding<Color>,
         format: F,
@@ -45,6 +50,13 @@ where R: View, G: View, B: View,
         self.done = done
     }
 
+    /// Initialize a ``LuminareColorPicker`` using preset hex color strategies.
+    /// - Parameters:
+    ///   - color: the color to be edited.
+    ///   - parseStrategy: the strategy used to parse the hex color.
+    ///   - isBordered: whether the text field should be bordered.
+    ///   - colorNames: names for the RGB components. Used for localization.
+    ///   - done: view to be displayed in the modal's done button.
     public init(
         color: Binding<Color>,
         parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell),
@@ -60,7 +72,14 @@ where R: View, G: View, B: View,
             done: done
         )
     }
-
+    
+    /// Initialize a ``LuminareColorPicker`` using a custom hex color format strategy.
+    /// - Parameters:
+    ///   - key: the key for the localized string of the done button.
+    ///   - color: the color to be edited.
+    ///   - format: the format of the hex color.
+    ///   - isBordered: whether the text field should be bordered.
+    ///   - colorNames: names for the RGB components. Used for localization.
     public init(
         _ key: LocalizedStringKey,
         color: Binding<Color>,
@@ -77,7 +96,14 @@ where R: View, G: View, B: View,
             Text(key)
         }
     }
-
+    
+    /// Initialize a ``LuminareColorPicker`` using preset hex color strategies.
+    /// - Parameters:
+    ///   - key: the key for the localized string of the done button.
+    ///   - color: the color to be edited.
+    ///   - parseStrategy: the strategy used to parse the hex color.
+    ///   - isBordered: whether the text field should be bordered.
+    ///   - colorNames: names for the RGB components. Used for localization.
     public init(
         _ key: LocalizedStringKey,
         color: Binding<Color>,
