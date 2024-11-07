@@ -8,7 +8,7 @@
 import AppKit
 import SwiftUI
 
-// adds functionality to SwiftUI's Color type
+// adds functionality to `Color`
 extension Color {
     static let violet = Color(red: 0.56, green: 0, blue: 1)
 
@@ -70,7 +70,7 @@ extension Color {
             NSLog("Invalid mix amount: \(amount). Amount must be between 0 and 1.")
             return self
         }
-        let blend = { (c1: CGFloat, c2: CGFloat) -> CGFloat in c1 + (c2 - c1) * amount }
+        let blend = { (color1: CGFloat, color2: CGFloat) -> CGFloat in color1 + (color2 - color1) * amount }
         let selfComponents = components
         let otherComponents = other.components
         return Color(

@@ -64,17 +64,17 @@ where Content: View, V: Equatable {
         Group {
             if isCompact {
                 HStack(spacing: 2) {
-                    ForEach(0...columnsIndex, id: \.self) { j in
-                        pickerButton(i: 0, j: j)
+                    ForEach(0...columnsIndex, id: \.self) { column in
+                        pickerButton(row: 0, column: column)
                     }
                 }
                 .frame(minHeight: 34)
             } else {
                 VStack(spacing: 2) {
-                    ForEach(0...rowsIndex, id: \.self) { i in
+                    ForEach(0...rowsIndex, id: \.self) { row in
                         HStack(spacing: 2) {
-                            ForEach(0...columnsIndex, id: \.self) { j in
-                                pickerButton(i: i, j: j)
+                            ForEach(0...columnsIndex, id: \.self) { column in
+                                pickerButton(row: row, column: column)
                             }
                         }
                     }
@@ -91,8 +91,8 @@ where Content: View, V: Equatable {
         .buttonStyle(LuminareButtonStyle())
     }
 
-    @ViewBuilder private func pickerButton(i: Int, j: Int) -> some View {
-        if let element = getElement(i: i, j: j) {
+    @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
+        if let element = getElement(row: row, column: column) {
             Button {
                 guard !isDisabled(element) else { return }
                 withAnimation(animation) {
@@ -101,10 +101,10 @@ where Content: View, V: Equatable {
             } label: {
                 ZStack {
                     let isActive = internalSelection == element
-                    getShape(i: i, j: j)
+                    getShape(row: row, column: column)
                         .foregroundStyle(isActive ? AnyShapeStyle(.tint.opacity(0.15)) : AnyShapeStyle(.clear))
                         .overlay {
-                            getShape(i: i, j: j)
+                            getShape(row: row, column: column)
                                 .strokeBorder(
                                     .tint,
                                     lineWidth: isActive ? 1.5 : 0
@@ -117,7 +117,7 @@ where Content: View, V: Equatable {
                 }
             }
         } else {
-            getShape(i: i, j: j)
+            getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
         }
     }
@@ -132,14 +132,14 @@ where Content: View, V: Equatable {
         (element as? LuminarePickerData)?.selectable == false
     }
 
-    private func getElement(i: Int, j: Int) -> V? {
-        guard j < elements2D[i].count else { return nil }
-        return elements2D[i][j]
+    private func getElement(row: Int, column: Int) -> V? {
+        guard column < elements2D[row].count else { return nil }
+        return elements2D[row][column]
     }
 
-    private func getShape(i: Int, j: Int) -> some InsettableShape {
+    private func getShape(row: Int, column: Int) -> some InsettableShape {
         // top left
-        if j == 0, i == 0, roundTop {
+        if column == 0, row == 0, roundTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
@@ -149,7 +149,7 @@ where Content: View, V: Equatable {
         }
 
         // bottom left
-        else if j == 0, i == rowsIndex, roundBottom {
+        else if column == 0, row == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
@@ -159,7 +159,7 @@ where Content: View, V: Equatable {
         }
 
         // top right
-        else if j == columnsIndex, i == 0, roundTop {
+        else if column == columnsIndex, row == 0, roundTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
@@ -169,7 +169,7 @@ where Content: View, V: Equatable {
         }
 
         // bottom right
-        else if j == columnsIndex, i == rowsIndex, roundBottom {
+        else if column == columnsIndex, row == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,

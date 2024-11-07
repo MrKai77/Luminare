@@ -9,8 +9,8 @@ import SwiftUI
 
 // MARK: - List
 
-public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View
-where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
+// swiftlint:disable:next line_length
+public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
     // MARK: Environments
 
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
@@ -512,7 +512,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         guard eventMonitor == nil else { return }
 
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            let kVK_Escape: CGKeyCode = 0x35
+            let kVK_Escape: CGKeyCode = 0x35 // swiftlint:disable:this identifier_name
 
             if event.keyCode == kVK_Escape {
                 withAnimation(animation) {

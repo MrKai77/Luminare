@@ -144,8 +144,14 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     LuminareSection {
         VStack(spacing: 24) {
             LuminareSidebarSection(selection: .constant(Tab.about), items: [Tab.lorem, .ipsum])
-            LuminareSidebarSection("Settings Graph", selection: .constant(Tab.about), items: [Tab.fundamental, .advanced, .expert])
-            LuminareSidebarSection("Application", selection: .constant(Tab.about), items: [Tab.about])
+            LuminareSidebarSection(
+                "Settings Graph",
+                selection: .constant(Tab.about), items: [Tab.fundamental, .advanced, .expert]
+            )
+            LuminareSidebarSection(
+                "Application",
+                selection: .constant(Tab.about), items: [Tab.about]
+            )
         }
     }
     .frame(width: 225)

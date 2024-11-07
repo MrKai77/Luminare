@@ -306,7 +306,10 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
         VStack {
             LuminareCompose("Pick from segments") {}
 
-            PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", isBordered: false, hasDividers: false, style: .segmented)
+            PickerPreview(
+                elements: ["macOS", "Linux", "Windows"],
+                selection: "macOS",
+                isBordered: false, hasDividers: false, style: .segmented)
                 .environment(\.luminareAnimation, .bouncy)
 
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)

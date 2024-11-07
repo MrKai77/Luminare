@@ -219,7 +219,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
         @objc func didLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
-            offsetObservation = scrollView.contentView.observe(\.bounds, options: [.new, .initial]) { [weak self] _, change in
+            offsetObservation = scrollView.contentView.observe(\.bounds, options: [
+                .new, .initial]) { [weak self] _, change in
                 guard let self, let bounds = change.newValue else { return }
                 parent.onOffsetChange(bounds)
             }

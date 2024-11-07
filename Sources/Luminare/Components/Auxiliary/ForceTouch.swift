@@ -113,7 +113,11 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
             gesture = .active(ForceTouchGesture.Event(state, event: event))
         }
 
-        monitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .leftMouseUp, .mouseMoved, .mouseExited]) { event in
+        monitor = NSEvent.addLocalMonitorForEvents(matching: [
+            .leftMouseDown,
+            .leftMouseUp,
+            .mouseMoved,
+            .mouseExited]) { event in
             let locationInView = view.convert(event.locationInWindow, from: nil)
             guard view.bounds.contains(locationInView) else { return event }
 

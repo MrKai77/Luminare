@@ -9,7 +9,10 @@ import SwiftUI
 
 // MARK: - Color Picker
 
-public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
+public struct LuminareColorPicker<R, G, B, F, Done>: View
+where R: View, G: View, B: View,
+        F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
+        Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
 
     // MARK: Fields
@@ -140,7 +143,8 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
 
 // MARK: - Preview
 
-private struct ColorPickerPreview<F>: View where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+private struct ColorPickerPreview<F>: View
+where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     let format: F
     @State var color: Color = .accentColor
 
@@ -149,11 +153,13 @@ private struct ColorPickerPreview<F>: View where F: ParseableFormatStyle, F.Form
             "Done",
             color: $color,
             format: format,
-            colorNames: (
-                red: Text("Red"),
-                green: Text("Green"),
-                blue: Text("Blue")
-            )
+            colorNames: .init {
+                Text("Red")
+            } green: {
+                Text("Green")
+            } blue: {
+                Text("Blue")
+            }
         )
     }
 }

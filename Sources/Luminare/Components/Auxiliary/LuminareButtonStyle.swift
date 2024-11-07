@@ -145,9 +145,10 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 
-    @ViewBuilder static func tintedBackgroundForState<
-        F: ShapeStyle
-    >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, layered: F) -> some View {
+    @ViewBuilder static func tintedBackgroundForState<F: ShapeStyle>(
+        isPressed: Bool, isEnabled: Bool, isHovering: Bool,
+        layered: F
+    ) -> some View {
         tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, styles: (
             layered.opacity(0.4),
             layered.opacity(0.25),
@@ -155,9 +156,10 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
         ))
     }
 
-    @ViewBuilder static func tintedBackgroundForState<
-        F1: ShapeStyle, F2: ShapeStyle, F3: ShapeStyle
-    >(isPressed: Bool, isEnabled: Bool, isHovering: Bool, styles: (F1, F2, F3)) -> some View {
+    @ViewBuilder static func tintedBackgroundForState<F1: ShapeStyle, F2: ShapeStyle, F3: ShapeStyle>(
+        isPressed: Bool, isEnabled: Bool, isHovering: Bool,
+        styles: (F1, F2, F3)
+    ) -> some View {
         Group {
             if isPressed, isEnabled {
                 Rectangle().foregroundStyle(styles.0)

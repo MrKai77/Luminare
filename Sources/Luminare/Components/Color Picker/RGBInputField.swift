@@ -36,10 +36,18 @@ struct RGBInputField<Label>: View where Label: View {
                     .padding(.vertical, 2)
                     .environment(\.luminareTint) { .primary }
                 } badge: {
-                    LuminareTextField("", value: .init($value), format: .number.precision(.integerAndFractionLength(integerLimits: 0...3, fractionLimits: 0...1)))
+                    LuminareTextField(
+                        "", value: .init($value),
+                        format: .number.precision(.integerAndFractionLength(
+                            integerLimits: 0...3,
+                            fractionLimits: 0...1)))
                 }
             } else {
-                LuminareTextField("", value: .init($value), format: .number.precision(.integerAndFractionLength(integerLimits: 0...3, fractionLimits: 0...1)))
+                LuminareTextField(
+                    "", value: .init($value),
+                    format: .number.precision(.integerAndFractionLength(
+                        integerLimits: 0...3,
+                        fractionLimits: 0...1)))
             }
         }
     }

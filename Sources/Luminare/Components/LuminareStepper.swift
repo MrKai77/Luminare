@@ -14,6 +14,7 @@ public enum LuminareStepperAlignment {
     case leading // the left side of the growth direction, typically the top if horizontal and the left if vertical
     case trailing // opposite to `leading`
 
+    // swiftlint:disable:next cyclomatic_complexity
     func hardPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {
         case .none:
@@ -45,6 +46,7 @@ public enum LuminareStepperAlignment {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func softPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {
         case .none:
@@ -173,8 +175,8 @@ public enum LuminareStepperDirection {
         }
     }
 
-    func percentage(in total: CGFloat, at: CGFloat) -> CGFloat {
-        let percentage = at / total
+    func percentage(in total: CGFloat, at index: CGFloat) -> CGFloat {
+        let percentage = index / total
         return switch self {
         case .horizontal, .verticalAlternate:
             percentage
@@ -322,7 +324,12 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
 
-    func offsetBy(_ value: V = .zero, direction: LuminareStepperDirection, nonAlternateOffset offset: V, wrap: Bool = true) -> V {
+    func offsetBy(
+        _ value: V = .zero,
+        direction: LuminareStepperDirection,
+        nonAlternateOffset offset: V,
+        wrap: Bool = true
+    ) -> V {
         let result = switch direction {
         case .horizontal, .verticalAlternate:
             value + offset
@@ -339,7 +346,8 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 }
 
 @available(macOS 15.0, *)
-public struct LuminareStepperProminentIndicators<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareStepperProminentIndicators<V>
+where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @ViewBuilder let color: (V) -> Color?
 
     public init(
@@ -521,7 +529,9 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
                         .tint(prominentTint ?? tint())
-                        .foregroundStyle(.tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1))
+                        .foregroundStyle(
+                            .tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1)
+                        )
                 }
                 .padding(alignment.hardPaddingEdges(of: direction), margin)
                 .padding(alignment.softPaddingEdges(of: direction), margin * (1 - magnifyFactor(at: index)))
@@ -552,8 +562,14 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             let offsetCompensate = -indicatorSpacing / 2
 
             Color.white
-                .padding(direction.paddingSpan.start, indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate)
-                .padding(direction.paddingSpan.end, indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate)
+                .padding(
+                    direction.paddingSpan.start,
+                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate
+                )
+                .padding(
+                    direction.paddingSpan.end,
+                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate
+                )
         } else {
             Color.white
         }
@@ -692,16 +708,16 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     }
 
     private func magnifyFactor(at index: Int) -> CGFloat {
-        let sd = 0.5
-        let value = bellCurve(x: shift(at: index), standardDeviation: sd)
-        let maxValue = bellCurve(x: 0, standardDeviation: sd)
+        let standardDeviation = 0.5
+        let value = bellCurve(shift(at: index), standardDeviation: standardDeviation)
+        let maxValue = bellCurve(0, standardDeviation: standardDeviation)
         return value / maxValue
     }
 
     private func blurFactor(at index: Int) -> CGFloat {
-        let sd = CGFloat(indicatorCount - 2)
-        let value = bellCurve(x: shift(at: index), standardDeviation: sd)
-        let maxValue = bellCurve(x: 0, standardDeviation: sd)
+        let standardDeviation = CGFloat(indicatorCount - 2)
+        let value = bellCurve(shift(at: index), standardDeviation: standardDeviation)
+        let maxValue = bellCurve(0, standardDeviation: standardDeviation)
         return 1 - value / maxValue
     }
 
@@ -712,8 +728,13 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - standardDeviation: The standard deviation (width) of the bell curve. Higher values result in a wider curve.
     ///   - amplitude: The peak (height) of the bell curve.
     /// - Returns: The y-value of the bell curve at the given x.
-    private func bellCurve(x: CGFloat, mean: CGFloat = .zero, standardDeviation: CGFloat, amplitude: CGFloat = 1) -> CGFloat {
-        let exponent = -pow(x - mean, 2) / (2 * pow(standardDeviation, 2))
+    private func bellCurve(
+        _ value: CGFloat,
+        mean: CGFloat = .zero,
+        standardDeviation: CGFloat,
+        amplitude: CGFloat = 1
+    ) -> CGFloat {
+        let exponent = -pow(value - mean, 2) / (2 * pow(standardDeviation, 2))
         return amplitude * exp(exponent)
     }
 
@@ -722,13 +743,16 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - x: The input value, expected to be in the range [0, 1].
     ///   - curvature: A parameter to control the curvature. Higher values create a sharper bend.
     /// - Returns: The transformed output in the range [0, 1].
-    private func bentSigmoid(_ x: Double, curvature: Double = 7.5) -> Double {
-        guard x >= -1 && x <= 1 else { return x }
+    private func bentSigmoid(
+        _ value: Double,
+        curvature: Double = 7.5
+    ) -> Double {
+        guard value >= -1 && value <= 1 else { return value }
 
-        return if x >= 0 {
-            1 / (1 + exp(-curvature * (x - 0.5)))
+        return if value >= 0 {
+            1 / (1 + exp(-curvature * (value - 0.5)))
         } else {
-            -bentSigmoid(-x)
+            -bentSigmoid(-value)
         }
     }
 }
@@ -736,7 +760,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 // MARK: - Preview
 
 @available(macOS 15.0, *)
-private struct StepperPreview<Label, V>: View where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+private struct StepperPreview<Label, V>: View
+where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @State var value: V
     var source: LuminareStepperSource<V>
     var alignment: LuminareStepperAlignment = .trailing

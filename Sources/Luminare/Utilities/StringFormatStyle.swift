@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// swiftlint:disable nesting_violation
 public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatStyle {
     public var parseStrategy: Strategy = .identity
 

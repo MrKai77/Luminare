@@ -21,7 +21,8 @@ public enum LuminareValueAdjusterControlSize {
 
 // MARK: - Value Adjuster (Compose)
 
-public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjusterCompose<Label, Content, V>: View
+where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias ControlSize = LuminareValueAdjusterControlSize
 
     private enum FocusedField {
@@ -212,6 +213,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                             focusedField = .textbox
                         }
                     } label: {
+                        // swiftlint:disable:next force_cast
                         Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)

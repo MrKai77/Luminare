@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-public typealias RGBColorNames<R, G, B> = (
-    red: R,
-    green: G,
-    blue: B
-)
+public struct RGBColorNames<R, G, B> where R: View, G: View, B: View {
+    @ViewBuilder public var red: () -> R
+    @ViewBuilder public var green: () -> G
+    @ViewBuilder public var blue: () -> B
+}
 
 // MARK: - Color Picker (Modal)
 
@@ -112,7 +112,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
     @ViewBuilder private var RGBInputFields: some View {
         HStack(spacing: 8) {
             RGBInputField(value: $redComponent) {
-                colorNames.red
+                colorNames.red()
             } color: { value in
                     .init(
                         red: value / 255.0,
@@ -125,7 +125,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             }
 
             RGBInputField(value: $greenComponent) {
-                colorNames.green
+                colorNames.green()
             } color: { value in
                     .init(
                         red: 1 - redComponent / 255.0,
@@ -138,7 +138,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             }
 
             RGBInputField(value: $blueComponent) {
-                colorNames.blue
+                colorNames.blue()
             } color: { value in
                     .init(
                         red: 1 - redComponent / 255.0,
@@ -193,11 +193,13 @@ private struct ColorPickerModalPreview: View {
         ColorPickerModalView(
             color: $color,
             hexColor: $hexColor,
-            colorNames: (
-                red: Text("Red"),
-                green: Text("Green"),
-                blue: Text("Blue")
-            )
+            colorNames: .init {
+                Text("Red")
+            } green: {
+                Text("Green")
+            } blue: {
+                Text("Blue")
+            }
         ) {
             Text("Done")
         }

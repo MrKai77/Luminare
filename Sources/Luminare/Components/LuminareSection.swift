@@ -270,11 +270,12 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
         }
 
-        Text(
-"""
-Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. Proident non est aliquip consectetur quis dolor. Incididunt aute do ea fugiat dolor. Cillum cillum enim exercitation dolor do. Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse et.
-"""
-        )
+        Text("""
+Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. \
+Proident non est aliquip consectetur quis dolor. Incididunt aute do ea fugiat dolor. \
+Cillum cillum enim exercitation dolor do. \
+Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse et.
+""")
         .padding(8)
         .foregroundStyle(.secondary)
     } header: {

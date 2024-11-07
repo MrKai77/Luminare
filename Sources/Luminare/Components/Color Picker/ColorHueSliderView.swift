@@ -60,7 +60,9 @@ struct ColorHueSliderView: View {
                 .shadow(radius: 3)
                 .onChange(of: selectionPosition) { _ in
                     withAnimation(animation) {
-                        selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
+                        selectionOffset = calculateOffset(
+                            handleWidth: handleWidth(at: selectionPosition, geo.size.width),
+                            geo.size.width)
                         selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
                         selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
                     }
@@ -74,7 +76,9 @@ struct ColorHueSliderView: View {
             )
             .onAppear {
                 selectionPosition = selectedColor.toHSB().hue * geo.size.width
-                selectionOffset = calculateOffset(handleWidth: handleWidth(at: selectionPosition, geo.size.width), geo.size.width)
+                selectionOffset = calculateOffset(
+                    handleWidth: handleWidth(at: selectionPosition, geo.size.width),
+                    geo.size.width)
                 selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
                 selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
             }

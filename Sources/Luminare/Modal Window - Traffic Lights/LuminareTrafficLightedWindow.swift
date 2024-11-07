@@ -55,8 +55,8 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject w
         let updatesCount = Int(duration * frameRate)
         let interval = duration / Double(updatesCount)
 
-        for i in 0...updatesCount {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * interval) {
+        for index in 0...updatesCount {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * interval) {
                 self.invalidateShadow()
             }
         }
