@@ -48,14 +48,12 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
     @FocusState private var focusedField: FocusedField?
 
-    @ViewBuilder private let content: (AnyView) -> Content
-    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private let content: (AnyView) -> Content, label: () -> Label
 
     @Binding private var value: V
     private let sliderRange: ClosedRange<V>
     private var step: V
-    private let upperClamp: Bool
-    private let lowerClamp: Bool
+    private let clampUpper: Bool, clampLower: Bool
     private let controlSize: ControlSize
     private let decimalPlaces: Int
 
@@ -69,8 +67,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
         step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
+        clampLower: Bool = false,
+        clampUpper: Bool = false,
         controlSize: ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content,
@@ -81,8 +79,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
         self._value = value
         self.sliderRange = sliderRange
-        self.lowerClamp = lowerClamp
-        self.upperClamp = upperClamp
+        self.clampLower = clampLower
+        self.clampUpper = clampUpper
         self.controlSize = controlSize
 
         self.decimalPlaces = decimalPlaces
@@ -105,8 +103,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         sliderRange: ClosedRange<V>,
         horizontalPadding: CGFloat = 8,
         step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
+        clampLower: Bool = false,
+        clampUpper: Bool = false,
         controlSize: ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content
@@ -116,8 +114,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
             sliderRange: sliderRange,
             horizontalPadding: horizontalPadding,
             step: step,
-            lowerClamp: lowerClamp,
-            upperClamp: upperClamp,
+            clampLower: clampLower,
+            clampUpper: clampUpper,
             controlSize: controlSize,
             decimalPlaces: decimalPlaces,
             content: content
@@ -183,11 +181,11 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
                                 value
                             },
                             set: {
-                                if lowerClamp, upperClamp {
+                                if clampLower, clampUpper {
                                     value = $0.clamped(to: sliderRange)
-                                } else if lowerClamp {
+                                } else if clampLower {
                                     value = max(sliderRange.lowerBound, $0)
-                                } else if upperClamp {
+                                } else if clampUpper {
                                     value = min(sliderRange.upperBound, $0)
                                 } else {
                                     value = $0
@@ -278,11 +276,11 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
                 value -= step
             }
 
-            if lowerClamp, upperClamp {
+            if clampLower, clampUpper {
                 value = value.clamped(to: sliderRange)
-            } else if lowerClamp {
+            } else if clampLower {
                 value = max(sliderRange.lowerBound, value)
-            } else if upperClamp {
+            } else if clampUpper {
                 value = min(sliderRange.upperBound, value)
             } else {
                 value = value
@@ -308,8 +306,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
             value: .constant(42),
             sliderRange: 0...128,
             step: 1,
-            lowerClamp: true,
-            upperClamp: false
+            clampLower: true,
+            clampUpper: false
         ) { view in
             HStack(spacing: 0) {
                 Text("#")
@@ -330,8 +328,8 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
             value: .constant(42),
             sliderRange: 0...128,
             step: 1,
-            lowerClamp: true,
-            upperClamp: false,
+            clampLower: true,
+            clampUpper: false,
             controlSize: .compact
         ) { button in
             HStack(spacing: 0) {

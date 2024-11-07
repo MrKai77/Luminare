@@ -19,8 +19,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
     private let height: CGFloat
     private let horizontalPadding: CGFloat
 
-    @ViewBuilder private let content: (V) -> Content
-    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private let content: (V) -> Content, label: () -> Label
 
     private let options: [V]
     @Binding private var selection: V

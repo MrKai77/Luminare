@@ -9,8 +9,7 @@ import SwiftUI
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
     public static let cornerRadius: CGFloat = 12
-    public static let contentPadding: CGFloat = 6
-    public static let sectionPadding: CGFloat = 8
+    public static let contentPadding: CGFloat = 6, sectionPadding: CGFloat = 8
 
     @Published public var closeHandler: (() -> Void)?
 

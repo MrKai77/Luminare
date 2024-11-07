@@ -21,19 +21,15 @@ where Content: View, V: Equatable {
 
     // MARK: Fields
 
-    private let cornerRadius: CGFloat = 12
-    private let innerPadding: CGFloat = 4
-    private let innerCornerRadius: CGFloat = 2
+    private let cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2
 
     private let elements2D: [[V]]
-    private let rowsIndex: Int
-    private let columnsIndex: Int
+    private let rowsIndex: Int, columnsIndex: Int
 
     @Binding private var selectedItem: V
     @State private var internalSelection: V
 
-    private let roundTop: Bool
-    private let roundBottom: Bool
+    private let roundTop: Bool, roundBottom: Bool
 
     @ViewBuilder private let content: (V) -> Content
 

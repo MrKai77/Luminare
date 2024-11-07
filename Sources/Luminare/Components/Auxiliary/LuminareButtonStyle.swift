@@ -13,8 +13,7 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let innerCornerRadius: CGFloat
-    private let elementMinHeight: CGFloat
+    private let innerCornerRadius: CGFloat, elementMinHeight: CGFloat
 
     @State private var isHovering: Bool
 
@@ -67,12 +66,30 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let innerCornerRadius: CGFloat = 2
-    private let elementMinHeight: CGFloat = 34
+    private let innerCornerRadius: CGFloat, elementMinHeight: CGFloat
 
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
 
-    public init() {}
+    public init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
+        self.isHovering = false
+    }
+    
+#if DEBUG
+    init(
+        innerCornerRadius: CGFloat = 2,
+        elementMinHeight: CGFloat = 34,
+        isHovering: Bool = false
+    ) {
+        self.innerCornerRadius = innerCornerRadius
+        self.elementMinHeight = elementMinHeight
+        self.isHovering = isHovering
+    }
+#endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -100,8 +117,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let innerCornerRadius: CGFloat
-    private let elementMinHeight: CGFloat
+    private let innerCornerRadius: CGFloat, elementMinHeight: CGFloat
 
     @State private var isHovering: Bool
 
@@ -178,8 +194,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let innerCornerRadius: CGFloat
-    private let elementMinHeight: CGFloat
+    private let innerCornerRadius: CGFloat, elementMinHeight: CGFloat
     @ViewBuilder private let icon: () -> Image
 
     @State private var isHovering: Bool
@@ -247,8 +262,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let elementMinHeight: CGFloat
-    private let elementExtraMinHeight: CGFloat
+    private let elementMinHeight: CGFloat, elementExtraMinHeight: CGFloat
     private let extraCompact: Bool
     private let cornerRadius: CGFloat
 

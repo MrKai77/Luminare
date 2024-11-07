@@ -391,13 +391,9 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private let alignment: Alignment
     private let direction: Direction
-    private let indicatorSpacing: CGFloat
-    private let maxSize: CGFloat
-    private let margin: CGFloat
+    private let indicatorSpacing: CGFloat, maxSize: CGFloat, margin: CGFloat
 
-    private let hasHierarchy: Bool
-    private let hasMask: Bool
-    private let hasBlur: Bool
+    private let hasHierarchy: Bool, hasMask: Bool, hasBlur: Bool
 
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?

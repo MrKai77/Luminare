@@ -12,18 +12,13 @@ import SwiftUI
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Fields
 
-    private let hasPadding: Bool
-    private let hasDividers: Bool
+    private let hasPadding: Bool, hasDividers: Bool
     private let isBordered: Bool
 
-    private let headerSpacing: CGFloat
-    private let footerSpacing: CGFloat
-    private let cornerRadius: CGFloat
-    private let innerPadding: CGFloat
+    private let headerSpacing: CGFloat, footerSpacing: CGFloat
+    private let cornerRadius: CGFloat, innerPadding: CGFloat
 
-    @ViewBuilder private let content: () -> Content
-    @ViewBuilder private let header: () -> Header
-    @ViewBuilder private let footer: () -> Footer
+    @ViewBuilder private let content: () -> Content, header: () -> Header, footer: () -> Footer
 
     // MARK: Initializers
 

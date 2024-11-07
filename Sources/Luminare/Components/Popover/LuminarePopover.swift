@@ -49,8 +49,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     private let padding: CGFloat
     private let shade: Shade
 
-    @ViewBuilder private let content: () -> Content
-    @ViewBuilder private let badge: () -> Badge
+    @ViewBuilder private let content: () -> Content, badge: () -> Badge
 
     @State private var isPopoverPresented: Bool = false
 

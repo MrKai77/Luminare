@@ -30,9 +30,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     // MARK: Fields
 
-    private let elementMinHeight: CGFloat
-    private let horizontalPadding: CGFloat
-    private let cornerRadius: CGFloat
+    private let elementMinHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
     private let hasDividers: Bool
     private let style: PickerStyle

@@ -16,13 +16,11 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 
     // MARK: Fields
 
-    let elementMinHeight: CGFloat
-    let horizontalPadding: CGFloat
+    let elementMinHeight: CGFloat, horizontalPadding: CGFloat
     let reducesTrailingSpace: Bool
     let spacing: CGFloat?
 
-    @ViewBuilder private let content: () -> Content
-    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private let content: () -> Content, label: () -> Label
 
     // MARK: Initializers
 

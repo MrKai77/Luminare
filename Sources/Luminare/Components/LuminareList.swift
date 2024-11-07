@@ -23,12 +23,9 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
     private let id: KeyPath<V, ID>
     private let actionsMaxHeight: CGFloat?
 
-    @ViewBuilder private let content: (Binding<V>) -> ContentA
-    @ViewBuilder private let emptyView: () -> ContentB
-    @ViewBuilder private let actions: () -> Actions
-    @ViewBuilder private let removeView: () -> RemoveView
-    @ViewBuilder private let header: () -> Header
-    @ViewBuilder private let footer: () -> Footer
+    @ViewBuilder private let content: (Binding<V>) -> ContentA, emptyView: () -> ContentB
+    @ViewBuilder private let actions: () -> Actions, removeView: () -> RemoveView
+    @ViewBuilder private let header: () -> Header, footer: () -> Footer
 
     @State private var firstItem: V?
     @State private var lastItem: V?

@@ -14,9 +14,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
 
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let elementMinHeight: CGFloat
-    private let horizontalPadding: CGFloat
-    private let cornerRadius: CGFloat
+    private let elementMinHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
 
     @Binding private var value: F.FormatInput?
