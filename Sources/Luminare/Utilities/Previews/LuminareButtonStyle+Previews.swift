@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if DEBUG
 #Preview("LuminareButtonStyle") {
     VStack {
         LuminareSection {
@@ -95,3 +96,4 @@ import SwiftUI
     }
     .padding()
 }
+#endif
