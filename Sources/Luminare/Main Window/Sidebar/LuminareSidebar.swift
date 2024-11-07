@@ -38,7 +38,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
     HStack {
         VStack {
             Text("Scrollable")
-            
+
             LuminareSidebar {
                 ForEach(0..<100) { num in
                     Text("\(num)")
@@ -47,10 +47,10 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 }
             }
         }
-        
+
         VStack {
             Text("Static")
-            
+
             LuminareSidebar {
                 ForEach(0..<5) { num in
                     Text("\(num)")

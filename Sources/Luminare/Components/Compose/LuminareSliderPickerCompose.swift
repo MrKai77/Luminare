@@ -11,14 +11,14 @@ import SwiftUI
 
 public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: View, Content: View, V: Equatable {
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
-    
+
     private let height: CGFloat
     private let horizontalPadding: CGFloat
-    
+
     @ViewBuilder private let content: (V) -> Content
     @ViewBuilder private let label: () -> Label
 
@@ -41,7 +41,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         self.options = options
         self._selection = selection
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
@@ -59,7 +59,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
             Text(key)
         }
     }
-    
+
     public init(
         _ options: [V], selection: Binding<V>,
         height: CGFloat = 70,
@@ -77,7 +77,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
             label()
         }
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
@@ -94,7 +94,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
             Text(key)
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -109,7 +109,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                         ZStack {
                             Capsule()
                                 .strokeBorder(.quaternary, lineWidth: 1)
-                            
+
                             Capsule()
                                 .foregroundStyle(.quinary.opacity(0.5))
                         }
@@ -151,7 +151,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to pick a value")
-                
+
                 Text("Composed")
                     .font(.caption)
                     .foregroundStyle(.secondary)

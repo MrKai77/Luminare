@@ -13,14 +13,14 @@ public protocol LuminarePickerData {
 
 // MARK: - Picker
 
-public struct LuminarePicker<Content, V>: View 
+public struct LuminarePicker<Content, V>: View
 where Content: View, V: Equatable {
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
-    
+
     private let cornerRadius: CGFloat = 12
     private let innerPadding: CGFloat = 4
     private let innerCornerRadius: CGFloat = 2
@@ -34,9 +34,9 @@ where Content: View, V: Equatable {
 
     private let roundTop: Bool
     private let roundBottom: Bool
-    
+
     @ViewBuilder private let content: (V) -> Content
-    
+
     // MARK: Initializers
 
     public init(
@@ -57,7 +57,7 @@ where Content: View, V: Equatable {
         self._selectedItem = selection
         self._internalSelection = State(initialValue: selection.wrappedValue)
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -121,11 +121,11 @@ where Content: View, V: Equatable {
                 .strokeBorder(.quaternary, lineWidth: 1)
         }
     }
-    
+
     private var isCompact: Bool {
         rowsIndex == 0
     }
-    
+
     // MARK: Functions
 
     private func isDisabled(_ element: V) -> Bool {
@@ -147,7 +147,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
             )
         }
-        
+
         // bottom left
         else if j == 0, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
@@ -157,7 +157,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: innerCornerRadius
             )
         }
-        
+
         // top right
         else if j == columnsIndex, i == 0, roundTop {
             UnevenRoundedRectangle(
@@ -167,7 +167,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
-        
+
         // bottom right
         else if j == columnsIndex, i == rowsIndex, roundBottom {
             UnevenRoundedRectangle(
@@ -177,7 +177,7 @@ where Content: View, V: Equatable {
                 topTrailingRadius: innerCornerRadius
             )
         }
-        
+
         // regular
         else {
             UnevenRoundedRectangle(

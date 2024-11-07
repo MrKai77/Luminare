@@ -11,21 +11,21 @@ import SwiftUI
 
 public struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     // MARK: Environments
-    
+
     @Environment(\.isEnabled) private var isEnabled
-    
+
     // MARK: Fields
-    
+
     let elementMinHeight: CGFloat
     let horizontalPadding: CGFloat
     let reducesTrailingSpace: Bool
     let spacing: CGFloat?
-    
+
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let label: () -> Label
-    
+
     // MARK: Initializers
-    
+
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         reducesTrailingSpace: Bool = false,
@@ -40,7 +40,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         self.label = label
         self.content = content
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
@@ -58,9 +58,9 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
             Text(key)
         }
     }
-    
+
     // MARK: Body
-    
+
     public var body: some View {
         HStack(spacing: spacing) {
             HStack(spacing: 0) {
@@ -69,9 +69,9 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
                     .disabled(!isEnabled)
             }
             .fixedSize(horizontal: false, vertical: true)
-            
+
             Spacer()
-            
+
             content()
                 .disabled(!isEnabled)
         }
@@ -87,7 +87,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     LuminareSection {
         LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
-                
+
             } label: {
                 Text("Button")
                     .frame(height: 30)
@@ -95,11 +95,10 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
             }
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
-        
-        
+
         LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
-                
+
             } label: {
                 Text("Button")
                     .frame(height: 30)

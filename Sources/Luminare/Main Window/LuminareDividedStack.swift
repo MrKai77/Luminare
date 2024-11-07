@@ -28,23 +28,23 @@ public struct LuminareDividedStack<Content>: View where Content: View {
     // MARK: Fields
 
     private let orientation: Orientation
-    
+
     @ViewBuilder private let content: () -> Content
-    
+
     // MARK: Initializers
-    
+
     /// Initializes a ``LuminareDividedStack``.
     ///
     /// - Parameter orientation: the ``Orientation`` that configures the direction to stack elements.
     /// - Parameter content: the content view of the stack.
     public init(
-        _ orientation: Orientation = .horizontal, 
+        _ orientation: Orientation = .horizontal,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.orientation = orientation
         self.content = content
     }
-    
+
     // MARK: Body
 
     public var body: some View {

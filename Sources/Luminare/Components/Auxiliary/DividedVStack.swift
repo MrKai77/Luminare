@@ -12,11 +12,11 @@ import SwiftUI
 
 public struct DividedVStack<Content>: View where Content: View {
     // MARK: Fields
-    
+
     private let spacing: CGFloat?
     private let applyMaskToItems: Bool
     private let hasDividers: Bool
-    
+
     @ViewBuilder private let content: () -> Content
 
     // MARK: Initializers
@@ -32,7 +32,7 @@ public struct DividedVStack<Content>: View where Content: View {
         self.hasDividers = hasDividers
         self.content = content
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -102,21 +102,21 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
 
 public struct LuminareCroppedSectionItem: ViewModifier {
     // MARK: Fields
-    
+
     let cornerRadius: CGFloat = 12
     let innerPadding: CGFloat = 4
     let innerCornerRadius: CGFloat = 2
 
     private let isFirstChild: Bool
     private let isLastChild: Bool
-    
+
     // MARK: Initializers
 
     public init(isFirstChild: Bool, isLastChild: Bool) {
         self.isFirstChild = isFirstChild
         self.isLastChild = isLastChild
     }
-    
+
     // MARK: Body
 
     public func body(content: Content) -> some View {

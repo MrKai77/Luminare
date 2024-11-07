@@ -18,28 +18,28 @@ public typealias RGBColorNames<R, G, B> = (
 // view for the color popup as a whole
 struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View, Done: View {
     typealias ColorNames = RGBColorNames<R, G, B>
-    
+
     // MARK: Environments
-    
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
-    
+
     @Binding var color: Color
     @Binding var hexColor: String
 
     let colorNames: ColorNames
     @ViewBuilder let done: () -> Done
-    
+
     @State private var redComponent: Double = 0
     @State private var greenComponent: Double = 0
     @State private var blueComponent: Double = 0
-    
+
     @State private var isRedStepperPresented: Bool = false
     @State private var isGreenStepperPresented: Bool = false
     @State private var isBlueStepperPresented: Bool = false
-    
+
     private let colorSampler = NSColorSampler()
 
     // MARK: Body
@@ -75,7 +75,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             }
 
             RGBInputFields
-            
+
             HStack {
                 Button {
                     colorSampler.show { nsColor in
@@ -91,7 +91,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                 .aspectRatio(1, contentMode: .fit)
                 .fixedSize()
                 .buttonStyle(LuminareCompactButtonStyle())
-                
+
                 Button {
                     dismiss()
                 } label: {
@@ -123,7 +123,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             .onChange(of: redComponent) { _ in
                 setColor(internalColor)
             }
-            
+
             RGBInputField(value: $greenComponent) {
                 colorNames.green
             } color: { value in
@@ -136,7 +136,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             .onChange(of: greenComponent) { _ in
                 setColor(internalColor)
             }
-            
+
             RGBInputField(value: $blueComponent) {
                 colorNames.blue
             } color: { value in
@@ -151,7 +151,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             }
         }
     }
-    
+
     private var internalColor: Color {
         Color(
             red: redComponent / 255.0,
@@ -159,7 +159,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             blue: blueComponent / 255.0
         )
     }
-    
+
     // MARK: Functions
 
     // set the color based on the source of change
@@ -172,11 +172,11 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
     // update components when the color changes
     private func updateComponents(_ newValue: Color) {
         hexColor = newValue.toHex()
-        
+
         // check if changed externally
         guard newValue != internalColor else { return }
         let rgb = newValue.toRGB()
-        
+
         redComponent = rgb.red
         greenComponent = rgb.green
         blueComponent = rgb.blue
@@ -188,7 +188,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
 private struct ColorPickerModalPreview: View {
     @State private var color: Color = .accentColor
     @State private var hexColor: String = ""
-    
+
     var body: some View {
         ColorPickerModalView(
             color: $color,

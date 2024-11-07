@@ -12,10 +12,10 @@ import SwiftUI
 /// A stylized section for ``LuminareSidebar``.
 public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: LuminareTabItem, Tab: Hashable {
     // MARK: Fields
-    
+
     @Binding private var selection: Tab
     private let items: [Tab]
-    
+
     @ViewBuilder private let label: () -> Label
 
     // MARK: Initializers
@@ -34,7 +34,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
         self.items = items
         self.label = label
     }
-    
+
     /// Initializes a ``LuminareSidebarSection`` where the label is a localized text.
     ///
     /// - Parameter key: the `LocalizedStringKey` to look up the label text.
@@ -52,7 +52,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             Text(key)
         }
     }
-    
+
     /// Initializes a ``LuminareSidebarSection`` without a label.
     ///
     /// - Parameter selection: the selected ``LuminareTabItem`` binding.
@@ -68,7 +68,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             EmptyView()
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -99,11 +99,11 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case advanced
     case expert
     case about
-    
+
     var id: Self {
         self
     }
-    
+
     var title: String {
         switch self {
         case .lorem: .init(localized: "Lorem")
@@ -114,7 +114,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         case .about: .init(localized: "About")
         }
     }
-    
+
     var icon: Image {
         switch self {
         case .lorem: .init(systemName: "paragraphsign")
@@ -125,7 +125,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         case .about: .init(systemName: "app.gift")
         }
     }
-    
+
     var hasIndicator: Bool {
         switch self {
         case .expert:
@@ -134,7 +134,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
             false
         }
     }
-    
+
     @ViewBuilder func view() -> some View {
         EmptyView()
     }

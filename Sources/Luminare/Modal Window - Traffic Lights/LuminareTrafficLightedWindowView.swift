@@ -12,7 +12,7 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
 
     let sectionSpacing: CGFloat = 12
     let cornerRadius: CGFloat = 12
-    
+
     @ViewBuilder let content: () -> Content
 
     var body: some View {

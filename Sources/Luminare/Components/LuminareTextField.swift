@@ -11,14 +11,14 @@ import SwiftUI
 
 public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     private let elementMinHeight: CGFloat
     private let horizontalPadding: CGFloat
     private let cornerRadius: CGFloat
     private let isBordered: Bool
-    
+
     @Binding private var value: F.FormatInput?
     private let format: F
     private let placeholder: LocalizedStringKey
@@ -59,7 +59,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
             isBordered: isBordered
         )
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -125,10 +125,9 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     LuminareSection {
         VStack {
             LuminareTextField("Text Field", text: .constant("Bordered"))
-            
+
             LuminareTextField("Text Field", text: .constant("Borderless"), isBordered: false)
-            
-            
+
             LuminareTextField("Text Field", text: .constant("Disabled"))
                 .disabled(true)
         }

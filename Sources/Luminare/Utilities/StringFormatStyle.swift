@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// swiftlint:disable nesting_violation
 public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatStyle {
     public var parseStrategy: Strategy = .identity
 
@@ -46,7 +47,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
 
         /// `42ab0E` -> `#42AB0E`
         case uppercasedWithWell
-        
+
         /// customized case and prefix characters.
         case custom(Lowercased, String)
 

@@ -12,9 +12,9 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     @Binding private var isPresented: Bool
-    
+
     private let closesOnDefocus: Bool
     private let isCompact: Bool
 

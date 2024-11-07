@@ -11,16 +11,16 @@ import SwiftUI
 
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Fields
-    
+
     private let hasPadding: Bool
     private let hasDividers: Bool
     private let isBordered: Bool
-    
+
     private let headerSpacing: CGFloat
     private let footerSpacing: CGFloat
     private let cornerRadius: CGFloat
     private let innerPadding: CGFloat
-    
+
     @ViewBuilder private let content: () -> Content
     @ViewBuilder private let header: () -> Header
     @ViewBuilder private let footer: () -> Footer
@@ -48,7 +48,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.header = header
         self.footer = footer
     }
-    
+
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
@@ -73,7 +73,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             Text(footerKey)
         }
     }
-    
+
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
@@ -97,7 +97,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             EmptyView()
         }
     }
-    
+
     public init(
         _ headerKey: LocalizedStringKey,
         hasPadding: Bool = true,
@@ -119,7 +119,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             Text(headerKey)
         }
     }
-    
+
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
@@ -143,7 +143,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             footer()
         }
     }
-    
+
     public init(
         footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
@@ -165,7 +165,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             Text(footerKey)
         }
     }
-    
+
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
@@ -188,7 +188,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             EmptyView()
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -198,7 +198,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     if Header.self == Text.self {
                         HStack {
                             header()
-                            
+
                             Spacer()
                         }
                     } else {
@@ -206,11 +206,11 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     }
                 }
                 .foregroundStyle(.secondary)
-                
+
                 Spacer()
                     .frame(height: headerSpacing)
             }
-            
+
             if isBordered {
                 DividedVStack(applyMaskToItems: hasPadding, hasDividers: hasDividers) {
                     content()
@@ -225,16 +225,16 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             } else {
                 content()
             }
-            
+
             if Footer.self != EmptyView.self {
                 Spacer()
                     .frame(height: footerSpacing)
-                
+
                 Group {
                     if Footer.self == Text.self {
                         HStack {
                             footer()
-                            
+
                             Spacer()
                         }
                     } else {
@@ -260,7 +260,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .foregroundStyle(.secondary)
         }
         .frame(height: 100)
-        
+
         LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
             } label: {
@@ -269,7 +269,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .padding(.horizontal, 8)
             }
         }
-        
+
         Text(
 """
 Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. Proident non est aliquip consectetur quis dolor. Incididunt aute do ea fugiat dolor. Cillum cillum enim exercitation dolor do. Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse et.
@@ -280,16 +280,16 @@ Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt
     } header: {
         HStack(alignment: .bottom) {
             Text("Section Header")
-            
+
             Spacer()
-            
+
             HStack(alignment: .bottom) {
                 Button {
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundStyle(.tint)
                 }
-                
+
                 Button {
                 } label: {
                     Image(systemName: "location")
@@ -300,7 +300,7 @@ Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt
     } footer: {
         HStack {
             Text("Section Footer")
-            
+
             Spacer()
         }
     }

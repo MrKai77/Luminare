@@ -12,7 +12,7 @@ import SwiftUI
 // custom input field for RGB values
 struct RGBInputField<Label>: View where Label: View {
     // MARK: Fields
-    
+
     @Binding var value: Double
     @ViewBuilder var label: () -> Label
     var color: (Double) -> Color? = { _ in nil }
@@ -49,7 +49,7 @@ struct RGBInputField<Label>: View where Label: View {
 
 private struct RGBInputFieldPreview: View {
     @State private var value: Double = 42
-    
+
     var body: some View {
         RGBInputField(value: $value) {
             Text("Red")

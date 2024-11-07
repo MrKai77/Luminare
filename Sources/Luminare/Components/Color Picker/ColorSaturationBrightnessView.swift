@@ -12,11 +12,11 @@ import SwiftUI
 // view for adjusting the lightness of a selected color
 struct ColorSaturationBrightnessView: View {
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
-    
+
     @Binding var selectedColor: Color
 
     @State private var circlePosition: CGPoint = .zero
@@ -83,7 +83,7 @@ struct ColorSaturationBrightnessView: View {
             }
         }
     }
-    
+
     // MARK: Functions
 
     // update the position of the circle based on user interaction
@@ -130,11 +130,11 @@ struct ColorSaturationBrightnessView: View {
 
 struct ColorPickerCircle: View {
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
-    
+
     @Binding private var selectedColor: Color
     @Binding private var isDragging: Bool
 
@@ -148,7 +148,7 @@ struct ColorPickerCircle: View {
         self._isDragging = isDragging
         self.circleSize = circleSize
     }
-    
+
     // MARK: Body
 
     var body: some View {

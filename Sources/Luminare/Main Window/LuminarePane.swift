@@ -12,7 +12,7 @@ import SwiftUI
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     // MARK: Fields
-    
+
     private let titlebarHeight: CGFloat = 50
 
     @ViewBuilder private let content: () -> Content
@@ -33,7 +33,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         self.content = content
         self.header = header
     }
-    
+
     /// Initializes a ``LuminarePane`` where the header is a localized text.
     ///
     /// - Parameter key: the `LocalizedStringKey` to look up the header text.
@@ -46,7 +46,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             Text(key)
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -87,7 +87,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
 struct TabHeaderButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     @State var isHovering: Bool = false
 
     func makeBody(configuration: Configuration) -> some View {

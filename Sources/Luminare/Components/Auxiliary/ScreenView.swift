@@ -10,7 +10,7 @@ import SwiftUI
 public struct ScreenView<Content>: View where Content: View {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     @Binding var blurred: Bool
     let screenContent: () -> Content
     @State private var image: NSImage?

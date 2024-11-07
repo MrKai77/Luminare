@@ -10,7 +10,7 @@ import SwiftUI
 public enum LuminareCompactPickerStyle {
     case menu
     case segmented
-    
+
     var style: any PickerStyle {
         switch self {
         case .menu: .menu
@@ -23,27 +23,27 @@ public enum LuminareCompactPickerStyle {
 
 public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Hashable & Equatable {
     public typealias PickerStyle = LuminareCompactPickerStyle
-    
+
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
-    
+
     private let elementMinHeight: CGFloat
     private let horizontalPadding: CGFloat
     private let cornerRadius: CGFloat
     private let isBordered: Bool
     private let hasDividers: Bool
     private let style: PickerStyle
-    
+
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
-    
+
     @State private var isHovering: Bool = false
-    
+
     // MARK: Initializers
-    
+
     public init(
         selection: Binding<V>,
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
@@ -62,9 +62,9 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         self.style = style
         self.content = content
     }
-    
+
     // MARK: Body
-    
+
     public var body: some View {
         Group {
             switch style {
@@ -110,18 +110,18 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         .clipShape(.rect(cornerRadius: cornerRadius))
         .animation(animationFast, value: isHovering)
     }
-    
+
     @ViewBuilder private func variadic<Layout>(
         layout: Layout, content: () -> some View
     ) -> some View where Layout: _VariadicView.ViewRoot {
         _VariadicView.Tree(layout, content: content)
     }
-    
+
     // MARK: - Layouts
-    
+
     struct MenuLayout: _VariadicView.UnaryViewRoot {
         @Binding var selection: V
-        
+
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
             Picker("", selection: $selection) {
                 ForEach(Array(zip(
@@ -136,30 +136,30 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             .buttonStyle(.borderless)
             .padding(.trailing, -2)
         }
-        
+
         private func getValues(from children: _VariadicView.Children) -> [V] {
             children.compactMap { child in
                 child.id(as: V.self)
             }
         }
     }
-    
+
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
-        
+
         let elementMinHeight: CGFloat
         let cornerRadius: CGFloat
         let hasDividers: Bool
-        
+
         @Binding var selection: V
         @Binding var isHovering: Bool
-        
+
         @Namespace private var namespace
         @State private var hoveringKnobOffset: Int?
         @State private var isHolding: Bool = false
-        
+
         private var mouseLocation: NSPoint { NSEvent.mouseLocation }
-        
+
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
             HStack {
                 ForEach(Array(children.enumerated()), id: \.offset) { index, child in
@@ -214,7 +214,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                             }
                         }
                         .zIndex(1)
-                        
+
                         if hasDividers, child.id != children.last?.id {
                             Divider()
                                 .frame(width: 0, height: elementMinHeight / 2)
@@ -225,19 +225,19 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             }
             .padding(.vertical, 4)
         }
-        
+
         struct SegmentedKnob: View {
             @Environment(\.luminareAnimation) private var animation
             @Environment(\.luminareAnimationFast) private var animationFast
-            
+
             let cornerRadius: CGFloat
-            
+
             @Binding var selection: V
             let value: V
             let view: _VariadicView.Children.Element
-            
+
             @State private var isHovering: Bool = false
-            
+
             var body: some View {
                 Button {
                     withAnimation(animation) {
@@ -276,7 +276,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     var isBordered: Bool = true
     var hasDividers: Bool = true
     let style: LuminareCompactPickerStyle
-    
+
     var body: some View {
         LuminareCompactPicker(selection: $selection, isBordered: isBordered, hasDividers: hasDividers, style: style) {
             ForEach(elements, id: \.self) { element in
@@ -290,7 +290,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     LuminareSection {
         LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
-                
+
             } label: {
                 Text("42")
                     .frame(height: 30)
@@ -298,17 +298,17 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             }
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
-        
+
         LuminareCompose("Pick from a menu", reducesTrailingSpace: true) {
             PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
         }
-        
+
         VStack {
             LuminareCompose("Pick from segments") {}
-            
+
             PickerPreview(elements: ["macOS", "Linux", "Windows"], selection: "macOS", isBordered: false, hasDividers: false, style: .segmented)
                 .environment(\.luminareAnimation, .bouncy)
-            
+
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }
     }

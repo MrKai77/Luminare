@@ -11,15 +11,15 @@ import SwiftUI
 
 public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
-    
+
     // MARK: Fields
-    
+
     @Binding var currentColor: Color
-    
+
     private let format: F
     private let isBordered: Bool
     private let colorNames: ColorNames
-    
+
     @ViewBuilder private let done: () -> Done
 
     @State private var text: String
@@ -41,7 +41,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
         self.colorNames = colorNames
         self.done = done
     }
-    
+
     public init(
         color: Binding<Color>,
         parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell),
@@ -57,7 +57,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
             done: done
         )
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         color: Binding<Color>,
@@ -74,7 +74,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
             Text(key)
         }
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         color: Binding<Color>,
@@ -91,7 +91,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
             Text(key)
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -143,7 +143,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
 private struct ColorPickerPreview<F>: View where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     let format: F
     @State var color: Color = .accentColor
-    
+
     var body: some View {
         LuminareColorPicker(
             "Done",

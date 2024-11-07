@@ -12,17 +12,17 @@ import SwiftUI
 public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View
 where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
     // MARK: Environments
-    
+
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
     private let id: KeyPath<V, ID>
     private let actionsMaxHeight: CGFloat?
-    
+
     @ViewBuilder private let content: (Binding<V>) -> ContentA
     @ViewBuilder private let emptyView: () -> ContentB
     @ViewBuilder private let actions: () -> Actions
@@ -60,7 +60,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.header = header
         self.footer = footer
     }
-    
+
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
@@ -90,7 +90,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -115,7 +115,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer: footer
         )
     }
-    
+
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
@@ -143,7 +143,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -168,7 +168,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -194,7 +194,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -217,7 +217,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             header: header
         )
     }
-    
+
     public init(
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -241,7 +241,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -266,7 +266,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer: footer
         )
     }
-    
+
     public init(
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -292,7 +292,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -315,7 +315,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer: footer
         )
     }
-    
+
     public init(
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -339,7 +339,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -365,7 +365,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -388,7 +388,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -487,7 +487,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             removeEventMonitor()
         }
     }
-    
+
     // MARK: Functions
 
     // TODO: investigate this
@@ -510,7 +510,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
     func addEventMonitor() {
         guard eventMonitor == nil else { return }
-        
+
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let kVK_Escape: CGKeyCode = 0x35
 
@@ -536,11 +536,11 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
 public struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     // MARK: Environments
-    
+
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
 
     @Binding private var item: V
@@ -561,7 +561,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 
     private let maxTintOpacity: CGFloat = 0.15
     @State private var tintOpacity: CGFloat = .zero
-    
+
     // MARK: Initializers
 
     public init(
@@ -581,7 +581,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         self._canRefreshSelection = canRefreshSelection
         self.content = content
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -661,7 +661,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             doubleLinePart()
         }
     }
-    
+
     @ViewBuilder private func firstItemPart() -> some View {
         VStack(spacing: 0) {
             ZStack {
@@ -672,54 +672,54 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     topTrailingRadius: cornerRadius
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
-                
+
                 VStack {
                     Color.clear
                     HStack {
                         Spacer()
                             .frame(width: lineWidth)
-                        
+
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
-                        
+
                         Spacer()
                             .frame(width: lineWidth)
                     }
                 }
             }
             .compositingGroup()
-            
+
             // --- bottom part ---
-            
+
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
-                
+
                 Spacer()
-                
+
                 Rectangle()
                     .frame(width: lineWidth)
             }
             .foregroundStyle(.tint)
         }
     }
-    
+
     @ViewBuilder private func lastItemPart(isBottomOfList: Bool) -> some View {
         VStack(spacing: 0) {
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
-                
+
                 Spacer()
-                
+
                 Rectangle()
                     .frame(width: lineWidth)
             }
             .foregroundStyle(.tint)
-            
+
             // --- bottom part ---
-            
+
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
@@ -728,16 +728,16 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     topTrailingRadius: 0
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
-                
+
                 VStack {
                     HStack {
                         Spacer()
                             .frame(width: lineWidth)
-                        
+
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
-                        
+
                         Spacer()
                             .frame(width: lineWidth)
                     }
@@ -747,20 +747,20 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             .compositingGroup()
         }
     }
-    
+
     @ViewBuilder private func doubleLinePart() -> some View {
         HStack {
             Rectangle()
                 .frame(width: lineWidth)
-            
+
             Spacer()
-            
+
             Rectangle()
                 .frame(width: lineWidth)
         }
         .foregroundStyle(.tint)
     }
-    
+
     @ViewBuilder private func singleSelectionPart(isBottomOfList: Bool) -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: cornerRadius,
@@ -770,9 +770,9 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
     }
-    
+
     // MARK: Functions
-    
+
     private func updateSelection(selection: Set<V>) {
         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
         lineWidth = selection.contains(item) ? maxLineWidth : .zero
@@ -804,8 +804,8 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> ()
-    
+    let add: (inout [V]) -> Void
+
     var body: some View {
         LuminareList(
             "List Header", "List Footer",
@@ -831,7 +831,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                     add(&items)
                 }
             }
-            
+
             Button("Sort") {
                 withAnimation {
                     items.sort(by: <)

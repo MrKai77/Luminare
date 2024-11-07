@@ -10,7 +10,7 @@ import SwiftUI
 public enum LuminareValueAdjusterControlSize {
     case regular
     case compact
-    
+
     var height: CGFloat {
         switch self {
         case .regular: 70
@@ -23,13 +23,13 @@ public enum LuminareValueAdjusterControlSize {
 
 public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias ControlSize = LuminareValueAdjusterControlSize
-    
+
     private enum FocusedField {
         case textbox
     }
-    
+
     // MARK: Environments
-    
+
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -49,7 +49,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
 
     @ViewBuilder private let content: (AnyView) -> Content
     @ViewBuilder private let label: () -> Label
-    
+
     @Binding private var value: V
     private let sliderRange: ClosedRange<V>
     private var step: V
@@ -57,9 +57,9 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
     private let lowerClamp: Bool
     private let controlSize: ControlSize
     private let decimalPlaces: Int
-    
+
     @State var eventMonitor: AnyObject?
-    
+
     // MARK: Initializers
 
     // TODO: max digit spacing for label
@@ -77,7 +77,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
     ) {
         self.content = content
         self.label = label
-        
+
         self._value = value
         self.sliderRange = sliderRange
         self.lowerClamp = lowerClamp
@@ -94,10 +94,10 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         } else {
             self.step = 1
         }
-        
+
         self.horizontalPadding = horizontalPadding
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         value: Binding<V>,
@@ -124,7 +124,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
             Text(key)
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -142,7 +142,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                 LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12) {
                     HStack(spacing: 12) {
                         slider()
-                        
+
                         text()
                     }
                     .frame(width: 270)
@@ -219,7 +219,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                     .buttonStyle(PlainButtonStyle())
                 }
             }
-            
+
             content(.init(view))
         }
         .frame(maxWidth: 150)
@@ -252,7 +252,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         }
         .opacity(isEnabled ? 1 : 0.5)
     }
-    
+
     // MARK: Functions
 
     func addEventMonitor() {
@@ -306,7 +306,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
             value: .constant(42),
             sliderRange: 0...128,
             step: 1,
-            lowerClamp: true, 
+            lowerClamp: true,
             upperClamp: false
         ) { view in
             HStack(spacing: 0) {
@@ -317,14 +317,13 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
-                
+
                 Text("Composed")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
-        
-        
+
         LuminareValueAdjusterCompose(
             value: .constant(42),
             sliderRange: 0...128,
@@ -341,7 +340,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
-                
+
                 Text("Composed, Compact")
                     .font(.caption)
                     .foregroundStyle(.secondary)
