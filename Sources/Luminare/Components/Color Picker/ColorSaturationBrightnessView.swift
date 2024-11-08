@@ -89,7 +89,7 @@ struct ColorSaturationBrightnessView: View {
             let brightness = 1 - (adjustedY / viewSize.height)
 
             selectedColor.saturation = Double(saturation)
-            selectedColor.brightness = Double(max(0.0001, brightness))
+            selectedColor.brightness = Double(brightness)
         }
 
         withAnimation(animation) {

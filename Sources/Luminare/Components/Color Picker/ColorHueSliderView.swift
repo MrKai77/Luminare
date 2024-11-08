@@ -17,6 +17,8 @@ struct ColorHueSliderView: View {
     // MARK: Fields
 
     @Binding var selectedColor: HSBColor
+    var roundTop: Bool = false
+    var roundBottom: Bool = false
 
     @State private var selectionPosition: CGFloat = 0
     @State private var selectionOffset: CGFloat = 0
@@ -43,23 +45,24 @@ struct ColorHueSliderView: View {
                 )
 
                 UnevenRoundedRectangle(
-                    topLeadingRadius: 2,
-                    bottomLeadingRadius: selectionOffset < (geo.size.width / 2) ? selectionCornerRadius : 2,
-                    bottomTrailingRadius: selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2,
-                    topTrailingRadius: 2
+                    topLeadingRadius: roundTop ? (selectionOffset < (geo.size.width / 2) ? selectionCornerRadius : 2) : 2,
+                    bottomLeadingRadius: roundBottom ? (selectionOffset < (geo.size.width / 2) ? selectionCornerRadius : 2) : 2,
+                    bottomTrailingRadius: roundBottom ? (selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2) : 2,
+                    topTrailingRadius: roundTop ? (selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2) : 2
                 )
                 .frame(width: selectionWidth, height: 12.5)
                 .padding(.bottom, 0.5)
                 .offset(x: selectionOffset, y: 0)
                 .foregroundColor(.white)
                 .shadow(radius: 3)
-                .onChange(of: selectionPosition) { _ in
+                .onChange(of: selectionPosition) { position in
                     withAnimation(animation) {
                         selectionOffset = calculateOffset(
-                            handleWidth: handleWidth(at: selectionPosition, geo.size.width),
-                            geo.size.width)
-                        selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
-                        selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
+                            handleWidth: handleWidth(at: position, geo.size.width),
+                            geo.size.width
+                        )
+                        selectionWidth = handleWidth(at: position, geo.size.width)
+                        selectionCornerRadius = handleCornerRadius(at: position, geo.size.width)
                     }
                 }
             }
@@ -73,9 +76,13 @@ struct ColorHueSliderView: View {
                 selectionPosition = selectedColor.hue * geo.size.width
                 selectionOffset = calculateOffset(
                     handleWidth: handleWidth(at: selectionPosition, geo.size.width),
-                    geo.size.width)
+                    geo.size.width
+                )
                 selectionWidth = handleWidth(at: selectionPosition, geo.size.width)
                 selectionCornerRadius = handleCornerRadius(at: selectionPosition, geo.size.width)
+            }
+            .onChange(of: selectedColor) { color in
+                selectionPosition = color.hue * geo.size.width
             }
         }
         .frame(height: 16)
@@ -125,7 +132,7 @@ struct ColorHueSliderView: View {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
 
     LuminareSection {
-        ColorHueSliderView(selectedColor: $color)
+        ColorHueSliderView(selectedColor: $color, roundTop: true, roundBottom: true)
     }
     .padding()
 }

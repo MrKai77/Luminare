@@ -32,6 +32,10 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
     var colorNames: ColorNames
     @ViewBuilder var done: () -> Done
 
+    @State private var redComponent: Double = .zero
+    @State private var greenComponent: Double = .zero
+    @State private var blueComponent: Double = .zero
+
     @State private var isRedStepperPresented: Bool = false
     @State private var isGreenStepperPresented: Bool = false
     @State private var isBlueStepperPresented: Bool = false
@@ -56,7 +60,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                             )
                         )
 
-                    ColorHueSliderView(selectedColor: $selectedColor)
+                    ColorHueSliderView(selectedColor: $selectedColor, roundBottom: true)
                         .scaledToFill()
                         .clipShape(
                             UnevenRoundedRectangle(
@@ -102,44 +106,55 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
         .onChange(of: selectedColor) { color in
             updateComponents(color)
         }
+        .onChange(of: internalColor) { color in
+            selectedColor = color
+        }
         .animation(animationFast, value: selectedColor)
     }
 
     // view for RGB input fields
     @ViewBuilder private var RGBInputFields: some View {
         HStack(spacing: 8) {
-            RGBInputField(value: $selectedColor.rgb.components.red) {
+            RGBInputField(value: $redComponent) {
                 colorNames.red()
             } color: { value in
-                let components = selectedColor.rgb.components
-                return .init(
-                    red: value,
-                    green: components.green,
-                    blue: components.blue
-                )
+                    .init(
+                        red: value / 255.0,
+                        green: greenComponent / 255.0,
+                        blue: blueComponent / 255.0
+                    )
             }
 
-            RGBInputField(value: $selectedColor.rgb.components.green) {
+            RGBInputField(value: $greenComponent) {
                 colorNames.green()
             } color: { value in
-                let components = selectedColor.rgb.components
-                return .init(
-                    red: components.red,
-                    green: value,
-                    blue: components.blue
-                )
+                    .init(
+                        red: redComponent / 255.0,
+                        green: value / 255.0,
+                        blue: blueComponent / 255.0
+                    )
             }
 
-            RGBInputField(value: $selectedColor.rgb.components.blue) {
+            RGBInputField(value: $blueComponent) {
                 colorNames.blue()
             } color: { value in
-                let components = selectedColor.rgb.components
-                return .init(
-                    red: components.red,
-                    green: components.green,
-                    blue: value
-                )
+                    .init(
+                        red: redComponent / 255.0,
+                        green: greenComponent / 255.0,
+                        blue: value / 255.0
+                    )
             }
+        }
+    }
+
+    private var internalColor: HSBColor {
+        let hsb = Color(red: redComponent / 255.0, green: greenComponent / 255.0, blue: blueComponent / 255.0).hsb
+
+        return if hsb.saturation == 0 || hsb.brightness == 0 {
+            // preserve hue
+            .init(hue: selectedColor.hue, saturation: hsb.saturation, brightness: hsb.brightness)
+        } else {
+            hsb
         }
     }
 
@@ -147,7 +162,16 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
 
     // update components when the color changes
     private func updateComponents(_ newValue: HSBColor) {
-        hexColor = newValue.rgb.toHex()
+        // check if changed externally
+        guard newValue != internalColor else { return }
+
+        let rgb = newValue.rgb
+        hexColor = rgb.toHex()
+
+        let components = rgb.components
+        redComponent = components.red * 255.0
+        greenComponent = components.green * 255.0
+        blueComponent = components.blue * 255.0
     }
 }
 

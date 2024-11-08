@@ -76,7 +76,7 @@ extension Color {
             Int(nsColor.blueComponent * 255)
         )
     }
-    
+
     // converts to HSBA components
     func toHSB() -> HSBColor {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black

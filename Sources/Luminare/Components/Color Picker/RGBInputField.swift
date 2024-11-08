@@ -13,7 +13,7 @@ import SwiftUI
 struct RGBInputField<Label>: View where Label: View {
     // MARK: Fields
 
-    @Binding var value: Double
+    @Binding var value: Double // [0, 255]
     @ViewBuilder var label: () -> Label
     var color: (Double) -> Color? = { _ in nil }
 
@@ -27,11 +27,7 @@ struct RGBInputField<Label>: View where Label: View {
             if #available(macOS 15.0, *) {
                 LuminarePopover(arrowEdge: .top, trigger: .onForceTouch()) {
                     LuminareStepper(
-                        value: .init {
-                            value * 255.0
-                        } set: { newValue in
-                            value = newValue / 255.0
-                        },
+                        value: $value,
                         source: .finiteContinuous(range: 0...255, stride: 5),
                         indicatorSpacing: 20,
                         prominentIndicators: .init(color: color)
@@ -43,37 +39,32 @@ struct RGBInputField<Label>: View where Label: View {
                     LuminareTextField(
                         "", value: .init($value),
                         format: .number.precision(.integerAndFractionLength(
-                            integerLimits: 0...3,
-                            fractionLimits: 0...1)))
+                            integerLimits: 1...3,
+                            fractionLimits: 0...2)))
                 }
             } else {
                 LuminareTextField(
                     "", value: .init($value),
                     format: .number.precision(.integerAndFractionLength(
-                        integerLimits: 0...3,
-                        fractionLimits: 0...1)))
+                        integerLimits: 1...3,
+                        fractionLimits: 0...2)))
             }
         }
     }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
-private struct RGBInputFieldPreview: View {
-    @State private var value: Double = 42
+@available(macOS 15.0, *)
+#Preview("RGBInputField") {
+    @Previewable @State var value: Double = 42
 
-    var body: some View {
+    LuminareSection {
         RGBInputField(value: $value) {
             Text("Red")
         } color: { value in
-                .init(red: value, green: 0, blue: 0)
+                .init(red: value / 255.0, green: 0, blue: 0)
         }
-    }
-}
-
-#Preview("RGBInputField") {
-    LuminareSection {
-        RGBInputFieldPreview()
     }
     .padding()
 }
