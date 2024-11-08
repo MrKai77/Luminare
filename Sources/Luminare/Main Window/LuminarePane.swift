@@ -23,8 +23,9 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     /// Initializes a ``LuminarePane``.
     ///
-    /// - Parameter content: the content view.
-    /// - Parameter header: the header that is located at the titlebar's position.
+    /// - Parameters:
+    ///   - content: the content view.
+    ///   - header: the header that is located at the titlebar's position.
     public init(
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
@@ -35,8 +36,9 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     /// Initializes a ``LuminarePane`` where the header is a localized text.
     ///
-    /// - Parameter key: the `LocalizedStringKey` to look up the header text.
-    /// - Parameter content: the content view.
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the header text.
+    ///   - content: the content view.
     public init(
         _ key: LocalizedStringKey,
         @ViewBuilder content: @escaping () -> Content

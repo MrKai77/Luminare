@@ -31,7 +31,8 @@ where R: View, G: View, B: View,
 
     // MARK: Initializers
 
-    /// The most flexible option to initialize a ``LuminareColorPicker``.
+    /// Initializes a ``LuminareColorPicker``.
+    ///
     /// - Parameters:
     ///   - color: the color to be edited.
     ///   - format: the format of the hex color.
@@ -53,7 +54,8 @@ where R: View, G: View, B: View,
         self.done = done
     }
 
-    /// Initialize a ``LuminareColorPicker`` using preset hex color strategies.
+    /// Initializes a ``LuminareColorPicker`` using preset hex color strategies.
+    ///
     /// - Parameters:
     ///   - color: the color to be edited.
     ///   - parseStrategy: the strategy used to parse the hex color.
@@ -76,7 +78,8 @@ where R: View, G: View, B: View,
         )
     }
 
-    /// Initialize a ``LuminareColorPicker`` using a custom hex color format strategy.
+    /// Initializes a ``LuminareColorPicker`` using a custom hex color format strategy.
+    ///
     /// - Parameters:
     ///   - key: the key for the localized string of the done button.
     ///   - color: the color to be edited.
@@ -100,7 +103,8 @@ where R: View, G: View, B: View,
         }
     }
 
-    /// Initialize a ``LuminareColorPicker`` using preset hex color strategies.
+    /// Initializes a ``LuminareColorPicker`` using preset hex color strategies.
+    /// 
     /// - Parameters:
     ///   - key: the key for the localized string of the done button.
     ///   - color: the color to be edited.

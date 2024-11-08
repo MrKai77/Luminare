@@ -22,9 +22,10 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
 
     /// Initializes a ``LuminareSidebarSection``.
     ///
-    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
-    /// - Parameter items: the list of available ``LuminareTabItem``.
-    /// - Parameter label: the label that is located at the very top of the containing tabs.
+    /// - Parameters:
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
+    ///   - label: the label that is located at the very top of the containing tabs.
     public init(
         selection: Binding<Tab>,
         items: [Tab],
@@ -37,9 +38,10 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
 
     /// Initializes a ``LuminareSidebarSection`` where the label is a localized text.
     ///
-    /// - Parameter key: the `LocalizedStringKey` to look up the label text.
-    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
-    /// - Parameter items: the list of available ``LuminareTabItem``.
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
     public init(
         _ key: LocalizedStringKey,
         selection: Binding<Tab>,
@@ -55,8 +57,9 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
 
     /// Initializes a ``LuminareSidebarSection`` without a label.
     ///
-    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
-    /// - Parameter items: the list of available ``LuminareTabItem``.
+    /// - Parameters:
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
     public init(
         selection: Binding<Tab>,
         items: [Tab]

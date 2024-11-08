@@ -28,8 +28,9 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
 
     /// Initializes a ``LuminareSidebarTab``.
     ///
-    /// - Parameter tab: the associated ``LuminareTabItem``.
-    /// - Parameter activeTab: the activated ``LuminareTabItem`` binding.
+    /// - Parameters:
+    ///   - tab: the associated ``LuminareTabItem``.
+    ///   - activeTab: the activated ``LuminareTabItem`` binding.
     public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
         self._activeTab = activeTab
         self.tab = tab

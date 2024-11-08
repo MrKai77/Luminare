@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Text Field
 
+/// A stylized text field.
 public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
     // MARK: Environments
 
@@ -22,10 +23,19 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     private let placeholder: LocalizedStringKey
 
     @State private var monitor: Any?
-    @State private var isHovering: Bool = false
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareTextField``.
+    ///
+    /// - Parameters:
+    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
+    ///   - value: the value to be edited.
+    ///   - format: the format of the value.
+    ///   - elementMinHeight: the minimum height of the inner view.
+    ///   - horizontalPadding: the horizontal padding of the inner view.
+    ///   - cornerRadius: the radius of the stroke.
+    ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
         value: Binding<F.FormatInput?>, format: F,
@@ -42,6 +52,15 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
         self.placeholder = placeholder
     }
 
+    /// Initializes a ``LuminareTextField`` with a `String` value.
+    ///
+    /// - Parameters:
+    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
+    ///   - value: the `String` value to be edited.
+    ///   - elementMinHeight: the minimum height of the inner view.
+    ///   - horizontalPadding: the horizontal padding of the inner view.
+    ///   - cornerRadius: the radius of the stroke.
+    ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
         text: Binding<String>,
@@ -62,36 +81,13 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
 
     public var body: some View {
         TextField(placeholder, value: $value, format: format)
-            .padding(.horizontal, horizontalPadding)
-            .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .background {
-                if isHovering {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.quaternary, lineWidth: 1)
-                } else if isBordered {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
-                } else {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.clear, lineWidth: 1)
-                }
-            }
-            .background {
-                if isHovering {
-                    Rectangle()
-                        .foregroundStyle(.quinary)
-                } else {
-                    Rectangle()
-                        .foregroundStyle(.clear)
-                }
-            }
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .modifier(LuminareHoverable(
+                elementMinHeight: elementMinHeight,
+                horizontalPadding: horizontalPadding,
+                cornerRadius: cornerRadius,
+                isBordered: isBordered
+            ))
             .onAppear {
                 guard monitor != nil else { return }
 

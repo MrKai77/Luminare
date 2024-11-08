@@ -36,8 +36,9 @@ public struct LuminareDividedStack<Content>: View where Content: View {
 
     /// Initializes a ``LuminareDividedStack``.
     ///
-    /// - Parameter orientation: the ``Orientation`` that configures the direction to stack elements.
-    /// - Parameter content: the content view of the stack.
+    /// - Parameters:
+    ///   - orientation: the ``Orientation`` that configures the direction to stack elements.
+    ///   - content: the content view of the stack.
     public init(
         _ orientation: Orientation = .horizontal,
         @ViewBuilder content: @escaping () -> Content

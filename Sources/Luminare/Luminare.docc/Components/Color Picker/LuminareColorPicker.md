@@ -4,7 +4,7 @@
     @Column(size: 2) {
         A simple yet robust color picker designed to match the Luminare design system.
         
-        The textfield provides an input for a hex color code, while RGB color codes can be inputted from inside a color picker modal.
+        The text field provides an input for a hex color code, while RGB color codes can be inputted from inside a color picker modal.
         
         Here is an example of its typical usage:
         

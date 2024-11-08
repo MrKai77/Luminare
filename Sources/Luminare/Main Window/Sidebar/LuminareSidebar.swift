@@ -13,8 +13,9 @@ public struct LuminareSidebar<Content>: View where Content: View {
 
     /// Initializes a ``LuminareSidebar``.
     ///
-    /// - Parameter content: the sidebar content. Typically multiple ``LuminareSidebarTab`` organized by
-    /// ``LuminareSidebarSection``.
+    /// - Parameters:
+    ///   - content: the sidebar content. Typically multiple ``LuminareSidebarTab`` organized by 
+    ///   ``LuminareSidebarSection``.
     public init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content
     }

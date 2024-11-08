@@ -16,12 +16,8 @@ import SwiftUI
 ///     case general
 ///     case about
 ///
-///     // in this case, `String` is extended to conform to `Identifiable`
-///     var id: String {
-///         switch self {
-///         case .general: "general"
-///         case .about: "about"
-///         }
+///     var id: Self {
+///         self
 ///     }
 ///
 ///     var title: String {
