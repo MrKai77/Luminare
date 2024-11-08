@@ -126,7 +126,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             .frame(width: size.width, height: size.height)
     }
 
-    func onOffsetChange(_ bounds: CGRect, animate: Bool = false) {
+    func onBoundsChange(_ bounds: CGRect, animate: Bool = false) {
         let offset = direction.offset(of: bounds.origin) - direction.offset(of: centerRect.origin)
         if animate {
             withAnimation(animationFast) {
@@ -187,26 +187,23 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
 
     public func makeCoordinator() -> Coordinator {
-        Coordinator(self, spacing: spacing, snapping: snapping)
+        Coordinator(self)
     }
 
     // MARK: - Coordinator
 
     public class Coordinator: NSObject {
         var parent: InfiniteScrollView
-        var spacing: CGFloat
-        var snapping: Bool
 
-        private var offsetObservation: NSKeyValueObservation?
+        private var boundsObservation: NSKeyValueObservation?
         private var offsetOrigin: CGFloat = .zero
         private var diffOrigin: Int = .zero
 
         private var lastOffset: CGFloat = .zero
+        private var lastDiffOffset: Int = .zero
 
-        init(_ parent: InfiniteScrollView, spacing: CGFloat, snapping: Bool) {
+        init(_ parent: InfiniteScrollView) {
             self.parent = parent
-            self.spacing = spacing
-            self.snapping = snapping
         }
 
         func initializeScroll(_ clipView: NSClipView) {
@@ -219,10 +216,10 @@ public struct InfiniteScrollView: NSViewRepresentable {
         @objc func didLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
-            offsetObservation = scrollView.contentView.observe(\.bounds, options: [
+            boundsObservation = scrollView.contentView.observe(\.bounds, options: [
                 .new, .initial]) { [weak self] _, change in
                 guard let self, let bounds = change.newValue else { return }
-                parent.onOffsetChange(bounds)
+                    parent.onBoundsChange(bounds)
             }
 
             let center = parent.direction.offset(of: parent.centerRect.origin)
@@ -230,13 +227,15 @@ public struct InfiniteScrollView: NSViewRepresentable {
             let relativeOffset = offset - center
 
             if parent.wrapping {
-                if abs(relativeOffset) >= spacing {
-                    resetScrollViewPosition(scrollView.contentView)
-                    print(1)
+                lastOffset = offset
+                lastDiffOffset = 0
 
-                    let diffOffset: Int = if relativeOffset >= spacing {
+                if abs(relativeOffset) >= parent.spacing {
+                    resetScrollViewPosition(scrollView.contentView)
+
+                    let diffOffset: Int = if relativeOffset >= parent.spacing {
                         +1
-                    } else if relativeOffset <= -spacing {
+                    } else if relativeOffset <= -parent.spacing {
                         -1
                     } else {
                         0
@@ -245,10 +244,18 @@ public struct InfiniteScrollView: NSViewRepresentable {
                     accumulateDiff(diffOffset)
                 }
             } else {
-                let offset = max(0, min(2 * spacing, offset))
+                let offset = max(0, min(2 * parent.spacing, offset))
                 let relativeOffset = offset - offsetOrigin
-                let diffOffset = Int((relativeOffset / parent.spacing).rounded(offset - lastOffset > 0 ? .down : .up))
+
+                let isIncremental = offset - lastOffset > 0
+                let comparation: (Int, Int) -> Int = isIncremental ? max : min
+                let diffOffset = comparation(
+                    lastDiffOffset,
+                    Int((relativeOffset / parent.spacing).rounded(isIncremental ? .down : .up))
+                )
+
                 lastOffset = offset
+                lastDiffOffset = diffOffset
 
                 overrideDiff(diffOffset)
             }
@@ -266,7 +273,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         @objc func didEndLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
-            if snapping {
+            if parent.snapping {
                 NSAnimationContext.runAnimationGroup { context in
                     context.allowsImplicitAnimation = true
                     self.snapScrollViewPosition(scrollView.contentView)
@@ -285,7 +292,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
         private func resetScrollViewPosition(_ clipView: NSClipView, offset: CGPoint = .zero, animate: Bool = false) {
             clipView.setBoundsOrigin(parent.centerRect.origin.applying(.init(translationX: offset.x, y: offset.y)))
-            parent.onOffsetChange(clipView.bounds, animate: animate)
+            parent.onBoundsChange(clipView.bounds, animate: animate)
 
             parent.shouldReset = false
             offsetOrigin = parent.direction.offset(of: clipView.bounds.origin)
@@ -298,12 +305,12 @@ public struct InfiniteScrollView: NSViewRepresentable {
             let relativeOffset = offset - center
 
             let localOffset: CGFloat = switch relativeOffset {
-            case relativeOffset where relativeOffset >= -spacing && relativeOffset < -spacing / 2:
-                -spacing
-            case relativeOffset where relativeOffset >= -spacing / 2 && relativeOffset < spacing / 2:
+            case relativeOffset where relativeOffset >= -parent.spacing && relativeOffset < -parent.spacing / 2:
+                -parent.spacing
+            case relativeOffset where relativeOffset >= -parent.spacing / 2 && relativeOffset < parent.spacing / 2:
                     .zero
-            case relativeOffset where relativeOffset >= spacing / 2:
-                +spacing
+            case relativeOffset where relativeOffset >= parent.spacing / 2:
+                +parent.spacing
             default:
                     .zero
             }

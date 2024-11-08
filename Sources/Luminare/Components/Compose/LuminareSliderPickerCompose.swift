@@ -140,7 +140,11 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
 // MARK: - Preview
 
-#Preview("LuminareSliderPickerCompose") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSliderPickerCompose",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         LuminareSliderPickerCompose(
             [0, 1, 2, 3, 4], selection: .constant(3)
@@ -157,5 +161,4 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
             }
         }
     }
-    .padding()
 }

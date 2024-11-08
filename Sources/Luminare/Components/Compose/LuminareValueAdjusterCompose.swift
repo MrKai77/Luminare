@@ -300,7 +300,11 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
 // MARK: - Preview
 
-#Preview("LuminareValueAdjusterCompose") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareValueAdjusterCompose",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         LuminareValueAdjusterCompose(
             value: .constant(42),
@@ -347,5 +351,4 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
             }
         }
     }
-    .padding()
 }

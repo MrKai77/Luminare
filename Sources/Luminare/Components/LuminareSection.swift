@@ -245,7 +245,11 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
 // MARK: - Preview
 
-#Preview("LuminareSection") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSection",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         VStack {
             Image(systemName: "apple.logo")
@@ -302,5 +306,4 @@ Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse
     }
     .frame(width: 450)
     .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
-    .padding()
 }

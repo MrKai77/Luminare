@@ -119,7 +119,11 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
 
 // MARK: - Preview
 
-#Preview("LuminareTextField") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareTextField",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         VStack {
             LuminareTextField("Text Field", text: .constant("Bordered"))
@@ -130,5 +134,4 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                 .disabled(true)
         }
     }
-    .padding()
 }

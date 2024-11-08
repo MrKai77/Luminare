@@ -138,8 +138,11 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     }
 }
 
-#Preview("LuminareSidebarTab") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebarTab",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSidebarTab(Tab.about, .constant(Tab.about))
         .frame(width: 225)
-        .padding()
 }

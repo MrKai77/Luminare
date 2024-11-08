@@ -11,7 +11,12 @@ import SwiftUI
 ///
 /// This is presently used in ``LuminareColorPicker`` in a `parseStrategy` to format the hex color string.
 ///
-/// See ``HexStrategy`` for more information on how to parse a hex string, or use the `Strategy.identity` strategy as a passthrough.
+/// See ``HexStrategy`` for more information on how to parse a hex string, or use the `Strategy.identity` strategy as a
+/// passthrough.
+///
+/// ## Topics
+///
+/// - ``HexStrategy``
 public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatStyle {
     public var parseStrategy: Strategy = .identity
 
@@ -34,7 +39,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
             }
         }
     }
-    
+
     /// A strategy to parse a hex string.
     public enum HexStrategy: Codable, Equatable, Hashable, ParseStrategy {
         public typealias ParseInput = String
@@ -55,7 +60,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
 
         /// customized case and prefix characters.
         case custom(Lowercased, String)
-        
+
         /// Parse a hex value using a specified strategy.
         /// - Parameter value: The hex value to parse.
         /// - Returns: The parsed hex value.

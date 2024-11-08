@@ -35,32 +35,41 @@ public struct LuminareSidebar<Content>: View where Content: View {
 
 // MARK: - Previews
 
-#Preview("LuminareSidebar") {
-    HStack {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebar",
+    traits: .sizeThatFitsLayout
+) {
+    HStack(spacing: 0) {
         VStack {
             Text("Scrollable")
+                .bold()
+                .padding()
 
             LuminareSidebar {
                 ForEach(0..<100) { num in
                     Text("\(num)")
-                        .frame(width: 150, height: 35)
+                        .frame(width: 150, height: 40)
                         .modifier(LuminareBordered())
                 }
             }
         }
 
+        Divider()
+
         VStack {
             Text("Static")
+                .bold()
+                .padding()
 
             LuminareSidebar {
                 ForEach(0..<5) { num in
                     Text("\(num)")
-                        .frame(width: 150, height: 35)
+                        .frame(width: 150, height: 40)
                         .modifier(LuminareBordered())
                 }
             }
         }
     }
-    .frame(height: 450)
-    .padding()
+    .frame(height: 420)
 }

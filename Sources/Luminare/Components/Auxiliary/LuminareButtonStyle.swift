@@ -78,7 +78,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
         self.elementMinHeight = elementMinHeight
         self.isHovering = false
     }
-    
+
 #if DEBUG
     init(
         innerCornerRadius: CGFloat = 2,

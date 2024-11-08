@@ -15,7 +15,7 @@
     @Column {
         ![LuminareSidebarSection](LuminareSidebarSection)
         
-        > Due to **Xcode Previews** bugs, the active borders of the tabs cannot be captured.
+        > Due to some unexpected behaviors in **Xcode Previews,** this screenshot is manually captured.
     }
 }
 

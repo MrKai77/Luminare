@@ -243,7 +243,11 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     }
 }
 
-#Preview("LuminareCompactPicker") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareCompactPicker",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
@@ -271,5 +275,4 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }
     }
-    .padding()
 }

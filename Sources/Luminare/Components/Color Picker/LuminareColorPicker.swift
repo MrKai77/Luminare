@@ -10,7 +10,10 @@ import SwiftUI
 // MARK: - Color Picker
 
 /// A stylized color picker.
-public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View, B: View, F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String, Done: View {
+public struct LuminareColorPicker<R, G, B, F, Done>: View
+where R: View, G: View, B: View,
+        F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
+        Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
 
     // MARK: Fields
@@ -27,7 +30,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
     @State private var isColorPickerPresented = false
 
     // MARK: Initializers
-    
+
     /// The most flexible option to initialize a ``LuminareColorPicker``.
     /// - Parameters:
     ///   - color: the color to be edited.
@@ -72,7 +75,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
             done: done
         )
     }
-    
+
     /// Initialize a ``LuminareColorPicker`` using a custom hex color format strategy.
     /// - Parameters:
     ///   - key: the key for the localized string of the done button.
@@ -96,7 +99,7 @@ public struct LuminareColorPicker<R, G, B, F, Done>: View where R: View, G: View
             Text(key)
         }
     }
-    
+
     /// Initialize a ``LuminareColorPicker`` using preset hex color strategies.
     /// - Parameters:
     ///   - key: the key for the localized string of the done button.

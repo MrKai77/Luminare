@@ -116,8 +116,8 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             } color: { value in
                     .init(
                         red: value / 255.0,
-                        green: 1 - greenComponent / 255.0,
-                        blue: 1 - blueComponent / 255.0
+                        green: greenComponent / 255.0,
+                        blue: blueComponent / 255.0
                     )
             }
             .onChange(of: redComponent) { _ in
@@ -128,9 +128,9 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                 colorNames.green()
             } color: { value in
                     .init(
-                        red: 1 - redComponent / 255.0,
+                        red: redComponent / 255.0,
                         green: value / 255.0,
-                        blue: 1 - blueComponent / 255.0
+                        blue: blueComponent / 255.0
                     )
             }
             .onChange(of: greenComponent) { _ in
@@ -141,8 +141,8 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                 colorNames.blue()
             } color: { value in
                     .init(
-                        red: 1 - redComponent / 255.0,
-                        green: 1 - greenComponent / 255.0,
+                        red: redComponent / 255.0,
+                        green: greenComponent / 255.0,
                         blue: value / 255.0
                     )
             }

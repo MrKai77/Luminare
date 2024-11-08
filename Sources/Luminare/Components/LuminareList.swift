@@ -838,7 +838,11 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     }
 }
 
-#Preview("LuminareList") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareList",
+    traits: .sizeThatFitsLayout
+) {
     ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
         guard items.count < 100 else { return }
         let random = { Int.random(in: 0..<100) }
@@ -846,5 +850,4 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         while items.contains([new]) { new = random() }
         items.append(new)
     }
-    .padding()
 }

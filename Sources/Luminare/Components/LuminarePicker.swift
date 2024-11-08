@@ -188,7 +188,11 @@ where Content: View, V: Equatable {
 
 // MARK: - Preview
 
-#Preview("LuminarePicker") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminarePicker",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         LuminarePicker(
             elements: Array(32..<50),
@@ -197,5 +201,4 @@ where Content: View, V: Equatable {
             Text("\(num)")
         }
     }
-    .padding()
 }

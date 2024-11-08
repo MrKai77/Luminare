@@ -81,7 +81,11 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 
 // MARK: - Preview
 
-#Preview("LuminareCompose") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareCompose",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         LuminareCompose("Label", reducesTrailingSpace: true) {
             Button {
@@ -106,5 +110,4 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         }
         .disabled(true)
     }
-    .padding()
 }

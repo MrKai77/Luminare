@@ -140,7 +140,11 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     }
 }
 
-#Preview("LuminareSidebarSection") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebarSection",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         VStack(spacing: 24) {
             LuminareSidebarSection(selection: .constant(Tab.about), items: [Tab.lorem, .ipsum])
@@ -155,5 +159,4 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         }
     }
     .frame(width: 225)
-    .padding()
 }

@@ -315,10 +315,10 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
 
-    func wrap(_ value: V) -> V {
+    func wrap(_ value: V, padding: V = .zero) -> V {
         switch self {
         case .finite(let range, _), .finiteContinuous(let range, _):
-            max(range.lowerBound, min(range.upperBound, value))
+            max(range.lowerBound + padding, min(range.upperBound - padding, value))
         case .infinite, .infiniteContinuous:
             value
         }
@@ -440,9 +440,10 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         self.feedback = feedback
 
         let rounded = source.round(value.wrappedValue)
-        self.offset = CGFloat(rounded.offset)
+        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.stride) * indicatorSpacing)
         self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
+//        print(rounded)
     }
 
     public init(
@@ -513,7 +514,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     @ViewBuilder private func indicator(at index: Int) -> some View {
         let frame = direction.frame(0)
-        let offsetFrame = direction.frame(-sigmoidOffset)
+        let offsetFrame = direction.frame(-bentOffset)
         let referencingValue = referencingValue(at: index)
 
         Group {
@@ -544,13 +545,13 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             let offsetStart = direction.offsetBy(
                     nonAlternateOffset: direction.offsetBy(
-                        sigmoidOffset,
+                        bentOffset,
                         nonAlternateOffset: indicatorSpacing
                     )
                 )
             let offsetEnd = direction.offsetBy(
                     nonAlternateOffset: direction.offsetBy(
-                        -sigmoidOffset,
+                        -bentOffset,
                          nonAlternateOffset: indicatorSpacing
                     )
                 )
@@ -609,7 +610,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                             } else if source.reachedStartingBound(internalValue, direction: direction) {
                                 -indicatorSpacing
                             } else {
-                                0
+                                offset
                             }
                         } set: { _ in
                             // do nothing
@@ -627,7 +628,15 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                     }
                     .onChange(of: offset) { _, newValue in
                         let offset = newValue / indicatorSpacing
-                        let valueOffset = V(offset) * source.stride
+                        let correctedOffset = if source.reachedStartingBound(roundedValue, direction: direction) {
+                            direction.offsetBy(offset, nonAlternateOffset: 1)
+                        } else if source.reachedEndingBound(roundedValue, direction: direction) {
+                            direction.offsetBy(offset, nonAlternateOffset: -1)
+                        } else {
+                            offset
+                        }
+                        
+                        let valueOffset = V(correctedOffset) * source.stride
                         internalValue = source.offsetBy(
                             roundedValue,
                             direction: direction,
@@ -651,18 +660,18 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     }
 
     private var indicatorOffset: CGFloat {
-        if source.reachedUpperBound(internalValue) {
+        if source.reachedUpperBound(roundedValue) {
             direction.offsetBy(offset, nonAlternateOffset: -indicatorSpacing)
-        } else if source.reachedLowerBound(internalValue) {
+        } else if source.reachedLowerBound(roundedValue) {
             direction.offsetBy(offset, nonAlternateOffset: indicatorSpacing)
         } else {
             offset
         }
     }
 
-    private var sigmoidOffset: CGFloat {
+    private var bentOffset: CGFloat {
         let progress = indicatorOffset / indicatorSpacing
-        let bent = bentSigmoid(progress)
+        let bent = bentSigmoid(progress, curvature: source.isContinuous ? 0 : 7.5)
         return bent * indicatorSpacing
     }
 
@@ -695,7 +704,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     // MARK: Functions
 
     private func shift(at index: Int) -> CGFloat {
-        direction.offsetBy(CGFloat(centerIndicatorIndex - index), nonAlternateOffset: sigmoidOffset / indicatorSpacing)
+        direction.offsetBy(CGFloat(centerIndicatorIndex - index), nonAlternateOffset: bentOffset / indicatorSpacing)
     }
 
     private func referencingValue(at index: Int) -> V {
@@ -743,6 +752,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         _ value: Double,
         curvature: Double = 7.5
     ) -> Double {
+        guard curvature != 0 else { return value }
         guard value >= -1 && value <= 1 else { return value }
 
         return if value >= 0 {
@@ -789,7 +799,6 @@ where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloating
 //                }
             }
         }
-        .padding()
     }
 }
 
@@ -825,10 +834,13 @@ private struct StepperPopoverPreview: View {
 }
 
 @available(macOS 15.0, *)
-#Preview("LuminareStepper") {
-    VStack {
-        HStack {
-            VStack {
+#Preview(
+    "LuminareStepper",
+    traits: .sizeThatFitsLayout
+) {
+    VStack(spacing: 20) {
+        HStack(spacing: 20) {
+            VStack(spacing: 20) {
                 StepperPreview(
                     value: 42,
                     source: .finite(range: -100...50, stride: 2),
@@ -839,14 +851,14 @@ private struct StepperPopoverPreview: View {
                         Text("Horizontal")
                             .bold()
 
-                        Text("Snapping Enabled")
+                        Text("Finite Snapping")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
 
                 StepperPreview(
-                    value: 42,
+                    value: 45,
                     source: .infiniteContinuous(stride: 2),
                     direction: .horizontalAlternate,
                     prominentValues: [0, 42]
@@ -860,10 +872,27 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-            }
-            .frame(width: 500)
 
-            HStack {
+                StepperPreview(
+                    value: 42,
+                    source: .infinite(stride: 2),
+                    alignment: .center,
+                    direction: .horizontal,
+                    prominentValues: [0, 26, 30, 34, 38, 42, 46, 50, 54, 58]
+                ) {
+                    VStack {
+                        Text("Horizontal Center Aligned")
+                            .bold()
+
+                        Text("Infinite Snapping")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .frame(width: 450)
+
+            HStack(spacing: 20) {
                 StepperPreview(
                     value: 42,
                     source: .finite(range: -100...50, stride: 2),
@@ -875,7 +904,7 @@ private struct StepperPopoverPreview: View {
                         Text("Vertical Center Aligned")
                             .bold()
 
-                        Text("Snapping Enabled")
+                        Text("Finite Snapping")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -897,11 +926,10 @@ private struct StepperPopoverPreview: View {
                     }
                 }
             }
-            .frame(width: 300)
+            .frame(width: 250)
         }
         .multilineTextAlignment(.center)
 
 //        StepperPopoverPreview()
     }
-    .padding()
 }

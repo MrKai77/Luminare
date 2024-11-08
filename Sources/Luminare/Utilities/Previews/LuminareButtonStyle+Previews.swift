@@ -8,7 +8,11 @@
 import SwiftUI
 
 #if DEBUG
-#Preview("LuminareButtonStyle") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareButtonStyle",
+    traits: .sizeThatFitsLayout
+) {
     VStack {
         LuminareSection {
             Button {
@@ -94,6 +98,5 @@ import SwiftUI
             .frame(height: 40)
         }
     }
-    .padding()
 }
 #endif

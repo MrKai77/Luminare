@@ -56,7 +56,12 @@ public extension LuminareTabItem {
     var hasIndicator: Bool { false }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        if Self.ID.self == Self.self {
+            // avoid recursive hashing
+            hasher.combine(String(reflecting: self))
+        } else {
+            hasher.combine(id)
+        }
         hasher.combine(title)
     }
 
