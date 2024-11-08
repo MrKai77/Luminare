@@ -27,7 +27,11 @@ struct RGBInputField<Label>: View where Label: View {
             if #available(macOS 15.0, *) {
                 LuminarePopover(arrowEdge: .top, trigger: .onForceTouch()) {
                     LuminareStepper(
-                        value: $value,
+                        value: .init {
+                            value * 255.0
+                        } set: { newValue in
+                            value = newValue / 255.0
+                        },
                         source: .finiteContinuous(range: 0...255, stride: 5),
                         indicatorSpacing: 20,
                         prominentIndicators: .init(color: color)
@@ -62,7 +66,7 @@ private struct RGBInputFieldPreview: View {
         RGBInputField(value: $value) {
             Text("Red")
         } color: { value in
-                .init(red: value / 255.0, green: 0, blue: 0)
+                .init(red: value, green: 0, blue: 0)
         }
     }
 }

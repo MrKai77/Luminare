@@ -156,7 +156,7 @@ where R: View, G: View, B: View,
             .buttonStyle(PlainButtonStyle())
             .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true, isCompact: true) {
                 ColorPickerModalView(
-                    color: $currentColor,
+                    selectedColor: $currentColor.hsb,
                     hexColor: $text,
                     colorNames: colorNames,
                     done: done

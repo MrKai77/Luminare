@@ -8,6 +8,35 @@
 import AppKit
 import SwiftUI
 
+// a shorthand for storing color in HSB format
+struct HSBColor: Equatable, Hashable, Codable {
+    var hue: Double
+    var saturation: Double
+    var brightness: Double
+    var opacity: Double
+
+    init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+        self.hue = hue
+        self.saturation = saturation
+        self.brightness = brightness
+        self.opacity = opacity
+    }
+
+    init(rgb: Color) {
+        self = rgb.toHSB()
+    }
+
+    var rgb: Color {
+        get {
+            .init(hsb: self)
+        }
+
+        set {
+            self = .init(rgb: newValue)
+        }
+    }
+}
+
 // adds functionality to `Color`
 extension Color {
     static let violet = Color(red: 0.56, green: 0, blue: 1)
@@ -35,6 +64,10 @@ extension Color {
         )
     }
 
+    init(hsb: HSBColor) {
+        self.init(hue: hsb.hue, saturation: hsb.saturation, brightness: hsb.brightness, opacity: hsb.opacity)
+    }
+
     // converts to hex representation
     func toHex() -> String {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
@@ -43,25 +76,16 @@ extension Color {
             Int(nsColor.blueComponent * 255)
         )
     }
-
-    // converts to RGB values
-    func toRGB() -> (red: Double, green: Double, blue: Double) {
-        let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
-        return (
-            Double(nsColor.redComponent * 255), Double(nsColor.greenComponent * 255),
-            Double(nsColor.blueComponent * 255)
-        )
-    }
-
-    // converts color to HSB values
-    func toHSB() -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
+    
+    // converts to HSBA components
+    func toHSB() -> HSBColor {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
         var hue: CGFloat = 0
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
         var alpha: CGFloat = 0
         nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-        return (hue, saturation, brightness)
+        return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
     }
 
     // mixes with another color
@@ -71,7 +95,7 @@ extension Color {
             return self
         }
         let blend = { (color1: CGFloat, color2: CGFloat) -> CGFloat in color1 + (color2 - color1) * amount }
-        let selfComponents = components
+        let selfComponents = self.components
         let otherComponents = other.components
         return Color(
             red: blend(selfComponents.red, otherComponents.red),
@@ -81,19 +105,34 @@ extension Color {
     }
 
     // extracts RGBA components
-    var components: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
-        let nsColor = NSColor(self)
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-        nsColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        return (red, green, blue, alpha)
+    var components: (red: Double, green: Double, blue: Double, opacity: Double) {
+        get {
+            let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
+            var red: CGFloat = 0
+            var green: CGFloat = 0
+            var blue: CGFloat = 0
+            var alpha: CGFloat = 0
+            nsColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+            return (red, green, blue, alpha)
+        }
+        
+        set {
+            self = .init(red: newValue.red, green: newValue.green, blue: newValue.blue, opacity: newValue.opacity)
+        }
     }
 
-    // adjusts the brightness of the color
-    func brightnessAdjustment(brightness: Double) -> Color {
-        let hsb = toHSB()
+    var hsb: HSBColor {
+        get {
+            .init(rgb: self)
+        }
+
+        set {
+            self = .init(hsb: newValue)
+        }
+    }
+
+    // adjusts the brightness
+    func brightness(_ brightness: Double) -> Color {
         // ensures the new brightness is within the range [0, 1]
         let adjustedBrightness = max(0.0, min(brightness, 1.0))
         return Color(

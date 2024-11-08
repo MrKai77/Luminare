@@ -16,7 +16,8 @@ struct ColorHueSliderView: View {
 
     // MARK: Fields
 
-    @Binding private var selectedColor: Color
+    @Binding var selectedColor: HSBColor
+
     @State private var selectionPosition: CGFloat = 0
     @State private var selectionOffset: CGFloat = 0
     @State private var selectionCornerRadius: CGFloat = 0
@@ -29,12 +30,6 @@ struct ColorHueSliderView: View {
                 Color(hue: $0, saturation: 1, brightness: 1)
             }
     )
-
-    // MARK: Initializers
-
-    init(selectedColor: Binding<Color>) {
-        self._selectedColor = selectedColor
-    }
 
     // MARK: Body
 
@@ -75,7 +70,7 @@ struct ColorHueSliderView: View {
                     }
             )
             .onAppear {
-                selectionPosition = selectedColor.toHSB().hue * geo.size.width
+                selectionPosition = selectedColor.hue * geo.size.width
                 selectionOffset = calculateOffset(
                     handleWidth: handleWidth(at: selectionPosition, geo.size.width),
                     geo.size.width)
@@ -94,18 +89,13 @@ struct ColorHueSliderView: View {
         let clampedX = max(5.5, min(value.location.x, viewSize - 5.5))
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
-        let currentHSB = selectedColor.toHSB()
 
         if percentage != lastPercentage, percentage == 5.5 / viewSize || percentage == (viewSize - 5.5) / viewSize {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
 
         withAnimation(animation) {
-            selectedColor = Color(
-                hue: percentage,
-                saturation: max(0.0001, currentHSB.saturation),
-                brightness: currentHSB.brightness
-            )
+            selectedColor.hue = percentage
         }
     }
 
@@ -130,9 +120,12 @@ struct ColorHueSliderView: View {
 
 // MARK: - Preview
 
+@available(macOS 15.0, *)
 #Preview("ColorHueSliderView") {
+    @Previewable @State var color: HSBColor = Color.accentColor.hsb
+
     LuminareSection {
-        ColorHueSliderView(selectedColor: .constant(.accentColor))
+        ColorHueSliderView(selectedColor: $color)
     }
     .padding()
 }
