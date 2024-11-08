@@ -67,7 +67,11 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         Group {
             switch style {
             case .menu:
-                _VariadicView.Tree(MenuLayout(selection: $selection), content: content)
+                Picker("", selection: $selection, content: content)
+                    .labelsHidden()
+                    .pickerStyle(.menu)
+                    .buttonStyle(.borderless)
+                    .padding(.trailing, -2)
             case .segmented:
                 _VariadicView.Tree(SegmentedLayout(
                     elementMinHeight: elementMinHeight,
@@ -82,31 +86,11 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 isHovering = hover
             }
         }
-        .frame(minHeight: elementMinHeight)
-        .padding(.horizontal, horizontalPadding)
-        .background {
-            if isHovering {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            } else if isBordered {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
-            } else {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.clear, lineWidth: 1)
-            }
-        }
-        .background {
-            if isHovering {
-                Rectangle()
-                    .foregroundStyle(.quinary)
-            } else {
-                Rectangle()
-                    .foregroundStyle(.clear)
-            }
-        }
-        .clipShape(.rect(cornerRadius: cornerRadius))
-        .animation(animationFast, value: isHovering)
+        .modifier(LuminareHoverable(
+            elementMinHeight: elementMinHeight,
+            horizontalPadding: horizontalPadding,
+            isBordered: isBordered
+        ))
     }
 
     @ViewBuilder private func variadic<Layout>(
@@ -116,31 +100,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     }
 
     // MARK: - Layouts
-
-    struct MenuLayout: _VariadicView.UnaryViewRoot {
-        @Binding var selection: V
-
-        @ViewBuilder func body(children: _VariadicView.Children) -> some View {
-            Picker("", selection: $selection) {
-                ForEach(Array(zip(
-                    children,
-                    getValues(from: children)
-                )), id: \.1) { child, _ in
-                    child
-                }
-            }
-            .labelsHidden()
-            .pickerStyle(.menu)
-            .buttonStyle(.borderless)
-            .padding(.trailing, -2)
-        }
-
-        private func getValues(from children: _VariadicView.Children) -> [V] {
-            children.compactMap { child in
-                child.id(as: V.self)
-            }
-        }
-    }
 
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
@@ -288,7 +247,6 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     LuminareSection {
         LuminareCompose("Button", reducesTrailingSpace: true) {
             Button {
-
             } label: {
                 Text("42")
                     .frame(height: 30)

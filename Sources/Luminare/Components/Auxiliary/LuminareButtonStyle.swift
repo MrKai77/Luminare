@@ -339,10 +339,10 @@ public struct LuminareBordered: ViewModifier {
     private let cornerRadius: CGFloat
 
     public init(
-        highlighted: Bool = false,
+        isHighlighted: Bool = false,
         cornerRadius: CGFloat = 8
     ) {
-        self.isHighlighted = highlighted
+        self.isHighlighted = isHighlighted
         self.cornerRadius = cornerRadius
     }
 
@@ -358,7 +358,76 @@ public struct LuminareBordered: ViewModifier {
             .clipShape(.rect(cornerRadius: cornerRadius))
             .background {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.quaternary, lineWidth: 1)
+                    .strokeBorder(.quaternary)
+            }
+    }
+}
+
+public struct LuminareHoverable: ViewModifier {
+    @Environment(\.luminareAnimationFast) private var animationFast
+
+    private let elementMinHeight: CGFloat, horizontalPadding: CGFloat
+    private let isBordered: Bool
+    private let cornerRadius: CGFloat
+
+    @State private var isHovering: Bool
+
+    public init(
+        elementMinHeight: CGFloat = 32,
+        horizontalPadding: CGFloat = 8,
+        isBordered: Bool = false,
+        cornerRadius: CGFloat = 8
+    ) {
+        self.elementMinHeight = elementMinHeight
+        self.horizontalPadding = horizontalPadding
+        self.isBordered = isBordered
+        self.cornerRadius = cornerRadius
+        self.isHovering = false
+    }
+
+#if DEBUG
+    init(
+        elementMinHeight: CGFloat = 32,
+        horizontalPadding: CGFloat = 8,
+        isBordered: Bool = false,
+        cornerRadius: CGFloat = 8,
+        isHovering: Bool = false
+    ) {
+        self.elementMinHeight = elementMinHeight
+        self.horizontalPadding = horizontalPadding
+        self.isBordered = isBordered
+        self.cornerRadius = cornerRadius
+        self.isHovering = isHovering
+    }
+#endif
+
+    public func body(content: Content) -> some View {
+        content
+            .onHover { hover in
+                withAnimation(animationFast) {
+                    isHovering = hover
+                }
+            }
+            .frame(minHeight: elementMinHeight)
+            .padding(.horizontal, horizontalPadding)
+            .background {
+                if isHovering {
+                    Rectangle()
+                        .foregroundStyle(.quinary)
+                } else {
+                    Rectangle()
+                        .foregroundStyle(.clear)
+                }
+            }
+            .clipShape(.rect(cornerRadius: cornerRadius))
+            .background {
+                if isHovering {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(.quaternary)
+                } else if isBordered {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(.quaternary.opacity(0.7))
+                }
             }
     }
 }
