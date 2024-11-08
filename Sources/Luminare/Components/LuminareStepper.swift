@@ -370,6 +370,7 @@ where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
 
 // MARK: - Stepper
 
+/// A stylized, abstract stepper
 @available(macOS 15.0, *)
 public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias Alignment = LuminareStepperAlignment

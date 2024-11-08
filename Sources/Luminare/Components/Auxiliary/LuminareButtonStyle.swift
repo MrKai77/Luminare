@@ -367,16 +367,16 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareAnimationFast) private var animationFast
 
     private let elementMinHeight: CGFloat, horizontalPadding: CGFloat
-    private let isBordered: Bool
     private let cornerRadius: CGFloat
+    private let isBordered: Bool
 
     @State private var isHovering: Bool
 
     public init(
         elementMinHeight: CGFloat = 32,
         horizontalPadding: CGFloat = 8,
-        isBordered: Bool = false,
-        cornerRadius: CGFloat = 8
+        cornerRadius: CGFloat = 8,
+        isBordered: Bool = false
     ) {
         self.elementMinHeight = elementMinHeight
         self.horizontalPadding = horizontalPadding
