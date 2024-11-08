@@ -44,11 +44,14 @@ struct ColorHueSliderView: View {
                     endPoint: .trailing
                 )
 
+                let leadingCornerRadius = selectionOffset < (geo.size.width / 2) ? selectionCornerRadius : 2
+                let trailingCornerRadius = selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2
+
                 UnevenRoundedRectangle(
-                    topLeadingRadius: roundTop ? (selectionOffset < (geo.size.width / 2) ? selectionCornerRadius : 2) : 2,
-                    bottomLeadingRadius: roundBottom ? (selectionOffset < (geo.size.width / 2) ? selectionCornerRadius : 2) : 2,
-                    bottomTrailingRadius: roundBottom ? (selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2) : 2,
-                    topTrailingRadius: roundTop ? (selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2) : 2
+                    topLeadingRadius: roundTop ? leadingCornerRadius : 2,
+                    bottomLeadingRadius: roundBottom ? leadingCornerRadius : 2,
+                    bottomTrailingRadius: roundBottom ? trailingCornerRadius : 2,
+                    topTrailingRadius: roundTop ? trailingCornerRadius : 2
                 )
                 .frame(width: selectionWidth, height: 12.5)
                 .padding(.bottom, 0.5)

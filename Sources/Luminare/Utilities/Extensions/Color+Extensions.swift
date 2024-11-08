@@ -115,7 +115,7 @@ extension Color {
             nsColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
             return (red, green, blue, alpha)
         }
-        
+
         set {
             self = .init(red: newValue.red, green: newValue.green, blue: newValue.blue, opacity: newValue.opacity)
         }

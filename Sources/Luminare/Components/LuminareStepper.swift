@@ -635,7 +635,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                         } else {
                             offset
                         }
-                        
+
                         let valueOffset = V(correctedOffset) * source.stride
                         internalValue = source.offsetBy(
                             roundedValue,

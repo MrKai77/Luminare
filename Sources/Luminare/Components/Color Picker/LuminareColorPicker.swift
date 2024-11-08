@@ -170,32 +170,28 @@ where R: View, G: View, B: View,
     }
 }
 
-// MARK: - Preview
-
-private struct ColorPickerPreview<F>: View
-where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
-    let format: F
-    @State var color: Color = .accentColor
-
-    var body: some View {
-        LuminareColorPicker(
-            "Done",
-            color: $color,
-            format: format,
-            colorNames: .init {
-                Text("Red")
-            } green: {
-                Text("Green")
-            } blue: {
-                Text("Blue")
-            }
-        )
-    }
-}
+// MARK: - Previews
 
 // preview as app
-#Preview("LuminareColorPicker") {
-    ColorPickerPreview(format: StringFormatStyle(parseStrategy: .hex(.custom(true, "#"))))
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareColorPicker",
+    traits: .sizeThatFitsLayout
+) {
+    @Previewable @State var color: Color = .accentColor
+
+    LuminareColorPicker(
+        "Done",
+        color: $color,
+        format: StringFormatStyle(parseStrategy: .hex(.lowercasedWithWell)),
+        colorNames: .init {
+            Text("Red")
+        } green: {
+            Text("Green")
+        } blue: {
+            Text("Blue")
+        }
+    )
     .monospaced()
-    .padding()
+    .frame(width: 300)
 }

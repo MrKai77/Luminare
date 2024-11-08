@@ -90,7 +90,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case lorem

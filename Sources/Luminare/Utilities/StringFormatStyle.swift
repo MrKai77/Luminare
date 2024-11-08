@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-/// A `String` format style.
+/// Formats `String` into multiple styles.
 ///
-/// This is presently used in ``LuminareColorPicker`` in a `parseStrategy` to format the hex color string.
+/// This is presently used as a `parseStrategy` parameter in ``LuminareColorPicker`` to format the hex string representing a color.
 ///
-/// See ``HexStrategy`` for more information on how to parse a hex string, or use the `Strategy.identity` strategy as a
+/// See ``HexStrategy`` for more information on how to parse a hex string, or use the `Strategy.identity` as a
 /// passthrough.
 ///
 /// ## Topics
@@ -44,22 +44,41 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
     public enum HexStrategy: Codable, Equatable, Hashable, ParseStrategy {
         public typealias ParseInput = String
         public typealias ParseOutput = String
-        public typealias Lowercased = Bool
 
-        /// `#42ab0E` parses to `42ab0e`.
+        /// A lowercased style without any prefixes.
+        ///
+        /// - Parses `#42ab0E` to `42ab0e`.
+        /// - Parses `42AB0E` to `42ab0e`.
         case lowercased
 
-        /// `#42ab0E` parses to `42AB0E`.
+        /// An uppercased style without any prefixes.
+        ///
+        /// - Parses `#42ab0E` to `42AB0E`.
+        /// - Parses `42ab0e` to `42AB0E`.
         case uppercased
 
-        /// `42ab0E` parses to `#42ab0e`.
+        /// A lowercased style prefixed with `#`.
+        ///
+        /// - Parses `42ab0E` to `#42ab0e`.
+        /// - Parses `#42AB0E` to `#42ab0e`.
         case lowercasedWithWell
 
-        /// `42ab0E` parses to `#42AB0E`.
+        /// An uppercased style prefixed with `#`.
+        ///
+        /// - Parses `42ab0E` to `#42AB0E`.
+        /// - Parses `#42ab0e` to `#42AB0E`.
         case uppercasedWithWell
 
-        /// customized case and prefix characters.
-        case custom(Lowercased, String)
+        /// A style with customized text case and prefix.
+        ///
+        /// ## Examples
+        ///
+        /// - `.custom(.lowercased, "$")`
+        ///     - Parses `#42AB0E` to `$42ab0e`.
+        ///
+        /// - `.custom(.uppercased, "@@")`
+        ///     - Parses `#42ab0e` to `@@42AB0E`.
+        case custom(TextCase, String)
 
         /// Parse a hex value using a specified strategy.
         /// - Parameter value: The hex value to parse.
@@ -67,17 +86,24 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
         public func parse(_ value: String) throws -> String {
             switch self {
             case .lowercased:
-                value.lowercased()
+                return value.lowercased()
                     .replacing(#/[^a-f0-9]/#, with: "")
             case .uppercased:
-                value.uppercased()
+                return value.uppercased()
                     .replacing(#/[^A-F0-9]/#, with: "")
             case .lowercasedWithWell:
-                try "#" + Self.lowercased.parse(value)
+                return try "#" + Self.lowercased.parse(value)
             case .uppercasedWithWell:
-                try "#" + Self.uppercased.parse(value)
-            case .custom(let lowercased, let prefix):
-                try prefix + (lowercased ? Self.lowercased : Self.uppercased).parse(value)
+                return try "#" + Self.uppercased.parse(value)
+            case .custom(let textCase, let prefix):
+                let branch = switch textCase {
+                case .uppercase:
+                    Self.uppercased
+                case .lowercase:
+                    Self.lowercased
+                }
+
+                return try prefix + branch.parse(value)
             }
         }
     }
@@ -90,4 +116,12 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
             return value
         }
     }
+}
+
+/// Represents a text case.
+public enum TextCase: String, Equatable, Hashable, Codable {
+    /// The uppercase.
+    case uppercase
+    /// The lowercase.
+    case lowercase
 }

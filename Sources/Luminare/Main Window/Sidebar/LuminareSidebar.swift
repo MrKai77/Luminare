@@ -33,7 +33,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
 @available(macOS 15.0, *)
 #Preview(

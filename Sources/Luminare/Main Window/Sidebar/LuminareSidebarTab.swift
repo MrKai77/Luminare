@@ -116,7 +116,7 @@ struct SidebarButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case about

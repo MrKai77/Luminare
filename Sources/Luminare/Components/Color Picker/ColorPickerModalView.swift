@@ -178,7 +178,10 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
 // MARK: - Preview
 
 @available(macOS 15.0, *)
-#Preview("ColorPickerModalView") {
+#Preview(
+    "ColorPickerModalView",
+    traits: .sizeThatFitsLayout
+) {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
     @Previewable @State var hexColor: String = ""
 
@@ -197,6 +200,5 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             Text("Done")
         }
     }
-    .padding()
     .frame(width: 300)
 }
