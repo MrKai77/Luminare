@@ -7,11 +7,26 @@
 
 import SwiftUI
 
+/// The indicator alignment of a ``LuminareStepper``.
 @available(macOS 15.0, *)
 public enum LuminareStepperAlignment {
+    /// The indicators are of the equal lengths and expand to both edges.
     case none
+    /// The indicators are of the equal lengths and have equal paddings from both edges.
     case center
+    /// The center indicator is larger than others and points to the direction normals to the
+    /// ``LuminareStepperDirection``.
+    ///
+    /// In left-to-right layouts, the indicators point to top if ``LuminareStepperDirection`` is
+    ///  ``LuminareStepperDirection/horizontal`` and to left if ``LuminareStepperDirection`` is
+    ///  ``LuminareStepperDirection/vertical``.
     case leading // the left side of the growth direction, typically the top if horizontal and the left if vertical
+    /// The center indicator is larger than others and points to the direction negatively normals to the 
+    /// ``LuminareStepperDirection``.
+    ///
+    /// In left-to-right layouts, the indicators point to bottom if ``LuminareStepperDirection`` is 
+    /// ``LuminareStepperDirection/horizontal`` and to right if ``LuminareStepperDirection`` is
+    /// ``LuminareStepperDirection/vertical``.
     case trailing // opposite to `leading`
 
     // swiftlint:disable:next cyclomatic_complexity
@@ -79,11 +94,16 @@ public enum LuminareStepperAlignment {
     }
 }
 
+/// The direction of a ``LuminareStepper``.
 @available(macOS 15.0, *)
 public enum LuminareStepperDirection {
+    /// In left-to-right layouts, the larger values are right-sided.
     case horizontal // the growth direction is typically right
+    /// In left-to-right layouts, the larger values are left-sided.
     case horizontalAlternate // opposite to `horizontal`
+    /// In left-to-right layouts, the larger values are upward.
     case vertical // the growth direction is typically up
+    /// In left-to-right layouts, the larger values are downward.
     case verticalAlternate // opposite to `vertical`
 
     var isAlternate: Bool {
@@ -195,11 +215,28 @@ public enum LuminareStepperDirection {
     }
 }
 
+/// Specifies how a ``LuminareStepper`` ranges and snaps its value.
 @available(macOS 15.0, *)
 public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    /// The value is finely ranged and strideable.
+    ///
+    /// The value will be strictly clamped inside a closed range and snapped to the nearest value according to the stride.
     case finite(range: ClosedRange<V>, stride: V = V(1))
+    /// The value is finely ranged but continuous.
+    ///
+    /// The value will be strictly clamped inside a closed range, but won't be snapped.
+    ///
+    /// In this case, the stride only defines how many values are between two indicators.
     case finiteContinuous(range: ClosedRange<V>, stride: V = V(1))
+    /// The value is strideable but infinite.
+    ///
+    /// The value will be snapped to the nearest value according to the stride, but won't be clamped.
     case infinite(stride: V = V(1))
+    /// The value is infinite and continuous.
+    ///
+    /// The value will be neither clamped nor snapped. All legal values of the type will be acceptable.
+    ///
+    /// In this case, the stride only defines how many values are between two indicators.
     case infiniteContinuous(stride: V = V(1))
 
     var isFinite: Bool {
@@ -345,11 +382,21 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     }
 }
 
+/// A custom delegate to customize any indicators of a ``LuminareStepper``.
 @available(macOS 15.0, *)
 public struct LuminareStepperProminentIndicators<V>
 where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @ViewBuilder let color: (V) -> Color?
 
+    /// Initializes a ``LuminareStepperProminentIndicators``.
+    ///
+    /// - Parameters:
+    ///   - values: a convenient array to roughly filter out unwanted values.
+    ///   If `nil`, all values will be available in the following closure.
+    ///   Otherwise, only values contained in this array will be available.
+    ///   - color: a closure to provide customized prominent colors for indicators that represent certain values.
+    ///   However, you might have to vaguely decide of which range the indicators will fall if the stride is not an
+    ///   integer.
     public init(
         _ values: [V]? = nil,
         color: @escaping (V) -> Color? = { _ in nil }
@@ -370,7 +417,7 @@ where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
 
 // MARK: - Stepper
 
-/// A stylized, abstract stepper
+/// A stylized, abstract stepper that provides vague yet elegant control to numeric values.
 @available(macOS 15.0, *)
 public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     public typealias Alignment = LuminareStepperAlignment
