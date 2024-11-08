@@ -220,7 +220,8 @@ public enum LuminareStepperDirection {
 public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     /// The value is finely ranged and strideable.
     ///
-    /// The value will be strictly clamped inside a closed range and snapped to the nearest value according to the stride.
+    /// The value will be strictly clamped inside a closed range and snapped to the nearest value according to the
+    /// stride.
     case finite(range: ClosedRange<V>, stride: V = V(1))
     /// The value is finely ranged but continuous.
     ///
@@ -454,6 +455,22 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareStepper``.
+    ///
+    /// - Parameters:
+    ///   - value: the value to be edited.
+    ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
+    ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
+    ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
+    ///   - indicatorSpacing: the spacing between indicators.
+    ///   This directly influnces the sensitivity since the span between two indicators will always be a stride.
+    ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
+    ///   - margin: the margin to inset the indicators from the edges based on the alignment.
+    ///   - hasHierarchy: whether the indicators placed further to the center have lighter opacities.
+    ///   - hasMask: whether to apply the gradient mask to the indicators to form a faded effect.
+    ///   - hasBlur: whether to blur the edged indicators.
+    ///   - prominentIndicators: the ``ProminentIndicators`` that defines how the indicators will be colored.
+    ///   - feedback: provides feedback when received changes of certain strided values.
     public init(
         value: Binding<V>,
         source: Source,
@@ -491,9 +508,26 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.stride) * indicatorSpacing)
         self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
-//        print(rounded)
     }
 
+    /// Initializes a ``LuminareStepper``.
+    ///
+    /// - Parameters:
+    ///   - value: the value to be edited.
+    ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
+    ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
+    ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
+    ///   - indicatorSpacing: the spacing between indicators.
+    ///   This directly influnces the sensitivity since the span between two indicators will always be a stride.
+    ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
+    ///   - margin: the margin to inset the indicators from the edges based on the alignment.
+    ///   - hasHierarchy: whether the indicators placed further to the center have lighter opacities.
+    ///   - hasMask: whether to apply the gradient mask to the indicators to form a faded effect.
+    ///   - hasBlur: whether to blur the edged indicators.
+    ///   - prominentValues: the values marked as prominent.
+    ///   - prominentColor: defines the colors of the indicators whose represented values are filtered by 
+    ///   `prominentValues`.
+    ///   - feedback: provides feedback when received changes of certain strided values.
     public init(
         value: Binding<V>,
         source: Source,

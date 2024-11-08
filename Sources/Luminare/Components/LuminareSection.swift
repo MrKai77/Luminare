@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Section
 
+/// A stylized content wrapper with a header and a footer.
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Fields
 

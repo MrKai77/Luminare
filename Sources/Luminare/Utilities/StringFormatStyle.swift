@@ -9,7 +9,8 @@ import SwiftUI
 
 /// Formats `String` into multiple styles.
 ///
-/// This is presently used as a `parseStrategy` parameter in ``LuminareColorPicker`` to format the hex string representing a color.
+/// This is presently used as a `parseStrategy` parameter in ``LuminareColorPicker`` to format the hex string 
+/// representing a color.
 ///
 /// See ``HexStrategy`` for more information on how to parse a hex string, or use the `Strategy.identity` as a
 /// passthrough.
