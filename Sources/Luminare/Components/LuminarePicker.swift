@@ -7,21 +7,23 @@
 
 import SwiftUI
 
+/// Defines the element's behaviors inside a ``LuminarePicker``.
 public protocol LuminarePickerData {
-    var selectable: Bool { get }
+    /// Whether this element is selectable.
+    var isSelectable: Bool { get }
 }
 
 // MARK: - Picker
 
-public struct LuminarePicker<Content, V>: View
-where Content: View, V: Equatable {
+/// A stylized, grid based picker.
+public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
     // MARK: Environments
 
     @Environment(\.luminareAnimation) private var animation
 
     // MARK: Fields
 
-    private let cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2
+    private let cornerRadius: CGFloat, innerPadding: CGFloat, innerCornerRadius: CGFloat
 
     private let elements2D: [[V]]
     private let rowsIndex: Int, columnsIndex: Int
@@ -35,12 +37,24 @@ where Content: View, V: Equatable {
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminarePicker``.
+    ///
+    /// - Parameters:
+    ///   - elements: the selectable elements.
+    ///   - selection: the binding of the selected value.
+    ///   - columns: the columns of the grid.
+    ///   - roundTop: whether to have top corners rounded.
+    ///   - roundBottom: whether to have bottom corners rounded.
+    ///   - cornerRadius: the radius of the corners.
+    ///   - innerPadding: the padding between the buttons.
+    ///   - innerCornerRadius: the radius of the corners of the buttons.
+    ///   - content: the content that is value based.
     public init(
         elements: [V],
         selection: Binding<V>,
         columns: Int = 4,
-        roundTop: Bool = true,
-        roundBottom: Bool = true,
+        roundTop: Bool = true, roundBottom: Bool = true,
+        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
@@ -48,10 +62,13 @@ where Content: View, V: Equatable {
         self.columnsIndex = columns - 1
         self.roundTop = roundTop
         self.roundBottom = roundBottom
+        self.cornerRadius = cornerRadius
+        self.innerPadding = innerPadding
+        self.innerCornerRadius = innerCornerRadius
         self.content = content
 
         self._selectedItem = selection
-        self._internalSelection = State(initialValue: selection.wrappedValue)
+        self.internalSelection = selection.wrappedValue
     }
 
     // MARK: Body
@@ -125,7 +142,7 @@ where Content: View, V: Equatable {
     // MARK: Functions
 
     private func isDisabled(_ element: V) -> Bool {
-        (element as? LuminarePickerData)?.selectable == false
+        (element as? LuminarePickerData)?.isSelectable == false
     }
 
     private func getElement(row: Int, column: Int) -> V? {
@@ -193,10 +210,12 @@ where Content: View, V: Equatable {
     "LuminarePicker",
     traits: .sizeThatFitsLayout
 ) {
+    @Previewable @State var selection = 42
+    
     LuminareSection {
         LuminarePicker(
             elements: Array(32..<50),
-            selection: .constant(42)
+            selection: $selection
         ) { num in
             Text("\(num)")
         }

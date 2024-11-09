@@ -55,10 +55,10 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     /// Initializes a ``LuminareCompactPicker``.
     ///
     /// - Parameters:
-    ///   - selection: the binding for the selected value.
+    ///   - selection: the binding of the selected value.
     ///   - elementMinHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - isBordered: whether to display a border while not hovering.
     ///   - style: the ``LuminareCompactPickerStyle`` that defines the style of the picker.
     ///   - content: the selectable values.
