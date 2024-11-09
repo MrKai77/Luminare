@@ -130,38 +130,18 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         .foregroundStyle(isHovering && selection == value ? .primary : .secondary)
                         .background {
                             if selection == value {
-                                Group {
-                                    if isHovering {
-                                        Rectangle()
-                                            .foregroundStyle(.background.opacity(0.7))
-                                            .shadow(color: .black.opacity(0.1), radius: 8)
-                                    } else {
-                                        Rectangle()
-                                            .foregroundStyle(.quinary)
-                                    }
-                                }
-                                .overlay {
-                                    if hoveringKnobOffset == index {
-                                        Rectangle()
-                                            .foregroundStyle(.background.opacity(0.2))
-                                            .blendMode(.luminosity)
-                                    }
-                                }
-                                .clipShape(.rect(cornerRadius: cornerRadius))
-                                .matchedGeometryEffect(
-                                    id: "knob", in: namespace
-                                )
+                                knobBackground(isCurrentlyHovering: hoveringKnobOffset == index)
+                                    .matchedGeometryEffect(
+                                        id: "knob", in: namespace
+                                    )
+                            } else if hoveringKnobOffset == index {
+                                RoundedRectangle(cornerRadius: cornerRadius)
+                                    .foregroundStyle(.quinary)
                             }
                         }
                         .onHover { hover in
-                            if selection == value {
-                                withAnimation(animationFast) {
-                                    if hover {
-                                        hoveringKnobOffset = index
-                                    } else {
-                                        hoveringKnobOffset = nil
-                                    }
-                                }
+                            withAnimation(animationFast) {
+                                hoveringKnobOffset = hover ? index : nil
                             }
                         }
                         .onChange(of: selection) { newValue in
@@ -184,17 +164,35 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             .padding(.vertical, 4)
         }
 
+        @ViewBuilder private func knobBackground(isCurrentlyHovering: Bool) -> some View {
+            Group {
+                if isHovering {
+                    Rectangle()
+                        .foregroundStyle(.background.opacity(0.8))
+                } else {
+                    Rectangle()
+                        .foregroundStyle(.quinary)
+                }
+            }
+            .overlay {
+                if isCurrentlyHovering {
+                    Rectangle()
+                        .foregroundStyle(.background.opacity(0.2))
+                        .blendMode(.luminosity)
+                }
+            }
+            .clipShape(.rect(cornerRadius: cornerRadius))
+        }
+
         struct SegmentedKnob: View {
             @Environment(\.luminareAnimation) private var animation
             @Environment(\.luminareAnimationFast) private var animationFast
 
-            let cornerRadius: CGFloat
+            var cornerRadius: CGFloat
 
             @Binding var selection: V
-            let value: V
-            let view: _VariadicView.Children.Element
-
-            @State private var isHovering: Bool = false
+            var value: V
+            var view: _VariadicView.Children.Element
 
             var body: some View {
                 Button {
@@ -207,20 +205,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         .padding(4)
                 }
                 .buttonStyle(.borderless)
-                .onHover { hover in
-                    withAnimation(animationFast) {
-                        isHovering = hover
-                    }
-                }
-                .background {
-                    Group {
-                        if selection != value, isHovering {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .foregroundStyle(.background.opacity(0.2))
-                        }
-                    }
-                    .blendMode(.luminosity)
-                }
             }
         }
     }
@@ -270,8 +254,9 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             PickerPreview(
                 elements: ["macOS", "Linux", "Windows"],
                 selection: "macOS",
-                isBordered: false, hasDividers: false, style: .segmented)
-                .environment(\.luminareAnimation, .bouncy)
+                isBordered: false, hasDividers: false, style: .segmented
+            )
+            .environment(\.luminareAnimation, .bouncy)
 
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
         }
