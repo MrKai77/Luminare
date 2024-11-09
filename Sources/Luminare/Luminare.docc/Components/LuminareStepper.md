@@ -2,9 +2,9 @@
 
 @Row {
     @Column {
-        A ``LuminareStepper`` can be either horizontal or vertical according to the provided ``LuminareStepperDirection``, while alternate directions inverts the side that represents arithmatically larger values.
+        A ``LuminareStepper`` can be either horizontal or vertical depending on the ``LuminareStepperDirection``, while alternate directions inverts the side that represents arithmatically larger values.
         
-        Based on the direction, the  indicators can have different alignments as shown in the screenshot, according to the provided ``LuminareStepperAlignment``.
+        Based on the direction, the  indicators can have different alignments as shown in the screenshot, depending on the ``LuminareStepperAlignment``.
     }
     
     @Column {

@@ -7,9 +7,19 @@
 
 import SwiftUI
 
+/// The style for a ``LuminareCompactPicker``.
 public enum LuminareCompactPickerStyle {
+    /// A menu that presents a popup list to toggle selection.
+    ///
+    /// Works great in most cases, especially with an enormous amount of choises.
     case menu
-    case segmented
+    /// A row of segmented knobs, each representing a selectable value.
+    ///
+    /// Often used for brief, flatten choises .
+    ///
+    /// - Parameters:
+    ///   - hasDividers: whether to display dividers between segmented knobs.
+    case segmented(hasDividers: Bool = true)
 
     var style: any PickerStyle {
         switch self {
@@ -21,6 +31,7 @@ public enum LuminareCompactPickerStyle {
 
 // MARK: - Compact Picker
 
+/// A stylized, compact picker.
 public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Hashable & Equatable {
     public typealias PickerStyle = LuminareCompactPickerStyle
 
@@ -32,7 +43,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     private let elementMinHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
-    private let hasDividers: Bool
     private let style: PickerStyle
 
     @Binding private var selection: V
@@ -42,12 +52,21 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareCompactPicker``.
+    ///
+    /// - Parameters:
+    ///   - selection: the binding for the selected value.
+    ///   - elementMinHeight: the minimum height of the inner view.
+    ///   - horizontalPadding: the horizontal padding of the inner view.
+    ///   - cornerRadius: the radius of the stroke.
+    ///   - isBordered: whether to display a border while not hovering.
+    ///   - style: the ``LuminareCompactPickerStyle`` that defines the style of the picker.
+    ///   - content: the selectable values.
     public init(
         selection: Binding<V>,
         elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true,
-        hasDividers: Bool = true,
         style: PickerStyle = .menu,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -56,7 +75,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.isBordered = isBordered
-        self.hasDividers = hasDividers
         self.style = style
         self.content = content
     }
@@ -72,7 +90,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     .pickerStyle(.menu)
                     .buttonStyle(.borderless)
                     .padding(.trailing, -2)
-            case .segmented:
+            case .segmented(let hasDividers):
                 _VariadicView.Tree(SegmentedLayout(
                     elementMinHeight: elementMinHeight,
                     cornerRadius: cornerRadius,
@@ -220,7 +238,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     let style: LuminareCompactPickerStyle
 
     var body: some View {
-        LuminareCompactPicker(selection: $selection, isBordered: isBordered, hasDividers: hasDividers, style: style) {
+        LuminareCompactPicker(selection: $selection, isBordered: isBordered, style: style) {
             ForEach(elements, id: \.self) { element in
                 Text("\(element)")
             }
@@ -249,16 +267,17 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
         }
 
         VStack {
-            LuminareCompose("Pick from segments") {}
+            LuminareCompose("Pick from segments") {
+            }
 
             PickerPreview(
                 elements: ["macOS", "Linux", "Windows"],
                 selection: "macOS",
-                isBordered: false, hasDividers: false, style: .segmented
+                isBordered: false, style: .segmented(hasDividers: false)
             )
             .environment(\.luminareAnimation, .bouncy)
 
-            PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented)
+            PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented())
         }
     }
 }
