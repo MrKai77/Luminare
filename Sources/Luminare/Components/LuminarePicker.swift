@@ -48,7 +48,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - cornerRadius: the radius of the corners.
     ///   - innerPadding: the padding between the buttons.
     ///   - innerCornerRadius: the radius of the corners of the buttons.
-    ///   - content: the content that is value based.
+    ///   - content: the content generator that accepts a value.
     public init(
         elements: [V],
         selection: Binding<V>,
@@ -211,7 +211,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @State var selection = 42
-    
+
     LuminareSection {
         LuminarePicker(
             elements: Array(32..<50),

@@ -36,7 +36,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
         self.label = label
     }
 
-    /// Initializes a ``LuminareSidebarSection`` where the label is a localized text.
+    /// Initializes a ``LuminareSidebarSection`` whose label is a localized text.
     ///
     /// - Parameters:
     ///   - key: the `LocalizedStringKey` to look up the label text.

@@ -31,7 +31,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     ///   - header: the header.
@@ -57,8 +57,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.header = header
         self.footer = footer
     }
-    
-    /// Initializes a ``LuminareSection`` where the header and the footer are localized texts.
+
+    /// Initializes a ``LuminareSection`` whose header and footer are localized texts.
     ///
     /// - Parameters:
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
@@ -68,7 +68,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     public init(
@@ -95,7 +95,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             Text(footerKey)
         }
     }
-    
+
     /// Initializes a ``LuminareSection`` without a footer.
     ///
     /// - Parameters:
@@ -104,7 +104,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     ///   - header: the header.
@@ -131,8 +131,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             EmptyView()
         }
     }
-    
-    /// Initializes a ``LuminareSection`` without a footer, where the header is a localized text.
+
+    /// Initializes a ``LuminareSection`` without a footer, whose header is a localized text.
     ///
     /// - Parameters:
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
@@ -141,7 +141,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     public init(
@@ -174,7 +174,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     ///   - footer: the footer.
@@ -201,8 +201,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             footer()
         }
     }
-    
-    /// Initializes a ``LuminareSection`` without a header, where the footer is a localized text.
+
+    /// Initializes a ``LuminareSection`` without a header, whose footer is a localized text.
     ///
     /// - Parameters:
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
@@ -211,7 +211,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     public init(
@@ -236,7 +236,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
 
-    
     /// Initializes a ``LuminareSection`` without a header and a footer.
     ///
     /// - Parameters:
@@ -245,7 +244,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the border.
+    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the contents.
     public init(
