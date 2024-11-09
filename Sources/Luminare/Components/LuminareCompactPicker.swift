@@ -95,7 +95,8 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     elementMinHeight: elementMinHeight,
                     cornerRadius: cornerRadius,
                     hasDividers: hasDividers,
-                    selection: $selection, isHovering: $isHovering
+                    isHovering: isHovering,
+                    selection: $selection
                 ), content: content)
             }
         }
@@ -123,52 +124,30 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
 
-        let elementMinHeight: CGFloat
-        let cornerRadius: CGFloat
-        let hasDividers: Bool
+        var elementMinHeight: CGFloat
+        var cornerRadius: CGFloat
+        var hasDividers: Bool
+        var isHovering: Bool
 
         @Binding var selection: V
-        @Binding var isHovering: Bool
 
         @Namespace private var namespace
-        @State private var hoveringKnobOffset: Int?
         @State private var isHolding: Bool = false
 
         private var mouseLocation: NSPoint { NSEvent.mouseLocation }
 
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
             HStack {
-                ForEach(Array(children.enumerated()), id: \.offset) { index, child in
+                ForEach(Array(children.enumerated()), id: \.offset) { _, child in
                     if let value = child.id(as: V.self) {
                         SegmentedKnob(
+                            namespace: namespace,
                             cornerRadius: cornerRadius,
+                            isParentHovering: isHovering,
                             selection: $selection, value: value,
                             view: child
                         )
                         .foregroundStyle(isHovering && selection == value ? .primary : .secondary)
-                        .background {
-                            if selection == value {
-                                knobBackground(isCurrentlyHovering: hoveringKnobOffset == index)
-                                    .matchedGeometryEffect(
-                                        id: "knob", in: namespace
-                                    )
-                            } else if hoveringKnobOffset == index {
-                                RoundedRectangle(cornerRadius: cornerRadius)
-                                    .foregroundStyle(.quinary)
-                            }
-                        }
-                        .onHover { hover in
-                            withAnimation(animationFast) {
-                                hoveringKnobOffset = hover ? index : nil
-                            }
-                        }
-                        .onChange(of: selection) { newValue in
-                            if newValue == value {
-                                withAnimation(animationFast) {
-                                    hoveringKnobOffset = index
-                                }
-                            }
-                        }
                         .zIndex(1)
 
                         if hasDividers, child.id != children.last?.id {
@@ -182,35 +161,19 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             .padding(.vertical, 4)
         }
 
-        @ViewBuilder private func knobBackground(isCurrentlyHovering: Bool) -> some View {
-            Group {
-                if isHovering {
-                    Rectangle()
-                        .foregroundStyle(.background.opacity(0.8))
-                } else {
-                    Rectangle()
-                        .foregroundStyle(.quinary)
-                }
-            }
-            .overlay {
-                if isCurrentlyHovering {
-                    Rectangle()
-                        .foregroundStyle(.background.opacity(0.2))
-                        .blendMode(.luminosity)
-                }
-            }
-            .clipShape(.rect(cornerRadius: cornerRadius))
-        }
-
         struct SegmentedKnob: View {
             @Environment(\.luminareAnimation) private var animation
             @Environment(\.luminareAnimationFast) private var animationFast
 
+            var namespace: Namespace.ID
             var cornerRadius: CGFloat
+            var isParentHovering: Bool
 
             @Binding var selection: V
             var value: V
             var view: _VariadicView.Children.Element
+
+            @State private var isHovering: Bool = false
 
             var body: some View {
                 Button {
@@ -223,6 +186,42 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         .padding(4)
                 }
                 .buttonStyle(.borderless)
+                .onHover { hover in
+                    withAnimation(animationFast) {
+                        isHovering = hover
+                    }
+                }
+                .background {
+                    if selection == value {
+                        background()
+                            .matchedGeometryEffect(
+                                id: "knob", in: namespace
+                            )
+                    } else if isHovering {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .foregroundStyle(.quinary)
+                    }
+                }
+            }
+
+            @ViewBuilder private func background() -> some View {
+                Group {
+                    if isParentHovering {
+                        Rectangle()
+                            .foregroundStyle(.background.opacity(0.8))
+                    } else {
+                        Rectangle()
+                            .foregroundStyle(.quinary)
+                    }
+                }
+                .overlay {
+                    if isHovering {
+                        Rectangle()
+                            .foregroundStyle(.background.opacity(0.2))
+                            .blendMode(.luminosity)
+                    }
+                }
+                .clipShape(.rect(cornerRadius: cornerRadius))
             }
         }
     }
