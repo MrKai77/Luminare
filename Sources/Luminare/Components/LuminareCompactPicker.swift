@@ -193,7 +193,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 }
                 .background {
                     if selection == value {
-                        background()
+                        knob()
                             .matchedGeometryEffect(
                                 id: "knob", in: namespace
                             )
@@ -204,14 +204,15 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 }
             }
 
-            @ViewBuilder private func background() -> some View {
+            @ViewBuilder private func knob() -> some View {
                 Group {
                     if isParentHovering {
                         Rectangle()
                             .foregroundStyle(.background.opacity(0.8))
                     } else {
+                        // the `.blendMode()` prevents `.quinary` style to be clipped
                         Rectangle()
-                            .foregroundStyle(.quinary)
+                            .foregroundStyle(.quinary.blendMode(.luminosity))
                     }
                 }
                 .overlay {
