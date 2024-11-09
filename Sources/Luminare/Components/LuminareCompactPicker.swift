@@ -58,7 +58,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     ///   - selection: the binding for the selected value.
     ///   - elementMinHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
-    ///   - cornerRadius: the radius of the stroke.
+    ///   - cornerRadius: the radius of the border.
     ///   - isBordered: whether to display a border while not hovering.
     ///   - style: the ``LuminareCompactPickerStyle`` that defines the style of the picker.
     ///   - content: the selectable values.

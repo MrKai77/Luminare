@@ -34,7 +34,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     ///   - format: the format of the value.
     ///   - elementMinHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
-    ///   - cornerRadius: the radius of the stroke.
+    ///   - cornerRadius: the radius of the border.
     ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
@@ -59,7 +59,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     ///   - value: the `String` value to be edited.
     ///   - elementMinHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
-    ///   - cornerRadius: the radius of the stroke.
+    ///   - cornerRadius: the radius of the border.
     ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
