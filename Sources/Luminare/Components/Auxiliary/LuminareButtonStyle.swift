@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Button Style
 
+/// A stylized button style.
 public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
