@@ -85,7 +85,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
             .modifier(LuminareHoverable(
                 elementMinHeight: elementMinHeight,
                 horizontalPadding: horizontalPadding,
-                innerCornerRadius: cornerRadius,
+                cornerRadius: cornerRadius,
                 isBordered: isBordered
             ))
             .onAppear {

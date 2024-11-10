@@ -108,7 +108,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         .modifier(LuminareHoverable(
             elementMinHeight: elementMinHeight,
             horizontalPadding: horizontalPadding,
-            innerCornerRadius: cornerRadius,
+            cornerRadius: cornerRadius,
             isBordered: isBordered
         ))
     }

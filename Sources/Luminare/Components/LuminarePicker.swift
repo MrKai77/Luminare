@@ -18,7 +18,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     // MARK: Fields
 
-    private let cornerRadius: CGFloat, innerPadding: CGFloat, innerCornerRadius: CGFloat
+    private let innerPadding: CGFloat
+    private let cornerRadius: CGFloat, buttonCornerRadius: CGFloat
 
     private let elements2D: [[V]]
     private let rows: Int, columns: Int
@@ -40,16 +41,17 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - columns: the columns of the grid.
     ///   - roundedTop: whether to have top corners rounded.
     ///   - roundedBottom: whether to have bottom corners rounded.
-    ///   - cornerRadius: the radius of the corners.
     ///   - innerPadding: the padding between the buttons.
-    ///   - innerCornerRadius: the radius of the corners of the buttons.
+    ///   - cornerRadius: the radius of the corners.
+    ///   - buttonCornerRadius: the radius of the corners of the buttons.
     ///   - content: the content generator that accepts a value.
     public init(
         elements: [V],
         selection: Binding<V>,
         columns: Int = 4,
         roundedTop: Bool = true, roundedBottom: Bool = true,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2,
+        innerPadding: CGFloat = 4,
+        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
@@ -57,9 +59,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self.columns = columns
         self.roundedTop = roundedTop
         self.roundedBottom = roundedBottom
-        self.cornerRadius = cornerRadius
         self.innerPadding = innerPadding
-        self.innerCornerRadius = innerCornerRadius
+        self.cornerRadius = cornerRadius
+        self.buttonCornerRadius = buttonCornerRadius
         self.content = content
 
         self._selectedItem = selection
@@ -76,13 +78,14 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - roundedBottom: whether to have bottom corners rounded.
     ///   - cornerRadius: the radius of the corners.
     ///   - innerPadding: the padding between the buttons.
-    ///   - innerCornerRadius: the radius of the corners of the buttons.
+    ///   - buttonCornerRadius: the radius of the corners of the buttons.
     ///   - content: the content generator that accepts a value.
     public init(
         compactElements: [V],
         selection: Binding<V>,
         roundedTop: Bool = true, roundedBottom: Bool = true,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2,
+        innerPadding: CGFloat = 4,
+        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.init(
@@ -90,7 +93,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             selection: selection,
             columns: compactElements.count,
             roundedTop: roundedTop, roundedBottom: roundedBottom,
-            cornerRadius: cornerRadius, innerPadding: innerPadding, innerCornerRadius: innerCornerRadius,
+            innerPadding: innerPadding,
+            cornerRadius: cornerRadius, buttonCornerRadius: buttonCornerRadius,
             content: content
         )
     }
@@ -201,31 +205,31 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius:
-                    (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
+                    (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
+                bottomTrailingRadius: buttonCornerRadius,
                 topTrailingRadius:
-                    isHorizontallyCompact ? cornerRadius - innerPadding : innerCornerRadius
+                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius
             )
         }
 
         // bottom left
         else if column == 0, row == maxRowIndex, roundedBottom {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius:
-                    isHorizontallyCompact ? cornerRadius - innerPadding : innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
+                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius,
+                topTrailingRadius: buttonCornerRadius
             )
         }
 
         // top right
         else if column == maxColumnIndex, row == 0, roundedTop {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
                 bottomTrailingRadius:
-                    (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                    (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
@@ -233,20 +237,20 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         // bottom right
         else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
                 bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: innerCornerRadius
+                topTrailingRadius: buttonCornerRadius
             )
         }
 
         // regular
         else {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
+                bottomTrailingRadius: buttonCornerRadius,
+                topTrailingRadius: buttonCornerRadius
             )
         }
     }

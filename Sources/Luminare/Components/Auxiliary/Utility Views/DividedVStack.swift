@@ -103,16 +103,20 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
 public struct LuminareCroppedSectionItem: ViewModifier {
     // MARK: Fields
 
-    let cornerRadius: CGFloat = 12
-    let innerPadding: CGFloat = 4
-    let innerCornerRadius: CGFloat = 2
-
-    private let isFirstChild: Bool
-    private let isLastChild: Bool
+    private let innerPadding: CGFloat
+    private let cornerRadius: CGFloat, buttonCornerRadius: CGFloat
+    private let isFirstChild: Bool, isLastChild: Bool
 
     // MARK: Initializers
 
-    public init(isFirstChild: Bool, isLastChild: Bool) {
+    public init(
+        innerPadding: CGFloat = 4,
+        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
+        isFirstChild: Bool, isLastChild: Bool
+    ) {
+        self.innerPadding = innerPadding
+        self.cornerRadius = cornerRadius
+        self.buttonCornerRadius = buttonCornerRadius
         self.isFirstChild = isFirstChild
         self.isLastChild = isLastChild
     }
@@ -136,23 +140,23 @@ public struct LuminareCroppedSectionItem: ViewModifier {
         } else if isFirstChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
+                bottomTrailingRadius: buttonCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         } else if isLastChild {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: innerCornerRadius
+                topTrailingRadius: buttonCornerRadius
             )
         } else {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
+                bottomTrailingRadius: buttonCornerRadius,
+                topTrailingRadius: buttonCornerRadius
             )
         }
     }
