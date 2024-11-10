@@ -7,10 +7,15 @@
 
 import SwiftUI
 
-/// Defines the element's behaviors inside a ``LuminarePicker``.
+/// The element's behaviors inside a ``LuminarePicker``.
 public protocol LuminarePickerData {
     /// Whether this element is selectable.
     var isSelectable: Bool { get }
+    
+    /// The selection color of this element.
+    ///
+    /// If `nil`, the color will fallback to the `\.luminareTint` environment value.
+    var tint: Color? { get }
 }
 
 // MARK: - Picker
@@ -19,6 +24,7 @@ public protocol LuminarePickerData {
 public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
     // MARK: Environments
 
+    @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
 
     // MARK: Fields
@@ -70,7 +76,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self._selectedItem = selection
         self.internalSelection = selection.wrappedValue
     }
-    
+
     /// Initializes a ``LuminarePicker`` that is vertically compact, which has exactly 1 row of elements.
     ///
     /// - Parameters:
@@ -158,6 +164,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
+            .tint(tint(of: element))
         } else {
             getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
@@ -184,6 +191,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     private func isDisabled(_ element: V) -> Bool {
         (element as? LuminarePickerData)?.isSelectable == false
+    }
+    
+    private func tint(of element: V) -> Color {
+        (element as? LuminarePickerData)?.tint ?? tint()
     }
 
     private func getElement(row: Int, column: Int) -> V? {
