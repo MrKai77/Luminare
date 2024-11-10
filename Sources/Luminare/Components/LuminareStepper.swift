@@ -884,7 +884,7 @@ where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloating
             ) { _ in
                     .accentColor
             }
-            .environment(\.luminareTint) { .primary }
+            .overrideTint { .primary }
 //            .background(.quinary)
 
             HStack {
@@ -916,7 +916,7 @@ private struct StepperPopoverPreview: View {
                     indicatorSpacing: 10,
                     maxSize: 32
                 )
-                .environment(\.luminareTint) { .primary }
+                .overrideTint { .primary }
                 .frame(width: 100, height: 32)
             }
 

@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+public extension View {
+    /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
+    /// value.
+    @ViewBuilder func overrideTint(_ tint: @escaping () -> Color) -> some View {
+        self
+            .tint(tint())
+            .environment(\.luminareTint, tint)
+    }
+}
+
 // MARK: - Popover
 
 public extension View {

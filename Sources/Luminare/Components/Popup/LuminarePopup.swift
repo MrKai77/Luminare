@@ -10,6 +10,10 @@ import SwiftUI
 // MARK: - Popup
 
 public struct LuminarePopup<Content: View>: NSViewRepresentable {
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
+    
     private let material: NSVisualEffectView.Material
     @Binding private var isPresented: Bool
 
@@ -37,22 +41,27 @@ public struct LuminarePopup<Content: View>: NSViewRepresentable {
         }
     }
 
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(self, content: content)
+    public func makeCoordinator() -> Coordinator<some View> {
+        Coordinator(self) {
+            content()
+                .environment(\.luminareAnimation, animation)
+                .environment(\.luminareAnimationFast, animationFast)
+                .overrideTint(tint)
+        }
     }
 
     // MARK: - Coordinator
 
     @MainActor
-    public class Coordinator: NSObject, NSWindowDelegate {
+    public class Coordinator<InnerContent>: NSObject, NSWindowDelegate where InnerContent: View {
         private let view: LuminarePopup
-        private var content: () -> Content
+        private var content: () -> InnerContent
         private var originalYPoint: CGFloat?
         var panel: LuminarePopupPanel?
 
         private var monitor: Any?
 
-        init(_ parent: LuminarePopup, content: @escaping () -> Content) {
+        init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
             self.view = parent
             self.content = content
             super.init()

@@ -750,8 +750,8 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
             } else {
                 List(selection: $selection) {
                     ForEach($items, id: id) { item in
-                        let tint = tint(of: item.wrappedValue)
                         let isDisabled = isDisabled(item.wrappedValue)
+                        let tint = getTint(of: item.wrappedValue)
 
                         Group {
                             if #available(macOS 14.0, *) {
@@ -777,10 +777,9 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
                                 )
                             }
                         }
-                        .tint(tint)
-                        .environment(\.luminareTint) { tint }
                         .disabled(isDisabled)
                         .animation(animation, value: isDisabled)
+                        .overrideTint { tint }
                     }
                     .onMove { indices, newOffset in
                         withAnimation(animation) {
@@ -833,7 +832,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
         (element as? LuminareSelectionData)?.isSelectable == false
     }
 
-    private func tint(of element: V) -> Color {
+    private func getTint(of element: V) -> Color {
         (element as? LuminareSelectionData)?.tint ?? tint()
     }
 

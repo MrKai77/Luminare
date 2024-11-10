@@ -36,9 +36,9 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
         let hostingView = NSHostingView(
             rootView: LuminareModalView(isCompact: isCompact, content: content)
-                .environment(\.luminareTint, tint)
                 .environment(\.luminareAnimation, animation)
                 .environment(\.luminareAnimationFast, animationFast)
+                .overrideTint(tint)
                 .environmentObject(self)
         )
 

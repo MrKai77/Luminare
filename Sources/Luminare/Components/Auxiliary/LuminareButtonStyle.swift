@@ -131,7 +131,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 
 /// A stylized button style that can be tinted.
 ///
-/// To tint the button, use the `.tint()` modifier.
+/// To tint the button, use the `.tint()` or `.overrideTint()` modifier.
 ///
 /// ![LuminareProminentButtonStyle](LuminareProminentButtonStyle)
 public struct LuminareProminentButtonStyle: ButtonStyle {

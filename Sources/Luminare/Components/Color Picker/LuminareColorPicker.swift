@@ -13,13 +13,13 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
       R: View, G: View, B: View, Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
 
-    struct ColorNamesAndDone {
+    struct ModalData {
         var colorNames: ColorNames
         @ViewBuilder var done: () -> Done
     }
 
     let format: F?
-    let colorNamesAndDone: ColorNamesAndDone?
+    let colorNamesAndDone: ModalData?
 
     /// Has a color well that can present a color picker modal.
     ///
