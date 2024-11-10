@@ -70,6 +70,35 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self._selectedItem = selection
         self.internalSelection = selection.wrappedValue
     }
+    
+    /// Initializes a ``LuminarePicker`` that is vertically compact, which has exactly 1 row of elements.
+    ///
+    /// - Parameters:
+    ///   - compactElements: the selectable elements.
+    ///   The columns of the picker will be aligned with the count of elements.
+    ///   - selection: the binding of the selected value.
+    ///   - roundedTop: whether to have top corners rounded.
+    ///   - roundedBottom: whether to have bottom corners rounded.
+    ///   - cornerRadius: the radius of the corners.
+    ///   - innerPadding: the padding between the buttons.
+    ///   - innerCornerRadius: the radius of the corners of the buttons.
+    ///   - content: the content generator that accepts a value.
+    public init(
+        compactElements: [V],
+        selection: Binding<V>,
+        roundedTop: Bool = true, roundedBottom: Bool = true,
+        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2,
+        @ViewBuilder content: @escaping (V) -> Content
+    ) {
+        self.init(
+            elements: compactElements,
+            selection: selection,
+            columns: compactElements.count,
+            roundedTop: roundedTop, roundedBottom: roundedBottom,
+            cornerRadius: cornerRadius, innerPadding: innerPadding, innerCornerRadius: innerCornerRadius,
+            content: content
+        )
+    }
 
     // MARK: Body
 
@@ -115,7 +144,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 ZStack {
                     let isActive = internalSelection == element
                     getShape(row: row, column: column)
-                        .foregroundStyle(isActive ? AnyShapeStyle(.tint.opacity(0.15)) : AnyShapeStyle(.clear))
+                        .foregroundStyle(.tint.opacity(isActive ? 0.15 : 0))
                         .overlay {
                             getShape(row: row, column: column)
                                 .strokeBorder(
