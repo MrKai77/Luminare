@@ -36,7 +36,7 @@ where R: View, G: View, B: View,
     /// - Parameters:
     ///   - color: the color to be edited.
     ///   - format: the format of the hex color.
-    ///   - isBordered: whether the text field should be bordered.
+    ///   - isBordered: whether to display a border around the text field while not hovering.
     ///   - colorNames: names for the RGB components. Used for localization.
     ///   - done: view to be displayed in the modal's done button.
     public init(
@@ -59,7 +59,7 @@ where R: View, G: View, B: View,
     /// - Parameters:
     ///   - color: the color to be edited.
     ///   - parseStrategy: the strategy used to parse the hex color.
-    ///   - isBordered: whether the text field should be bordered.
+    ///   - isBordered: whether to display a border around the text field while not hovering.
     ///   - colorNames: names for the RGB components. Used for localization.
     ///   - done: view to be displayed in the modal's done button.
     public init(
@@ -84,7 +84,7 @@ where R: View, G: View, B: View,
     ///   - key: the key for the localized string of the done button.
     ///   - color: the color to be edited.
     ///   - format: the format of the hex color.
-    ///   - isBordered: whether the text field should be bordered.
+    ///   - isBordered: whether to display a border around the text field while not hovering.
     ///   - colorNames: names for the RGB components. Used for localization.
     public init(
         _ key: LocalizedStringKey,
@@ -109,7 +109,7 @@ where R: View, G: View, B: View,
     ///   - key: the key for the localized string of the done button.
     ///   - color: the color to be edited.
     ///   - parseStrategy: the strategy used to parse the hex color.
-    ///   - isBordered: whether the text field should be bordered.
+    ///   - isBordered: whether to display a border around the text field while not hovering.
     ///   - colorNames: names for the RGB components. Used for localization.
     public init(
         _ key: LocalizedStringKey,
