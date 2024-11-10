@@ -39,8 +39,6 @@ struct HSBColor: Equatable, Hashable, Codable {
 
 // adds functionality to `Color`
 extension Color {
-    static let violet = Color(red: 0.56, green: 0, blue: 1)
-
     // initializes with a hex value, supporting both 3 and 6 characters
     init?(hex: String) {
         let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")

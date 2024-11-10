@@ -294,7 +294,6 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                         }
                         .padding()
                     }
-                    .tint(.violet)
 
                     Spacer()
                 }
