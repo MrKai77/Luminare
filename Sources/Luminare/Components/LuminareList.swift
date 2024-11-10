@@ -759,8 +759,6 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
                             content: content
                         )
                     }
-                    // TODO: `deleteItems` crashes Loop, need to be investigated further
-                    // .onDelete(perform: deleteItems)
                     .onMove { indices, newOffset in
                         withAnimation(animation) {
                             items.move(fromOffsets: indices, toOffset: newOffset)
@@ -807,14 +805,6 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
     }
 
     // MARK: Functions
-
-    // TODO: investigate this
-    // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
-    // private func deleteItems(at offsets: IndexSet) {
-    //  withAnimation {
-    //    items.remove(atOffsets: offsets)
-    //  }
-    // }
 
     func processSelection() {
         if selection.isEmpty {
@@ -1140,6 +1130,10 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                         withAnimation {
                             items.removeAll { selection.contains($0) || value.wrappedValue == $0 }
                         }
+                    }
+                }
+                .swipeActions {
+                    Button("Swipe me!") {
                     }
                 }
         } emptyView: {
