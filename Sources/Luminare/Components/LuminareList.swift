@@ -14,6 +14,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
     // MARK: Environments
 
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
+    @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
 
     // MARK: Fields
@@ -749,15 +750,37 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
             } else {
                 List(selection: $selection) {
                     ForEach($items, id: id) { item in
-                        LuminareListItem(
-                            items: $items,
-                            selection: $selection,
-                            item: item,
-                            firstItem: $firstItem,
-                            lastItem: $lastItem,
-                            canRefreshSelection: $canRefreshSelection,
-                            content: content
-                        )
+                        let tint = tint(of: item.wrappedValue)
+                        let isDisabled = isDisabled(item.wrappedValue)
+
+                        Group {
+                            if #available(macOS 14.0, *) {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    canRefreshSelection: $canRefreshSelection,
+                                    content: content
+                                )
+                                .selectionDisabled(isDisabled)
+                            } else {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    canRefreshSelection: $canRefreshSelection,
+                                    content: content
+                                )
+                            }
+                        }
+                        .tint(tint)
+                        .environment(\.luminareTint) { tint }
+                        .disabled(isDisabled)
+                        .animation(animation, value: isDisabled)
                     }
                     .onMove { indices, newOffset in
                         withAnimation(animation) {
@@ -806,7 +829,15 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
 
     // MARK: Functions
 
-    func processSelection() {
+    private func isDisabled(_ element: V) -> Bool {
+        (element as? LuminareSelectionData)?.isSelectable == false
+    }
+
+    private func tint(of element: V) -> Color {
+        (element as? LuminareSelectionData)?.tint ?? tint()
+    }
+
+    private func processSelection() {
         if selection.isEmpty {
             firstItem = nil
             lastItem = nil
@@ -816,7 +847,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
         }
     }
 
-    func addEventMonitor() {
+    private func addEventMonitor() {
         guard eventMonitor == nil else { return }
 
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
@@ -832,7 +863,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
         } as? NSObject
     }
 
-    func removeEventMonitor() {
+    private func removeEventMonitor() {
         if let eventMonitor {
             NSEvent.removeMonitor(eventMonitor)
         }
@@ -845,6 +876,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
 public struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     // MARK: Environments
 
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -898,6 +930,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             .overlay {
                 content($item)
                     .environment(\.hoveringOverLuminareItem, isHovering)
+                    .foregroundStyle(isEnabled ? .primary : .secondary)
             }
             .tag(item)
             .onHover { hover in
@@ -908,8 +941,10 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 
             .background {
                 ZStack {
-                    getItemBorder()
-                    getItemBackground()
+                    if isEnabled {
+                        itemBorder()
+                        itemBackground()
+                    }
                 }
                 .padding(.horizontal, 1)
                 .padding(.leading, 1)
@@ -925,6 +960,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                 }
             }
             .onChange(of: selection) { newSelection in
+                guard isEnabled else { return }
                 guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
                     withAnimation(animation) {
@@ -944,7 +980,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             }
     }
 
-    @ViewBuilder func getItemBackground() -> some View {
+    @ViewBuilder private func itemBackground() -> some View {
         Group {
             tint()
                 .opacity(tintOpacity)
@@ -957,7 +993,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         }
     }
 
-    @ViewBuilder func getItemBorder() -> some View {
+    @ViewBuilder private func itemBorder() -> some View {
         if isFirstInSelection(), isLastInSelection() {
             singleSelectionPart(isBottomOfList: item == items.last)
 

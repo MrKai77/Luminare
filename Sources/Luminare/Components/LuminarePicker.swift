@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-/// The element's behaviors inside a ``LuminarePicker``.
-public protocol LuminarePickerData {
-    /// Whether this element is selectable.
-    var isSelectable: Bool { get }
-    
-    /// The selection color of this element.
-    ///
-    /// If `nil`, the color will fallback to the `\.luminareTint` environment value.
-    var tint: Color? { get }
-}
-
 // MARK: - Picker
 
 /// A stylized, grid based picker.
@@ -141,14 +130,16 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
         if let element = getElement(row: row, column: column) {
+            let isDisabled = isDisabled(element)
+
             Button {
-                guard !isDisabled(element) else { return }
                 withAnimation(animation) {
                     internalSelection = element
                 }
             } label: {
                 ZStack {
                     let isActive = internalSelection == element
+
                     getShape(row: row, column: column)
                         .foregroundStyle(.tint.opacity(isActive ? 0.15 : 0))
                         .overlay {
@@ -160,11 +151,13 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                         }
 
                     content(element)
-                        .foregroundStyle(isDisabled(element) ? .secondary : .primary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .tint(tint(of: element))
+            .environment(\.luminareTint) { tint(of: element) }
+            .disabled(isDisabled)
+            .animation(animation, value: isDisabled)
         } else {
             getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
@@ -190,11 +183,11 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     // MARK: Functions
 
     private func isDisabled(_ element: V) -> Bool {
-        (element as? LuminarePickerData)?.isSelectable == false
+        (element as? LuminareSelectionData)?.isSelectable == false
     }
-    
+
     private func tint(of element: V) -> Color {
-        (element as? LuminarePickerData)?.tint ?? tint()
+        (element as? LuminareSelectionData)?.tint ?? tint()
     }
 
     private func getElement(row: Int, column: Int) -> V? {
