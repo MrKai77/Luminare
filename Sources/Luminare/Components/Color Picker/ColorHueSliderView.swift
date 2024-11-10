@@ -17,8 +17,8 @@ struct ColorHueSliderView: View {
     // MARK: Fields
 
     @Binding var selectedColor: HSBColor
-    var roundTop: Bool = false
-    var roundBottom: Bool = false
+    var roundedTop: Bool = false
+    var roundedBottom: Bool = false
 
     @State private var selectionPosition: CGFloat = 0
     @State private var selectionOffset: CGFloat = 0
@@ -48,10 +48,10 @@ struct ColorHueSliderView: View {
                 let trailingCornerRadius = selectionOffset > (geo.size.width / 2) ? selectionCornerRadius : 2
 
                 UnevenRoundedRectangle(
-                    topLeadingRadius: roundTop ? leadingCornerRadius : 2,
-                    bottomLeadingRadius: roundBottom ? leadingCornerRadius : 2,
-                    bottomTrailingRadius: roundBottom ? trailingCornerRadius : 2,
-                    topTrailingRadius: roundTop ? trailingCornerRadius : 2
+                    topLeadingRadius: roundedTop ? leadingCornerRadius : 2,
+                    bottomLeadingRadius: roundedBottom ? leadingCornerRadius : 2,
+                    bottomTrailingRadius: roundedBottom ? trailingCornerRadius : 2,
+                    topTrailingRadius: roundedTop ? trailingCornerRadius : 2
                 )
                 .frame(width: selectionWidth, height: 12.5)
                 .padding(.bottom, 0.5)
@@ -135,7 +135,7 @@ struct ColorHueSliderView: View {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
 
     LuminareSection {
-        ColorHueSliderView(selectedColor: $color, roundTop: true, roundBottom: true)
+        ColorHueSliderView(selectedColor: $color, roundedTop: true, roundedBottom: true)
     }
     .padding()
 }

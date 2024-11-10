@@ -40,14 +40,18 @@ struct RGBInputField<Label>: View where Label: View {
                         "", value: .init($value),
                         format: .number.precision(.integerAndFractionLength(
                             integerLimits: 1...3,
-                            fractionLimits: 0...2)))
+                            fractionLimits: 0...2
+                        ))
+                    )
                 }
             } else {
                 LuminareTextField(
                     "", value: .init($value),
                     format: .number.precision(.integerAndFractionLength(
                         integerLimits: 1...3,
-                        fractionLimits: 0...2)))
+                        fractionLimits: 0...2
+                    ))
+                )
             }
         }
     }

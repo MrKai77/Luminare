@@ -31,7 +31,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Binding private var selectedItem: V
     @State private var internalSelection: V
 
-    private let roundTop: Bool, roundBottom: Bool
+    private let roundedTop: Bool, roundedBottom: Bool
 
     @ViewBuilder private let content: (V) -> Content
 
@@ -43,8 +43,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - elements: the selectable elements.
     ///   - selection: the binding of the selected value.
     ///   - columns: the columns of the grid.
-    ///   - roundTop: whether to have top corners rounded.
-    ///   - roundBottom: whether to have bottom corners rounded.
+    ///   - roundedTop: whether to have top corners rounded.
+    ///   - roundedBottom: whether to have bottom corners rounded.
     ///   - cornerRadius: the radius of the corners.
     ///   - innerPadding: the padding between the buttons.
     ///   - innerCornerRadius: the radius of the corners of the buttons.
@@ -53,15 +53,15 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         elements: [V],
         selection: Binding<V>,
         columns: Int = 4,
-        roundTop: Bool = true, roundBottom: Bool = true,
+        roundedTop: Bool = true, roundedBottom: Bool = true,
         cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4, innerCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
         self.rowsIndex = elements2D.count - 1
         self.columnsIndex = columns - 1
-        self.roundTop = roundTop
-        self.roundBottom = roundBottom
+        self.roundedTop = roundedTop
+        self.roundedBottom = roundedBottom
         self.cornerRadius = cornerRadius
         self.innerPadding = innerPadding
         self.innerCornerRadius = innerCornerRadius
@@ -152,17 +152,17 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     private func getShape(row: Int, column: Int) -> some InsettableShape {
         // top left
-        if column == 0, row == 0, roundTop {
+        if column == 0, row == 0, roundedTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomLeadingRadius: (rowsIndex == 0 && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
                 topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
             )
         }
 
         // bottom left
-        else if column == 0, row == rowsIndex, roundBottom {
+        else if column == 0, row == rowsIndex, roundedBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
@@ -172,17 +172,17 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
 
         // top right
-        else if column == columnsIndex, row == 0, roundTop {
+        else if column == columnsIndex, row == 0, roundedTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomTrailingRadius: (rowsIndex == 0 && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
 
         // bottom right
-        else if column == columnsIndex, row == rowsIndex, roundBottom {
+        else if column == columnsIndex, row == rowsIndex, roundedBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,

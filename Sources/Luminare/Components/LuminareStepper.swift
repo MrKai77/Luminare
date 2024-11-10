@@ -221,24 +221,24 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     /// The value is finely ranged and strideable.
     ///
     /// The value will be strictly clamped inside a closed range and snapped to the nearest value according to the
-    /// stride.
-    case finite(range: ClosedRange<V>, stride: V = V(1))
+    /// step.
+    case finite(range: ClosedRange<V>, step: V = 1)
     /// The value is finely ranged but continuous.
     ///
     /// The value will be strictly clamped inside a closed range, but won't be snapped.
     ///
-    /// In this case, the stride only defines how many values are between two indicators.
-    case finiteContinuous(range: ClosedRange<V>, stride: V = V(1))
+    /// In this case, the step only defines how many values are between two indicators.
+    case finiteContinuous(range: ClosedRange<V>, step: V = 1)
     /// The value is strideable but infinite.
     ///
-    /// The value will be snapped to the nearest value according to the stride, but won't be clamped.
-    case infinite(stride: V = V(1))
+    /// The value will be snapped to the nearest value according to the step, but won't be clamped.
+    case infinite(step: V = 1)
     /// The value is infinite and continuous.
     ///
     /// The value will be neither clamped nor snapped. All legal values of the type will be acceptable.
     ///
-    /// In this case, the stride only defines how many values are between two indicators.
-    case infiniteContinuous(stride: V = V(1))
+    /// In this case, the step only defines how many values are between two indicators.
+    case infiniteContinuous(step: V = 1)
 
     var isFinite: Bool {
         switch self {
@@ -260,8 +260,8 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     var count: Int? {
         switch self {
-        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
-            Int(((range.upperBound - range.lowerBound) / stride).rounded(.down)) + 1
+        case .finite(let range, let step), .finiteContinuous(let range, let step):
+            Int(((range.upperBound - range.lowerBound) / step).rounded(.down)) + 1
         default:
             nil
         }
@@ -276,30 +276,30 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
 
-    var stride: V {
+    var step: V {
         switch self {
-        case .finite(_, let stride), .finiteContinuous(_, let stride),
-                .infinite(let stride), .infiniteContinuous(let stride):
-            stride
+        case .finite(_, let step), .finiteContinuous(_, let step),
+                .infinite(let step), .infiniteContinuous(let step):
+            step
         }
     }
 
     func round(_ value: V) -> (value: V, offset: V) {
         switch self {
-        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
+        case .finite(let range, let step), .finiteContinuous(let range, let step):
             let diff = value - range.lowerBound
-            let remainder = diff.truncatingRemainder(dividingBy: stride)
+            let remainder = diff.truncatingRemainder(dividingBy: step)
             return (value - remainder, remainder)
-        case .infinite(let stride), .infiniteContinuous(let stride):
-            let remainder = value.truncatingRemainder(dividingBy: stride)
+        case .infinite(let step), .infiniteContinuous(let step):
+            let remainder = value.truncatingRemainder(dividingBy: step)
             return (value - remainder, remainder)
         }
     }
 
     func continuousIndex(of value: V) -> V? {
         switch self {
-        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
-            (value - range.lowerBound) / stride
+        case .finite(let range, let step), .finiteContinuous(let range, let step):
+            (value - range.lowerBound) / step
         default:
             nil
         }
@@ -307,9 +307,9 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     func isEdgeCase(_ value: V) -> Bool {
         switch self {
-        case .finite(let range, let stride), .finiteContinuous(let range, let stride):
-            let min = range.lowerBound + stride
-            let max = range.upperBound - stride
+        case .finite(let range, let step), .finiteContinuous(let range, let step):
+            let min = range.lowerBound + step
+            let max = range.upperBound - step
 
             return value < min || value > max
         case .infinite, .infiniteContinuous:
@@ -396,7 +396,7 @@ where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     ///   If `nil`, all values will be available in the following closure.
     ///   Otherwise, only values contained in this array will be available.
     ///   - color: a closure to provide customized prominent colors for indicators that represent certain values.
-    ///   However, you might have to vaguely decide of which range the indicators will fall if the stride is not an
+    ///   However, you might have to vaguely decide of which range the indicators will fall if the step is not an
     ///   integer.
     public init(
         _ values: [V]? = nil,
@@ -463,7 +463,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
     ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - indicatorSpacing: the spacing between indicators.
-    ///   This directly influnces the sensitivity since the span between two indicators will always be a stride.
+    ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
     ///   - margin: the margin to inset the indicators from the edges based on the alignment.
     ///   - hasHierarchy: whether the indicators placed further to the center have lighter opacities.
@@ -505,7 +505,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         self.feedback = feedback
 
         let rounded = source.round(value.wrappedValue)
-        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.stride) * indicatorSpacing)
+        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
         self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
     }
@@ -518,7 +518,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
     ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - indicatorSpacing: the spacing between indicators.
-    ///   This directly influnces the sensitivity since the span between two indicators will always be a stride.
+    ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
     ///   - margin: the margin to inset the indicators from the edges based on the alignment.
     ///   - hasHierarchy: whether the indicators placed further to the center have lighter opacities.
@@ -705,7 +705,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                         roundedValue = source.offsetBy(
                             roundedValue,
                             direction: direction,
-                            nonAlternateOffset: V(newValue - oldValue) * source.stride
+                            nonAlternateOffset: V(newValue - oldValue) * source.step
                         )
                     }
                     .onChange(of: offset) { _, newValue in
@@ -718,11 +718,11 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                             offset
                         }
 
-                        let valueOffset = V(correctedOffset) * source.stride
+                        let valueOffset = V(correctedOffset) * source.step
                         internalValue = source.offsetBy(
                             roundedValue,
                             direction: direction,
-                            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.stride)
+                            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.step)
                         )
                     }
                     .onChange(of: internalValue) { _, _ in
@@ -791,7 +791,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private func referencingValue(at index: Int) -> V {
         let relativeIndex = index - centerIndicatorIndex
-        return roundedValue + V(relativeIndex) * source.stride
+        return roundedValue + V(relativeIndex) * source.step
     }
 
     private func magnifyFactor(at index: Int) -> CGFloat {
@@ -897,7 +897,7 @@ private struct StepperPopoverPreview: View {
             .popover(isPresented: $isPresented) {
                 LuminareStepper(
                     value: $value,
-                    source: .finite(range: 0...100, stride: 1),
+                    source: .finite(range: 0...100, step: 1),
                     direction: .horizontal,
                     indicatorSpacing: 10,
                     maxSize: 32
@@ -925,7 +925,7 @@ private struct StepperPopoverPreview: View {
             VStack(spacing: 20) {
                 StepperPreview(
                     value: 42,
-                    source: .finite(range: -100...50, stride: 2),
+                    source: .finite(range: -100...50, step: 2),
                     direction: .horizontal,
                     prominentValues: [0, 42, 50]
                 ) {
@@ -941,7 +941,7 @@ private struct StepperPopoverPreview: View {
 
                 StepperPreview(
                     value: 45,
-                    source: .infiniteContinuous(stride: 2),
+                    source: .infiniteContinuous(step: 2),
                     direction: .horizontalAlternate,
                     prominentValues: [0, 42]
                 ) {
@@ -957,7 +957,7 @@ private struct StepperPopoverPreview: View {
 
                 StepperPreview(
                     value: 42,
-                    source: .infinite(stride: 2),
+                    source: .infinite(step: 2),
                     alignment: .center,
                     direction: .horizontal,
                     prominentValues: [0, 26, 30, 34, 38, 42, 46, 50, 54, 58]
@@ -977,7 +977,7 @@ private struct StepperPopoverPreview: View {
             HStack(spacing: 20) {
                 StepperPreview(
                     value: 42,
-                    source: .finite(range: -100...50, stride: 2),
+                    source: .finite(range: -100...50, step: 2),
                     alignment: .center,
                     direction: .vertical,
                     prominentValues: [0, 38, 40, 42]
@@ -994,7 +994,7 @@ private struct StepperPopoverPreview: View {
 
                 StepperPreview(
                     value: 42,
-                    source: .finiteContinuous(range: -100...50, stride: 2),
+                    source: .finiteContinuous(range: -100...50, step: 2),
                     direction: .verticalAlternate,
                     prominentValues: [0, 38, 40, 42]
                 ) {

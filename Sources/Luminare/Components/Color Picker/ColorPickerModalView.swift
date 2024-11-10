@@ -60,7 +60,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                             )
                         )
 
-                    ColorHueSliderView(selectedColor: $selectedColor, roundBottom: true)
+                    ColorHueSliderView(selectedColor: $selectedColor, roundedBottom: true)
                         .scaledToFill()
                         .clipShape(
                             UnevenRoundedRectangle(

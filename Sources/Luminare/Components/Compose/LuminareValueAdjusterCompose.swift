@@ -21,8 +21,9 @@ public enum LuminareValueAdjusterControlSize {
 
 // MARK: - Value Adjuster (Compose)
 
-public struct LuminareValueAdjusterCompose<Label, Content, V>: View
-where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
+where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
+      F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
     public typealias ControlSize = LuminareValueAdjusterControlSize
 
     private enum FocusedField {
@@ -37,87 +38,67 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
     // MARK: Fields
 
+    @Binding private var value: V
+    private let range: ClosedRange<V>, step: V.Stride?
+    private let format: F
+    private let clampsUpper: Bool, clampsLower: Bool
     private let horizontalPadding: CGFloat
-
-    private let formatter: NumberFormatter
-    private var totalRange: V {
-        sliderRange.upperBound - sliderRange.lowerBound
-    }
-
-    @State private var isShowingTextBox = false
-
-    @FocusState private var focusedField: FocusedField?
+    private let controlSize: ControlSize
 
     @ViewBuilder private let content: (AnyView) -> Content, label: () -> Label
 
-    @Binding private var value: V
-    private let sliderRange: ClosedRange<V>
-    private var step: V
-    private let clampUpper: Bool, clampLower: Bool
-    private let controlSize: ControlSize
-    private let decimalPlaces: Int
+    @State private var isShowingTextBox = false
+    @State var eventMonitor: Any?
 
-    @State var eventMonitor: AnyObject?
+    @FocusState private var focusedField: FocusedField?
 
     // MARK: Initializers
 
-    // TODO: max digit spacing for label
     public init(
         value: Binding<V>,
-        sliderRange: ClosedRange<V>,
+        in range: ClosedRange<V>, step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
         horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        clampLower: Bool = false,
-        clampUpper: Bool = false,
         controlSize: ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.content = content
-        self.label = label
 
         self._value = value
-        self.sliderRange = sliderRange
-        self.clampLower = clampLower
-        self.clampUpper = clampUpper
+        self.range = range
+        self.step = step
+        self.format = format
+        self.clampsUpper = clampsUpper
+        self.clampsLower = clampsLower
+        self.horizontalPadding = horizontalPadding
         self.controlSize = controlSize
 
-        self.decimalPlaces = decimalPlaces
-
-        self.formatter = NumberFormatter()
-        formatter.maximumFractionDigits = 5
-
-        if let step {
-            self.step = step
-        } else {
-            self.step = 1
-        }
-
-        self.horizontalPadding = horizontalPadding
+        self.content = content
+        self.label = label
     }
 
     public init(
         _ key: LocalizedStringKey,
         value: Binding<V>,
-        sliderRange: ClosedRange<V>,
+        in range: ClosedRange<V>, step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
         horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        clampLower: Bool = false,
-        clampUpper: Bool = false,
         controlSize: ControlSize = .regular,
-        decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
             value: value,
-            sliderRange: sliderRange,
+            in: range, step: step,
+            format: format,
+            clampsUpper: clampsUpper,
+            clampsLower: clampsLower,
             horizontalPadding: horizontalPadding,
-            step: step,
-            clampLower: clampLower,
-            clampUpper: clampUpper,
             controlSize: controlSize,
-            decimalPlaces: decimalPlaces,
             content: content
         ) {
             Text(key)
@@ -155,19 +136,30 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         .animation(animation, value: isShowingTextBox)
     }
 
+    private var totalRange: V {
+        range.upperBound - range.lowerBound
+    }
+
     @ViewBuilder private func slider() -> some View {
-        Slider(
-            value: Binding(
-                get: {
-                    value
-                },
-                set: { newValue in
-                    value = newValue
-                    isShowingTextBox = false
-                }
-            ),
-            in: sliderRange
-        )
+        let binding: Binding<V> = .init {
+            value
+        } set: { newValue in
+            value = newValue
+            isShowingTextBox = false
+        }
+
+        if let step {
+            Slider(
+                value: binding,
+                in: range,
+                step: step
+            )
+        } else {
+            Slider(
+                value: binding,
+                in: range
+            )
+        }
     }
 
     @ViewBuilder private func text() -> some View {
@@ -176,23 +168,20 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
                 if isShowingTextBox {
                     TextField(
                         "",
-                        value: Binding(
-                            get: {
-                                value
-                            },
-                            set: {
-                                if clampLower, clampUpper {
-                                    value = $0.clamped(to: sliderRange)
-                                } else if clampLower {
-                                    value = max(sliderRange.lowerBound, $0)
-                                } else if clampUpper {
-                                    value = min(sliderRange.upperBound, $0)
-                                } else {
-                                    value = $0
-                                }
+                        value: .init(.init {
+                            value
+                        } set: { newValue in
+                            if clampsLower, clampsUpper {
+                                value = newValue.clamped(to: range)
+                            } else if clampsLower {
+                                value = max(range.lowerBound, newValue)
+                            } else if clampsUpper {
+                                value = min(range.upperBound, newValue)
+                            } else {
+                                value = newValue
                             }
-                        ),
-                        formatter: formatter
+                        }),
+                        format: format
                     )
                     .onSubmit {
                         withAnimation(animationFast) {
@@ -211,8 +200,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
                             focusedField = .textbox
                         }
                     } label: {
-                        // swiftlint:disable:next force_cast
-                        Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
+                        Text(format.format(value))
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)
                     }
@@ -268,20 +256,33 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
                 return event
             }
 
+            let isShiftDown = event.modifierFlags.contains(.shift) // x10
+            let isOptionDown = event.modifierFlags.contains(.option) // x0.1
+            let acceleration: V = if isShiftDown && isOptionDown {
+                1
+            } else if isShiftDown {
+                10
+            } else if isOptionDown {
+                0.1
+            } else {
+                1
+            }
+            let step = V(step ?? 1)
+
             if event.keyCode == upArrow {
-                value += step
+                value += step * acceleration
             }
 
             if event.keyCode == downArrow {
-                value -= step
+                value -= step * acceleration
             }
 
-            if clampLower, clampUpper {
-                value = value.clamped(to: sliderRange)
-            } else if clampLower {
-                value = max(sliderRange.lowerBound, value)
-            } else if clampUpper {
-                value = min(sliderRange.upperBound, value)
+            if clampsLower, clampsUpper {
+                value = value.clamped(to: range)
+            } else if clampsLower {
+                value = max(range.lowerBound, value)
+            } else if clampsUpper {
+                value = min(range.upperBound, value)
             } else {
                 value = value
             }
@@ -305,13 +306,13 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
     "LuminareValueAdjusterCompose",
     traits: .sizeThatFitsLayout
 ) {
+    @Previewable @State var value: Double = 42
+
     LuminareSection {
         LuminareValueAdjusterCompose(
-            value: .constant(42),
-            sliderRange: 0...128,
-            step: 1,
-            clampLower: true,
-            clampUpper: false
+            value: $value,
+            in: 0...128,
+            format: .number.precision(.fractionLength(0...3))
         ) { view in
             HStack(spacing: 0) {
                 Text("#")
@@ -329,11 +330,9 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         }
 
         LuminareValueAdjusterCompose(
-            value: .constant(42),
-            sliderRange: 0...128,
-            step: 1,
-            clampLower: true,
-            clampUpper: false,
+            value: $value,
+            in: 0...128,
+            format: .number.precision(.fractionLength(0...3)),
             controlSize: .compact
         ) { button in
             HStack(spacing: 0) {
