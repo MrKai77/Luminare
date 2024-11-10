@@ -16,14 +16,10 @@
         }
         ```
         
-        Elements can conform to ``LuminarePickerData`` for more precise controls on selection behaviors.
+        Elements can conform to ``LuminareSelectionData`` for more precise controls on selection behaviors.
     }
     
     @Column {
         ![LuminarePicker](LuminarePicker)
     }
 }
-
-## Topics
-
-- ``LuminarePickerData``

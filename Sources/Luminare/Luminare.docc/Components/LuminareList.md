@@ -8,7 +8,7 @@
         It has a toolbar that reserves a position for the **remove** button, while its leading space is free to insert custom action buttons.
         The toolbar only hides when all of the provided buttons are `EmptyView`.
         
-        > Slide actions are currently disabled on list items due to severe bugs.
+        Elements can conform to ``LuminareSelectionData`` for more precise controls on selection behaviors.
     }
     
     @Column {
