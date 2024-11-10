@@ -13,7 +13,7 @@ public struct LuminarePopup<Content: View>: NSViewRepresentable {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     private let material: NSVisualEffectView.Material
     @Binding private var isPresented: Bool
 

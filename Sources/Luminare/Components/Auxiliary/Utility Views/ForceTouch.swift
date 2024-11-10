@@ -94,8 +94,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         view.translatesAutoresizingMaskIntoConstraints = false
 
         let recognizer = ForceTouchGestureRecognizer(
-            configuration,
-            threshold: threshold
+            configuration
         ) { state in
             self.state = state
 
@@ -110,7 +109,15 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
             }
         } onPressureChange: { event in
             terminateLongPressDelegate()
-            gesture = .active(ForceTouchGesture.Event(state, event: event))
+
+            let isFirstStage = event.stage == 1
+            let isOverThreshold = CGFloat(event.pressure) >= threshold
+
+            gesture = if !isFirstStage || isOverThreshold {
+                .active(ForceTouchGesture.Event(state, event: event))
+            } else {
+                .inactive
+            }
         }
 
         monitor = NSEvent.addLocalMonitorForEvents(matching: [
@@ -173,17 +180,14 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
 // MARK: - Force Touch Gesture Recognizer
 
 class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
-    private let threshold: CGFloat
     private let onStateChange: (NSPressGestureRecognizer.State) -> Void
     private let onPressureChange: (NSEvent) -> Void
 
     init(
         _ configuration: NSPressureConfiguration,
-        threshold: CGFloat,
         onStateChange: @escaping (NSPressGestureRecognizer.State) -> Void,
         onPressureChange: @escaping (NSEvent) -> Void
     ) {
-        self.threshold = threshold
         self.onStateChange = onStateChange
         self.onPressureChange = onPressureChange
 

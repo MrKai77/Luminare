@@ -22,7 +22,7 @@ public extension View {
 public extension View {
     @ViewBuilder func luminarePopover<Content>(
         arrowEdge: Edge = .bottom,
-        trigger: LuminarePopoverTrigger = .onHover(),
+        trigger: LuminarePopoverTrigger = .hover(),
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         shade: LuminarePopoverShade = .styled(),
