@@ -30,6 +30,9 @@ LuminareList(
 } emptyView: {
     Text("Empty")
         .foregroundStyle(.secondary)
+        .swipeActions {
+            // swipe actions for row
+        }
 } actions: {
     Button("Add") {
         withAnimation {
