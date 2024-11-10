@@ -8,7 +8,7 @@
 import SwiftUI
 import AppKit
 
-public enum InfiniteScrollDirection: Equatable {
+public enum InfiniteScrollViewDirection: Equatable {
     case horizontal
     case vertical
 
@@ -79,7 +79,7 @@ public enum InfiniteScrollDirection: Equatable {
 // MARK: - Infinite Scroll
 
 public struct InfiniteScrollView: NSViewRepresentable {
-    public typealias Direction = InfiniteScrollDirection
+    public typealias Direction = InfiniteScrollViewDirection
 
     @Environment(\.luminareAnimationFast) private var animationFast
 
@@ -356,7 +356,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 // MARK: - Preview
 
 private struct InfiniteScrollPreview: View {
-    var direction: InfiniteScrollDirection = .horizontal
+    var direction: InfiniteScrollViewDirection = .horizontal
     var size: CGSize = .init(width: 500, height: 100)
 
     @State private var offset: CGFloat = 0

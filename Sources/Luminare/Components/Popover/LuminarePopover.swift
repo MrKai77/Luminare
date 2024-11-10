@@ -27,7 +27,7 @@ public enum LuminarePopoverShade {
     }
 
     public static func styled<S: ShapeStyle>(_ style: S = .secondary) -> Self {
-        .some(AnyShapeStyle(style))
+        .some(.init(style))
     }
 }
 
@@ -149,7 +149,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                         let stage = event.stage
 
                         if stage == 1 {
-                            isPopoverPresented = event.pressure >= 0.25
+                            isPopoverPresented = event.pressure >= 0.5
                             if !forceTouchRecognized {
                                 forceTouchProgress = event.pressure
                             }
@@ -175,7 +175,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                         RoundedRectangle(cornerRadius: cornerRadius)
                     case .onForceTouch:
                         RoundedRectangle(cornerRadius: cornerRadius)
-                            .opacity(forceTouchProgress)
+                            .opacity(forceTouchProgress * 2.0 - 1.0)
                     }
                 }
                 .foregroundStyle(style.opacity(0.1))
@@ -214,7 +214,9 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                     content()
                 case .onForceTouch:
                     content()
-                        .opacity(0.5 + 0.5 * forceTouchProgress)
+                        .opacity(forceTouchProgress * 2.0 - 1.0)
+                        .scaleEffect(forceTouchRecognized ? 1.1 : 1, anchor: .center)
+                        .animation(.bouncy, value: forceTouchRecognized)
                 }
             }
             .multilineTextAlignment(.center)
@@ -303,20 +305,16 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
         LuminareCompose {
         } label: {
             PopoverForceTouchPreview(arrowEdge: .top) { gesture, recognized in
-                VStack(alignment: .leading) {
-                    Text("**Think different.**")
-
-                    Group {
-                        switch gesture {
-                        case .active(let event) where event.stage == 1 && !recognized:
-                            ProgressView(value: event.pressure)
-                        default:
-                            EmptyView()
-                        }
+                Group {
+                    switch gesture {
+                    case .active(let event) where event.stage == 1 && !recognized:
+                        ProgressView(value: event.pressure)
+                    default:
+                        Text("**Think different.**")
                     }
                 }
+                .frame(width: 200)
                 .padding()
-                .frame(height: 100)
             } badge: {
                 Text("Pops to top (force touch me)")
             }
