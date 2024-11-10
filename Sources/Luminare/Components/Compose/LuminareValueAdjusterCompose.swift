@@ -66,7 +66,6 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-
         self._value = value
         self.range = range
         self.step = step

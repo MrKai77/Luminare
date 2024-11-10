@@ -26,7 +26,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     private let cornerRadius: CGFloat, innerPadding: CGFloat, innerCornerRadius: CGFloat
 
     private let elements2D: [[V]]
-    private let rowsIndex: Int, columnsIndex: Int
+    private let rows: Int, columns: Int
 
     @Binding private var selectedItem: V
     @State private var internalSelection: V
@@ -58,8 +58,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
-        self.rowsIndex = elements2D.count - 1
-        self.columnsIndex = columns - 1
+        self.rows = elements2D.count
+        self.columns = columns
         self.roundedTop = roundedTop
         self.roundedBottom = roundedBottom
         self.cornerRadius = cornerRadius
@@ -75,18 +75,18 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     public var body: some View {
         Group {
-            if isCompact {
+            if isVerticallyCompact {
                 HStack(spacing: 2) {
-                    ForEach(0...columnsIndex, id: \.self) { column in
+                    ForEach(0...maxColumnIndex, id: \.self) { column in
                         pickerButton(row: 0, column: column)
                     }
                 }
                 .frame(minHeight: 34)
             } else {
                 VStack(spacing: 2) {
-                    ForEach(0...rowsIndex, id: \.self) { row in
+                    ForEach(0...maxRowIndex, id: \.self) { row in
                         HStack(spacing: 2) {
-                            ForEach(0...columnsIndex, id: \.self) { column in
+                            ForEach(0...maxColumnIndex, id: \.self) { column in
                                 pickerButton(row: row, column: column)
                             }
                         }
@@ -135,8 +135,20 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
     }
 
-    private var isCompact: Bool {
-        rowsIndex == 0
+    private var isVerticallyCompact: Bool {
+        rows == 1
+    }
+
+    private var isHorizontallyCompact: Bool {
+        columns == 1
+    }
+
+    private var maxRowIndex: Int {
+        rows - 1
+    }
+
+    private var maxColumnIndex: Int {
+        columns - 1
     }
 
     // MARK: Functions
@@ -155,34 +167,38 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         if column == 0, row == 0, roundedTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: (rowsIndex == 0 && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomLeadingRadius:
+                    (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
+                topTrailingRadius:
+                    isHorizontallyCompact ? cornerRadius - innerPadding : innerCornerRadius
             )
         }
 
         // bottom left
-        else if column == 0, row == rowsIndex, roundedBottom {
+        else if column == 0, row == maxRowIndex, roundedBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
-                bottomTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomTrailingRadius:
+                    isHorizontallyCompact ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: innerCornerRadius
             )
         }
 
         // top right
-        else if column == columnsIndex, row == 0, roundedTop {
+        else if column == maxColumnIndex, row == 0, roundedTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: (rowsIndex == 0 && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                bottomTrailingRadius:
+                    (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : innerCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
 
         // bottom right
-        else if column == columnsIndex, row == rowsIndex, roundedBottom {
+        else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
             UnevenRoundedRectangle(
                 topLeadingRadius: innerCornerRadius,
                 bottomLeadingRadius: innerCornerRadius,

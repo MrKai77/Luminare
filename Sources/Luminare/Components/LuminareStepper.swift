@@ -222,22 +222,36 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     ///
     /// The value will be strictly clamped inside a closed range and snapped to the nearest value according to the
     /// step.
-    case finite(range: ClosedRange<V>, step: V = 1)
+    ///
+    /// - Parameters:
+    ///   - in: the closed range of the available values.
+    ///   - step: the step between two snapped values.
+    case finite(in: ClosedRange<V>, step: V = 1) // swiftlint:disable:this identifier_name
     /// The value is finely ranged but continuous.
     ///
     /// The value will be strictly clamped inside a closed range, but won't be snapped.
     ///
     /// In this case, the step only defines how many values are between two indicators.
-    case finiteContinuous(range: ClosedRange<V>, step: V = 1)
+    ///
+    /// - Parameters:
+    ///   - in: the closed range of the available values.
+    ///   - step: the step between two indicators.
+    case finiteContinuous(in: ClosedRange<V>, step: V = 1) // swiftlint:disable:this identifier_name
     /// The value is strideable but infinite.
     ///
     /// The value will be snapped to the nearest value according to the step, but won't be clamped.
+    ///
+    /// - Parameters:
+    ///   - step: the step between two snapped values.
     case infinite(step: V = 1)
     /// The value is infinite and continuous.
     ///
     /// The value will be neither clamped nor snapped. All legal values of the type will be acceptable.
     ///
     /// In this case, the step only defines how many values are between two indicators.
+    ///
+    /// - Parameters:
+    ///   - step: the step between two indicators.
     case infiniteContinuous(step: V = 1)
 
     var isFinite: Bool {
@@ -897,7 +911,7 @@ private struct StepperPopoverPreview: View {
             .popover(isPresented: $isPresented) {
                 LuminareStepper(
                     value: $value,
-                    source: .finite(range: 0...100, step: 1),
+                    source: .finite(in: 0...100, step: 1),
                     direction: .horizontal,
                     indicatorSpacing: 10,
                     maxSize: 32
@@ -925,7 +939,7 @@ private struct StepperPopoverPreview: View {
             VStack(spacing: 20) {
                 StepperPreview(
                     value: 42,
-                    source: .finite(range: -100...50, step: 2),
+                    source: .finite(in: -100...50, step: 2),
                     direction: .horizontal,
                     prominentValues: [0, 42, 50]
                 ) {
@@ -977,7 +991,7 @@ private struct StepperPopoverPreview: View {
             HStack(spacing: 20) {
                 StepperPreview(
                     value: 42,
-                    source: .finite(range: -100...50, step: 2),
+                    source: .finite(in: -100...50, step: 2),
                     alignment: .center,
                     direction: .vertical,
                     prominentValues: [0, 38, 40, 42]
@@ -994,7 +1008,7 @@ private struct StepperPopoverPreview: View {
 
                 StepperPreview(
                     value: 42,
-                    source: .finiteContinuous(range: -100...50, step: 2),
+                    source: .finiteContinuous(in: -100...50, step: 2),
                     direction: .verticalAlternate,
                     prominentValues: [0, 38, 40, 42]
                 ) {

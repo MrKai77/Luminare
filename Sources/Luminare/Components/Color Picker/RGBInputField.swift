@@ -28,7 +28,7 @@ struct RGBInputField<Label>: View where Label: View {
                 LuminarePopover(arrowEdge: .top, trigger: .onForceTouch()) {
                     LuminareStepper(
                         value: $value,
-                        source: .finiteContinuous(range: 0...255, stride: 5),
+                        source: .finiteContinuous(in: 0...255, step: 5),
                         indicatorSpacing: 20,
                         prominentIndicators: .init(color: color)
                     )
