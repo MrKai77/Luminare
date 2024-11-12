@@ -94,7 +94,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
     @Binding public var shouldReset: Bool
     @Binding public var offset: CGFloat
-    @Binding public var page: Int
+    @Binding public var diff: Int
 
     var length: CGFloat {
         direction.length(of: size)
@@ -126,22 +126,14 @@ public struct InfiniteScrollView: NSViewRepresentable {
             .frame(width: size.width, height: size.height)
     }
 
-    func onBoundsChange(
-        _ bounds: CGRect,
-        pageCompensation: Int? = nil,
-        animate: Bool = false
-    ) {
+    func onBoundsChange(_ bounds: CGRect, animate: Bool = false) {
         let offset = direction.offset(of: bounds.origin) - direction.offset(of: centerRect.origin)
-        let offsetCompensation: CGFloat = if let pageCompensation {
-            -CGFloat(pageCompensation) * spacing
-        } else { 0 }
-
         if animate {
             withAnimation(animationFast) {
-                self.offset = offset + offsetCompensation
+                self.offset = offset
             }
         } else {
-            self.offset = offset + offsetCompensation
+            self.offset = offset
         }
     }
 
@@ -189,6 +181,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
+        print(wrapping)
         DispatchQueue.main.async {
             context.coordinator.initializeScroll(nsView.contentView)
         }
@@ -203,40 +196,41 @@ public struct InfiniteScrollView: NSViewRepresentable {
     public class Coordinator: NSObject {
         var parent: InfiniteScrollView
 
+        private var boundsObservation: NSKeyValueObservation?
         private var offsetOrigin: CGFloat = .zero
-        private var pageOrigin: Int = .zero
-        private var pageCompensationOrigin: Int = .zero
+        private var diffOrigin: Int = .zero
 
         private var lastOffset: CGFloat = .zero
-        private var lastPageOffset: Int = .zero
+        private var lastDiffOffset: Int = .zero
 
         init(_ parent: InfiniteScrollView) {
             self.parent = parent
-
-            offsetOrigin = parent.offset
-            pageOrigin = parent.page
-            pageCompensationOrigin = parent.page
         }
 
         func initializeScroll(_ clipView: NSClipView) {
             if parent.shouldReset {
                 resetScrollViewPosition(clipView, offset: parent.direction.point(from: parent.initialOffset))
-                parent.offset = parent.initialOffset
-                pageOrigin = parent.page
-
-                lastOffset = 0
-                lastPageOffset = 0
+                diffOrigin = parent.diff
             }
         }
 
         @objc func didLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
+            boundsObservation = scrollView.contentView.observe(\.bounds, options: [
+                .new, .initial]) { [weak self] _, change in
+                guard let self, let bounds = change.newValue else { return }
+                    parent.onBoundsChange(bounds)
+            }
+
             let center = parent.direction.offset(of: parent.centerRect.origin)
             let offset = parent.direction.offset(of: scrollView.contentView.bounds.origin)
             let relativeOffset = offset - center
 
             if parent.wrapping {
+                lastOffset = offset
+                lastDiffOffset = 0
+
                 if abs(relativeOffset) >= parent.spacing {
                     resetScrollViewPosition(scrollView.contentView)
 
@@ -244,36 +238,35 @@ public struct InfiniteScrollView: NSViewRepresentable {
                         +1
                     } else if relativeOffset <= -parent.spacing {
                         -1
-                    } else { 0 }
+                    } else {
+                        0
+                    }
 
-                    accumulatePage(diffOffset)
+                    accumulateDiff(diffOffset)
                 }
-
-                pageCompensationOrigin = parent.page
             } else {
                 let offset = max(0, min(2 * parent.spacing, offset))
                 let relativeOffset = offset - offsetOrigin
 
                 let isIncremental = offset - lastOffset > 0
-                let clamp: (Int, Int) -> Int = isIncremental ? max : min
-                let pageOffset = clamp(
-                    lastPageOffset,
+                let comparation: (Int, Int) -> Int = isIncremental ? max : min
+                let diffOffset = comparation(
+                    lastDiffOffset,
                     Int((relativeOffset / parent.spacing).rounded(isIncremental ? .down : .up))
                 )
 
-                overridePage(pageOffset)
+                lastOffset = offset
+                lastDiffOffset = diffOffset
+
+                overrideDiff(diffOffset)
             }
-
-            lastOffset = offset
-
-            onBoundsChange(scrollView.contentView)
         }
 
         @objc func willStartLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
             offsetOrigin = parent.direction.offset(of: scrollView.contentView.bounds.origin)
-            pageOrigin = parent.page
+            diffOrigin = parent.diff
 
             lastOffset = offsetOrigin
         }
@@ -289,33 +282,18 @@ public struct InfiniteScrollView: NSViewRepresentable {
             }
         }
 
-        private func onBoundsChange(_ clipView: NSClipView, animate: Bool = false) {
-            let bounds = clipView.bounds
-            if parent.wrapping {
-                parent.onBoundsChange(bounds, animate: animate)
-            } else {
-                parent.onBoundsChange(
-                    bounds,
-                    pageCompensation: parent.page - pageCompensationOrigin,
-                    animate: animate
-                )
-            }
+        private func accumulateDiff(_ offset: Int) {
+            parent.diff += offset
+            diffOrigin = parent.diff
         }
 
-        private func accumulatePage(_ offset: Int) {
-            parent.page += offset
-            pageOrigin = parent.page
-            lastPageOffset = 0
-        }
-
-        private func overridePage(_ offset: Int) {
-            parent.page = pageOrigin + offset
-            lastPageOffset = offset
+        private func overrideDiff(_ offset: Int) {
+            parent.diff = diffOrigin + offset
         }
 
         private func resetScrollViewPosition(_ clipView: NSClipView, offset: CGPoint = .zero, animate: Bool = false) {
             clipView.setBoundsOrigin(parent.centerRect.origin.applying(.init(translationX: offset.x, y: offset.y)))
-            onBoundsChange(clipView, animate: animate)
+            parent.onBoundsChange(clipView.bounds, animate: animate)
 
             parent.shouldReset = false
             offsetOrigin = parent.direction.offset(of: clipView.bounds.origin)
@@ -327,46 +305,48 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
             let relativeOffset = offset - center
 
-            let snapsToPrevious = relativeOffset <= -parent.spacing / 2
-            let snapsToNext = relativeOffset >= parent.spacing / 2
-
-            let snapOffset: CGFloat = if snapsToPrevious {
+            let localOffset: CGFloat = switch relativeOffset {
+            case relativeOffset where relativeOffset >= -parent.spacing && relativeOffset < -parent.spacing / 2:
                 -parent.spacing
-            } else if snapsToNext {
-                parent.spacing
-            } else { 0 }
-
-            // update page
-            if parent.wrapping {
-                let pageOffset: Int = if snapsToNext {
-                    +1
-                } else if snapsToPrevious {
-                    -1
-                } else { 0 }
-
-                accumulatePage(pageOffset)
-            } else {
-                let relativeOffsetOrigin = offsetOrigin - center
-                let relativeOffset = snapOffset - relativeOffsetOrigin
-                let pageOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
-
-                overridePage(pageOffset)
+            case relativeOffset where relativeOffset >= -parent.spacing / 2 && relativeOffset < parent.spacing / 2:
+                    .zero
+            case relativeOffset where relativeOffset >= parent.spacing / 2:
+                +parent.spacing
+            default:
+                    .zero
             }
 
-            // update offset
             if parent.wrapping {
-                if snapsToPrevious || snapsToNext {
+                let diffOffset: Int = if localOffset > 0 {
+                    +1
+                } else if localOffset < 0 {
+                    -1
+                } else {
+                    0
+                }
+
+                accumulateDiff(diffOffset)
+            } else {
+                let relativeOffsetOrigin = offsetOrigin - center
+                let relativeOffset = localOffset - relativeOffsetOrigin
+                let diffOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
+
+                overrideDiff(diffOffset)
+            }
+
+            if parent.wrapping {
+                if localOffset != 0 {
                     resetScrollViewPosition(
                         clipView,
-                        offset: parent.direction.point(from: relativeOffset - snapOffset)
+                        offset: parent.direction.point(from: relativeOffset - localOffset)
                     )
                 }
 
                 resetScrollViewPosition(clipView, animate: true)
             } else {
-                self.resetScrollViewPosition(
+                resetScrollViewPosition(
                     clipView,
-                    offset: self.parent.direction.point(from: snapOffset),
+                    offset: parent.direction.point(from: localOffset),
                     animate: true
                 )
             }
@@ -381,7 +361,7 @@ private struct InfiniteScrollPreview: View {
     var size: CGSize = .init(width: 500, height: 100)
 
     @State private var offset: CGFloat = 0
-    @State private var page: Int = 0
+    @State private var diff: Int = 0
     @State private var shouldReset: Bool = true
     @State private var wrapping: Bool = true
 
@@ -398,7 +378,7 @@ private struct InfiniteScrollPreview: View {
 
             shouldReset: $shouldReset,
             offset: $offset,
-            page: $page
+            diff: $diff
         )
         .frame(width: size.width, height: size.height)
         .border(.red)
@@ -417,7 +397,7 @@ private struct InfiniteScrollPreview: View {
         HStack {
             Text(String(format: "Offset: %.1f", offset))
 
-            Text("Page: \(page)")
+            Text("Diff: \(diff)")
                 .foregroundStyle(.tint)
         }
         .monospaced()

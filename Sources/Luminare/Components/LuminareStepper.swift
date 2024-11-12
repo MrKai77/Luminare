@@ -301,8 +301,8 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     func round(_ value: V) -> (value: V, offset: V) {
         switch self {
         case .finite(let range, let step), .finiteContinuous(let range, let step):
-            let page = value - range.lowerBound
-            let remainder = page.truncatingRemainder(dividingBy: step)
+            let diff = value - range.lowerBound
+            let remainder = diff.truncatingRemainder(dividingBy: step)
             return (value - remainder, remainder)
         case .infinite(let step), .infiniteContinuous(let step):
             let remainder = value.truncatingRemainder(dividingBy: step)
@@ -462,7 +462,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     private let feedback: (V) -> SensoryFeedback?
 
     @State private var containerSize: CGSize = .zero
-    @State private var page: Int = .zero
+    @State private var diff: Int = .zero
     @State private var offset: CGFloat
 
     @State private var shouldScrollViewReset: Bool = true
@@ -651,16 +651,17 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                          nonAlternateOffset: indicatorSpacing
                     )
                 )
-            let offsetCompensation = -indicatorSpacing / 2
+
+            let offsetCompensate = -indicatorSpacing / 2
 
             Color.white
                 .padding(
                     direction.paddingSpan.start,
-                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensation
+                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate
                 )
                 .padding(
                     direction.paddingSpan.end,
-                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensation
+                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate
                 )
         } else {
             Color.white
@@ -689,43 +690,43 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             Color.clear
                 .overlay {
                     infiniteScrollView(proxy: proxy)
-                        .onChange(of: page) { oldValue, newValue in
-                            // do not use `+=`, otherwise causing multiple assignments
-                            roundedValue = source.offsetBy(
-                                roundedValue,
-                                direction: direction,
-                                nonAlternateOffset: V(newValue - oldValue) * source.step
-                            )
+                    .onChange(of: diff) { oldValue, newValue in
+                        // do not use `+=`, otherwise causing multiple assignments
+                        roundedValue = source.offsetBy(
+                            roundedValue,
+                            direction: direction,
+                            nonAlternateOffset: V(newValue - oldValue) * source.step
+                        )
+                    }
+                    .onChange(of: offset) { _, newValue in
+                        let offset = newValue / indicatorSpacing
+                        let correctedOffset = if source.reachedStartingBound(roundedValue, direction: direction) {
+                            direction.offsetBy(offset, nonAlternateOffset: 1)
+                        } else if source.reachedEndingBound(roundedValue, direction: direction) {
+                            direction.offsetBy(offset, nonAlternateOffset: -1)
+                        } else {
+                            offset
                         }
-                        .onChange(of: offset) { _, newValue in
-                            let offset = newValue / indicatorSpacing
-//                            let correctedOffset = if source.reachedStartingBound(roundedValue, direction: direction) {
-//                                direction.offsetBy(offset, nonAlternateOffset: 1)
-//                            } else if source.reachedEndingBound(roundedValue, direction: direction) {
-//                                direction.offsetBy(offset, nonAlternateOffset: -1)
-//                            } else {
-//                                offset
-//                            }
 
-                            let valueOffset = V(offset) * source.step
-                            internalValue = source.offsetBy(
-                                roundedValue,
-                                direction: direction,
-                                nonAlternateOffset: valueOffset
-                            )
-                        }
-                        .onChange(of: internalValue) { _, _ in
-                            value = internalValue
-                        }
-                        .onChange(of: value) { _, newValue in
-                            // check if changed externally
-                            guard newValue != internalValue else { return }
-                            internalValue = newValue
+                        let valueOffset = V(correctedOffset) * source.step
+                        internalValue = source.offsetBy(
+                            roundedValue,
+                            direction: direction,
+                            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.step)
+                        )
+                    }
+                    .onChange(of: internalValue) { _, _ in
+                        value = internalValue
+                    }
+                    .onChange(of: value) { _, newValue in
+                        // check if changed externally
+                        guard newValue != internalValue else { return }
+                        internalValue = newValue
 
-                            let rounded = source.round(newValue)
-                            roundedValue = rounded.value
-                            offset = CGFloat(rounded.offset)
-                        }
+                        let rounded = source.round(newValue)
+                        roundedValue = rounded.value
+                        offset = CGFloat(rounded.offset)
+                    }
                 }
         }
     }
@@ -752,7 +753,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             shouldReset: $shouldScrollViewReset,
             offset: $offset,
-            page: $page
+            diff: $diff
         )
     }
 
@@ -775,7 +776,13 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     }
 
     private var indicatorOffset: CGFloat {
-        offset
+        if source.reachedUpperBound(roundedValue) {
+            direction.offsetBy(offset, nonAlternateOffset: -indicatorSpacing)
+        } else if source.reachedLowerBound(roundedValue) {
+            direction.offsetBy(offset, nonAlternateOffset: indicatorSpacing)
+        } else {
+            offset
+        }
     }
 
     private var bentOffset: CGFloat {
