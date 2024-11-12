@@ -83,16 +83,16 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    public var direction: Direction
-    public var size: CGSize
-    public var spacing: CGFloat
-    public var snapping: Bool
-
     var debug: Bool = false
+    public var direction: Direction
 
-    @Binding public var shouldReset: Bool
+    @Binding public var size: CGSize
+    @Binding public var spacing: CGFloat
+    @Binding public var snapping: Bool
     @Binding public var wrapping: Bool
     @Binding public var initialOffset: CGFloat
+
+    @Binding public var shouldReset: Bool
     @Binding public var offset: CGFloat
     @Binding public var diff: Int
 
@@ -181,6 +181,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
+        print(wrapping)
         DispatchQueue.main.async {
             context.coordinator.initializeScroll(nsView.contentView)
         }
@@ -362,44 +363,55 @@ private struct InfiniteScrollPreview: View {
     @State private var offset: CGFloat = 0
     @State private var diff: Int = 0
     @State private var shouldReset: Bool = true
+    @State private var wrapping: Bool = true
 
     var body: some View {
         InfiniteScrollView(
-            direction: direction,
-            size: size,
-            spacing: 50,
-            snapping: true,
             debug: true,
-            shouldReset: $shouldReset,
-            wrapping: .constant(false),
+            direction: direction,
+
+            size: .constant(size),
+            spacing: .constant(50),
+            snapping: .constant(true),
+            wrapping: $wrapping,
             initialOffset: .constant(0),
+
+            shouldReset: $shouldReset,
             offset: $offset,
             diff: $diff
         )
         .frame(width: size.width, height: size.height)
+        .border(.red)
 
-        Button("Reset") {
-            shouldReset = true
+        HStack {
+            Button("Reset Offset") {
+                shouldReset = true
+            }
+
+            Button(wrapping ? "Disable Wrapping" : "Enable Wrapping") {
+                wrapping.toggle()
+            }
         }
         .frame(maxWidth: .infinity)
 
-        Text(String(format: "%.1f", offset))
-            .frame(height: 12)
+        HStack {
+            Text(String(format: "Offset: %.1f", offset))
 
-        Text("\(diff)")
-            .frame(height: 12)
+            Text("Diff: \(diff)")
+                .foregroundStyle(.tint)
+        }
+        .monospaced()
+        .frame(height: 12)
     }
 }
 
 #Preview {
     VStack {
         InfiniteScrollPreview()
-            .border(.red)
 
         Divider()
 
         InfiniteScrollPreview(direction: .vertical, size: .init(width: 100, height: 500))
-            .border(.red)
     }
     .padding()
     .contentTransition(.numericText())

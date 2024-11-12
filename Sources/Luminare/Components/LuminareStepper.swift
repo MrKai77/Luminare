@@ -689,31 +689,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         GeometryReader { proxy in
             Color.clear
                 .overlay {
-                    InfiniteScrollView(
-                        direction: .init(axis: direction.axis),
-                        size: proxy.size,
-                        spacing: indicatorSpacing,
-                        snapping: !source.isContinuous,
-                        shouldReset: $shouldScrollViewReset,
-                        wrapping: .init {
-                            !source.isEdgeCase(internalValue)
-                        } set: { _ in
-                            // do nothing
-                        },
-                        initialOffset: .init {
-                            if source.reachedEndingBound(internalValue, direction: direction) {
-                                indicatorSpacing
-                            } else if source.reachedStartingBound(internalValue, direction: direction) {
-                                -indicatorSpacing
-                            } else {
-                                offset
-                            }
-                        } set: { _ in
-                            // do nothing
-                        },
-                        offset: $offset,
-                        diff: $diff
-                    )
+                    infiniteScrollView(proxy: proxy)
                     .onChange(of: diff) { oldValue, newValue in
                         // do not use `+=`, otherwise causing multiple assignments
                         roundedValue = source.offsetBy(
@@ -752,6 +728,50 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                         offset = CGFloat(rounded.offset)
                     }
                 }
+        }
+    }
+
+    @ViewBuilder private func infiniteScrollView(proxy: GeometryProxy) -> some View {
+        InfiniteScrollView(
+            direction: .init(axis: direction.axis),
+
+            size: getOnlyBinding {
+                proxy.size
+            },
+            spacing: getOnlyBinding {
+                indicatorSpacing
+            },
+            snapping: getOnlyBinding {
+                snapping
+            },
+            wrapping: getOnlyBinding {
+                wrapping
+            },
+            initialOffset: getOnlyBinding {
+                initialOffset
+            },
+
+            shouldReset: $shouldScrollViewReset,
+            offset: $offset,
+            diff: $diff
+        )
+    }
+
+    private var snapping: Bool {
+        !source.isContinuous
+    }
+
+    private var wrapping: Bool {
+        !source.isEdgeCase(internalValue)
+    }
+
+    private var initialOffset: CGFloat {
+        if source.reachedEndingBound(internalValue, direction: direction) {
+            indicatorSpacing
+        } else if source.reachedStartingBound(internalValue, direction: direction) {
+            -indicatorSpacing
+        } else {
+            offset
         }
     }
 
@@ -798,6 +818,11 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     }
 
     // MARK: Functions
+
+    private func getOnlyBinding<Value>(value: @Sendable @escaping () -> Value) -> Binding<Value>
+    where Value: Hashable {
+        .init(get: value) { _ in }
+    }
 
     private func shift(at index: Int) -> CGFloat {
         direction.offsetBy(CGFloat(centerIndicatorIndex - index), nonAlternateOffset: bentOffset / indicatorSpacing)

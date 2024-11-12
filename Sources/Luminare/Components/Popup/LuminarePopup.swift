@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Popup
 
-public struct LuminarePopup<Content: View>: NSViewRepresentable {
+public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
