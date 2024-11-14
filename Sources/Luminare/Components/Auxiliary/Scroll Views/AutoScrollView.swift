@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A simple scroll view that enables scrolling only if the content is large enough to scroll.
 public struct AutoScrollView<Content>: View where Content: View {
     private let axes: Axis.Set
     private let showsIndicators: Bool
@@ -15,6 +16,12 @@ public struct AutoScrollView<Content>: View where Content: View {
     @State private var contentSize: CGSize = .zero
     @State private var containerSize: CGSize = .zero
 
+    /// Initializes a ``AutoScrollView``.
+    ///
+    /// - Parameters:
+    ///   - axes: the axes of the scroll view.
+    ///   - showsIndicators: whether to show the scroll indicators.
+    ///   - content: the content to scroll.
     public init(
         _ axes: Axis.Set = .vertical,
         showsIndicators: Bool = true,

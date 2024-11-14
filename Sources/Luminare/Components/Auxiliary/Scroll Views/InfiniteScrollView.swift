@@ -8,10 +8,14 @@
 import SwiftUI
 import AppKit
 
+/// The direction of an ``InfiniteScrollView``.
 public enum InfiniteScrollViewDirection: Equatable {
+    /// The view can, and can only be scrolled horizontally.
     case horizontal
+    /// The view can, and can only be scrolled vertically.
     case vertical
 
+    /// Initializes an ``InfiniteScrollViewDirection`` from an `Axis`.
     public init(axis: Axis) {
         switch axis {
         case .horizontal:
@@ -21,6 +25,7 @@ public enum InfiniteScrollViewDirection: Equatable {
         }
     }
 
+    /// The scrolling `Axis` of the ``InfiniteScrollView``.
     public var axis: Axis {
         switch self {
         case .horizontal:
@@ -83,23 +88,56 @@ public enum InfiniteScrollViewDirection: Equatable {
 
 // MARK: - Infinite Scroll
 
+/// An auxiliary view that handles infinite scrolling with conditional wrapping and snapping support.
+///
+/// The fundamental effect is achieved through resetting the scrolling position after every scroll event that reaches
+/// the specified page length.
+///
+/// The scrolling result can be listened through ``InfiniteScrollView/offset`` and ``InfiniteScrollView/page``,
+/// respectively representing the offset from the page and the scrolled page count.
 public struct InfiniteScrollView: NSViewRepresentable {
     public typealias Direction = InfiniteScrollViewDirection
 
     @Environment(\.luminareAnimationFast) private var animationFast
 
     var debug: Bool = false
+    /// The ``InfiniteScrollViewDirection`` that defines the scrolling direction.
     public var direction: Direction
+    /// Whether mouse dragging is allowed as an alternative of scrolling.
+    /// Overscrolling is not allowed when dragging.
     public var allowsDragging: Bool = true
 
+    /// The explicit size of the scroll view.
     @Binding public var size: CGSize
+    /// the spacing between pages.
     @Binding public var spacing: CGFloat
+    /// Whether snapping is enabled.
+    ///
+    /// If snapping is enabled, the view will automatically snaps to the nearest available page anchor with animation.
+    /// Otherwise, scrolling can stop at arbitrary midpoints.
     @Binding public var snapping: Bool
+    /// Whether wrapping is enabled.
+    ///
+    /// If wrapping is enabled, the view will always allow infinite scrolling by constantly resetting the scrolling
+    /// position.
+    /// Otherwise, the view won't lock the scrollable region and allows overscrolling to happen.
     @Binding public var wrapping: Bool
+    /// The initial offset of the scroll view.
+    ///
+    /// Can be useful when arbitrary initialization points are required.
     @Binding public var initialOffset: CGFloat
 
+    /// Whether the scroll view should be resetted.
+    ///
+    /// This will automatically be set to `false` after a valid reset happens.
     @Binding public var shouldReset: Bool
+    /// The offset from the nearest page.
+    ///
+    /// This binding is get-only.
     @Binding public var offset: CGFloat
+    /// The scrolled page count.
+    ///
+    /// This binding is get-only.
     @Binding public var page: Int
 
     var length: CGFloat {
