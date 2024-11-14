@@ -145,9 +145,11 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
     "LuminareSliderPickerCompose",
     traits: .sizeThatFitsLayout
 ) {
+    @Previewable @State var selection = 3
+
     LuminareSection {
         LuminareSliderPickerCompose(
-            [0, 1, 2, 3, 4], selection: .constant(3)
+            Array(0...4), selection: $selection
         ) { value in
             Text("\(value) is Chosen")
                 .monospaced()

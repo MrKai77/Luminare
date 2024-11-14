@@ -301,8 +301,8 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     func round(_ value: V) -> (value: V, offset: V) {
         switch self {
         case .finite(let range, let step), .finiteContinuous(let range, let step):
-            let diff = value - range.lowerBound
-            let remainder = diff.truncatingRemainder(dividingBy: step)
+            let page = value - range.lowerBound
+            let remainder = page.truncatingRemainder(dividingBy: step)
             return (value - remainder, remainder)
         case .infinite(let step), .infiniteContinuous(let step):
             let remainder = value.truncatingRemainder(dividingBy: step)
@@ -454,6 +454,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private let alignment: Alignment
     private let direction: Direction
+    private let allowsDragging: Bool
     private let indicatorSpacing: CGFloat, maxSize: CGFloat, margin: CGFloat
 
     private let hasHierarchy: Bool, hasMask: Bool, hasBlur: Bool
@@ -462,7 +463,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     private let feedback: (V) -> SensoryFeedback?
 
     @State private var containerSize: CGSize = .zero
-    @State private var diff: Int = .zero
+    @State private var page: Int = .zero
     @State private var offset: CGFloat
 
     @State private var shouldScrollViewReset: Bool = true
@@ -474,6 +475,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     /// - Parameters:
     ///   - value: the value to be edited.
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
+    ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
+    ///   Overscrolling is not allowed when dragging inside a finite range.
     ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
     ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - indicatorSpacing: the spacing between indicators.
@@ -491,6 +494,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         alignment: Alignment = .trailing,
         direction: Direction = .horizontal,
+        allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
         margin: CGFloat = 8,
@@ -507,6 +511,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         self.alignment = alignment
         self.direction = direction
+        self.allowsDragging = allowsDragging
         self.indicatorSpacing = indicatorSpacing
         self.maxSize = maxSize
         self.margin = margin
@@ -531,6 +536,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
     ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
     ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
+    ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
+    ///   Overscrolling is not allowed when dragging inside a finite range.
     ///   - indicatorSpacing: the spacing between indicators.
     ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
@@ -548,6 +555,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         alignment: Alignment = .trailing,
         direction: Direction = .horizontal,
+        allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
         margin: CGFloat = 8,
@@ -566,6 +574,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             alignment: alignment,
             direction: direction,
+            allowsDragging: allowsDragging,
             indicatorSpacing: indicatorSpacing,
             maxSize: maxSize,
             margin: margin,
@@ -690,7 +699,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             Color.clear
                 .overlay {
                     infiniteScrollView(proxy: proxy)
-                    .onChange(of: diff) { oldValue, newValue in
+                    .onChange(of: page) { oldValue, newValue in
                         // do not use `+=`, otherwise causing multiple assignments
                         roundedValue = source.offsetBy(
                             roundedValue,
@@ -753,7 +762,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             shouldReset: $shouldScrollViewReset,
             offset: $offset,
-            diff: $diff
+            page: $page
         )
     }
 
