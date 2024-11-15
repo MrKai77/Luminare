@@ -15,7 +15,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
 
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    private let elementMinHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
+    private let minHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
 
     @Binding private var value: F.FormatInput?
@@ -32,18 +32,18 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
     ///   - value: the value to be edited.
     ///   - format: the format of the value.
-    ///   - elementMinHeight: the minimum height of the inner view.
+    ///   - minHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
     ///   - cornerRadius: the radius of the corners..
     ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
         value: Binding<F.FormatInput?>, format: F,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true
     ) {
-        self.elementMinHeight = elementMinHeight
+        self.minHeight = minHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.isBordered = isBordered
@@ -57,21 +57,21 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     /// - Parameters:
     ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
     ///   - value: the `String` value to be edited.
-    ///   - elementMinHeight: the minimum height of the inner view.
+    ///   - minHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
     ///   - cornerRadius: the radius of the corners..
     ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
         text: Binding<String>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true
     ) where F == StringFormatStyle {
         self.init(
             placeholder,
             value: .init(text), format: StringFormatStyle(),
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            minHeight: minHeight, horizontalPadding: horizontalPadding,
             cornerRadius: cornerRadius,
             isBordered: isBordered
         )
@@ -83,7 +83,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
         TextField(placeholder, value: $value, format: format)
             .textFieldStyle(.plain)
             .modifier(LuminareHoverable(
-                elementMinHeight: elementMinHeight,
+                minHeight: minHeight,
                 horizontalPadding: horizontalPadding,
                 cornerRadius: cornerRadius,
                 isBordered: isBordered

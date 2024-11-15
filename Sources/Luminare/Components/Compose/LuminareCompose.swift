@@ -7,6 +7,20 @@
 
 import SwiftUI
 
+public enum LuminareComposeControlSize {
+    /// The regular size where the slider and the content are in separated lines.
+    case regular
+    /// The compact size where the slider and the content are in one single line.
+    case compact
+    
+    var height: CGFloat {
+        switch self {
+        case .regular: 70
+        case .compact: 34
+        }
+    }
+}
+
 // MARK: - Compose
 
 /// A stylized view that composes a content with a label.
@@ -17,9 +31,10 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 
     // MARK: Fields
 
-    let elementMinHeight: CGFloat, horizontalPadding: CGFloat
-    let reducesTrailingSpace: Bool
+    let minHeight: CGFloat, horizontalPadding: CGFloat
+    let contentMaxWidth: CGFloat?
     let spacing: CGFloat?
+    let reducesTrailingSpace: Bool
 
     @ViewBuilder private let content: () -> Content, label: () -> Label
 
@@ -28,25 +43,27 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     /// Initializes a ``LuminareCompose``.
     ///
     /// - Parameters:
-    ///   - elementMinHeight: the minimum height of the composed view.
+    ///   - minHeight: the minimum height of the composed view.
     ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - spacing: the spacing between the label and the content.
     ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
     ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
     ///   padding around the content.
-    ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     ///   - label: the label.
     public init(
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        reducesTrailingSpace: Bool = false,
+        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
+        reducesTrailingSpace: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.elementMinHeight = elementMinHeight
+        self.minHeight = minHeight
         self.horizontalPadding = horizontalPadding
-        self.reducesTrailingSpace = reducesTrailingSpace
+        self.contentMaxWidth = contentMaxWidth
         self.spacing = spacing
+        self.reducesTrailingSpace = reducesTrailingSpace
         self.label = label
         self.content = content
     }
@@ -55,24 +72,26 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     ///
     /// - Parameters:
     ///   - key: the `LocalizedStringKey` to look up the label text.
-    ///   - elementMinHeight: the minimum height of the composed view.
+    ///   - minHeight: the minimum height of the composed view.
     ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - spacing: the spacing between the label and the content.
     ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
     ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
     ///   padding around the content.
-    ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     public init(
         _ key: LocalizedStringKey,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
-        reducesTrailingSpace: Bool = false,
+        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
+        reducesTrailingSpace: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
-            reducesTrailingSpace: reducesTrailingSpace,
-            spacing: spacing
+            minHeight: minHeight, horizontalPadding: horizontalPadding,
+            contentMaxWidth: contentMaxWidth,
+            spacing: spacing,
+            reducesTrailingSpace: reducesTrailingSpace
         ) {
             content()
         } label: {
@@ -87,18 +106,16 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
             HStack(spacing: 0) {
                 label()
                     .opacity(isEnabled ? 1 : 0.5)
-                    .disabled(!isEnabled)
             }
             .fixedSize(horizontal: false, vertical: true)
 
             Spacer()
 
             content()
-                .disabled(!isEnabled)
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.trailing, reducesTrailingSpace ? -4 : 0)
-        .frame(minHeight: elementMinHeight)
+        .frame(minHeight: minHeight)
     }
 }
 
@@ -132,5 +149,18 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
             .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
         }
         .disabled(true)
+    }
+}
+
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareCompose (Constrained)",
+    traits: .sizeThatFitsLayout
+) {
+    LuminareSection {
+        LuminareCompose("Label") {
+            Color.red
+                .frame(height: 30)
+        }
     }
 }

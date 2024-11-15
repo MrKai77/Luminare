@@ -7,24 +7,12 @@
 
 import SwiftUI
 
-public enum LuminareValueAdjusterControlSize {
-    case regular
-    case compact
-
-    var height: CGFloat {
-        switch self {
-        case .regular: 70
-        case .compact: 34
-        }
-    }
-}
-
 // MARK: - Value Adjuster (Compose)
 
 public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
 where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
       F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
-    public typealias ControlSize = LuminareValueAdjusterControlSize
+    public typealias ControlSize = LuminareComposeControlSize
 
     private enum FocusedField {
         case textbox

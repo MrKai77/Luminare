@@ -41,7 +41,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     // MARK: Fields
 
-    private let elementMinHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
+    private let minHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
     private let style: PickerStyle
 
@@ -56,7 +56,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     ///
     /// - Parameters:
     ///   - selection: the binding of the selected value.
-    ///   - elementMinHeight: the minimum height of the inner view.
+    ///   - minHeight: the minimum height of the inner view.
     ///   - horizontalPadding: the horizontal padding of the inner view.
     ///   - cornerRadius: the radius of the corners..
     ///   - isBordered: whether to display a border while not hovering.
@@ -64,14 +64,14 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     ///   - content: the selectable values.
     public init(
         selection: Binding<V>,
-        elementMinHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
+        minHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true,
         style: PickerStyle = .menu,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
-        self.elementMinHeight = elementMinHeight
+        self.minHeight = minHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.isBordered = isBordered
@@ -92,7 +92,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     .padding(.trailing, -2)
             case .segmented(let hasDividers):
                 _VariadicView.Tree(SegmentedLayout(
-                    elementMinHeight: elementMinHeight,
+                    minHeight: minHeight,
                     cornerRadius: cornerRadius,
                     hasDividers: hasDividers,
                     isHovering: isHovering,
@@ -106,7 +106,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             }
         }
         .modifier(LuminareHoverable(
-            elementMinHeight: elementMinHeight,
+            minHeight: minHeight,
             horizontalPadding: horizontalPadding,
             cornerRadius: cornerRadius,
             isBordered: isBordered
@@ -124,7 +124,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
 
-        var elementMinHeight: CGFloat
+        var minHeight: CGFloat
         var cornerRadius: CGFloat
         var hasDividers: Bool
         var isHovering: Bool
@@ -152,7 +152,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
                         if hasDividers, child.id != children.last?.id {
                             Divider()
-                                .frame(width: 0, height: elementMinHeight / 2)
+                                .frame(width: 0, height: minHeight / 2)
                                 .zIndex(0)
                         }
                     }
