@@ -13,7 +13,7 @@ public struct ScreenView<Content>: View where Content: View {
 
     @Binding var isBlurred: Bool
     let content: () -> Content
-    
+
     @State private var image: NSImage?
 
     private let screenShape = UnevenRoundedRectangle(

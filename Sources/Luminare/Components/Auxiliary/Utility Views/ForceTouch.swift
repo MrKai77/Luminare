@@ -8,10 +8,14 @@
 import SwiftUI
 import AppKit
 
+/// The gesture state of a ``ForceTouch``.
 public enum ForceTouchGesture: Equatable {
+    /// An inactive gesture.
     case inactive
+    /// An active gesture with a ``Event``.
     case active(Event)
 
+    /// The event context of a ``ForceTouchGesture``.
     public struct Event: Equatable {
         public var state: NSPressGestureRecognizer.State
         public var stage: Int
@@ -62,6 +66,19 @@ public enum ForceTouchGesture: Equatable {
 
 // MARK: - Force Touch
 
+/// A force touch recognizer.
+///
+/// On devices with force touch trackpads (e.g., MacBook Pros), this view can be regularly triggered by force touch
+/// gestures.
+/// As an alternative for devices without force touch support, this view can also be triggered through long press
+/// gestures.
+///
+/// However, the delegation of long press can automatically happen after failing to receive a force touch event after
+/// a delay of **`threshold + 0.1` seconds,** even on devices that support force touch.
+///
+/// While long pressing, the ``ForceTouchGesture/Event/pressure`` will be increased by `0.1` every `0.1`
+/// seconds, and the ``ForceTouchGesture/Event/stage`` will be increased by `1` every time the
+/// ``ForceTouchGesture/Event/pressure`` overflows.
 public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     private let configuration: NSPressureConfiguration
     private let threshold: CGFloat
@@ -75,6 +92,15 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     @State private var longPressTimer: Timer?
     @State private var monitor: Any?
 
+    /// Initializes a ``ForceTouch``.
+    ///
+    /// - Parameters:
+    ///   - configuration: the `NSPressureConfiguration` that configures the force touch behavior.
+    ///   - threshold: the minimum threshold before emitting the first gesture event.
+    ///   As force touch gestures have many stages, this only applies to the first stage.
+    ///   - gesture: the binding for the emitted ``ForceTouchGesture``.
+    ///   This binding is get-only.
+    ///   - content: the content to be force touched.
     public init(
         configuration: NSPressureConfiguration = .init(pressureBehavior: .primaryDefault),
         threshold: CGFloat = 0.5,
@@ -146,7 +172,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         return view
     }
 
-    public func updateNSView(_ nsView: NSView, context: Context) {}
+    public func updateNSView(_: NSView, context _: Context) {}
 
     private func prepareLongPressDelegate(_ event: NSEvent) {
         let modifierFlags = event.modifierFlags
