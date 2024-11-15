@@ -96,8 +96,12 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
     public var body: some View {
         VStack {
-            if controlSize == .regular {
-                LuminareCompose(horizontalPadding: horizontalPadding) {
+            switch controlSize {
+            case .regular:
+                LuminareCompose(
+                    horizontalPadding: horizontalPadding,
+                    reducesTrailingSpace: true
+                ) {
                     text()
                 } label: {
                     label()
@@ -105,14 +109,17 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
                 slider()
                     .padding(.horizontal, horizontalPadding)
-            } else {
-                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12) {
+                    .padding(.trailing, -2)
+            case .compact:
+                LuminareCompose(
+                    horizontalPadding: horizontalPadding, spacing: 12,
+                    reducesTrailingSpace: true
+                ) {
                     HStack(spacing: 12) {
                         slider()
 
                         text()
                     }
-                    .frame(width: 270)
                 } label: {
                     label()
                 }

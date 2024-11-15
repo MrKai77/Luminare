@@ -7,12 +7,15 @@
 
 import SwiftUI
 
+/// The control size for views based on ``LuminareCompose``.
+///
+/// Typically, this is eligible for views that have additional controls beside static contents.
 public enum LuminareComposeControlSize {
-    /// The regular size where the slider and the content are in separated lines.
+    /// The regular size where the content is separated into two lines.
     case regular
-    /// The compact size where the slider and the content are in one single line.
+    /// The compact size where the content is in one single line.
     case compact
-    
+
     var height: CGFloat {
         switch self {
         case .regular: 70
@@ -45,6 +48,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     /// - Parameters:
     ///   - minHeight: the minimum height of the composed view.
     ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
     ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
     ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
@@ -74,6 +78,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     ///   - key: the `LocalizedStringKey` to look up the label text.
     ///   - minHeight: the minimum height of the composed view.
     ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
     ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
     ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
@@ -111,11 +116,20 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 
             Spacer()
 
-            content()
+            if let contentMaxWidth {
+                HStack(spacing: 0) {
+                    Spacer()
+
+                    content()
+                }
+                .frame(maxWidth: contentMaxWidth)
+            } else {
+                content()
+            }
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.trailing, reducesTrailingSpace ? -4 : 0)
-        .frame(minHeight: minHeight)
+        .frame(maxWidth: .infinity, minHeight: minHeight)
     }
 }
 
