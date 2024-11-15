@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Slider Picker (Compose)
 
+/// A stylized, composed picker for discrete values with a slider.
 public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: View, Content: View, V: Equatable {
     // MARK: Environments
 
@@ -26,6 +27,15 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareSliderPickerCompose``.
+    ///
+    /// - Parameters:
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - content: the content generator that accepts a value.
+    ///   - label: the label.
     public init(
         _ options: [V], selection: Binding<V>,
         height: CGFloat = 70,
@@ -41,6 +51,15 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         self._selection = selection
     }
 
+    /// Initializes a ``LuminareSliderPickerCompose`` where the label is a localized text.
+    ///
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - content: the content generator that accepts a value.
     public init(
         _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
@@ -59,6 +78,15 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         }
     }
 
+    /// Initializes a ``LuminareSliderPickerCompose`` where the content is a localized text.
+    ///
+    /// - Parameters:
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - contentKey: the content generator that accepts a value.
+    ///   - label: the label.
     public init(
         _ options: [V], selection: Binding<V>,
         height: CGFloat = 70,
@@ -77,6 +105,15 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         }
     }
 
+    /// Initializes a ``LuminareSliderPickerCompose`` where the content and the label are localized texts.
+    ///
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - contentKey: the content generator that accepts a value.
     public init(
         _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,

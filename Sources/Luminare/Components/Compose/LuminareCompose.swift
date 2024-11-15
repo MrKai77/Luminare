@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Compose
 
+/// A stylized view that composes a content with a label.
 public struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
     // MARK: Environments
 
@@ -24,6 +25,17 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareCompose``.
+    ///
+    /// - Parameters:
+    ///   - elementMinHeight: the minimum height of the composed view.
+    ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
+    ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
+    ///   padding around the content.
+    ///   - spacing: the spacing between the label and the content.
+    ///   - content: the content.
+    ///   - label: the label.
     public init(
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         reducesTrailingSpace: Bool = false,
@@ -39,6 +51,17 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         self.content = content
     }
 
+    /// Initializes a ``LuminareCompose`` where the label is a localized text.
+    ///
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - elementMinHeight: the minimum height of the composed view.
+    ///   - horizontalPadding: the horizontal padding around the composed content.
+    ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
+    ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
+    ///   padding around the content.
+    ///   - spacing: the spacing between the label and the content.
+    ///   - content: the content.
     public init(
         _ key: LocalizedStringKey,
         elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
