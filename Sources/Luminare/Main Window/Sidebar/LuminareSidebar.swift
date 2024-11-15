@@ -23,7 +23,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
     public var body: some View {
         if #available(macOS 14.0, *) {
             let overflow: CGFloat = 50
-            
+
             AutoScrollView(.vertical) {
                 VStack(spacing: 24) {
                     content()
@@ -33,7 +33,6 @@ public struct LuminareSidebar<Content>: View where Content: View {
             .scrollContentBackground(.hidden)
             .padding(.horizontal, 12)
             .frame(maxHeight: .infinity, alignment: .top)
-            .luminareBackground()
 
             .padding(.top, -overflow)
             .contentMargins(.top, overflow)
@@ -45,11 +44,13 @@ public struct LuminareSidebar<Content>: View where Content: View {
                         endPoint: .bottom
                     )
                     .frame(height: overflow)
-                    
+
                     Color.white
                 }
                 .padding(.top, -overflow)
             }
+
+            .luminareBackground()
         } else {
             AutoScrollView(.vertical) {
                 VStack(spacing: 24) {
