@@ -21,16 +21,32 @@ public struct LuminareSidebar<Content>: View where Content: View {
     }
 
     public var body: some View {
-        AutoScrollView(.vertical) {
-            VStack(spacing: 24) {
-                content()
+        if #available(macOS 14.0, *) {
+            AutoScrollView(.vertical) {
+                VStack(spacing: 24) {
+                    content()
+                }
             }
+            .scrollIndicators(.never)
+            .scrollContentBackground(.hidden)
+            .padding(.horizontal, 12)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .luminareBackground()
+            
+            .padding(.top, -50)
+            .contentMargins(.top, 50)
+        } else {
+            AutoScrollView(.vertical) {
+                VStack(spacing: 24) {
+                    content()
+                }
+            }
+            .scrollIndicators(.never)
+            .scrollContentBackground(.hidden)
+            .padding(.horizontal, 12)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .luminareBackground()
         }
-        .scrollIndicators(.never)
-        .scrollContentBackground(.hidden)
-        .padding(.horizontal, 12)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .luminareBackground()
     }
 }
 
@@ -46,6 +62,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
             Text("Scrollable")
                 .bold()
                 .padding()
+                .zIndex(1)
 
             LuminareSidebar {
                 ForEach(0..<100) { num in
@@ -62,6 +79,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
             Text("Static")
                 .bold()
                 .padding()
+                .zIndex(1)
 
             LuminareSidebar {
                 ForEach(0..<5) { num in

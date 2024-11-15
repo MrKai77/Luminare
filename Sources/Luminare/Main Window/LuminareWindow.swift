@@ -24,7 +24,7 @@ public class LuminareWindow: NSWindow {
 
         super.init(
             contentRect: .zero,
-            styleMask: [.titled, .fullSizeContentView, .closable],
+            styleMask: [.titled, .fullSizeContentView, .closable, .resizable],
             backing: .buffered,
             defer: false // if true, background blur will break
         )
