@@ -33,7 +33,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     ///   - header: the header.
     ///   - footer: the footer.
     public init(
@@ -70,7 +70,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
@@ -106,7 +106,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     ///   - header: the header.
     public init(
         hasPadding: Bool = true,
@@ -143,7 +143,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     public init(
         _ headerKey: LocalizedStringKey,
         hasPadding: Bool = true,
@@ -176,7 +176,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     ///   - footer: the footer.
     public init(
         hasPadding: Bool = true,
@@ -213,7 +213,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     public init(
         footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
@@ -246,7 +246,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerSpacing: the spacing between footer and content.
     ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
-    ///   - content: the contents.
+    ///   - content: the content.
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
@@ -294,7 +294,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
             Group {
                 if isBordered {
-                    DividedVStack(applyMaskToItems: hasPadding, hasDividers: hasDividers) {
+                    DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
                         content()
                     }
                     .frame(maxWidth: .infinity)

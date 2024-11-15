@@ -60,7 +60,7 @@ public enum ForceTouchGesture: Equatable {
     }
 }
 
-// MARK: - Force Touxh
+// MARK: - Force Touch
 
 public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     private let configuration: NSPressureConfiguration

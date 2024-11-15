@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A background effect that matches ``Luminare``.
 public struct LuminareBackgroundEffect: ViewModifier {
     public func body(content: Content) -> some View {
         content

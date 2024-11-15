@@ -11,8 +11,9 @@ public struct ScreenView<Content>: View where Content: View {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    @Binding var blurred: Bool
-    let screenContent: () -> Content
+    @Binding var isBlurred: Bool
+    let content: () -> Content
+    
     @State private var image: NSImage?
 
     private let screenShape = UnevenRoundedRectangle(
@@ -22,21 +23,24 @@ public struct ScreenView<Content>: View where Content: View {
         topTrailingRadius: 12
     )
 
-    public init(blurred: Binding<Bool> = .constant(false), @ViewBuilder _ screenContent: @escaping () -> Content) {
-        self._blurred = blurred
-        self.screenContent = screenContent
+    public init(
+        isBlurred: Binding<Bool> = .constant(false),
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self._isBlurred = isBlurred
+        self.content = content
     }
 
     public var body: some View {
         ZStack {
-            GeometryReader { geo in
+            GeometryReader { proxy in
                 if let image {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: geo.size.width, height: geo.size.height)
-                        .blur(radius: blurred ? 10 : 0)
-                        .opacity(blurred ? 0.5 : 1)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .blur(radius: isBlurred ? 10 : 0)
+                        .opacity(isBlurred ? 0.5 : 1)
                 } else {
                     tint()
                         .opacity(0.1)
@@ -51,7 +55,7 @@ public struct ScreenView<Content>: View where Content: View {
                 }
             }
             .overlay {
-                screenContent()
+                content()
                     .padding(5)
             }
             .clipShape(screenShape)

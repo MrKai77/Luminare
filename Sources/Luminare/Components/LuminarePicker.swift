@@ -43,7 +43,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - roundedBottom: whether to have bottom corners rounded.
     ///   - innerPadding: the padding between the buttons.
     ///   - cornerRadius: the radius of the corners.
-    ///   - buttonCornerRadius: the radius of the corners of the buttons.
+    ///   - buttonCornerRadius: the radius of the corners of the button.
     ///   - content: the content generator that accepts a value.
     public init(
         elements: [V],
@@ -78,7 +78,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - roundedBottom: whether to have bottom corners rounded.
     ///   - cornerRadius: the radius of the corners.
     ///   - innerPadding: the padding between the buttons.
-    ///   - buttonCornerRadius: the radius of the corners of the buttons.
+    ///   - buttonCornerRadius: the radius of the corners of the button.
     ///   - content: the content generator that accepts a value.
     public init(
         compactElements: [V],
