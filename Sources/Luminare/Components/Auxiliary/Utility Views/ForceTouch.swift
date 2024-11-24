@@ -136,10 +136,11 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         } onPressureChange: { event in
             terminateLongPressDelegate()
 
+            let isValid = event.stage > 0
             let isFirstStage = event.stage == 1
             let isOverThreshold = CGFloat(event.pressure) >= threshold
 
-            gesture = if !isFirstStage || isOverThreshold {
+            gesture = if isValid && (!isFirstStage || isOverThreshold) {
                 .active(ForceTouchGesture.Event(state, event: event))
             } else {
                 .inactive
