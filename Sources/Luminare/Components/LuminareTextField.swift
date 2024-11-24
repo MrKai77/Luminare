@@ -63,14 +63,14 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
-        text: Binding<String>,
+        text: Binding<String?>,
         minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true
     ) where F == StringFormatStyle {
         self.init(
             placeholder,
-            value: .init(text), format: StringFormatStyle(),
+            value: text, format: StringFormatStyle(),
             minHeight: minHeight, horizontalPadding: horizontalPadding,
             cornerRadius: cornerRadius,
             isBordered: isBordered
