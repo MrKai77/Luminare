@@ -24,7 +24,7 @@ let package = Package(
         // targets can depend on other targets in this package and products from dependencies
         .target(
             name: "Luminare",
-            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
         ),
         .testTarget(
             name: "LuminareTests",
