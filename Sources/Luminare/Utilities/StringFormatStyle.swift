@@ -108,6 +108,10 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
             }
         }
     }
+    
+    public init(parseStrategy: Strategy = .identity) {
+        self.parseStrategy = parseStrategy
+    }
 
     public func format(_ value: String) -> String {
         do {
