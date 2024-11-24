@@ -10,15 +10,12 @@ import SwiftUI
 // MARK: - Text Field
 
 /// A stylized text field.
-public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String, F.FormatInput: Equatable {
+public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
     // MARK: Environments
 
-    @Environment(\.undoManager) private var undoManager
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
-    
-    @ObservedObject private var undoModel: UndoModel = UndoModel<F.FormatInput?>(value: nil)
 
     private let minHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
@@ -114,9 +111,6 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                     NSEvent.removeMonitor(monitor)
                 }
                 monitor = nil
-            }
-            .onChange(of: value) { newValue in
-                undoModel.registerUndo(newValue, in: undoManager)
             }
     }
 }
