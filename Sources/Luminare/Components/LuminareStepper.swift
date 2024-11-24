@@ -461,7 +461,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
-    private let onRoundedValueChange: (V) -> Void
+    private let onRoundedValueChange: (V, V) -> Void
 
     @State private var containerSize: CGSize = .zero
     @State private var page: Int = .zero
@@ -508,7 +508,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
-        onRoundedValueChange: @escaping (V) -> Void = { _ in }
+        onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
     ) {
         self._value = value
         self.source = source
@@ -574,7 +574,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentValues: [V]? = nil,
         prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
-        onRoundedValueChange: @escaping (V) -> Void = { _ in }
+        onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
     ) {
         self.init(
             value: value,
@@ -744,8 +744,9 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                         let rounded = source.round(newValue)
                         roundedValue = rounded.value
                         offset = CGFloat(rounded.offset)
-
-                        onRoundedValueChange(rounded.value)
+                    }
+                    .onChange(of: roundedValue, initial: true) { oldValue, newValue in
+                        onRoundedValueChange(oldValue, newValue)
                     }
                 }
         }
@@ -928,6 +929,8 @@ where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloating
                 prominentValues: prominentValues
             ) { _ in
                     .accentColor
+            } onRoundedValueChange: { oldValue, newValue in
+                print(newValue)
             }
             .overrideTint { .primary }
 //            .background(.quinary)
