@@ -744,8 +744,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                         let rounded = source.round(newValue)
                         roundedValue = rounded.value
                         offset = CGFloat(rounded.offset)
-                        
-                        onRoundedValueChange(rounded)
+
+                        onRoundedValueChange(rounded.value)
                     }
                 }
         }
