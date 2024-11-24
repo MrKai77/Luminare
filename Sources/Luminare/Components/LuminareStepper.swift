@@ -929,7 +929,7 @@ where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloating
                 prominentValues: prominentValues
             ) { _ in
                     .accentColor
-            } onRoundedValueChange: { oldValue, newValue in
+            } onRoundedValueChange: { _, newValue in
                 print(newValue)
             }
             .overrideTint { .primary }
