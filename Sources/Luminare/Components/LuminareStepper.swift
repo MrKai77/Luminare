@@ -461,6 +461,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
+    private let onRoundedValueChange: (V) -> Void
 
     @State private var containerSize: CGSize = .zero
     @State private var page: Int = .zero
@@ -488,6 +489,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - hasBlur: whether to blur the edged indicators.
     ///   - prominentIndicators: the ``ProminentIndicators`` that defines how the indicators will be colored.
     ///   - feedback: provides feedback when received changes of certain strided values.
+    ///   - onRoundedValueChange: callback when rounded value changes.
+    ///   Useful for listening to correctly rounded values instead of rounding towards zero.
     public init(
         value: Binding<V>,
         source: Source,
@@ -504,7 +507,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         hasBlur: Bool = true,
 
         prominentIndicators: ProminentIndicators = .init(),
-        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
+        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
+        onRoundedValueChange: @escaping (V) -> Void = { _ in }
     ) {
         self._value = value
         self.source = source
@@ -522,6 +526,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
+        self.onRoundedValueChange = onRoundedValueChange
 
         let rounded = source.round(value.wrappedValue)
         self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
@@ -549,6 +554,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - prominentColor: defines the colors of the indicators whose represented values are filtered by 
     ///   `prominentValues`.
     ///   - feedback: provides feedback when received changes of certain strided values.
+    ///   - onRoundedValueChange: callback when rounded value changes.
+    ///   Useful for listening to correctly rounded values instead of rounding towards zero.
     public init(
         value: Binding<V>,
         source: Source,
@@ -566,7 +573,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         prominentValues: [V]? = nil,
         prominentColor: @escaping (V) -> Color? = { _ in nil },
-        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment }
+        feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
+        onRoundedValueChange: @escaping (V) -> Void = { _ in }
     ) {
         self.init(
             value: value,
@@ -584,7 +592,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             hasBlur: hasBlur,
 
             prominentIndicators: .init(prominentValues, color: prominentColor),
-            feedback: feedback
+            feedback: feedback,
+            onRoundedValueChange: onRoundedValueChange
         )
     }
 
