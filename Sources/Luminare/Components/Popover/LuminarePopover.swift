@@ -8,26 +8,26 @@
 import SwiftUI
 
 public enum LuminarePopoverTrigger {
-    case onHover(delay: CGFloat = 0.5)
-    case onForceTouch(
+    case hover(delay: CGFloat = 0.5)
+    case forceTouch(
         threshold: CGFloat = 0.5,
-        onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> () = { _, _ in }
+        onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> Void = { _, _ in }
     )
 }
 
 public enum LuminarePopoverShade {
     case none
     case some(_ style: AnyShapeStyle)
-    
+
     var style: AnyShapeStyle? {
         switch self {
         case .some(let style): style
         default: nil
         }
     }
-    
+
     public static func styled<S: ShapeStyle>(_ style: S = .secondary) -> Self {
-        .some(AnyShapeStyle(style))
+        .some(.init(style))
     }
 }
 
@@ -36,36 +36,35 @@ public enum LuminarePopoverShade {
 public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: View {
     public typealias Trigger = LuminarePopoverTrigger
     public typealias Shade = LuminarePopoverShade
-    
+
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
-    
+
     private let arrowEdge: Edge
     private let trigger: Trigger
     private let cornerRadius: CGFloat
     private let padding: CGFloat
     private let shade: Shade
-    
-    @ViewBuilder private let content: () -> Content
-    @ViewBuilder private let badge: () -> Badge
-    
+
+    @ViewBuilder private let content: () -> Content, badge: () -> Badge
+
     @State private var isPopoverPresented: Bool = false
-    
+
     @State private var isHovering: Bool = false
     @State private var hoverTimer: Timer?
-    
+
     @State private var forceTouchGesture: ForceTouchGesture = .inactive
     @State private var forceTouchRecognized: Bool = false
     @State private var forceTouchProgress: CGFloat = 0
-    
+
     // MARK: Initializers
-    
+
     public init(
         arrowEdge: Edge = .top,
-        trigger: Trigger = .onHover(),
+        trigger: Trigger = .hover(),
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         shade: Shade = .styled(),
@@ -80,11 +79,11 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
         self.content = content
         self.badge = badge
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         arrowEdge: Edge = .top,
-        trigger: Trigger = .onHover(),
+        trigger: Trigger = .hover(),
         highlight: Bool = true,
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
@@ -103,10 +102,10 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             badge()
         }
     }
-    
+
     public init(
         arrowEdge: Edge = .top,
-        trigger: Trigger = .onHover(),
+        trigger: Trigger = .hover(),
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         badgeSize: CGFloat = 4,
@@ -127,15 +126,15 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             )
         }
     }
-    
+
     // MARK: Body
-    
+
     public var body: some View {
         Group {
             switch trigger {
-            case .onHover(_):
+            case .hover:
                 badge()
-            case .onForceTouch(let threshold, let onGesture):
+            case .forceTouch(let threshold, let onGesture):
                 ForceTouch(threshold: threshold, gesture: $forceTouchGesture) {
                     badge()
                 }
@@ -143,26 +142,25 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                     switch gesture {
                     case .inactive:
                         let recognized = forceTouchRecognized
-                        
+
                         forceTouchRecognized = false
                         isPopoverPresented = recognized
                     case .active(let event):
                         let stage = event.stage
-                        
+                        isPopoverPresented = true
+
                         if stage == 1 {
-                            isPopoverPresented = event.pressure >= 0.25
                             if !forceTouchRecognized {
                                 forceTouchProgress = event.pressure
                             }
                         }
-                        
+
                         if stage == 2 {
-                            isPopoverPresented = true
                             forceTouchRecognized = true
                             forceTouchProgress = 1
                         }
                     }
-                    
+
                     onGesture(gesture, forceTouchRecognized)
                 }
             }
@@ -172,11 +170,11 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             if let style = shade.style, isPopoverPresented {
                 Group {
                     switch trigger {
-                    case .onHover:
+                    case .hover:
                         RoundedRectangle(cornerRadius: cornerRadius)
-                    case .onForceTouch:
+                    case .forceTouch:
                         RoundedRectangle(cornerRadius: cornerRadius)
-                            .opacity(forceTouchProgress)
+                            .opacity(normalizedForceTouchProgress)
                     }
                 }
                 .foregroundStyle(style.opacity(0.1))
@@ -185,13 +183,13 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
         }
         .onHover { hover in
             isHovering = hover
-            
+
             switch trigger {
-            case .onHover(let delay):
+            case .hover(let delay):
                 if isHovering {
                     hoverTimer = .scheduledTimer(withTimeInterval: delay, repeats: false) { _ in
                         isPopoverPresented = true
-                        
+
                         hoverTimer = .scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                             isPopoverPresented = isHovering
                             hoverTimer?.invalidate()
@@ -206,22 +204,34 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             default:
                 break
             }
-            
+
         }
         .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
             Group {
                 switch trigger {
-                case .onHover:
+                case .hover:
                     content()
-                case .onForceTouch:
+                case .forceTouch:
                     content()
-                        .opacity(0.5 + 0.5 * forceTouchProgress)
+                        .opacity(normalizedForceTouchProgress)
+                        .scaleEffect(forceTouchRecognized ? 1.1 : 1, anchor: .center)
+                        .animation(.bouncy, value: forceTouchRecognized)
                 }
             }
             .multilineTextAlignment(.center)
         }
         .padding(-padding)
         .animation(animationFast, value: isPopoverPresented)
+    }
+
+    private var normalizedForceTouchProgress: CGFloat {
+        switch trigger {
+        case .forceTouch(let threshold, _):
+            let progress = (forceTouchProgress - threshold) / (1 - threshold)
+            return max(0, progress)
+        default:
+            return 0
+        }
     }
 }
 
@@ -232,17 +242,17 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
     var cornerRadius: CGFloat = 8
     var padding: CGFloat = 4
     var shade: LuminarePopoverShade = .styled()
-    
+
     @ViewBuilder var content: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> Content
     @ViewBuilder var badge: () -> Badge
-    
+
     @State private var gesture: ForceTouchGesture = .inactive
     @State private var recognized: Bool = false
 
     var body: some View {
         LuminarePopover(
             arrowEdge: arrowEdge,
-            trigger: .onForceTouch { gesture, recognized in
+            trigger: .forceTouch { gesture, recognized in
                 self.gesture = gesture
                 self.recognized = recognized
             },
@@ -268,7 +278,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                 Text("Pops to bottom (hover me)")
             }
         }
-        
+
         LuminareCompose {
         } label: {
             LuminarePopover(arrowEdge: .trailing) {
@@ -281,12 +291,12 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                 Text("Pops to trailing with highlight (hover me)")
             }
         }
-        
+
         LuminareCompose {
         } label: {
             HStack {
                 Text("Pops from a dot ↗")
-                
+
                 VStack {
                     LuminarePopover(arrowEdge: .top) {
                         VStack(alignment: .leading) {
@@ -295,30 +305,25 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
                         }
                         .padding()
                     }
-                    .tint(.violet)
-                    
+
                     Spacer()
                 }
             }
         }
-        
+
         LuminareCompose {
         } label: {
             PopoverForceTouchPreview(arrowEdge: .top) { gesture, recognized in
-                VStack(alignment: .leading) {
-                    Text("**Think different.**")
-                    
-                    Group {
-                        switch gesture {
-                        case .active(let event) where event.stage == 1 && !recognized:
-                            ProgressView(value: event.pressure)
-                        default:
-                            EmptyView()
-                        }
+                Group {
+                    switch gesture {
+                    case .active(let event) where event.stage == 1 && !recognized:
+                        ProgressView(value: event.pressure)
+                    default:
+                        Text("**Think different.**")
                     }
                 }
+                .frame(width: 200)
                 .padding()
-                .frame(height: 100)
             } badge: {
                 Text("Pops to top (force touch me)")
             }

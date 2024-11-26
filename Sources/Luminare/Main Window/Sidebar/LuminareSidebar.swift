@@ -13,53 +13,98 @@ public struct LuminareSidebar<Content>: View where Content: View {
 
     /// Initializes a ``LuminareSidebar``.
     ///
-    /// - Parameter content: the sidebar content. Typically multiple ``LuminareSidebarTab`` organized by ``LuminareSidebarSection``.
+    /// - Parameters:
+    ///   - content: the sidebar content.
+    ///   Typically multiple ``LuminareSidebarTab`` organized by ``LuminareSidebarSection``.
     public init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content
     }
 
     public var body: some View {
-        AutoScrollView(.vertical) {
-            VStack(spacing: 24) {
-                content()
+        if #available(macOS 14.0, *) {
+            let overflow: CGFloat = 50
+
+            AutoScrollView(.vertical) {
+                VStack(spacing: 24) {
+                    content()
+                }
             }
+            .scrollIndicators(.never)
+            .scrollContentBackground(.hidden)
+            .padding(.horizontal, 12)
+            .frame(maxHeight: .infinity, alignment: .top)
+
+            .padding(.top, -overflow)
+            .contentMargins(.top, overflow)
+            .mask {
+                VStack(spacing: 0) {
+                    LinearGradient(
+                        colors: [.clear, .white],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: overflow)
+
+                    Color.white
+                }
+                .padding(.top, -overflow)
+            }
+
+            .luminareBackground()
+        } else {
+            AutoScrollView(.vertical) {
+                VStack(spacing: 24) {
+                    content()
+                }
+            }
+            .scrollIndicators(.never)
+            .scrollContentBackground(.hidden)
+            .padding(.horizontal, 12)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .luminareBackground()
         }
-        .scrollIndicators(.never)
-        .scrollContentBackground(.hidden)
-        .padding(.horizontal, 12)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .luminareBackground()
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
-#Preview("LuminareSidebar") {
-    HStack {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebar",
+    traits: .sizeThatFitsLayout
+) {
+    HStack(spacing: 0) {
         VStack {
             Text("Scrollable")
-            
+                .bold()
+                .padding()
+                .zIndex(1)
+
             LuminareSidebar {
                 ForEach(0..<100) { num in
                     Text("\(num)")
-                        .frame(width: 150, height: 35)
+                        .frame(width: 150, height: 40)
                         .modifier(LuminareBordered())
                 }
             }
         }
-        
+
+        Divider()
+
         VStack {
             Text("Static")
-            
+                .bold()
+                .padding()
+                .zIndex(1)
+
             LuminareSidebar {
                 ForEach(0..<5) { num in
                     Text("\(num)")
-                        .frame(width: 150, height: 35)
+                        .frame(width: 150, height: 40)
                         .modifier(LuminareBordered())
                 }
             }
         }
     }
-    .frame(height: 450)
-    .padding()
+    .frame(height: 420)
 }

@@ -12,7 +12,7 @@ import SwiftUI
 /// A stylized tab for ``LuminareSidebar`` that is designed to be selectable.
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Environments
-    
+
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -23,18 +23,19 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     private let tab: Tab
 
     @State private var isActive = false
-    
+
     // MARK: Initializers
 
     /// Initializes a ``LuminareSidebarTab``.
     ///
-    /// - Parameter tab: the associated ``LuminareTabItem``.
-    /// - Parameter activeTab: the activated ``LuminareTabItem`` binding.
+    /// - Parameters:
+    ///   - tab: the associated ``LuminareTabItem``.
+    ///   - activeTab: the activated ``LuminareTabItem`` binding.
     public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
         self._activeTab = activeTab
         self.tab = tab
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -79,7 +80,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             processActiveTab()
         }
     }
-    
+
     // MARK: Functions
 
     private func processActiveTab() {
@@ -93,7 +94,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
 
 struct SidebarButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     let cornerRadius: CGFloat = 12
     @State var isHovering: Bool = false
     @Binding var isActive: Bool
@@ -116,21 +117,21 @@ struct SidebarButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case about
-    
+
     var id: Self {
         self
     }
-    
+
     var title: String {
         switch self {
         case .about: .init(localized: "About")
         }
     }
-    
+
     var icon: Image {
         switch self {
         case .about: .init(systemName: "app.gift")
@@ -138,8 +139,11 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     }
 }
 
-#Preview("LuminareSidebarTab") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebarTab",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSidebarTab(Tab.about, .constant(Tab.about))
         .frame(width: 225)
-        .padding()
 }

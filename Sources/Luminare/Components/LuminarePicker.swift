@@ -7,74 +7,115 @@
 
 import SwiftUI
 
-public protocol LuminarePickerData {
-    var selectable: Bool { get }
-}
-
 // MARK: - Picker
 
-public struct LuminarePicker<Content, V>: View 
-where Content: View, V: Equatable {
+/// A stylized, grid based picker.
+public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
     // MARK: Environments
-    
+
+    @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
-    
-    private let cornerRadius: CGFloat = 12
-    private let innerPadding: CGFloat = 4
-    private let innerCornerRadius: CGFloat = 2
+
+    private let innerPadding: CGFloat
+    private let cornerRadius: CGFloat, buttonCornerRadius: CGFloat
 
     private let elements2D: [[V]]
-    private let rowsIndex: Int
-    private let columnsIndex: Int
+    private let rows: Int, columns: Int
 
     @Binding private var selectedItem: V
     @State private var internalSelection: V
 
-    private let roundTop: Bool
-    private let roundBottom: Bool
-    
+    private let roundedTop: Bool, roundedBottom: Bool
+
     @ViewBuilder private let content: (V) -> Content
-    
+
     // MARK: Initializers
 
+    /// Initializes a ``LuminarePicker``.
+    ///
+    /// - Parameters:
+    ///   - elements: the selectable elements.
+    ///   - selection: the binding of the selected value.
+    ///   - columns: the columns of the grid.
+    ///   - roundedTop: whether to have top corners rounded.
+    ///   - roundedBottom: whether to have bottom corners rounded.
+    ///   - innerPadding: the padding between the buttons.
+    ///   - cornerRadius: the radius of the corners.
+    ///   - buttonCornerRadius: the radius of the corners of the button.
+    ///   - content: the content generator that accepts a value.
     public init(
         elements: [V],
         selection: Binding<V>,
         columns: Int = 4,
-        roundTop: Bool = true,
-        roundBottom: Bool = true,
+        roundedTop: Bool = true, roundedBottom: Bool = true,
+        innerPadding: CGFloat = 4,
+        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
-        self.rowsIndex = elements2D.count - 1
-        self.columnsIndex = columns - 1
-        self.roundTop = roundTop
-        self.roundBottom = roundBottom
+        self.rows = elements2D.count
+        self.columns = columns
+        self.roundedTop = roundedTop
+        self.roundedBottom = roundedBottom
+        self.innerPadding = innerPadding
+        self.cornerRadius = cornerRadius
+        self.buttonCornerRadius = buttonCornerRadius
         self.content = content
 
         self._selectedItem = selection
-        self._internalSelection = State(initialValue: selection.wrappedValue)
+        self.internalSelection = selection.wrappedValue
     }
-    
+
+    /// Initializes a ``LuminarePicker`` that is vertically compact, which has exactly 1 row of elements.
+    ///
+    /// - Parameters:
+    ///   - compactElements: the selectable elements.
+    ///   The columns of the picker will be aligned with the count of elements.
+    ///   - selection: the binding of the selected value.
+    ///   - roundedTop: whether to have top corners rounded.
+    ///   - roundedBottom: whether to have bottom corners rounded.
+    ///   - cornerRadius: the radius of the corners.
+    ///   - innerPadding: the padding between the buttons.
+    ///   - buttonCornerRadius: the radius of the corners of the button.
+    ///   - content: the content generator that accepts a value.
+    public init(
+        compactElements: [V],
+        selection: Binding<V>,
+        roundedTop: Bool = true, roundedBottom: Bool = true,
+        innerPadding: CGFloat = 4,
+        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
+        @ViewBuilder content: @escaping (V) -> Content
+    ) {
+        self.init(
+            elements: compactElements,
+            selection: selection,
+            columns: compactElements.count,
+            roundedTop: roundedTop, roundedBottom: roundedBottom,
+            innerPadding: innerPadding,
+            cornerRadius: cornerRadius, buttonCornerRadius: buttonCornerRadius,
+            content: content
+        )
+    }
+
     // MARK: Body
 
     public var body: some View {
         Group {
-            if isCompact {
+            if isVerticallyCompact {
                 HStack(spacing: 2) {
-                    ForEach(0...columnsIndex, id: \.self) { j in
-                        pickerButton(i: 0, j: j)
+                    ForEach(0...maxColumnIndex, id: \.self) { column in
+                        pickerButton(row: 0, column: column)
                     }
                 }
                 .frame(minHeight: 34)
             } else {
                 VStack(spacing: 2) {
-                    ForEach(0...rowsIndex, id: \.self) { i in
+                    ForEach(0...maxRowIndex, id: \.self) { row in
                         HStack(spacing: 2) {
-                            ForEach(0...columnsIndex, id: \.self) { j in
-                                pickerButton(i: i, j: j)
+                            ForEach(0...maxColumnIndex, id: \.self) { column in
+                                pickerButton(row: row, column: column)
                             }
                         }
                     }
@@ -91,20 +132,23 @@ where Content: View, V: Equatable {
         .buttonStyle(LuminareButtonStyle())
     }
 
-    @ViewBuilder private func pickerButton(i: Int, j: Int) -> some View {
-        if let element = getElement(i: i, j: j) {
+    @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
+        if let element = getElement(row: row, column: column) {
+            let isDisabled = isDisabled(element)
+            let tint = getTint(of: element)
+
             Button {
-                guard !isDisabled(element) else { return }
                 withAnimation(animation) {
                     internalSelection = element
                 }
             } label: {
                 ZStack {
                     let isActive = internalSelection == element
-                    getShape(i: i, j: j)
-                        .foregroundStyle(isActive ? AnyShapeStyle(.tint.opacity(0.15)) : AnyShapeStyle(.clear))
+
+                    getShape(row: row, column: column)
+                        .foregroundStyle(.tint.opacity(isActive ? 0.15 : 0))
                         .overlay {
-                            getShape(i: i, j: j)
+                            getShape(row: row, column: column)
                                 .strokeBorder(
                                     .tint,
                                     lineWidth: isActive ? 1.5 : 0
@@ -112,79 +156,101 @@ where Content: View, V: Equatable {
                         }
 
                     content(element)
-                        .foregroundStyle(isDisabled(element) ? .secondary : .primary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
+            .disabled(isDisabled)
+            .animation(animation, value: isDisabled)
+            .overrideTint { tint }
         } else {
-            getShape(i: i, j: j)
+            getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
         }
     }
-    
-    private var isCompact: Bool {
-        rowsIndex == 0
+
+    private var isVerticallyCompact: Bool {
+        rows == 1
     }
-    
+
+    private var isHorizontallyCompact: Bool {
+        columns == 1
+    }
+
+    private var maxRowIndex: Int {
+        rows - 1
+    }
+
+    private var maxColumnIndex: Int {
+        columns - 1
+    }
+
     // MARK: Functions
 
     private func isDisabled(_ element: V) -> Bool {
-        (element as? LuminarePickerData)?.selectable == false
+        (element as? LuminareSelectionData)?.isSelectable == false
     }
 
-    private func getElement(i: Int, j: Int) -> V? {
-        guard j < elements2D[i].count else { return nil }
-        return elements2D[i][j]
+    private func getTint(of element: V) -> Color {
+        (element as? LuminareSelectionData)?.tint ?? tint()
     }
 
-    private func getShape(i: Int, j: Int) -> some InsettableShape {
+    private func getElement(row: Int, column: Int) -> V? {
+        guard column < elements2D[row].count else { return nil }
+        return elements2D[row][column]
+    }
+
+    private func getShape(row: Int, column: Int) -> some InsettableShape {
         // top left
-        if j == 0, i == 0, roundTop {
+        if column == 0, row == 0, roundedTop {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius
+                bottomLeadingRadius:
+                    (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
+                bottomTrailingRadius: buttonCornerRadius,
+                topTrailingRadius:
+                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius
             )
         }
-        
+
         // bottom left
-        else if j == 0, i == rowsIndex, roundBottom {
+        else if column == 0, row == maxRowIndex, roundedBottom {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
-                bottomTrailingRadius: (columnsIndex == 0) ? cornerRadius - innerPadding : innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
+                bottomTrailingRadius:
+                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius,
+                topTrailingRadius: buttonCornerRadius
             )
         }
-        
+
         // top right
-        else if j == columnsIndex, i == 0, roundTop {
+        else if column == maxColumnIndex, row == 0, roundedTop {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: (rowsIndex == 0 && roundBottom) ? cornerRadius - innerPadding : innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
+                bottomTrailingRadius:
+                    (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
-        
+
         // bottom right
-        else if j == columnsIndex, i == rowsIndex, roundBottom {
+        else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
                 bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: innerCornerRadius
+                topTrailingRadius: buttonCornerRadius
             )
         }
-        
+
         // regular
         else {
             UnevenRoundedRectangle(
-                topLeadingRadius: innerCornerRadius,
-                bottomLeadingRadius: innerCornerRadius,
-                bottomTrailingRadius: innerCornerRadius,
-                topTrailingRadius: innerCornerRadius
+                topLeadingRadius: buttonCornerRadius,
+                bottomLeadingRadius: buttonCornerRadius,
+                bottomTrailingRadius: buttonCornerRadius,
+                topTrailingRadius: buttonCornerRadius
             )
         }
     }
@@ -192,14 +258,19 @@ where Content: View, V: Equatable {
 
 // MARK: - Preview
 
-#Preview("LuminarePicker") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminarePicker",
+    traits: .sizeThatFitsLayout
+) {
+    @Previewable @State var selection = 42
+
     LuminareSection {
         LuminarePicker(
             elements: Array(32..<50),
-            selection: .constant(42)
+            selection: $selection
         ) { num in
             Text("\(num)")
         }
     }
-    .padding()
 }

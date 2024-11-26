@@ -12,8 +12,8 @@ import SwiftUI
 // custom input field for RGB values
 struct RGBInputField<Label>: View where Label: View {
     // MARK: Fields
-    
-    @Binding var value: Double
+
+    @Binding var value: Double // [0, 255]
     @ViewBuilder var label: () -> Label
     var color: (Double) -> Color? = { _ in nil }
 
@@ -25,43 +25,50 @@ struct RGBInputField<Label>: View where Label: View {
                 .foregroundStyle(.secondary)
 
             if #available(macOS 15.0, *) {
-                LuminarePopover(arrowEdge: .top, trigger: .onForceTouch()) {
+                LuminarePopover(arrowEdge: .top, trigger: .forceTouch()) {
                     LuminareStepper(
                         value: $value,
-                        source: .finiteContinuous(range: 0...255, stride: 5),
+                        source: .finiteContinuous(in: 0...255, step: 5),
                         indicatorSpacing: 20,
                         prominentIndicators: .init(color: color)
                     )
                     .frame(width: 135, height: 32)
                     .padding(.vertical, 2)
-                    .environment(\.luminareTint) { .primary }
+                    .overrideTint { .primary }
                 } badge: {
-                    LuminareTextField("", value: .init($value), format: .number.precision(.integerAndFractionLength(integerLimits: 0...3, fractionLimits: 0...1)))
+                    LuminareTextField(
+                        "", value: .init($value),
+                        format: .number.precision(.integerAndFractionLength(
+                            integerLimits: 1...3,
+                            fractionLimits: 0...2
+                        ))
+                    )
                 }
             } else {
-                LuminareTextField("", value: .init($value), format: .number.precision(.integerAndFractionLength(integerLimits: 0...3, fractionLimits: 0...1)))
+                LuminareTextField(
+                    "", value: .init($value),
+                    format: .number.precision(.integerAndFractionLength(
+                        integerLimits: 1...3,
+                        fractionLimits: 0...2
+                    ))
+                )
             }
         }
     }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
-private struct RGBInputFieldPreview: View {
-    @State private var value: Double = 42
-    
-    var body: some View {
+@available(macOS 15.0, *)
+#Preview("RGBInputField") {
+    @Previewable @State var value: Double = 42
+
+    LuminareSection {
         RGBInputField(value: $value) {
             Text("Red")
         } color: { value in
                 .init(red: value / 255.0, green: 0, blue: 0)
         }
-    }
-}
-
-#Preview("RGBInputField") {
-    LuminareSection {
-        RGBInputFieldPreview()
     }
     .padding()
 }

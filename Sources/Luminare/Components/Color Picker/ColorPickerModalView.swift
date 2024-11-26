@@ -7,39 +7,39 @@
 
 import SwiftUI
 
-public typealias RGBColorNames<R, G, B> = (
-    red: R,
-    green: G,
-    blue: B
-)
+public struct RGBColorNames<R, G, B> where R: View, G: View, B: View {
+    @ViewBuilder public var red: () -> R
+    @ViewBuilder public var green: () -> G
+    @ViewBuilder public var blue: () -> B
+}
 
 // MARK: - Color Picker (Modal)
 
 // view for the color popup as a whole
 struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View, Done: View {
     typealias ColorNames = RGBColorNames<R, G, B>
-    
+
     // MARK: Environments
-    
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
-    
-    @Binding var color: Color
+
+    @Binding var selectedColor: HSBColor
     @Binding var hexColor: String
 
-    let colorNames: ColorNames
-    @ViewBuilder let done: () -> Done
-    
-    @State private var redComponent: Double = 0
-    @State private var greenComponent: Double = 0
-    @State private var blueComponent: Double = 0
-    
+    var colorNames: ColorNames
+    @ViewBuilder var done: () -> Done
+
+    @State private var redComponent: Double = .zero
+    @State private var greenComponent: Double = .zero
+    @State private var blueComponent: Double = .zero
+
     @State private var isRedStepperPresented: Bool = false
     @State private var isGreenStepperPresented: Bool = false
     @State private var isBlueStepperPresented: Bool = false
-    
+
     private let colorSampler = NSColorSampler()
 
     // MARK: Body
@@ -49,7 +49,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
         Group {
             LuminareSection(hasPadding: false, hasDividers: false) {
                 VStack(spacing: 2) {
-                    ColorSaturationBrightnessView(selectedColor: $color)
+                    ColorSaturationBrightnessView(selectedColor: $selectedColor)
                         .scaledToFill()
                         .clipShape(
                             UnevenRoundedRectangle(
@@ -60,7 +60,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                             )
                         )
 
-                    ColorHueSliderView(selectedColor: $color)
+                    ColorHueSliderView(selectedColor: $selectedColor, roundedBottom: true)
                         .scaledToFill()
                         .clipShape(
                             UnevenRoundedRectangle(
@@ -75,13 +75,13 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             }
 
             RGBInputFields
-            
+
             HStack {
                 Button {
                     colorSampler.show { nsColor in
                         if let nsColor {
-                            setColor(.init(nsColor: nsColor))
-                            updateComponents(color)
+                            selectedColor = Color(nsColor: nsColor).hsb
+                            updateComponents(selectedColor)
                         }
                     }
                 } label: {
@@ -91,7 +91,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
                 .aspectRatio(1, contentMode: .fit)
                 .fixedSize()
                 .buttonStyle(LuminareCompactButtonStyle())
-                
+
                 Button {
                     dismiss()
                 } label: {
@@ -101,113 +101,104 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             }
         }
         .onAppear {
+            updateComponents(selectedColor)
+        }
+        .onChange(of: selectedColor) { color in
             updateComponents(color)
         }
-        .onChange(of: color) { _ in
-            updateComponents(color)
+        .onChange(of: internalColor) { color in
+            selectedColor = color
         }
+        .animation(animationFast, value: selectedColor)
     }
 
     // view for RGB input fields
     @ViewBuilder private var RGBInputFields: some View {
         HStack(spacing: 8) {
             RGBInputField(value: $redComponent) {
-                colorNames.red
+                colorNames.red()
             } color: { value in
                     .init(
                         red: value / 255.0,
-                        green: 1 - greenComponent / 255.0,
-                        blue: 1 - blueComponent / 255.0
+                        green: greenComponent / 255.0,
+                        blue: blueComponent / 255.0
                     )
             }
-            .onChange(of: redComponent) { _ in
-                setColor(internalColor)
-            }
-            
+
             RGBInputField(value: $greenComponent) {
-                colorNames.green
+                colorNames.green()
             } color: { value in
                     .init(
-                        red: 1 - redComponent / 255.0,
+                        red: redComponent / 255.0,
                         green: value / 255.0,
-                        blue: 1 - blueComponent / 255.0
+                        blue: blueComponent / 255.0
                     )
             }
-            .onChange(of: greenComponent) { _ in
-                setColor(internalColor)
-            }
-            
+
             RGBInputField(value: $blueComponent) {
-                colorNames.blue
+                colorNames.blue()
             } color: { value in
                     .init(
-                        red: 1 - redComponent / 255.0,
-                        green: 1 - greenComponent / 255.0,
+                        red: redComponent / 255.0,
+                        green: greenComponent / 255.0,
                         blue: value / 255.0
                     )
             }
-            .onChange(of: blueComponent) { _ in
-                setColor(internalColor)
-            }
         }
     }
-    
-    private var internalColor: Color {
-        Color(
-            red: redComponent / 255.0,
-            green: greenComponent / 255.0,
-            blue: blueComponent / 255.0
-        )
+
+    private var internalColor: HSBColor {
+        let hsb = Color(red: redComponent / 255.0, green: greenComponent / 255.0, blue: blueComponent / 255.0).hsb
+
+        return if hsb.saturation == 0 || hsb.brightness == 0 {
+            // preserve hue
+            .init(hue: selectedColor.hue, saturation: hsb.saturation, brightness: hsb.brightness)
+        } else {
+            hsb
+        }
     }
-    
+
     // MARK: Functions
 
-    // set the color based on the source of change
-    private func setColor(_ newColor: Color) {
-        withAnimation(animationFast) {
-            color = newColor
-        }
-    }
-
     // update components when the color changes
-    private func updateComponents(_ newValue: Color) {
-        hexColor = newValue.toHex()
-        
+    private func updateComponents(_ newValue: HSBColor) {
         // check if changed externally
         guard newValue != internalColor else { return }
-        let rgb = newValue.toRGB()
-        
-        redComponent = rgb.red
-        greenComponent = rgb.green
-        blueComponent = rgb.blue
+
+        let rgb = newValue.rgb
+        hexColor = rgb.toHex()
+
+        let components = rgb.components
+        redComponent = components.red * 255.0
+        greenComponent = components.green * 255.0
+        blueComponent = components.blue * 255.0
     }
 }
 
 // MARK: - Preview
 
-private struct ColorPickerModalPreview: View {
-    @State private var color: Color = .accentColor
-    @State private var hexColor: String = ""
-    
-    var body: some View {
+@available(macOS 15.0, *)
+#Preview(
+    "ColorPickerModalView",
+    traits: .sizeThatFitsLayout
+) {
+    @Previewable @State var color: HSBColor = Color.accentColor.hsb
+    @Previewable @State var hexColor: String = ""
+
+    LuminareSection {
         ColorPickerModalView(
-            color: $color,
+            selectedColor: $color,
             hexColor: $hexColor,
-            colorNames: (
-                red: Text("Red"),
-                green: Text("Green"),
-                blue: Text("Blue")
-            )
+            colorNames: .init {
+                Text("Red")
+            } green: {
+                Text("Green")
+            } blue: {
+                Text("Blue")
+            }
         ) {
             Text("Done")
         }
     }
-}
-
-#Preview("ColorPickerModalView") {
-    LuminareSection {
-        ColorPickerModalPreview()
-    }
-    .padding()
     .frame(width: 300)
 }

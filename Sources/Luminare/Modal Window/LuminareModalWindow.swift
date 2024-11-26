@@ -12,9 +12,9 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     @Binding private var isPresented: Bool
-    
+
     private let closesOnDefocus: Bool
     private let isCompact: Bool
 
@@ -36,9 +36,9 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
 
         let hostingView = NSHostingView(
             rootView: LuminareModalView(isCompact: isCompact, content: content)
-                .environment(\.luminareTint, tint)
                 .environment(\.luminareAnimation, animation)
                 .environment(\.luminareAnimationFast, animationFast)
+                .overrideTint(tint)
                 .environmentObject(self)
         )
 
@@ -64,8 +64,8 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         let updatesCount = Int(duration * frameRate)
         let interval = duration / Double(updatesCount)
 
-        for i in 0...updatesCount {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * interval) {
+        for index in 0...updatesCount {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * interval) {
                 self.invalidateShadow()
             }
         }

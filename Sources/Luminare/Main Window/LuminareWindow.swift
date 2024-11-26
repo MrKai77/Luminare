@@ -13,8 +13,9 @@ public class LuminareWindow: NSWindow {
 
     /// Initializes a ``LuminareWindow``.
     ///
-    /// - Parameter blurRadius: the blur radius of the window background.
-    /// - Parameter content: the content view of the window, wrapped in a ``LuminareView``.
+    /// - Parameters:
+    ///   - blurRadius: the blur radius of the window background.
+    ///   - content: the content view of the window, wrapped in a ``LuminareView``.
     public init(
         blurRadius: CGFloat? = nil,
         content: @escaping () -> some View
@@ -23,7 +24,7 @@ public class LuminareWindow: NSWindow {
 
         super.init(
             contentRect: .zero,
-            styleMask: [.titled, .fullSizeContentView, .closable],
+            styleMask: [.titled, .fullSizeContentView, .closable, .resizable],
             backing: .buffered,
             defer: false // if true, background blur will break
         )

@@ -9,10 +9,9 @@ import SwiftUI
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
     public static let cornerRadius: CGFloat = 12
-    public static let contentPadding: CGFloat = 6
-    public static let sectionPadding: CGFloat = 8
+    public static let contentPadding: CGFloat = 6, sectionPadding: CGFloat = 8
 
-    @Published public var closeHandler: (() -> ())?
+    @Published public var closeHandler: (() -> Void)?
 
     public init() {
         super.init(
@@ -25,11 +24,11 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
         titleVisibility = .hidden
         titlebarAppearsTransparent = true
         animationBehavior = .utilityWindow
-        
+
         isOpaque = false
         backgroundColor = .clear
         isMovable = false
-        
+
         ignoresMouseEvents = false
         becomesKeyOnlyIfNeeded = true
     }

@@ -12,19 +12,20 @@ import SwiftUI
 /// A stylized section for ``LuminareSidebar``.
 public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: LuminareTabItem, Tab: Hashable {
     // MARK: Fields
-    
+
     @Binding private var selection: Tab
     private let items: [Tab]
-    
+
     @ViewBuilder private let label: () -> Label
 
     // MARK: Initializers
 
     /// Initializes a ``LuminareSidebarSection``.
     ///
-    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
-    /// - Parameter items: the list of available ``LuminareTabItem``.
-    /// - Parameter label: the label that is located at the very top of the containing tabs.
+    /// - Parameters:
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
+    ///   - label: the label that is located at the very top of the containing tabs.
     public init(
         selection: Binding<Tab>,
         items: [Tab],
@@ -34,12 +35,13 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
         self.items = items
         self.label = label
     }
-    
-    /// Initializes a ``LuminareSidebarSection`` where the label is a localized text.
+
+    /// Initializes a ``LuminareSidebarSection`` whose label is a localized text.
     ///
-    /// - Parameter key: the `LocalizedStringKey` to look up the label text.
-    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
-    /// - Parameter items: the list of available ``LuminareTabItem``.
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
     public init(
         _ key: LocalizedStringKey,
         selection: Binding<Tab>,
@@ -52,11 +54,12 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             Text(key)
         }
     }
-    
+
     /// Initializes a ``LuminareSidebarSection`` without a label.
     ///
-    /// - Parameter selection: the selected ``LuminareTabItem`` binding.
-    /// - Parameter items: the list of available ``LuminareTabItem``.
+    /// - Parameters:
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
     public init(
         selection: Binding<Tab>,
         items: [Tab]
@@ -68,7 +71,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             EmptyView()
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -90,7 +93,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case lorem
@@ -99,11 +102,11 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case advanced
     case expert
     case about
-    
+
     var id: Self {
         self
     }
-    
+
     var title: String {
         switch self {
         case .lorem: .init(localized: "Lorem")
@@ -114,7 +117,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         case .about: .init(localized: "About")
         }
     }
-    
+
     var icon: Image {
         switch self {
         case .lorem: .init(systemName: "paragraphsign")
@@ -125,7 +128,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         case .about: .init(systemName: "app.gift")
         }
     }
-    
+
     var hasIndicator: Bool {
         switch self {
         case .expert:
@@ -134,20 +137,29 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
             false
         }
     }
-    
+
     @ViewBuilder func view() -> some View {
         EmptyView()
     }
 }
 
-#Preview("LuminareSidebarSection") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebarSection",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         VStack(spacing: 24) {
             LuminareSidebarSection(selection: .constant(Tab.about), items: [Tab.lorem, .ipsum])
-            LuminareSidebarSection("Settings Graph", selection: .constant(Tab.about), items: [Tab.fundamental, .advanced, .expert])
-            LuminareSidebarSection("Application", selection: .constant(Tab.about), items: [Tab.about])
+            LuminareSidebarSection(
+                "Settings Graph",
+                selection: .constant(Tab.about), items: [Tab.fundamental, .advanced, .expert]
+            )
+            LuminareSidebarSection(
+                "Application",
+                selection: .constant(Tab.about), items: [Tab.about]
+            )
         }
     }
     .frame(width: 225)
-    .padding()
 }

@@ -12,11 +12,10 @@ import SwiftUI
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     // MARK: Fields
-    
+
     private let titlebarHeight: CGFloat = 50
 
-    @ViewBuilder private let content: () -> Content
-    @ViewBuilder private let header: () -> Header
+    @ViewBuilder private let content: () -> Content, header: () -> Header
 
     @State private var clickedOutsideFlag = false
 
@@ -24,8 +23,9 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     /// Initializes a ``LuminarePane``.
     ///
-    /// - Parameter content: the content view.
-    /// - Parameter header: the header that is located at the titlebar's position.
+    /// - Parameters:
+    ///   - content: the content view.
+    ///   - header: the header that is located at the titlebar's position.
     public init(
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
@@ -33,11 +33,12 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         self.content = content
         self.header = header
     }
-    
+
     /// Initializes a ``LuminarePane`` where the header is a localized text.
     ///
-    /// - Parameter key: the `LocalizedStringKey` to look up the header text.
-    /// - Parameter content: the content view.
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the header text.
+    ///   - content: the content view.
     public init(
         _ key: LocalizedStringKey,
         @ViewBuilder content: @escaping () -> Content
@@ -46,7 +47,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             Text(key)
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -87,7 +88,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
 struct TabHeaderButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     @State var isHovering: Bool = false
 
     func makeBody(configuration: Configuration) -> some View {

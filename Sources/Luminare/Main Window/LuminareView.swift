@@ -14,12 +14,12 @@ import SwiftUI
 /// This view automatically overrides the content's tint by the one specified with `\.luminareTint` environment value.
 public struct LuminareView<Content>: View where Content: View {
     // MARK: Environments
-    
+
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareWindow) private var window
-    
+
     // MARK: Fields
-    
+
     @ViewBuilder public let content: () -> Content
 
     @State private var currentAnimation: LuminareWindowAnimation?
@@ -38,9 +38,9 @@ public struct LuminareView<Content>: View where Content: View {
             .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
             .focusable(false)
             .buttonStyle(LuminareButtonStyle())
-            .tint(tint())
+            .overrideTint(tint)
     }
-    
+
     // MARK: Functions
 
     func setSize(size: CGSize, animate: Bool) {

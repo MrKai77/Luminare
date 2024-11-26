@@ -9,33 +9,43 @@ import SwiftUI
 
 // MARK: - Text Field
 
+/// A stylized text field.
 public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
     // MARK: Environments
-    
+
     @Environment(\.luminareAnimationFast) private var animationFast
-    
-    private let elementMinHeight: CGFloat
-    private let horizontalPadding: CGFloat
-    private let cornerRadius: CGFloat
+
+    // MARK: Fields
+
+    private let minHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
     private let isBordered: Bool
-    
+
     @Binding private var value: F.FormatInput?
     private let format: F
     private let placeholder: LocalizedStringKey
 
     @State private var monitor: Any?
-    @State private var isHovering: Bool = false
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareTextField``.
+    ///
+    /// - Parameters:
+    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
+    ///   - value: the value to be edited.
+    ///   - format: the format of the value.
+    ///   - minHeight: the minimum height of the inner view.
+    ///   - horizontalPadding: the horizontal padding of the inner view.
+    ///   - cornerRadius: the radius of the corners..
+    ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
         value: Binding<F.FormatInput?>, format: F,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true
     ) {
-        self.elementMinHeight = elementMinHeight
+        self.minHeight = minHeight
         self.horizontalPadding = horizontalPadding
         self.cornerRadius = cornerRadius
         self.isBordered = isBordered
@@ -44,56 +54,42 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
         self.placeholder = placeholder
     }
 
+    /// Initializes a ``LuminareTextField`` with a `String` value.
+    ///
+    /// - Parameters:
+    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
+    ///   - value: the `String` value to be edited.
+    ///   - minHeight: the minimum height of the inner view.
+    ///   - horizontalPadding: the horizontal padding of the inner view.
+    ///   - cornerRadius: the radius of the corners..
+    ///   - isBordered: whether to display a border while not hovering.
     public init(
         _ placeholder: LocalizedStringKey,
-        text: Binding<String>,
-        elementMinHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
+        text: Binding<String?>,
+        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         cornerRadius: CGFloat = 8,
         isBordered: Bool = true
     ) where F == StringFormatStyle {
         self.init(
             placeholder,
-            value: .init(text), format: StringFormatStyle(),
-            elementMinHeight: elementMinHeight, horizontalPadding: horizontalPadding,
+            value: text, format: StringFormatStyle(),
+            minHeight: minHeight, horizontalPadding: horizontalPadding,
             cornerRadius: cornerRadius,
             isBordered: isBordered
         )
     }
-    
+
     // MARK: Body
 
     public var body: some View {
         TextField(placeholder, value: $value, format: format)
-            .padding(.horizontal, horizontalPadding)
-            .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .background {
-                if isHovering {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.quaternary, lineWidth: 1)
-                } else if isBordered {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.quaternary.opacity(0.7), lineWidth: 1)
-                } else {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.clear, lineWidth: 1)
-                }
-            }
-            .background {
-                if isHovering {
-                    Rectangle()
-                        .foregroundStyle(.quinary)
-                } else {
-                    Rectangle()
-                        .foregroundStyle(.clear)
-                }
-            }
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .modifier(LuminareHoverable(
+                minHeight: minHeight,
+                horizontalPadding: horizontalPadding,
+                cornerRadius: cornerRadius,
+                isBordered: isBordered
+            ))
             .onAppear {
                 guard monitor != nil else { return }
 
@@ -121,17 +117,19 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
 
 // MARK: - Preview
 
-#Preview("LuminareTextField") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareTextField",
+    traits: .sizeThatFitsLayout
+) {
     LuminareSection {
         VStack {
             LuminareTextField("Text Field", text: .constant("Bordered"))
-            
+
             LuminareTextField("Text Field", text: .constant("Borderless"), isBordered: false)
-            
-            
+
             LuminareTextField("Text Field", text: .constant("Disabled"))
                 .disabled(true)
         }
     }
-    .padding()
 }

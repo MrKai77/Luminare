@@ -9,26 +9,24 @@ import SwiftUI
 
 // MARK: - List
 
-public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View
-where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable {
+/// A stylized list.
+public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable { // swiftlint:disable:this line_length
     // MARK: Environments
-    
+
     @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
+    @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
-    
+
     // MARK: Fields
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
     private let id: KeyPath<V, ID>
     private let actionsMaxHeight: CGFloat?
-    
-    @ViewBuilder private let content: (Binding<V>) -> ContentA
-    @ViewBuilder private let emptyView: () -> ContentB
-    @ViewBuilder private let actions: () -> Actions
-    @ViewBuilder private let removeView: () -> RemoveView
-    @ViewBuilder private let header: () -> Header
-    @ViewBuilder private let footer: () -> Footer
+
+    @ViewBuilder private let content: (Binding<V>) -> ContentA, emptyView: () -> ContentB
+    @ViewBuilder private let actions: () -> Actions, removeView: () -> RemoveView
+    @ViewBuilder private let header: () -> Header, footer: () -> Footer
 
     @State private var firstItem: V?
     @State private var lastItem: V?
@@ -38,6 +36,20 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
     // MARK: Initializers
 
+    /// Initializes a ``LuminareList``.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    ///   - header: the header.
+    ///   - footer: the footer.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -60,7 +72,21 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         self.header = header
         self.footer = footer
     }
-    
+
+    /// Initializes a ``LuminareList`` whose header, footer and **remove** button's content are localized texts.
+    ///
+    /// - Parameters:
+    ///   - headerKey: the `LocalizedStringKey` to look up the header text.
+    ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
@@ -90,7 +116,20 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` that displays literally nothing when nothing is inside the list.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    ///   - header: the header.
+    ///   - footer: the footer.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -115,7 +154,21 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer: footer
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` that displays literally nothing when nothing is inside the list, whose header,
+    /// footer and **remove** button's content are localized texts.
+    ///
+    /// - Parameters:
+    ///   - headerKey: the `LocalizedStringKey` to look up the header text.
+    ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
@@ -143,7 +196,20 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a footer.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    ///   - header: the header.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -168,7 +234,21 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a footer, whose header and **remove** button's content are localized
+    /// texts.
+    ///
+    /// - Parameters:
+    ///   - headerKey: the `LocalizedStringKey` to look up the header text.
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -194,7 +274,19 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a footer and displays literally nothing when nothing is inside the list.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    ///   - header: the header.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -217,7 +309,20 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             header: header
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a footer and displays literally nothing when nothing is inside the list,
+    /// whose header and **remove** button's content are localized texts.
+    ///
+    /// - Parameters:
+    ///   - headerKey: the `LocalizedStringKey` to look up the header text.
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         headerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -241,7 +346,20 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    ///   - footer: the footer.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -266,7 +384,21 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer: footer
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header, whose footer and **remove** button's content are localized
+    /// texts.
+    ///
+    /// - Parameters:
+    ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -292,7 +424,19 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header and displays literally nothing when nothing is inside the list.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    ///   - footer: the footer.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -315,7 +459,20 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             footer: footer
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header and displays literally nothing when nothing is inside the list,
+    /// whose footer and **remove** button's content are localized texts.
+    ///
+    /// - Parameters:
+    ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         footerKey: LocalizedStringKey,
         items: Binding<[V]>,
@@ -339,7 +496,19 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header and a footer.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -365,7 +534,87 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header and a footer, whose **remove** button's content are localized
+    /// texts.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    public init(
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
+        removeKey: LocalizedStringKey,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder emptyView: @escaping () -> ContentB,
+        @ViewBuilder actions: @escaping () -> Actions
+    ) where Header == EmptyView, RemoveView == Text, Footer == EmptyView {
+        self.init(
+            items: items,
+            selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
+            content: content,
+            emptyView: emptyView,
+            actions: actions,
+            removeView: {
+                Text(removeKey)
+            }
+        )
+    }
+
+    /// Initializes a ``LuminareList`` without a header and a footer and displays literally nothing when nothing is
+    /// inside the list.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    ///   - removeView: the view inside the **remove** button.
+    public init(
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder actions: @escaping () -> Actions,
+        @ViewBuilder removeView: @escaping () -> RemoveView
+    ) where Header == EmptyView, ContentB == EmptyView, Footer == EmptyView {
+        self.init(
+            items: items,
+            selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
+            content: content,
+            emptyView: {
+                EmptyView()
+            },
+            actions: actions,
+            removeView: removeView
+        )
+    }
+
+    /// Initializes a ``LuminareList`` without a header and a footer and displays literally nothing when nothing is
+    /// inside the list, whose **remove** button's content are localized texts.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - removeKey: the `LocalizedStringKey` to look up the text inside the **remove** button.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
@@ -379,51 +628,121 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             selection: selection, id: id,
             actionsMaxHeight: actionsMaxHeight,
             content: content,
-            emptyView: {
-                EmptyView()
-            },
             actions: actions,
             removeView: {
                 Text(removeKey)
             }
         )
     }
-    
+
+    /// Initializes a ``LuminareList`` without a header, a footer and a **remove** button.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - actions: the actions placed next to the **remove** button.
+    ///   Typically buttons that manipulate the listed items.
+    public init(
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
+        @ViewBuilder actions: @escaping () -> Actions
+    ) where Header == EmptyView, ContentB == EmptyView, RemoveView == EmptyView, Footer == EmptyView {
+        self.init(
+            items: items,
+            selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
+            content: content,
+            emptyView: {
+                EmptyView()
+            },
+            actions: actions,
+            removeView: {
+                EmptyView()
+            },
+            header: {
+                EmptyView()
+            },
+            footer: {
+                EmptyView()
+            }
+        )
+    }
+
+    /// Initializes a ``LuminareList`` without a toolbar.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - actionsMaxHeight: the maximum height of the actions region.
+    ///   - content: the content generator that accepts a value binding.
+    public init(
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        actionsMaxHeight: CGFloat? = 40,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA
+    ) where Header == EmptyView, ContentB == EmptyView,
+    Actions == EmptyView, RemoveView == EmptyView, Footer == EmptyView {
+        self.init(
+            items: items,
+            selection: selection, id: id,
+            actionsMaxHeight: actionsMaxHeight,
+            content: content,
+            actions: {
+                EmptyView()
+            }
+        )
+    }
+
     // MARK: Body
 
     public var body: some View {
         LuminareSection(hasPadding: false) {
-            HStack(spacing: 2) {
-                actions()
-                    .buttonStyle(LuminareButtonStyle())
+            let hasActions = Actions.self != EmptyView.self
+            let hasRemoveView = RemoveView.self != EmptyView.self
 
-                Button {
-                    if !selection.isEmpty {
-                        canRefreshSelection = false
-                        items.removeAll(where: { selection.contains($0) })
-
-                        selection = []
-
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            canRefreshSelection = true
-                        }
+            if hasActions || hasRemoveView {
+                HStack(spacing: 2) {
+                    if hasActions {
+                        actions()
+                            .buttonStyle(LuminareButtonStyle())
                     }
-                } label: {
-                    removeView()
+
+                    if hasRemoveView {
+                        Button {
+                            if !selection.isEmpty {
+                                canRefreshSelection = false
+                                items.removeAll(where: { selection.contains($0) })
+
+                                selection = []
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                    canRefreshSelection = true
+                                }
+                            }
+                        } label: {
+                            removeView()
+                        }
+                        .buttonStyle(LuminareDestructiveButtonStyle())
+                        .disabled(selection.isEmpty)
+                    }
                 }
-                .buttonStyle(LuminareDestructiveButtonStyle())
-                .disabled(selection.isEmpty)
-            }
-            .frame(maxHeight: actionsMaxHeight)
-            .modifier(
-                LuminareCroppedSectionItem(
-                    isFirstChild: true,
-                    isLastChild: false
+                .frame(maxHeight: actionsMaxHeight)
+                .modifier(
+                    LuminareCroppedSectionItem(
+                        isFirstChild: true,
+                        isLastChild: false
+                    )
                 )
-            )
-            .padding(.vertical, 4)
-            .padding(.bottom, 4)
-            .padding([.top, .horizontal], 1)
+                .padding(.vertical, 4)
+                .padding(.bottom, 4)
+                .padding([.top, .horizontal], 1)
+            }
 
             if items.isEmpty {
                 emptyView()
@@ -431,18 +750,37 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             } else {
                 List(selection: $selection) {
                     ForEach($items, id: id) { item in
-                        LuminareListItem(
-                            items: $items,
-                            selection: $selection,
-                            item: item,
-                            firstItem: $firstItem,
-                            lastItem: $lastItem,
-                            canRefreshSelection: $canRefreshSelection,
-                            content: content
-                        )
+                        let isDisabled = isDisabled(item.wrappedValue)
+                        let tint = getTint(of: item.wrappedValue)
+
+                        Group {
+                            if #available(macOS 14.0, *) {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    canRefreshSelection: $canRefreshSelection,
+                                    content: content
+                                )
+                                .selectionDisabled(isDisabled)
+                            } else {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    canRefreshSelection: $canRefreshSelection,
+                                    content: content
+                                )
+                            }
+                        }
+                        .disabled(isDisabled)
+                        .animation(animation, value: isDisabled)
+                        .overrideTint { tint }
                     }
-                    // TODO: `deleteItems` crashes Loop, need to be investigated further
-                    // .onDelete(perform: deleteItems)
                     .onMove { indices, newOffset in
                         withAnimation(animation) {
                             items.move(fromOffsets: indices, toOffset: newOffset)
@@ -487,18 +825,18 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
             removeEventMonitor()
         }
     }
-    
+
     // MARK: Functions
 
-    // TODO: investigate this
-    // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
-    // private func deleteItems(at offsets: IndexSet) {
-    //  withAnimation {
-    //    items.remove(atOffsets: offsets)
-    //  }
-    // }
+    private func isDisabled(_ element: V) -> Bool {
+        (element as? LuminareSelectionData)?.isSelectable == false
+    }
 
-    func processSelection() {
+    private func getTint(of element: V) -> Color {
+        (element as? LuminareSelectionData)?.tint ?? tint()
+    }
+
+    private func processSelection() {
         if selection.isEmpty {
             firstItem = nil
             lastItem = nil
@@ -508,11 +846,11 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         }
     }
 
-    func addEventMonitor() {
+    private func addEventMonitor() {
         guard eventMonitor == nil else { return }
-        
+
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            let kVK_Escape: CGKeyCode = 0x35
+            let kVK_Escape: CGKeyCode = 0x35 // swiftlint:disable:this identifier_name
 
             if event.keyCode == kVK_Escape {
                 withAnimation(animation) {
@@ -524,7 +862,7 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
         } as? NSObject
     }
 
-    func removeEventMonitor() {
+    private func removeEventMonitor() {
         if let eventMonitor {
             NSEvent.removeMonitor(eventMonitor)
         }
@@ -536,11 +874,12 @@ where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: V
 
 public struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
     // MARK: Environments
-    
+
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    
+
     // MARK: Fields
 
     @Binding private var item: V
@@ -561,7 +900,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 
     private let maxTintOpacity: CGFloat = 0.15
     @State private var tintOpacity: CGFloat = .zero
-    
+
     // MARK: Initializers
 
     public init(
@@ -581,7 +920,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         self._canRefreshSelection = canRefreshSelection
         self.content = content
     }
-    
+
     // MARK: Body
 
     public var body: some View {
@@ -590,6 +929,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             .overlay {
                 content($item)
                     .environment(\.hoveringOverLuminareItem, isHovering)
+                    .foregroundStyle(isEnabled ? .primary : .secondary)
             }
             .tag(item)
             .onHover { hover in
@@ -600,8 +940,10 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 
             .background {
                 ZStack {
-                    getItemBorder()
-                    getItemBackground()
+                    if isEnabled {
+                        itemBorder()
+                        itemBackground()
+                    }
                 }
                 .padding(.horizontal, 1)
                 .padding(.leading, 1)
@@ -617,6 +959,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                 }
             }
             .onChange(of: selection) { newSelection in
+                guard isEnabled else { return }
                 guard canRefreshSelection else { return }
                 DispatchQueue.main.async {
                     withAnimation(animation) {
@@ -629,12 +972,14 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     withAnimation(animation) {
                         // initialize selection
                         updateSelection(selection: selection)
+                        // reset hovering state
+                        isHovering = false
                     }
                 }
             }
     }
 
-    @ViewBuilder func getItemBackground() -> some View {
+    @ViewBuilder private func itemBackground() -> some View {
         Group {
             tint()
                 .opacity(tintOpacity)
@@ -647,7 +992,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         }
     }
 
-    @ViewBuilder func getItemBorder() -> some View {
+    @ViewBuilder private func itemBorder() -> some View {
         if isFirstInSelection(), isLastInSelection() {
             singleSelectionPart(isBottomOfList: item == items.last)
 
@@ -661,7 +1006,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             doubleLinePart()
         }
     }
-    
+
     @ViewBuilder private func firstItemPart() -> some View {
         VStack(spacing: 0) {
             ZStack {
@@ -672,54 +1017,54 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     topTrailingRadius: cornerRadius
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
-                
+
                 VStack {
                     Color.clear
                     HStack {
                         Spacer()
                             .frame(width: lineWidth)
-                        
+
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
-                        
+
                         Spacer()
                             .frame(width: lineWidth)
                     }
                 }
             }
             .compositingGroup()
-            
+
             // --- bottom part ---
-            
+
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
-                
+
                 Spacer()
-                
+
                 Rectangle()
                     .frame(width: lineWidth)
             }
             .foregroundStyle(.tint)
         }
     }
-    
+
     @ViewBuilder private func lastItemPart(isBottomOfList: Bool) -> some View {
         VStack(spacing: 0) {
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
-                
+
                 Spacer()
-                
+
                 Rectangle()
                     .frame(width: lineWidth)
             }
             .foregroundStyle(.tint)
-            
+
             // --- bottom part ---
-            
+
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
@@ -728,16 +1073,16 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
                     topTrailingRadius: 0
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
-                
+
                 VStack {
                     HStack {
                         Spacer()
                             .frame(width: lineWidth)
-                        
+
                         Rectangle()
                             .foregroundStyle(.white)
                             .blendMode(.destinationOut)
-                        
+
                         Spacer()
                             .frame(width: lineWidth)
                     }
@@ -747,20 +1092,20 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
             .compositingGroup()
         }
     }
-    
+
     @ViewBuilder private func doubleLinePart() -> some View {
         HStack {
             Rectangle()
                 .frame(width: lineWidth)
-            
+
             Spacer()
-            
+
             Rectangle()
                 .frame(width: lineWidth)
         }
         .foregroundStyle(.tint)
     }
-    
+
     @ViewBuilder private func singleSelectionPart(isBottomOfList: Bool) -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: cornerRadius,
@@ -770,9 +1115,9 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
     }
-    
+
     // MARK: Functions
-    
+
     private func updateSelection(selection: Set<V>) {
         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
         lineWidth = selection.contains(item) ? maxLineWidth : .zero
@@ -804,8 +1149,8 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> ()
-    
+    let add: (inout [V]) -> Void
+
     var body: some View {
         LuminareList(
             "List Header", "List Footer",
@@ -822,6 +1167,10 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                         }
                     }
                 }
+                .swipeActions {
+                    Button("Swipe me!") {
+                    }
+                }
         } emptyView: {
             Text("Empty")
                 .foregroundStyle(.secondary)
@@ -831,7 +1180,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                     add(&items)
                 }
             }
-            
+
             Button("Sort") {
                 withAnimation {
                     items.sort(by: <)
@@ -841,7 +1190,11 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     }
 }
 
-#Preview("LuminareList") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareList",
+    traits: .sizeThatFitsLayout
+) {
     ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
         guard items.count < 100 else { return }
         let random = { Int.random(in: 0..<100) }
@@ -849,5 +1202,4 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         while items.contains([new]) { new = random() }
         items.append(new)
     }
-    .padding()
 }

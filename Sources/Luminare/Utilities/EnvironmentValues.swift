@@ -11,8 +11,9 @@ import SwiftUI
 
 // MARK: LuminareTint
 
-// currently, it is impossible to read the `.tint(Color)` modifier on a view
+// currently, it is impossible to read the `.tint()` modifier on a view
 // this is a custom environement value as an alternative implementation of it
+// in practice, it should always be synchronized with `.tint()`
 public struct LuminareTintEnvironmentKey: EnvironmentKey {
     public static var defaultValue: () -> Color = { .accentColor }
 }

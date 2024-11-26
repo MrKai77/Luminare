@@ -9,10 +9,14 @@ import SwiftUI
 
 // MARK: - Popup
 
-public struct LuminarePopup<Content: View>: NSViewRepresentable {
+public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
+
     private let material: NSVisualEffectView.Material
     @Binding private var isPresented: Bool
-    
+
     @ViewBuilder private let content: () -> Content
 
     public init(
@@ -28,31 +32,36 @@ public struct LuminarePopup<Content: View>: NSViewRepresentable {
     public func makeNSView(context _: Context) -> NSView {
         .init()
     }
-    
+
     // !!! referencing `isPresented` in this function is necessary for triggering view update
     public func updateNSView(_ nsView: NSView, context: Context) {
-        let _ = isPresented
+        _ = isPresented
         DispatchQueue.main.async {
             context.coordinator.setVisible(isPresented, in: nsView)
         }
     }
 
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(self, content: content)
+    public func makeCoordinator() -> Coordinator<some View> {
+        Coordinator(self) {
+            content()
+                .environment(\.luminareAnimation, animation)
+                .environment(\.luminareAnimationFast, animationFast)
+                .overrideTint(tint)
+        }
     }
-    
+
     // MARK: - Coordinator
 
     @MainActor
-    public class Coordinator: NSObject, NSWindowDelegate {
+    public class Coordinator<InnerContent>: NSObject, NSWindowDelegate where InnerContent: View {
         private let view: LuminarePopup
-        private var content: () -> Content
+        private var content: () -> InnerContent
         private var originalYPoint: CGFloat?
         var panel: LuminarePopupPanel?
-        
+
         private var monitor: Any?
 
-        init(_ parent: LuminarePopup, content: @escaping () -> Content) {
+        init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
             self.view = parent
             self.content = content
             super.init()
@@ -65,34 +74,34 @@ public struct LuminarePopup<Content: View>: NSViewRepresentable {
                 panel?.close()
                 return
             }
-            
+
             guard let view else { return }
-            
+
             guard panel == nil else { return }
-            
+
             initializePopup()
             guard let panel else { return }
-            
+
             // panel size
             let targetSize = NSSize(width: 300, height: 300)
             let extraPadding: CGFloat = 10
-            
+
             // get coordinates to place popopver
             guard let windowFrame = view.window?.frame else { return }
             let viewBounds = view.bounds
             var targetPoint = view.convert(viewBounds, to: nil).origin // convert to window coordinates
             originalYPoint = targetPoint.y
-            
+
             // correct panel position
             targetPoint.y += windowFrame.minY
             targetPoint.x += windowFrame.minX
             targetPoint.y -= targetSize.height + extraPadding
-            
+
             // set position and show panel
             panel.setContentSize(targetSize)
             panel.setFrameOrigin(targetPoint)
             panel.makeKeyAndOrderFront(nil)
-            
+
             if monitor == nil {
                 DispatchQueue.main.async { [weak self] in
                     self?.monitor = NSEvent.addLocalMonitorForEvents(matching: [
@@ -158,10 +167,10 @@ public struct LuminarePopup<Content: View>: NSViewRepresentable {
 
 private struct PopupPreview<Label, Content>: View where Label: View, Content: View {
     @State var isPresented: Bool = false
-    
+
     @ViewBuilder let content: () -> Content
     @ViewBuilder let label: () -> Label
-    
+
     var body: some View {
         Button {
             isPresented.toggle()

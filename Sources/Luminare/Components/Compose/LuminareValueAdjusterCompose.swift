@@ -7,130 +7,101 @@
 
 import SwiftUI
 
-public enum LuminareValueAdjusterControlSize {
-    case regular
-    case compact
-    
-    var height: CGFloat {
-        switch self {
-        case .regular: 70
-        case .compact: 34
-        }
-    }
-}
-
 // MARK: - Value Adjuster (Compose)
 
-public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    public typealias ControlSize = LuminareValueAdjusterControlSize
-    
+public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
+where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
+      F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
+    public typealias ControlSize = LuminareComposeControlSize
+
     private enum FocusedField {
         case textbox
     }
-    
+
     // MARK: Environments
-    
+
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
 
     // MARK: Fields
 
+    @Binding private var value: V
+    private let range: ClosedRange<V>, step: V.Stride?
+    private let format: F
+    private let clampsUpper: Bool, clampsLower: Bool
     private let horizontalPadding: CGFloat
+    private let controlSize: ControlSize
 
-    private let formatter: NumberFormatter
-    private var totalRange: V {
-        sliderRange.upperBound - sliderRange.lowerBound
-    }
+    @ViewBuilder private let content: (AnyView) -> Content, label: () -> Label
 
     @State private var isShowingTextBox = false
+    @State var eventMonitor: Any?
 
     @FocusState private var focusedField: FocusedField?
 
-    @ViewBuilder private let content: (AnyView) -> Content
-    @ViewBuilder private let label: () -> Label
-    
-    @Binding private var value: V
-    private let sliderRange: ClosedRange<V>
-    private var step: V
-    private let upperClamp: Bool
-    private let lowerClamp: Bool
-    private let controlSize: ControlSize
-    private let decimalPlaces: Int
-    
-    @State var eventMonitor: AnyObject?
-    
     // MARK: Initializers
 
-    // TODO: max digit spacing for label
     public init(
         value: Binding<V>,
-        sliderRange: ClosedRange<V>,
+        in range: ClosedRange<V>, step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
         horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
         controlSize: ControlSize = .regular,
         decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.content = content
-        self.label = label
-        
         self._value = value
-        self.sliderRange = sliderRange
-        self.lowerClamp = lowerClamp
-        self.upperClamp = upperClamp
+        self.range = range
+        self.step = step
+        self.format = format
+        self.clampsUpper = clampsUpper
+        self.clampsLower = clampsLower
+        self.horizontalPadding = horizontalPadding
         self.controlSize = controlSize
 
-        self.decimalPlaces = decimalPlaces
-
-        self.formatter = NumberFormatter()
-        formatter.maximumFractionDigits = 5
-
-        if let step {
-            self.step = step
-        } else {
-            self.step = 1
-        }
-        
-        self.horizontalPadding = horizontalPadding
+        self.content = content
+        self.label = label
     }
-    
+
     public init(
         _ key: LocalizedStringKey,
         value: Binding<V>,
-        sliderRange: ClosedRange<V>,
+        in range: ClosedRange<V>, step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
         horizontalPadding: CGFloat = 8,
-        step: V? = nil,
-        lowerClamp: Bool = false,
-        upperClamp: Bool = false,
         controlSize: ControlSize = .regular,
-        decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
             value: value,
-            sliderRange: sliderRange,
+            in: range, step: step,
+            format: format,
+            clampsUpper: clampsUpper,
+            clampsLower: clampsLower,
             horizontalPadding: horizontalPadding,
-            step: step,
-            lowerClamp: lowerClamp,
-            upperClamp: upperClamp,
             controlSize: controlSize,
-            decimalPlaces: decimalPlaces,
             content: content
         ) {
             Text(key)
         }
     }
-    
+
     // MARK: Body
 
     public var body: some View {
         VStack {
-            if controlSize == .regular {
-                LuminareCompose(horizontalPadding: horizontalPadding) {
+            switch controlSize {
+            case .regular:
+                LuminareCompose(
+                    horizontalPadding: horizontalPadding,
+                    reducesTrailingSpace: true
+                ) {
                     text()
                 } label: {
                     label()
@@ -138,14 +109,17 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
 
                 slider()
                     .padding(.horizontal, horizontalPadding)
-            } else {
-                LuminareCompose(horizontalPadding: horizontalPadding, spacing: 12) {
+                    .padding(.trailing, -2)
+            case .compact:
+                LuminareCompose(
+                    horizontalPadding: horizontalPadding, spacing: 12,
+                    reducesTrailingSpace: true
+                ) {
                     HStack(spacing: 12) {
                         slider()
-                        
+
                         text()
                     }
-                    .frame(width: 270)
                 } label: {
                     label()
                 }
@@ -156,19 +130,30 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         .animation(animation, value: isShowingTextBox)
     }
 
+    private var totalRange: V {
+        range.upperBound - range.lowerBound
+    }
+
     @ViewBuilder private func slider() -> some View {
-        Slider(
-            value: Binding(
-                get: {
-                    value
-                },
-                set: { newValue in
-                    value = newValue
-                    isShowingTextBox = false
-                }
-            ),
-            in: sliderRange
-        )
+        let binding: Binding<V> = .init {
+            value
+        } set: { newValue in
+            value = newValue
+            isShowingTextBox = false
+        }
+
+        if let step {
+            Slider(
+                value: binding,
+                in: range,
+                step: step
+            )
+        } else {
+            Slider(
+                value: binding,
+                in: range
+            )
+        }
     }
 
     @ViewBuilder private func text() -> some View {
@@ -177,23 +162,20 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                 if isShowingTextBox {
                     TextField(
                         "",
-                        value: Binding(
-                            get: {
-                                value
-                            },
-                            set: {
-                                if lowerClamp, upperClamp {
-                                    value = $0.clamped(to: sliderRange)
-                                } else if lowerClamp {
-                                    value = max(sliderRange.lowerBound, $0)
-                                } else if upperClamp {
-                                    value = min(sliderRange.upperBound, $0)
-                                } else {
-                                    value = $0
-                                }
+                        value: .init(.init {
+                            value
+                        } set: { newValue in
+                            if clampsLower, clampsUpper {
+                                value = newValue.clamped(to: range)
+                            } else if clampsLower {
+                                value = max(range.lowerBound, newValue)
+                            } else if clampsUpper {
+                                value = min(range.upperBound, newValue)
+                            } else {
+                                value = newValue
                             }
-                        ),
-                        formatter: formatter
+                        }),
+                        format: format
                     )
                     .onSubmit {
                         withAnimation(animationFast) {
@@ -212,14 +194,14 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                             focusedField = .textbox
                         }
                     } label: {
-                        Text(String(format: "%.\(decimalPlaces)f", value as! CVarArg))
+                        Text(format.format(value))
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
             }
-            
+
             content(.init(view))
         }
         .frame(maxWidth: 150)
@@ -252,7 +234,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         }
         .opacity(isEnabled ? 1 : 0.5)
     }
-    
+
     // MARK: Functions
 
     func addEventMonitor() {
@@ -268,20 +250,33 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
                 return event
             }
 
+            let isShiftDown = event.modifierFlags.contains(.shift) // x10
+            let isOptionDown = event.modifierFlags.contains(.option) // x0.1
+            let acceleration: V = if isShiftDown && isOptionDown {
+                1
+            } else if isShiftDown {
+                10
+            } else if isOptionDown {
+                0.1
+            } else {
+                1
+            }
+            let step = V(step ?? 1)
+
             if event.keyCode == upArrow {
-                value += step
+                value += step * acceleration
             }
 
             if event.keyCode == downArrow {
-                value -= step
+                value -= step * acceleration
             }
 
-            if lowerClamp, upperClamp {
-                value = value.clamped(to: sliderRange)
-            } else if lowerClamp {
-                value = max(sliderRange.lowerBound, value)
-            } else if upperClamp {
-                value = min(sliderRange.upperBound, value)
+            if clampsLower, clampsUpper {
+                value = value.clamped(to: range)
+            } else if clampsLower {
+                value = max(range.lowerBound, value)
+            } else if clampsUpper {
+                value = min(range.upperBound, value)
             } else {
                 value = value
             }
@@ -300,14 +295,18 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
 
 // MARK: - Preview
 
-#Preview("LuminareValueAdjusterCompose") {
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareValueAdjusterCompose",
+    traits: .sizeThatFitsLayout
+) {
+    @Previewable @State var value: Double = 42
+
     LuminareSection {
         LuminareValueAdjusterCompose(
-            value: .constant(42),
-            sliderRange: 0...128,
-            step: 1,
-            lowerClamp: true, 
-            upperClamp: false
+            value: $value,
+            in: 0...128,
+            format: .number.precision(.fractionLength(0...3))
         ) { view in
             HStack(spacing: 0) {
                 Text("#")
@@ -317,20 +316,17 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
-                
+
                 Text("Composed")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
-        
-        
+
         LuminareValueAdjusterCompose(
-            value: .constant(42),
-            sliderRange: 0...128,
-            step: 1,
-            lowerClamp: true,
-            upperClamp: false,
+            value: $value,
+            in: 0...128,
+            format: .number.precision(.fractionLength(0...3)),
             controlSize: .compact
         ) { button in
             HStack(spacing: 0) {
@@ -341,12 +337,11 @@ public struct LuminareValueAdjusterCompose<Label, Content, V>: View where Label:
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
-                
+
                 Text("Composed, Compact")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
     }
-    .padding()
 }
