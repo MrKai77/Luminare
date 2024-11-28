@@ -11,16 +11,13 @@ import SwiftUI
 
 /// A stylized, composed picker for discrete values with a slider.
 public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: View, Content: View, V: Equatable {
-    public typealias ControlSize = LuminareComposeControlSize
-
     // MARK: Environments
 
     @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareComposeControlSize) private var controlSize
 
     // MARK: Fields
-
-    private let horizontalPadding: CGFloat
-    private let controlSize: ControlSize
 
     @ViewBuilder private let content: (V) -> Content, label: () -> Label
 
@@ -35,18 +32,13 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
-    ///   - horizontalPadding: the horizontal padding around the composed content.
     ///   - content: the content generator that accepts a value.
     ///   - label: the label.
     public init(
         _ options: [V], selection: Binding<V>,
-        horizontalPadding: CGFloat = 8,
-        controlSize: ControlSize = .regular,
         @ViewBuilder content: @escaping (V) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.horizontalPadding = horizontalPadding
-        self.controlSize = controlSize
         self.content = content
         self.label = label
         self.options = options
@@ -60,19 +52,14 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
-    ///   - horizontalPadding: the horizontal padding around the composed content.
     ///   - content: the content generator that accepts a value.
     public init(
         _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
-        horizontalPadding: CGFloat = 8,
-        controlSize: ControlSize = .regular,
         @ViewBuilder content: @escaping (V) -> Content
     ) where Label == Text {
         self.init(
-            options, selection: selection,
-            horizontalPadding: horizontalPadding,
-            controlSize: controlSize
+            options, selection: selection
         ) { value in
             content(value)
         } label: {
@@ -86,20 +73,15 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
-    ///   - horizontalPadding: the horizontal padding around the composed content.
     ///   - contentKey: the content generator that accepts a value.
     ///   - label: the label.
     public init(
         _ options: [V], selection: Binding<V>,
-        horizontalPadding: CGFloat = 8,
-        controlSize: ControlSize = .regular,
         contentKey: @escaping (V) -> LocalizedStringKey,
         @ViewBuilder label: @escaping () -> Label
     ) where Content == Text {
         self.init(
-            options, selection: selection,
-            horizontalPadding: horizontalPadding,
-            controlSize: controlSize
+            options, selection: selection
         ) { value in
             Text(contentKey(value))
         } label: {
@@ -114,19 +96,14 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
-    ///   - horizontalPadding: the horizontal padding around the composed content.
     ///   - contentKey: the content generator that accepts a value.
     public init(
         _ key: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
-        horizontalPadding: CGFloat = 8,
-        controlSize: ControlSize = .regular,
         contentKey: @escaping (V) -> LocalizedStringKey
     ) where Label == Text, Content == Text {
         self.init(
             options, selection: selection,
-            horizontalPadding: horizontalPadding,
-            controlSize: controlSize,
             contentKey: contentKey
         ) {
             Text(key)
@@ -139,10 +116,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         VStack {
             switch controlSize {
             case .regular:
-                LuminareCompose(
-                    horizontalPadding: horizontalPadding,
-                    reducesTrailingSpace: true
-                ) {
+                LuminareCompose(reducesTrailingSpace: true) {
                     text()
                 } label: {
                     label()
@@ -152,10 +126,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                     .padding(.horizontal, horizontalPadding)
                     .padding(.trailing, -2)
             case .compact:
-                LuminareCompose(
-                    horizontalPadding: horizontalPadding, spacing: 12,
-                    reducesTrailingSpace: true
-                ) {
+                LuminareCompose(spacing: 12, reducesTrailingSpace: true) {
                     HStack(spacing: 12) {
                         slider()
 
@@ -216,24 +187,6 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     LuminareSection {
         LuminareSliderPickerCompose(
-            Array(0...4), selection: $selection,
-            controlSize: .compact
-        ) { value in
-            Text("\(value) is Chosen")
-                .monospaced()
-        } label: {
-            VStack(alignment: .leading) {
-                Text("Slide to pick a value")
-
-                Text("Composed")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    LuminareSection {
-        LuminareSliderPickerCompose(
             Array(0...4), selection: $selection
         ) { value in
             Text("\(value) is Chosen")
@@ -247,5 +200,21 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                     .foregroundStyle(.secondary)
             }
         }
+        
+        LuminareSliderPickerCompose(
+            Array(0...4), selection: $selection
+        ) { value in
+            Text("\(value) is Chosen")
+                .monospaced()
+        } label: {
+            VStack(alignment: .leading) {
+                Text("Slide to pick a value")
+
+                Text("Composed, Compact")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .luminareComposeControlSize(.compact)
     }
 }

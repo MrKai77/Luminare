@@ -31,10 +31,11 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     // MARK: Fields
 
-    let minHeight: CGFloat, horizontalPadding: CGFloat
     let contentMaxWidth: CGFloat?
     let spacing: CGFloat?
     let reducesTrailingSpace: Bool
@@ -46,8 +47,6 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     /// Initializes a ``LuminareCompose``.
     ///
     /// - Parameters:
-    ///   - minHeight: the minimum height of the composed view.
-    ///   - horizontalPadding: the horizontal padding around the composed content.
     ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
     ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
@@ -56,15 +55,12 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     ///   - content: the content.
     ///   - label: the label.
     public init(
-        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
         reducesTrailingSpace: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.minHeight = minHeight
-        self.horizontalPadding = horizontalPadding
         self.contentMaxWidth = contentMaxWidth
         self.spacing = spacing
         self.reducesTrailingSpace = reducesTrailingSpace
@@ -76,8 +72,6 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     ///
     /// - Parameters:
     ///   - key: the `LocalizedStringKey` to look up the label text.
-    ///   - minHeight: the minimum height of the composed view.
-    ///   - horizontalPadding: the horizontal padding around the composed content.
     ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
     ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
@@ -86,14 +80,12 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
     ///   - content: the content.
     public init(
         _ key: LocalizedStringKey,
-        minHeight: CGFloat = 34, horizontalPadding: CGFloat = 8,
         contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
         reducesTrailingSpace: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
-            minHeight: minHeight, horizontalPadding: horizontalPadding,
             contentMaxWidth: contentMaxWidth,
             spacing: spacing,
             reducesTrailingSpace: reducesTrailingSpace

@@ -38,12 +38,13 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     // MARK: Environments
 
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareCompactPickerStyle) private var style
 
     // MARK: Fields
-
-    private let minHeight: CGFloat, horizontalPadding: CGFloat, cornerRadius: CGFloat
-    private let isBordered: Bool
-    private let style: PickerStyle
 
     @Binding private var selection: V
     @ViewBuilder private let content: () -> Content
@@ -56,26 +57,12 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     ///
     /// - Parameters:
     ///   - selection: the binding of the selected value.
-    ///   - minHeight: the minimum height of the inner view.
-    ///   - horizontalPadding: the horizontal padding of the inner view.
-    ///   - cornerRadius: the radius of the corners..
-    ///   - isBordered: whether to display a border while not hovering.
-    ///   - style: the ``LuminareCompactPickerStyle`` that defines the style of the picker.
     ///   - content: the selectable values.
     public init(
         selection: Binding<V>,
-        minHeight: CGFloat = 30, horizontalPadding: CGFloat = 4,
-        cornerRadius: CGFloat = 8,
-        isBordered: Bool = true,
-        style: PickerStyle = .menu,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._selection = selection
-        self.minHeight = minHeight
-        self.horizontalPadding = horizontalPadding
-        self.cornerRadius = cornerRadius
-        self.isBordered = isBordered
-        self.style = style
         self.content = content
     }
 
@@ -105,12 +92,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 isHovering = hover
             }
         }
-        .modifier(LuminareHoverable(
-            minHeight: minHeight,
-            horizontalPadding: horizontalPadding,
-            cornerRadius: cornerRadius,
-            isBordered: isBordered
-        ))
+        .modifier(LuminareHoverable())
     }
 
     @ViewBuilder private func variadic<Layout>(
@@ -233,12 +215,9 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 private struct PickerPreview<V>: View where V: Hashable & Equatable {
     let elements: [V]
     @State var selection: V
-    var isBordered: Bool = true
-    var hasDividers: Bool = true
-    let style: LuminareCompactPickerStyle
 
     var body: some View {
-        LuminareCompactPicker(selection: $selection, isBordered: isBordered, style: style) {
+        LuminareCompactPicker(selection: $selection) {
             ForEach(elements, id: \.self) { element in
                 Text("\(element)")
             }
@@ -263,7 +242,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
         }
 
         LuminareCompose("Pick from a menu", reducesTrailingSpace: true) {
-            PickerPreview(elements: Array(0..<200), selection: 42, style: .menu)
+            PickerPreview(elements: Array(0..<200), selection: 42)
         }
 
         VStack {
@@ -272,12 +251,14 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
 
             PickerPreview(
                 elements: ["macOS", "Linux", "Windows"],
-                selection: "macOS",
-                isBordered: false, style: .segmented(hasDividers: false)
+                selection: "macOS"
             )
-            .environment(\.luminareAnimation, .bouncy)
+            .luminareAnimation(.bouncy)
+            .luminareCompactPickerStyle(.segmented(hasDividers: false))
+            .luminareBordered(false)
 
-            PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42, style: .segmented())
+            PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42)
+                .luminareCompactPickerStyle(.segmented())
         }
     }
 }

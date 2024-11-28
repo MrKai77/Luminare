@@ -15,33 +15,15 @@ import SwiftUI
 public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-
-    private let cornerRadius: CGFloat, minHeight: CGFloat
-
-    @State private var isHovering: Bool
-
-    /// Initializes a ``LuminareButtonStyle``.
-    ///
-    /// - Parameters:
-    ///   - cornerRadius: the corner radius of the button.
-    ///   - minHeight: the minimum height of the background.
-    public init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34
-    ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
-        self.isHovering = false
-    }
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareMinHeight) private var minHeight
+    
+    @State private var isHovering: Bool = false
 
 #if DEBUG
     init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34,
         isHovering: Bool = false
     ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
         self.isHovering = isHovering
     }
 #endif
@@ -63,7 +45,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 }
             }
             .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
     }
 }
@@ -76,33 +58,15 @@ public struct LuminareButtonStyle: ButtonStyle {
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-
-    private let cornerRadius: CGFloat, minHeight: CGFloat
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareMinHeight) private var minHeight
 
     @State private var isHovering: Bool
 
-    /// Initializes a ``LuminareDestructiveButtonStyle``.
-    ///
-    /// - Parameters:
-    ///   - cornerRadius: the corner radius of the button.
-    ///   - minHeight: the minimum height of the background.
-    public init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34
-    ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
-        self.isHovering = false
-    }
-
 #if DEBUG
     init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34,
         isHovering: Bool = false
     ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
         self.isHovering = isHovering
     }
 #endif
@@ -122,7 +86,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
                 }
             }
             .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
     }
 }
@@ -137,33 +101,15 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-
-    private let cornerRadius: CGFloat, minHeight: CGFloat
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareMinHeight) private var minHeight
 
     @State private var isHovering: Bool
 
-    /// Initializes a ``LuminareProminentButtonStyle``.
-    ///
-    /// - Parameters:
-    ///   - cornerRadius: the corner radius of the button.
-    ///   - minHeight: the minimum height of the background.
-    public init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34
-    ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
-        self.isHovering = false
-    }
-
 #if DEBUG
     init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34,
         isHovering: Bool = false
     ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
         self.isHovering = isHovering
     }
 #endif
@@ -183,7 +129,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
                 }
             }
             .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
     }
 
@@ -225,9 +171,9 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
 public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareMinHeight) private var minHeight
 
-    private let minHeight: CGFloat
-    private let cornerRadius: CGFloat
     @ViewBuilder private let icon: () -> Image
 
     @State private var isHovering: Bool
@@ -235,29 +181,19 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     /// Initializes a ``LuminareCosmeticButtonStyle``.
     ///
     /// - Parameters:
-    ///   - minHeight: the minimum height of the background.
-    ///   - cornerRadius: the corner radius of the button.
     ///   - icon: the trailing aligned `Image` to display while hovering.
     public init(
-        minHeight: CGFloat = 34,
-        cornerRadius: CGFloat = 2,
         @ViewBuilder icon: @escaping () -> Image
     ) {
-        self.minHeight = minHeight
-        self.cornerRadius = cornerRadius
         self.icon = icon
         self.isHovering = false
     }
 
 #if DEBUG
     init(
-        minHeight: CGFloat = 34,
-        cornerRadius: CGFloat = 2,
         isHovering: Bool = false,
         @ViewBuilder icon: @escaping () -> Image
     ) {
-        self.minHeight = minHeight
-        self.cornerRadius = cornerRadius
         self.icon = icon
         self.isHovering = isHovering
     }
@@ -280,7 +216,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 }
             }
             .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
             .overlay {
                 HStack {
@@ -305,10 +241,10 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareMinHeight) private var minHeight
 
     private let extraCompact: Bool
-    private let minHeight: CGFloat
-    private let cornerRadius: CGFloat
 
     @State var isHovering: Bool
 
@@ -316,29 +252,19 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     ///
     /// - Parameters:
     ///   - extraCompact: whether to eliminate the padding around the content.
-    ///   - minHeight: the minimum height of the background.
-    ///   - cornerRadius: the corner radius of the button.
     public init(
-        extraCompact: Bool = false,
-        minHeight: CGFloat = 34,
-        cornerRadius: CGFloat = 8
+        extraCompact: Bool = false
     ) {
         self.extraCompact = extraCompact
-        self.minHeight = minHeight
-        self.cornerRadius = cornerRadius
         self.isHovering = false
     }
 
 #if DEBUG
     init(
         extraCompact: Bool = false,
-        minHeight: CGFloat = 34,
-        cornerRadius: CGFloat = 8,
         isHovering: Bool = false
     ) {
         self.extraCompact = extraCompact
-        self.minHeight = minHeight
-        self.cornerRadius = cornerRadius
         self.isHovering = isHovering
     }
 #endif
@@ -357,7 +283,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             }
             .background(border())
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
@@ -370,9 +296,9 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @ViewBuilder private func border() -> some View {
         Group {
             if isHovering {
-                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary)
+                RoundedRectangle(cornerRadius: buttonCornerRadius).strokeBorder(.quaternary)
             } else {
-                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary.opacity(0.7))
+                RoundedRectangle(cornerRadius: buttonCornerRadius).strokeBorder(.quaternary.opacity(0.7))
             }
         }
     }
@@ -392,20 +318,19 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 ///     }
 /// }
 public struct LuminareBordered: ViewModifier {
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    
     private let isHighlighted: Bool
-    private let cornerRadius: CGFloat
 
     /// Initializes a ``LuminareBordered``.
     ///
     /// - Parameters:
     ///   - isHighlighted: whether to display a highlighted overlay.
-    ///   - cornerRadius: the corner radius of the button.
+    ///   - buttonCornerRadius: the corner radius of the button.
     public init(
-        isHighlighted: Bool = false,
-        cornerRadius: CGFloat = 8
+        isHighlighted: Bool = false
     ) {
         self.isHighlighted = isHighlighted
-        self.cornerRadius = cornerRadius
     }
 
     public func body(content: Content) -> some View {
@@ -417,9 +342,9 @@ public struct LuminareBordered: ViewModifier {
                     Rectangle().foregroundStyle(.quinary)
                 }
             }
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .background {
-                RoundedRectangle(cornerRadius: cornerRadius)
+                RoundedRectangle(cornerRadius: buttonCornerRadius)
                     .strokeBorder(.quaternary)
             }
     }
@@ -440,43 +365,17 @@ public struct LuminareBordered: ViewModifier {
 /// }
 public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareAnimationFast) private var animationFast
-
-    private let minHeight: CGFloat, horizontalPadding: CGFloat
-    private let cornerRadius: CGFloat
-    private let isBordered: Bool
-
-    @State private var isHovering: Bool
-
-    /// Initializes a ``LuminareHoverable``.
-    ///
-    /// - Parameters:
-    ///   - minHeight: the minimum height of the background.
-    ///   - horizontalPadding: the horizontal padding around the content.
-    ///   - cornerRadius: the corner radius of the button.
-    ///   - isBordered: whether to display a border while not hovering.
-    public init(
-        minHeight: CGFloat = 32, horizontalPadding: CGFloat = 8,
-        cornerRadius: CGFloat = 8,
-        isBordered: Bool = false
-    ) {
-        self.minHeight = minHeight
-        self.horizontalPadding = horizontalPadding
-        self.cornerRadius = cornerRadius
-        self.isBordered = isBordered
-        self.isHovering = false
-    }
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareIsBordered) private var isBordered
+    
+    @State private var isHovering: Bool = false
 
 #if DEBUG
     init(
-        minHeight: CGFloat = 32, horizontalPadding: CGFloat = 8,
-        cornerRadius: CGFloat = 8,
-        isBordered: Bool = false,
         isHovering: Bool = false
     ) {
-        self.minHeight = minHeight
-        self.horizontalPadding = horizontalPadding
-        self.cornerRadius = cornerRadius
-        self.isBordered = isBordered
         self.isHovering = isHovering
     }
 #endif
@@ -499,13 +398,13 @@ public struct LuminareHoverable: ViewModifier {
                         .foregroundStyle(.clear)
                 }
             }
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .background {
                 if isHovering {
-                    RoundedRectangle(cornerRadius: cornerRadius)
+                    RoundedRectangle(cornerRadius: buttonCornerRadius)
                         .strokeBorder(.quaternary)
                 } else if isBordered {
-                    RoundedRectangle(cornerRadius: cornerRadius)
+                    RoundedRectangle(cornerRadius: buttonCornerRadius)
                         .strokeBorder(.quaternary.opacity(0.7))
                 }
             }

@@ -11,13 +11,17 @@ import SwiftUI
 
 /// A stylized content wrapper with a header and a footer.
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
+    // MARK: Environments
+    
+    @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareIsBordered) private var isBordered
+    
     // MARK: Fields
 
     private let hasPadding: Bool, hasDividers: Bool
-    private let isBordered: Bool
 
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
-    private let cornerRadius: CGFloat, innerPadding: CGFloat
+    private let innerPadding: CGFloat
 
     @ViewBuilder private let content: () -> Content, header: () -> Header, footer: () -> Footer
 
@@ -28,10 +32,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     ///   - header: the header.
@@ -39,19 +41,16 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
         self.hasPadding = hasPadding
         self.hasDividers = hasDividers
-        self.isBordered = isBordered
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
-        self.cornerRadius = cornerRadius
         self.innerPadding = innerPadding
         self.content = content
         self.header = header
@@ -65,10 +64,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     public init(
@@ -76,17 +73,15 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         _ footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == Text {
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
-            cornerRadius: cornerRadius, innerPadding: innerPadding
+            innerPadding: innerPadding
         ) {
             content()
         } header: {
@@ -101,28 +96,24 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     ///   - header: the header.
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
     ) where Footer == EmptyView {
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
-            cornerRadius: cornerRadius, innerPadding: innerPadding
+            innerPadding: innerPadding
         ) {
             content()
         } header: {
@@ -138,27 +129,23 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     public init(
         _ headerKey: LocalizedStringKey,
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == EmptyView {
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
-            cornerRadius: cornerRadius, innerPadding: innerPadding
+            innerPadding: innerPadding
         ) {
             content()
         } header: {
@@ -171,28 +158,24 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     ///   - footer: the footer.
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder footer: @escaping () -> Footer
     ) where Header == EmptyView {
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
-            cornerRadius: cornerRadius, innerPadding: innerPadding
+            innerPadding: innerPadding
         ) {
             content()
         } header: {
@@ -208,27 +191,23 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     public init(
         footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == Text {
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
-            cornerRadius: cornerRadius, innerPadding: innerPadding
+            innerPadding: innerPadding
         ) {
             content()
         } footer: {
@@ -241,26 +220,22 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - hasDividers: whether to display dividers between contents.
-    ///   - isBordered: whether to display a border.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - cornerRadius: the radius of the corners..
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     public init(
         hasPadding: Bool = true,
         hasDividers: Bool = true,
-        isBordered: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
-        cornerRadius: CGFloat = 12, innerPadding: CGFloat = 4,
+        innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == EmptyView {
         self.init(
             hasPadding: hasPadding,
             hasDividers: hasDividers,
-            isBordered: isBordered,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
-            cornerRadius: cornerRadius, innerPadding: innerPadding
+            innerPadding: innerPadding
         ) {
             content()
         } header: {

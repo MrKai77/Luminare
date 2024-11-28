@@ -435,8 +435,6 @@ where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
 /// A stylized, abstract stepper that provides vague yet elegant control to numeric values.
 @available(macOS 15.0, *)
 public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    public typealias Alignment = LuminareStepperAlignment
-    public typealias Direction = LuminareStepperDirection
     public typealias Source = LuminareStepperSource<V>
     public typealias ProminentIndicators = LuminareStepperProminentIndicators<V>
 
@@ -444,6 +442,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareStepperAlignment) private var alignment
+    @Environment(\.luminareStepperDirection) private var direction
 
     // MARK: Fields
 
@@ -452,15 +452,14 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
     private let source: Source
 
-    private let alignment: Alignment
-    private let direction: Direction
     private let allowsDragging: Bool
     private let indicatorSpacing: CGFloat, maxSize: CGFloat, margin: CGFloat
 
     private let hasHierarchy: Bool, hasMask: Bool, hasBlur: Bool
-
+    
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
+    
     private let onRoundedValueChange: (V, V) -> Void
 
     @State private var containerSize: CGSize = .zero
@@ -478,8 +477,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
     ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
     ///   Overscrolling is not allowed when dragging inside a finite range.
-    ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
-    ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - indicatorSpacing: the spacing between indicators.
     ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
@@ -495,8 +492,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         source: Source,
 
-        alignment: Alignment = .trailing,
-        direction: Direction = .horizontal,
         allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
@@ -508,13 +503,12 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
+        
         onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
     ) {
         self._value = value
         self.source = source
 
-        self.alignment = alignment
-        self.direction = direction
         self.allowsDragging = allowsDragging
         self.indicatorSpacing = indicatorSpacing
         self.maxSize = maxSize
@@ -526,6 +520,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
+        
         self.onRoundedValueChange = onRoundedValueChange
 
         let rounded = source.round(value.wrappedValue)
@@ -539,8 +534,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     /// - Parameters:
     ///   - value: the value to be edited.
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
-    ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
-    ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
     ///   Overscrolling is not allowed when dragging inside a finite range.
     ///   - indicatorSpacing: the spacing between indicators.
@@ -560,8 +553,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         source: Source,
 
-        alignment: Alignment = .trailing,
-        direction: Direction = .horizontal,
         allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
@@ -574,14 +565,13 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentValues: [V]? = nil,
         prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
+        
         onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
     ) {
         self.init(
             value: value,
             source: source,
 
-            alignment: alignment,
-            direction: direction,
             allowsDragging: allowsDragging,
             indicatorSpacing: indicatorSpacing,
             maxSize: maxSize,
@@ -593,6 +583,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             prominentIndicators: .init(prominentValues, color: prominentColor),
             feedback: feedback,
+            
             onRoundedValueChange: onRoundedValueChange
         )
     }
@@ -912,8 +903,6 @@ private struct StepperPreview<Label, V>: View
 where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @State var value: V
     var source: LuminareStepperSource<V>
-    var alignment: LuminareStepperAlignment = .trailing
-    var direction: LuminareStepperDirection = .horizontal
     var prominentValues: [V]
     @ViewBuilder var label: () -> Label
 
@@ -924,8 +913,6 @@ where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloating
             LuminareStepper(
                 value: $value,
                 source: source,
-                alignment: alignment,
-                direction: direction,
                 prominentValues: prominentValues
             ) { _ in
                     .accentColor
@@ -960,7 +947,6 @@ private struct StepperPopoverPreview: View {
                 LuminareStepper(
                     value: $value,
                     source: .finite(in: 0...100, step: 1),
-                    direction: .horizontal,
                     indicatorSpacing: 10,
                     maxSize: 32
                 )
@@ -988,7 +974,6 @@ private struct StepperPopoverPreview: View {
                 StepperPreview(
                     value: 42,
                     source: .finite(in: -100...50, step: 2),
-                    direction: .horizontal,
                     prominentValues: [0, 42, 50]
                 ) {
                     VStack {
@@ -1004,7 +989,6 @@ private struct StepperPopoverPreview: View {
                 StepperPreview(
                     value: 45,
                     source: .infiniteContinuous(step: 2),
-                    direction: .horizontalAlternate,
                     prominentValues: [0, 42]
                 ) {
                     VStack {
@@ -1016,12 +1000,11 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperDirection(.horizontalAlternate)
 
                 StepperPreview(
                     value: 42,
                     source: .infinite(step: 2),
-                    alignment: .center,
-                    direction: .horizontal,
                     prominentValues: [0, 26, 30, 34, 38, 42, 46, 50, 54, 58]
                 ) {
                     VStack {
@@ -1033,6 +1016,8 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperAlignment(.center)
+                .luminareStepperDirection(.horizontal)
             }
             .frame(width: 450)
 
@@ -1040,8 +1025,6 @@ private struct StepperPopoverPreview: View {
                 StepperPreview(
                     value: 42,
                     source: .finite(in: -100...50, step: 2),
-                    alignment: .center,
-                    direction: .vertical,
                     prominentValues: [0, 38, 40, 42]
                 ) {
                     VStack {
@@ -1053,11 +1036,12 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperAlignment(.center)
+                .luminareStepperDirection(.vertical)
 
                 StepperPreview(
                     value: 42,
                     source: .finiteContinuous(in: -100...50, step: 2),
-                    direction: .verticalAlternate,
                     prominentValues: [0, 38, 40, 42]
                 ) {
                     VStack {
@@ -1069,6 +1053,7 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperDirection(.verticalAlternate)
             }
             .frame(width: 250)
         }

@@ -13,7 +13,7 @@ import SwiftUI
 public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID>: View where Header: View, ContentA: View, ContentB: View, Actions: View, RemoveView: View, Footer: View, V: Hashable, ID: Hashable { // swiftlint:disable:this line_length
     // MARK: Environments
 
-    @Environment(\.clickedOutsideFlag) private var clickedOutsideFlag
+    @Environment(\.luminareClickedOutside) private var luminareClickedOutside
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
 
@@ -802,7 +802,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
         } footer: {
             footer()
         }
-        .onChange(of: clickedOutsideFlag) { _ in
+        .onChange(of: luminareClickedOutside) { _ in
             withAnimation(animation) {
                 selection = []
             }
