@@ -737,6 +737,9 @@ where
     public var body: some View {
         LuminareSection(hasPadding: false) {
             LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                let hasActions = Actions.self != EmptyView.self
+                let hasRemoveView = RemoveView.self != EmptyView.self
+
                 Section {
                     if items.isEmpty {
                         emptyView()
@@ -755,6 +758,7 @@ where
                                             item: item,
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
+                                            roundedTop: !hasActions && !hasRemoveView,
                                             canRefreshSelection:
                                                 $canRefreshSelection,
                                             content: content
@@ -767,6 +771,7 @@ where
                                             item: item,
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
+                                            roundedTop: hasActions || hasRemoveView,
                                             canRefreshSelection:
                                                 $canRefreshSelection,
                                             content: content
@@ -795,57 +800,57 @@ where
                         .listStyle(.plain)
                     }
                 } header: {
-                    let hasActions = Actions.self != EmptyView.self
-                    let hasRemoveView = RemoveView.self != EmptyView.self
-
-                    if hasActions || hasRemoveView {
-                        if isBordered {
-                            VStack(spacing: 0) {
-                                HStack(spacing: 2) {
-                                    if hasActions {
-                                        actions()
-                                            .buttonStyle(LuminareButtonStyle())
+                    Group {
+                        if hasActions || hasRemoveView {
+                            if isBordered {
+                                VStack(spacing: 0) {
+                                    HStack(spacing: 2) {
+                                        if hasActions {
+                                            actions()
+                                                .buttonStyle(LuminareButtonStyle())
+                                        }
+                                        
+                                        if hasRemoveView {
+                                            removeButton()
+                                        }
                                     }
-
-                                    if hasRemoveView {
-                                        removeButton()
+                                    .modifier(
+                                        LuminareCroppedSectionItem(
+                                            isFirstChild: true,
+                                            isLastChild: false
+                                        )
+                                    )
+                                    .luminareMinHeight(actionsMaxHeight ?? 0)
+                                    .frame(maxHeight: actionsMaxHeight)
+                                    .padding(.vertical, 4)
+                                    
+                                    Divider()
+                                        .padding(.vertical, -1) // it's nuanced
+                                }
+                                .background(.ultraThickMaterial)
+                            } else {
+                                LuminareSection {
+                                    HStack(spacing: 2) {
+                                        if hasActions {
+                                            actions()
+                                                .buttonStyle(LuminareButtonStyle())
+                                        }
+                                        
+                                        if hasRemoveView {
+                                            removeButton()
+                                        }
                                     }
                                 }
-                                .modifier(
-                                    LuminareCroppedSectionItem(
-                                        isFirstChild: true,
-                                        isLastChild: false
-                                    )
-                                )
+                                .luminareBordered(true)
                                 .luminareMinHeight(actionsMaxHeight ?? 0)
                                 .frame(maxHeight: actionsMaxHeight)
-                                .padding(.vertical, 4)
-
-                                Divider()
-                                    .padding(.vertical, -1) // it's nuanced
+                                .padding(.horizontal, -4)
+                                .padding(.top, 4)
+                                .padding(.bottom, 8)
                             }
-                            .background(.ultraThickMaterial)
-                        } else {
-                            LuminareSection {
-                                HStack(spacing: 2) {
-                                    if hasActions {
-                                        actions()
-                                            .buttonStyle(LuminareButtonStyle())
-                                    }
-
-                                    if hasRemoveView {
-                                        removeButton()
-                                    }
-                                }
-                            }
-                            .luminareBordered(true)
-                            .luminareMinHeight(actionsMaxHeight ?? 0)
-                            .frame(maxHeight: actionsMaxHeight)
-                            .padding(.horizontal, -4)
-                            .padding(.top, 4)
-                            .padding(.bottom, 8)
                         }
                     }
+                    .luminareButtonCornerRadius()
                 }
             }
         } header: {
@@ -956,20 +961,23 @@ where Content: View, V: Hashable {
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
 
     // MARK: Fields
 
-    @Binding private var item: V
-    @ViewBuilder private let content: (Binding<V>) -> Content
+    @Binding var items: [V]
+    @Binding var selection: Set<V>
 
-    @Binding private var items: [V]
-    @Binding private var selection: Set<V>
-
-    @Binding private var firstItem: V?
-    @Binding private var lastItem: V?
-    @Binding private var canRefreshSelection: Bool
+    @Binding var item: V
+    @Binding var firstItem: V?
+    @Binding var lastItem: V?
+    
+    var roundedTop: Bool = true
+    var roundedBottom: Bool = true
+    @Binding var canRefreshSelection: Bool
+    @ViewBuilder var content: (Binding<V>) -> Content
 
     @State private var isHovering = false
 
@@ -978,26 +986,6 @@ where Content: View, V: Hashable {
 
     private let maxTintOpacity: CGFloat = 0.15
     @State private var tintOpacity: CGFloat = .zero
-
-    // MARK: Initializers
-
-    public init(
-        items: Binding<[V]>,
-        selection: Binding<Set<V>>,
-        item: Binding<V>,
-        firstItem: Binding<V?>,
-        lastItem: Binding<V?>,
-        canRefreshSelection: Binding<Bool>,
-        @ViewBuilder content: @escaping (Binding<V>) -> Content
-    ) {
-        self._items = items
-        self._selection = selection
-        self._item = item
-        self._firstItem = firstItem
-        self._lastItem = lastItem
-        self._canRefreshSelection = canRefreshSelection
-        self.content = content
-    }
 
     // MARK: Body
 
@@ -1067,10 +1055,6 @@ where Content: View, V: Hashable {
         item == items.last
     }
 
-    private var cornerRadius: CGFloat {
-        getCornerRadius(12 + lineWidth / 2.0)
-    }
-
     @ViewBuilder private func itemBackground() -> some View {
         Group {
             tint()
@@ -1105,11 +1089,11 @@ where Content: View, V: Hashable {
 
             ZStack {
                 UnevenRoundedRectangle(
-                    topLeadingRadius: isFirst
+                    topLeadingRadius: isFirst && roundedTop
                         ? cornerRadius : buttonCornerRadius,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
-                    topTrailingRadius: isFirst
+                    topTrailingRadius: isFirst && roundedTop
                         ? cornerRadius : buttonCornerRadius
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
@@ -1166,9 +1150,9 @@ where Content: View, V: Hashable {
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
-                    bottomLeadingRadius: isLast
+                    bottomLeadingRadius: isLast && roundedBottom
                         ? cornerRadius : buttonCornerRadius,
-                    bottomTrailingRadius: isLast
+                    bottomTrailingRadius: isLast && roundedBottom
                         ? cornerRadius : buttonCornerRadius,
                     topTrailingRadius: 0
                 )
@@ -1208,13 +1192,13 @@ where Content: View, V: Hashable {
 
     @ViewBuilder private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
-            topLeadingRadius: isFirst
+            topLeadingRadius: isFirst && roundedTop
                 ? cornerRadius : buttonCornerRadius,
-            bottomLeadingRadius: isLast
+            bottomLeadingRadius: isLast && roundedBottom
                 ? cornerRadius : buttonCornerRadius,
-            bottomTrailingRadius: isLast
+            bottomTrailingRadius: isLast && roundedBottom
                 ? cornerRadius : buttonCornerRadius,
-            topTrailingRadius: isFirst
+            topTrailingRadius: isFirst && roundedTop
                 ? cornerRadius : buttonCornerRadius
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
@@ -1247,10 +1231,6 @@ where Content: View, V: Hashable {
         }
 
         return item == lastItem
-    }
-
-    private func getCornerRadius(_ radius: CGFloat) -> CGFloat {
-        isBordered ? radius : 0
     }
 }
 
@@ -1323,6 +1303,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         }
         .luminareMinHeight(50)
 //        .luminareBordered(false)
+//        .luminareButtonCornerRadius(8)
     }
     .frame(height: 350)
 }
