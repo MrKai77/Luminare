@@ -1,6 +1,6 @@
 @testable import Luminare
-import Testing
 import SwiftUI
+import Testing
 
 struct LuminareTests {
     @Test func test() {

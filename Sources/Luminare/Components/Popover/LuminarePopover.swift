@@ -11,7 +11,7 @@ public enum LuminarePopoverTrigger {
     case hover(delay: CGFloat = 0.5)
     case forceTouch(
         threshold: CGFloat = 0.5,
-        onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> Void = { _, _ in }
+        onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> () = { _, _ in }
     )
 }
 
@@ -21,12 +21,12 @@ public enum LuminarePopoverShade {
 
     var style: AnyShapeStyle? {
         switch self {
-        case .some(let style): style
+        case let .some(style): style
         default: nil
         }
     }
 
-    public static func styled<S: ShapeStyle>(_ style: S = .secondary) -> Self {
+    public static func styled(_ style: some ShapeStyle = .secondary) -> Self {
         .some(.init(style))
     }
 }
@@ -116,7 +116,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             switch trigger {
             case .hover:
                 badge()
-            case .forceTouch(let threshold, let onGesture):
+            case let .forceTouch(threshold, onGesture):
                 ForceTouch(threshold: threshold, gesture: $forceTouchGesture) {
                     badge()
                 }
@@ -127,7 +127,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
 
                         forceTouchRecognized = false
                         isPopoverPresented = recognized
-                    case .active(let event):
+                    case let .active(event):
                         let stage = event.stage
                         isPopoverPresented = true
 
@@ -167,7 +167,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             isHovering = hover
 
             switch trigger {
-            case .hover(let delay):
+            case let .hover(delay):
                 if isHovering {
                     hoverTimer = .scheduledTimer(withTimeInterval: delay, repeats: false) { _ in
                         isPopoverPresented = true
@@ -186,7 +186,6 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             default:
                 break
             }
-
         }
         .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
             Group {
@@ -208,7 +207,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
 
     private var normalizedForceTouchProgress: CGFloat {
         switch trigger {
-        case .forceTouch(let threshold, _):
+        case let .forceTouch(threshold, _):
             let progress = (forceTouchProgress - threshold) / (1 - threshold)
             return max(0, progress)
         default:
@@ -258,8 +257,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
             .luminarePopoverShade(.none)
         }
 
-        LuminareCompose {
-        } label: {
+        LuminareCompose {} label: {
             LuminarePopover(arrowEdge: .trailing) {
                 VStack(alignment: .leading) {
                     Text("The **misfits.** The ~rebels.~")
@@ -271,8 +269,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
             }
         }
 
-        LuminareCompose {
-        } label: {
+        LuminareCompose {} label: {
             HStack {
                 Text("Pops from a dot ↗")
 
@@ -290,12 +287,11 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
             }
         }
 
-        LuminareCompose {
-        } label: {
+        LuminareCompose {} label: {
             PopoverForceTouchPreview(arrowEdge: .top) { gesture, recognized in
                 Group {
                     switch gesture {
-                    case .active(let event) where event.stage == 1 && !recognized:
+                    case let .active(event) where event.stage == 1 && !recognized:
                         ProgressView(value: event.pressure)
                     default:
                         Text("**Think different.**")

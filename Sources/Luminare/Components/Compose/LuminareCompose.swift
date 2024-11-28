@@ -1,6 +1,6 @@
 //
 //  LuminareCompose.swift
-//  
+//
 //
 //  Created by KrLite on 2024/10/25.
 //
@@ -134,9 +134,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 ) {
     LuminareSection {
         LuminareCompose("Label", reducesTrailingSpace: true) {
-            Button {
-
-            } label: {
+            Button {} label: {
                 Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
@@ -145,9 +143,7 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         }
 
         LuminareCompose("Label", reducesTrailingSpace: true) {
-            Button {
-
-            } label: {
+            Button {} label: {
                 Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)

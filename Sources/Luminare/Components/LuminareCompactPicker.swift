@@ -77,7 +77,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     .pickerStyle(.menu)
                     .buttonStyle(.borderless)
                     .padding(.trailing, -2)
-            case .segmented(let hasDividers):
+            case let .segmented(hasDividers):
                 _VariadicView.Tree(SegmentedLayout(
                     minHeight: minHeight,
                     cornerRadius: cornerRadius,
@@ -95,9 +95,9 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         .modifier(LuminareHoverable())
     }
 
-    @ViewBuilder private func variadic<Layout>(
-        layout: Layout, content: () -> some View
-    ) -> some View where Layout: _VariadicView.ViewRoot {
+    @ViewBuilder private func variadic(
+        layout: some _VariadicView.ViewRoot, content: () -> some View
+    ) -> some View {
         _VariadicView.Tree(layout, content: content)
     }
 
@@ -232,8 +232,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
 ) {
     LuminareSection {
         LuminareCompose("Button", reducesTrailingSpace: true) {
-            Button {
-            } label: {
+            Button {} label: {
                 Text("42")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
@@ -246,8 +245,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
         }
 
         VStack {
-            LuminareCompose("Pick from segments") {
-            }
+            LuminareCompose("Pick from segments") {}
 
             PickerPreview(
                 elements: ["macOS", "Linux", "Windows"],

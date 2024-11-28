@@ -5,8 +5,8 @@
 //  Created by KrLite on 2024/10/29.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// The gesture state of a ``ForceTouch``.
 public enum ForceTouchGesture: Equatable {
@@ -113,7 +113,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         self.content = content
     }
 
-    public func makeNSView(context: Context) -> NSView {
+    public func makeNSView(context _: Context) -> NSView {
         let view = NSHostingView(
             rootView: content()
         )
@@ -140,7 +140,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
             let isFirstStage = event.stage == 1
             let isOverThreshold = CGFloat(event.pressure) >= threshold
 
-            gesture = if isValid && (!isFirstStage || isOverThreshold) {
+            gesture = if isValid, !isFirstStage || isOverThreshold {
                 .active(ForceTouchGesture.Event(state, event: event))
             } else {
                 .inactive
@@ -151,7 +151,8 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
             .leftMouseDown,
             .leftMouseUp,
             .mouseMoved,
-            .mouseExited]) { event in
+            .mouseExited
+        ]) { event in
             let locationInView = view.convert(event.locationInWindow, from: nil)
             guard view.bounds.contains(locationInView) else { return event }
 
@@ -207,13 +208,13 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
 // MARK: - Force Touch Gesture Recognizer
 
 class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
-    private let onStateChange: (NSPressGestureRecognizer.State) -> Void
-    private let onPressureChange: (NSEvent) -> Void
+    private let onStateChange: (NSPressGestureRecognizer.State) -> ()
+    private let onPressureChange: (NSEvent) -> ()
 
     init(
         _ configuration: NSPressureConfiguration,
-        onStateChange: @escaping (NSPressGestureRecognizer.State) -> Void,
-        onPressureChange: @escaping (NSEvent) -> Void
+        onStateChange: @escaping (NSPressGestureRecognizer.State) -> (),
+        onPressureChange: @escaping (NSEvent) -> ()
     ) {
         self.onStateChange = onStateChange
         self.onPressureChange = onPressureChange
@@ -224,7 +225,8 @@ class ForceTouchGestureRecognizer: NSPressGestureRecognizer {
         self.action = #selector(handlePressureChange)
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -253,7 +255,7 @@ private struct ForceTouchPreview<Content>: View where Content: View {
                 switch gesture {
                 case .inactive:
                     Color.clear
-                case .active(let event):
+                case let .active(event):
                     Color.red.opacity(event.pressure)
                 }
             }

@@ -1,6 +1,6 @@
 //
 //  View+Extensions.swift
-//  
+//
 //
 //  Created by KrLite on 2024/11/3.
 //
@@ -20,14 +20,14 @@ public extension View {
 // MARK: - Popover
 
 public extension View {
-    @ViewBuilder func luminarePopover<Content>(
+    @ViewBuilder func luminarePopover(
         arrowEdge: Edge = .bottom,
         trigger: LuminarePopoverTrigger = .hover(),
         cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         shade: LuminarePopoverShade = .styled(),
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
         LuminarePopover(
             arrowEdge: arrowEdge,
             trigger: trigger,

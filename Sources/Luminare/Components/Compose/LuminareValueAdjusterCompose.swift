@@ -10,8 +10,8 @@ import SwiftUI
 // MARK: - Value Adjuster (Compose)
 
 public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
-where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
-      F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
+    where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
+    F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
     public typealias ControlSize = LuminareComposeControlSize
 
     private enum FocusedField {
@@ -48,7 +48,6 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        decimalPlaces: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
@@ -238,7 +237,7 @@ where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride:
 
             let isShiftDown = event.modifierFlags.contains(.shift) // x10
             let isOptionDown = event.modifierFlags.contains(.option) // x0.1
-            let acceleration: V = if isShiftDown && isOptionDown {
+            let acceleration: V = if isShiftDown, isOptionDown {
                 1
             } else if isShiftDown {
                 10
