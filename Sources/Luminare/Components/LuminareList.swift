@@ -840,6 +840,7 @@ where
                             .frame(maxHeight: actionsMaxHeight)
                             .padding(.horizontal, -4)
                             .padding(.top, 4)
+                            .padding(.bottom, 6)
                         }
                     }
                 }
@@ -1258,7 +1259,6 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
 
     var body: some View {
         LuminareList(
-            //            "List Header", "List Footer",
             items: $items,
             selection: $selection,
             id: \.self
@@ -1294,6 +1294,10 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
         } removeView: {
             Text("Remove")
+        } header: {
+            Text("List Header")
+        } footer: {
+            Text("List Footer")
         }
     }
 }
@@ -1313,7 +1317,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
-        //        .luminareBordered(false)
+        .luminareBordered(false)
     }
     .frame(height: 350)
 }
