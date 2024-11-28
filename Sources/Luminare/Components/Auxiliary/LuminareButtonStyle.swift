@@ -241,7 +241,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
 
     private let extraCompact: Bool
@@ -318,7 +318,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 ///     }
 /// }
 public struct LuminareBordered: ViewModifier {
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
 
     private let isHighlighted: Bool
 
@@ -365,7 +365,7 @@ public struct LuminareBordered: ViewModifier {
 /// }
 public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareIsBordered) private var isBordered

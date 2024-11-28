@@ -145,7 +145,6 @@ public struct LuminareColorPicker<F, R, G, B, Done>: View
 
     @Binding var currentColor: Color
 
-    private let isBordered: Bool
     private let style: Style
 
     @State private var text: String
@@ -157,16 +156,13 @@ public struct LuminareColorPicker<F, R, G, B, Done>: View
     ///
     /// - Parameters:
     ///   - color: the color to be edited.
-    ///   - isBordered: whether to display a border around the text field while not hovering.
     ///   - style: the ``LuminareColorPickerStyle`` that defines the style of the color picker.
     public init(
         color: Binding<Color>,
-        isBordered: Bool = true,
         style: Style
     ) {
         self._currentColor = color
         self._text = State(initialValue: color.wrappedValue.toHex())
-        self.isBordered = isBordered
         self.style = style
     }
 
@@ -178,8 +174,7 @@ public struct LuminareColorPicker<F, R, G, B, Done>: View
                 LuminareTextField(
                     "Hex Color",
                     value: .init($text),
-                    format: format,
-                    isBordered: isBordered
+                    format: format
                 )
                 .onSubmit {
                     if let newColor = Color(hex: text) {

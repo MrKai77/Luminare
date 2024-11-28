@@ -13,7 +13,7 @@ public extension View {
     @ViewBuilder func overrideTint(_ tint: @escaping () -> Color) -> some View {
         self
             .tint(tint())
-            .environment(\.luminareTint, tint)
+            .luminareTint(tint)
     }
 }
 
@@ -22,18 +22,12 @@ public extension View {
 public extension View {
     @ViewBuilder func luminarePopover(
         arrowEdge: Edge = .bottom,
-        trigger: LuminarePopoverTrigger = .hover(),
-        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
-        shade: LuminarePopoverShade = .styled(),
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         LuminarePopover(
             arrowEdge: arrowEdge,
-            trigger: trigger,
-            cornerRadius: cornerRadius,
             padding: padding,
-            shade: shade,
             content: content
         ) {
             self
@@ -88,7 +82,7 @@ public extension View {
 // MARK: - Environment Values
 
 public extension View {
-    @ViewBuilder func luminareTint(tint: @escaping () -> Color) -> some View {
+    @ViewBuilder func luminareTint(_ tint: @escaping () -> Color) -> some View {
         environment(\.luminareTint, tint)
     }
 
@@ -109,6 +103,10 @@ public extension View {
     @ViewBuilder func luminareButtonCornerRadius(_ radius: CGFloat = 2) -> some View {
         environment(\.luminareButtonCornerRadius, radius)
     }
+    
+    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
+        environment(\.luminareCompactButtonCornerRadius, radius)
+    }
 
     @ViewBuilder func luminareMinHeight(_ height: CGFloat = 34) -> some View {
         environment(\.luminareMinHeight, height)
@@ -126,11 +124,11 @@ public extension View {
         environment(\.luminareComposeControlSize, controlSize)
     }
 
-    @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger = .hover()) -> some View {
+    @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger = .hover) -> some View {
         environment(\.luminarePopoverTrigger, trigger)
     }
 
-    @ViewBuilder func luminarePopoverShade(_ shade: LuminarePopoverShade = .styled()) -> some View {
+    @ViewBuilder func luminarePopoverShade(_ shade: LuminarePopoverShade = .styled) -> some View {
         environment(\.luminarePopoverShade, shade)
     }
 

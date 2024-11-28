@@ -253,6 +253,14 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     /// - Parameters:
     ///   - step: the step between two indicators.
     case infiniteContinuous(step: V = 1)
+    
+    public static var infinite: Self {
+        .infinite()
+    }
+    
+    public static var infiniteContinuous: Self {
+        .infiniteContinuous()
+    }
 
     var isFinite: Bool {
         switch self {
@@ -524,9 +532,11 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         self.onRoundedValueChange = onRoundedValueChange
 
         let rounded = source.round(value.wrappedValue)
-        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
+        self.offset = .zero // apply later
         self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
+        
+        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
     }
 
     /// Initializes a ``LuminareStepper``.

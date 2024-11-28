@@ -25,7 +25,7 @@ struct RGBInputField<Label>: View where Label: View {
                 .foregroundStyle(.secondary)
 
             if #available(macOS 15.0, *) {
-                LuminarePopover(arrowEdge: .top, trigger: .forceTouch()) {
+                LuminarePopover(arrowEdge: .top) {
                     LuminareStepper(
                         value: $value,
                         source: .finiteContinuous(in: 0...255, step: 5),
@@ -44,6 +44,7 @@ struct RGBInputField<Label>: View where Label: View {
                         ))
                     )
                 }
+                .luminarePopoverTrigger(.forceTouch())
             } else {
                 LuminareTextField(
                     "", value: .init($value),

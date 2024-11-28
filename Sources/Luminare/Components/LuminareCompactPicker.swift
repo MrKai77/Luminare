@@ -20,6 +20,10 @@ public enum LuminareCompactPickerStyle {
     /// - Parameters:
     ///   - hasDividers: whether to display dividers between segmented knobs.
     case segmented(hasDividers: Bool = true)
+    
+    public static var segmented: Self {
+        .segmented()
+    }
 
     var style: any PickerStyle {
         switch self {
@@ -256,7 +260,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             .luminareBordered(false)
 
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42)
-                .luminareCompactPickerStyle(.segmented())
+                .luminareCompactPickerStyle(.segmented)
         }
     }
 }

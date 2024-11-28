@@ -248,32 +248,15 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     // MARK: Body
 
     public var body: some View {
-        VStack(spacing: 0) {
-            if Header.self != EmptyView.self {
-                Group {
-                    if Header.self == Text.self {
-                        HStack {
-                            header()
-
-                            Spacer()
-                        }
-                    } else {
-                        header()
-                    }
-                }
-                .foregroundStyle(.secondary)
-
-                Spacer()
-                    .frame(height: headerSpacing)
-            }
-
+        Section {
             Group {
                 if isBordered {
                     DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
                         content()
                     }
                     .frame(maxWidth: .infinity)
-                    .background(.quinary)
+                    .background(.ultraThickMaterial)
+                    .background(.quinary.opacity(0.5))
                     .clipShape(.rect(cornerRadius: cornerRadius))
                     .overlay {
                         RoundedRectangle(cornerRadius: cornerRadius)
@@ -284,16 +267,34 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 }
             }
             .padding(innerPadding)
-
+        } header: {
+            if Header.self != EmptyView.self {
+                Group {
+                    if Header.self == Text.self {
+                        HStack {
+                            header()
+                            
+                            Spacer()
+                        }
+                    } else {
+                        header()
+                    }
+                }
+                .foregroundStyle(.secondary)
+                
+                Spacer()
+                    .frame(height: headerSpacing)
+            }
+        } footer: {
             if Footer.self != EmptyView.self {
                 Spacer()
                     .frame(height: footerSpacing)
-
+                
                 Group {
                     if Footer.self == Text.self {
                         HStack {
                             footer()
-
+                            
                             Spacer()
                         }
                     } else {
@@ -339,6 +340,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         """)
         .padding(8)
         .foregroundStyle(.secondary)
+        .fixedSize(horizontal: false, vertical: true)
     } header: {
         HStack(alignment: .bottom) {
             Text("Section Header")

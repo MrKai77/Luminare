@@ -13,21 +13,33 @@ public enum LuminarePopoverTrigger {
         threshold: CGFloat = 0.5,
         onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> () = { _, _ in }
     )
+    
+    public static var hover: Self {
+        .hover()
+    }
+    
+    public static var forceTouch: Self {
+        .forceTouch()
+    }
 }
 
 public enum LuminarePopoverShade {
     case none
-    case some(_ style: AnyShapeStyle)
+    case styled(_ style: AnyShapeStyle)
+    
+    public static var styled: Self {
+        .styled()
+    }
 
     var style: AnyShapeStyle? {
         switch self {
-        case let .some(style): style
+        case let .styled(style): style
         default: nil
         }
     }
 
     public static func styled(_ style: some ShapeStyle = .secondary) -> Self {
-        .some(.init(style))
+        .styled(.init(style))
     }
 }
 

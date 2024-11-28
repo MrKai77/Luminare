@@ -37,6 +37,7 @@ public extension EnvironmentValues {
 
     @Entry var luminareCornerRadius: CGFloat = 12
     @Entry var luminareButtonCornerRadius: CGFloat = 2
+    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
@@ -47,8 +48,8 @@ public extension EnvironmentValues {
 
     // MARK: Luminare Popover
 
-    @Entry var luminarePopoverTrigger: LuminarePopoverTrigger = .hover()
-    @Entry var luminarePopoverShade: LuminarePopoverShade = .styled()
+    @Entry var luminarePopoverTrigger: LuminarePopoverTrigger = .hover
+    @Entry var luminarePopoverShade: LuminarePopoverShade = .styled
 
     // MARK: Luminare Stepper
 
