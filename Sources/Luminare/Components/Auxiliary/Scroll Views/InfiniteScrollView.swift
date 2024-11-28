@@ -5,8 +5,8 @@
 //  Created by KrLite on 2024/11/2.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// The direction of an ``InfiniteScrollView``.
 public enum InfiniteScrollViewDirection: Equatable {
@@ -29,9 +29,9 @@ public enum InfiniteScrollViewDirection: Equatable {
     public var axis: Axis {
         switch self {
         case .horizontal:
-                .horizontal
+            .horizontal
         case .vertical:
-                .vertical
+            .vertical
         }
     }
 
@@ -69,9 +69,9 @@ public enum InfiniteScrollViewDirection: Equatable {
     func point(from offset: CGFloat) -> CGPoint {
         switch self {
         case .horizontal:
-                .init(x: offset, y: 0)
+            .init(x: offset, y: 0)
         case .vertical:
-                .init(x: 0, y: offset)
+            .init(x: 0, y: offset)
         }
     }
 
@@ -79,9 +79,9 @@ public enum InfiniteScrollViewDirection: Equatable {
     func size(from length: CGFloat, fallback: CGFloat) -> CGSize {
         switch self {
         case .horizontal:
-                .init(width: length, height: fallback)
+            .init(width: length, height: fallback)
         case .vertical:
-                .init(width: fallback, height: length)
+            .init(width: fallback, height: length)
         }
     }
 }
@@ -287,7 +287,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
                     // ensure the dragging *happens* inside the view and can *continue* anywhere else
                     let canIgnoreBounds = draggingStage == .dragging
-                    guard canIgnoreBounds || clipView.bounds.contains(location) else { return event}
+                    guard canIgnoreBounds || clipView.bounds.contains(location) else { return event }
 
                     switch event.type {
                     case .leftMouseDown:
@@ -305,7 +305,8 @@ public struct InfiniteScrollView: NSViewRepresentable {
                             draggingStage = .invalid
                             didEndLiveScroll(.init(
                                 name: NSScrollView.didEndLiveScrollNotification,
-                                object: scrollView)
+                                object: scrollView
+                            )
                             )
                         }
                     case .leftMouseDragged:
@@ -322,19 +323,22 @@ public struct InfiniteScrollView: NSViewRepresentable {
                             draggingStage = .dragging
                             willStartLiveScroll(.init(
                                 name: NSScrollView.willStartLiveScrollNotification,
-                                object: scrollView)
+                                object: scrollView
+                            )
                             )
 
                             // emits dragging
                             didLiveScroll(.init(
                                 name: NSScrollView.didLiveScrollNotification,
-                                object: scrollView)
+                                object: scrollView
+                            )
                             )
                         case .dragging:
                             // emits dragging
                             didLiveScroll(.init(
                                 name: NSScrollView.didLiveScrollNotification,
-                                object: scrollView)
+                                object: scrollView
+                            )
                             )
                         }
                     default:

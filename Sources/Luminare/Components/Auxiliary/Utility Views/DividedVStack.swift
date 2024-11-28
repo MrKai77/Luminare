@@ -117,7 +117,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
 #Preview {
     LuminareSection {
         DividedVStack {
-            ForEach(37..<43) { num in
+            ForEach(37 ..< 43) { num in
                 Text("\(num)")
             }
         }

@@ -327,7 +327,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 }
                 .foregroundStyle(.secondary)
             }
-
         }
     }
 }
@@ -350,8 +349,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         .frame(height: 100)
 
         LuminareCompose("Button", reducesTrailingSpace: true) {
-            Button {
-            } label: {
+            Button {} label: {
                 Text("Click Me!")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
@@ -359,11 +357,11 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
 
         Text("""
-Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. \
-Proident non est aliquip consectetur quis dolor. Incididunt aute do ea fugiat dolor. \
-Cillum cillum enim exercitation dolor do. \
-Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse et.
-""")
+        Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. \
+        Proident non est aliquip consectetur quis dolor. Incididunt aute do ea fugiat dolor. \
+        Cillum cillum enim exercitation dolor do. \
+        Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse et.
+        """)
         .padding(8)
         .foregroundStyle(.secondary)
     } header: {
@@ -373,14 +371,12 @@ Deserunt ipsum aute non occaecat commodo adipisicing non. In est incididunt esse
             Spacer()
 
             HStack(alignment: .bottom) {
-                Button {
-                } label: {
+                Button {} label: {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundStyle(.tint)
                 }
 
-                Button {
-                } label: {
+                Button {} label: {
                     Image(systemName: "location")
                 }
             }

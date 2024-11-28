@@ -20,7 +20,7 @@ public enum LuminareDividedStackOrientation {
 /// A stylized stack that divides its content into groups, separated by division lines.
 ///
 /// This is the root view of a ``LuminareWindow`` in common practice.
-/// Typically, you are likely to wrap a ``LuminareSidebar`` inside along with a ``LuminarePane`` to create a tabbed 
+/// Typically, you are likely to wrap a ``LuminareSidebar`` inside along with a ``LuminarePane`` to create a tabbed
 /// content.
 public struct LuminareDividedStack<Content>: View where Content: View {
     /// A local typealias identical to ``LuminareDividedStackOrientation``.
