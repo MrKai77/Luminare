@@ -67,7 +67,7 @@ struct RGBInputField<Label>: View where Label: View {
         RGBInputField(value: $value) {
             Text("Red")
         } color: { value in
-                .init(red: value / 255.0, green: 0, blue: 0)
+            .init(red: value / 255.0, green: 0, blue: 0)
         }
     }
     .padding()

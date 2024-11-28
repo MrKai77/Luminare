@@ -118,31 +118,31 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
             RGBInputField(value: $redComponent) {
                 colorNames.red()
             } color: { value in
-                    .init(
-                        red: value / 255.0,
-                        green: greenComponent / 255.0,
-                        blue: blueComponent / 255.0
-                    )
+                .init(
+                    red: value / 255.0,
+                    green: greenComponent / 255.0,
+                    blue: blueComponent / 255.0
+                )
             }
 
             RGBInputField(value: $greenComponent) {
                 colorNames.green()
             } color: { value in
-                    .init(
-                        red: redComponent / 255.0,
-                        green: value / 255.0,
-                        blue: blueComponent / 255.0
-                    )
+                .init(
+                    red: redComponent / 255.0,
+                    green: value / 255.0,
+                    blue: blueComponent / 255.0
+                )
             }
 
             RGBInputField(value: $blueComponent) {
                 colorNames.blue()
             } color: { value in
-                    .init(
-                        red: redComponent / 255.0,
-                        green: greenComponent / 255.0,
-                        blue: value / 255.0
-                    )
+                .init(
+                    red: redComponent / 255.0,
+                    green: greenComponent / 255.0,
+                    blue: value / 255.0
+                )
             }
         }
     }
@@ -183,7 +183,7 @@ struct ColorPickerModalView<R, G, B, Done>: View where R: View, G: View, B: View
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
-    @Previewable @State var hexColor: String = ""
+    @Previewable @State var hexColor = ""
 
     LuminareSection {
         ColorPickerModalView(

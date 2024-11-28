@@ -34,17 +34,17 @@ public struct LuminareButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34,
-        isHovering: Bool = false
-    ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            cornerRadius: CGFloat = 2,
+            minHeight: CGFloat = 34,
+            isHovering: Bool = false
+        ) {
+            self.cornerRadius = cornerRadius
+            self.minHeight = minHeight
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -95,17 +95,17 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34,
-        isHovering: Bool = false
-    ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            cornerRadius: CGFloat = 2,
+            minHeight: CGFloat = 34,
+            isHovering: Bool = false
+        ) {
+            self.cornerRadius = cornerRadius
+            self.minHeight = minHeight
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -156,17 +156,17 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        cornerRadius: CGFloat = 2,
-        minHeight: CGFloat = 34,
-        isHovering: Bool = false
-    ) {
-        self.cornerRadius = cornerRadius
-        self.minHeight = minHeight
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            cornerRadius: CGFloat = 2,
+            minHeight: CGFloat = 34,
+            isHovering: Bool = false
+        ) {
+            self.cornerRadius = cornerRadius
+            self.minHeight = minHeight
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -187,9 +187,9 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
     }
 
-    @ViewBuilder static func tintedBackgroundForState<F: ShapeStyle>(
+    @ViewBuilder static func tintedBackgroundForState(
         isPressed: Bool, isEnabled: Bool, isHovering: Bool,
-        layered: F
+        layered: some ShapeStyle
     ) -> some View {
         tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, styles: (
             layered.opacity(0.4),
@@ -198,9 +198,9 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
         ))
     }
 
-    @ViewBuilder static func tintedBackgroundForState<F1: ShapeStyle, F2: ShapeStyle, F3: ShapeStyle>(
+    @ViewBuilder static func tintedBackgroundForState(
         isPressed: Bool, isEnabled: Bool, isHovering: Bool,
-        styles: (F1, F2, F3)
+        styles: (some ShapeStyle, some ShapeStyle, some ShapeStyle)
     ) -> some View {
         Group {
             if isPressed, isEnabled {
@@ -249,19 +249,19 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        minHeight: CGFloat = 34,
-        cornerRadius: CGFloat = 2,
-        isHovering: Bool = false,
-        @ViewBuilder icon: @escaping () -> Image
-    ) {
-        self.minHeight = minHeight
-        self.cornerRadius = cornerRadius
-        self.icon = icon
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            minHeight: CGFloat = 34,
+            cornerRadius: CGFloat = 2,
+            isHovering: Bool = false,
+            @ViewBuilder icon: @escaping () -> Image
+        ) {
+            self.minHeight = minHeight
+            self.cornerRadius = cornerRadius
+            self.icon = icon
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -329,19 +329,19 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        extraCompact: Bool = false,
-        minHeight: CGFloat = 34,
-        cornerRadius: CGFloat = 8,
-        isHovering: Bool = false
-    ) {
-        self.extraCompact = extraCompact
-        self.minHeight = minHeight
-        self.cornerRadius = cornerRadius
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            extraCompact: Bool = false,
+            minHeight: CGFloat = 34,
+            cornerRadius: CGFloat = 8,
+            isHovering: Bool = false
+        ) {
+            self.extraCompact = extraCompact
+            self.minHeight = minHeight
+            self.cornerRadius = cornerRadius
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -466,20 +466,20 @@ public struct LuminareHoverable: ViewModifier {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        minHeight: CGFloat = 32, horizontalPadding: CGFloat = 8,
-        cornerRadius: CGFloat = 8,
-        isBordered: Bool = false,
-        isHovering: Bool = false
-    ) {
-        self.minHeight = minHeight
-        self.horizontalPadding = horizontalPadding
-        self.cornerRadius = cornerRadius
-        self.isBordered = isBordered
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            minHeight: CGFloat = 32, horizontalPadding: CGFloat = 8,
+            cornerRadius: CGFloat = 8,
+            isBordered: Bool = false,
+            isHovering: Bool = false
+        ) {
+            self.minHeight = minHeight
+            self.horizontalPadding = horizontalPadding
+            self.cornerRadius = cornerRadius
+            self.isBordered = isBordered
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func body(content: Content) -> some View {
         content

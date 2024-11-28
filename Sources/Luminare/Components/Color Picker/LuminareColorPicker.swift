@@ -9,8 +9,8 @@ import SwiftUI
 
 /// The style of a ``LuminareColorPicker``.
 public struct LuminareColorPickerStyle<F, R, G, B, Done>
-where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
-      R: View, G: View, B: View, Done: View {
+    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
+    R: View, G: View, B: View, Done: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
 
     struct ModalData {
@@ -52,7 +52,7 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
     /// - Parameters:
     ///   - format: the `ParseableFormatStyle` to parse the color string.
     public static func textField(format: F) -> Self
-    where R == EmptyView, G == EmptyView, B == EmptyView, Done == EmptyView {
+        where R == EmptyView, G == EmptyView, B == EmptyView, Done == EmptyView {
         .init(format: format, colorNamesAndDone: nil)
     }
 
@@ -137,8 +137,8 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
 
 /// A stylized color picker.
 public struct LuminareColorPicker<F, R, G, B, Done>: View
-where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
-      R: View, G: View, B: View, Done: View {
+    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
+    R: View, G: View, B: View, Done: View {
     public typealias Style = LuminareColorPickerStyle<F, R, G, B, Done>
 
     // MARK: Fields

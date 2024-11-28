@@ -205,10 +205,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius:
-                    (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
+                (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
                 bottomTrailingRadius: buttonCornerRadius,
                 topTrailingRadius:
-                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius
+                isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius
             )
         }
 
@@ -218,7 +218,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topLeadingRadius: buttonCornerRadius,
                 bottomLeadingRadius: cornerRadius - innerPadding,
                 bottomTrailingRadius:
-                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius,
+                isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius,
                 topTrailingRadius: buttonCornerRadius
             )
         }
@@ -229,7 +229,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topLeadingRadius: buttonCornerRadius,
                 bottomLeadingRadius: buttonCornerRadius,
                 bottomTrailingRadius:
-                    (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
+                (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }
@@ -267,7 +267,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     LuminareSection {
         LuminarePicker(
-            elements: Array(32..<50),
+            elements: Array(32 ..< 50),
             selection: $selection
         ) { num in
             Text("\(num)")
