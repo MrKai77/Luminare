@@ -759,6 +759,7 @@ where
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
                                             roundedTop: !hasActions && !hasRemoveView,
+                                            roundedBottom: isBordered,
                                             canRefreshSelection:
                                                 $canRefreshSelection,
                                             content: content
@@ -772,6 +773,7 @@ where
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
                                             roundedTop: hasActions || hasRemoveView,
+                                            roundedBottom: isBordered,
                                             canRefreshSelection:
                                                 $canRefreshSelection,
                                             content: content
@@ -1054,19 +1056,28 @@ where Content: View, V: Hashable {
     private var isLast: Bool {
         item == items.last
     }
+    
+    private var itemBackgroundShape: UnevenRoundedRectangle {
+        .init(
+            topLeadingRadius: isFirst && roundedTop ? cornerRadius : buttonCornerRadius,
+            bottomLeadingRadius: isLast && roundedBottom ? cornerRadius : buttonCornerRadius,
+            bottomTrailingRadius: isLast && roundedBottom ? cornerRadius : buttonCornerRadius,
+            topTrailingRadius: isFirst && roundedTop ? cornerRadius : buttonCornerRadius
+        )
+    }
 
     @ViewBuilder private func itemBackground() -> some View {
-        Group {
-            tint()
+        ZStack {
+            itemBackgroundShape
+                .foregroundStyle(.tint)
                 .opacity(tintOpacity)
 
             if isHovering {
-                Rectangle()
+                itemBackgroundShape
                     .foregroundStyle(.quaternary.opacity(0.7))
                     .opacity(
                         (maxTintOpacity - tintOpacity) * (1 / maxTintOpacity)
                     )
-                    .clipShape(.rect(cornerRadius: buttonCornerRadius))
             }
         }
     }
