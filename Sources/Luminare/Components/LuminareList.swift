@@ -1317,7 +1317,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
-        .luminareBordered(false)
+//        .luminareBordered(false)
     }
     .frame(height: 350)
 }
