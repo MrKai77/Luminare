@@ -22,6 +22,7 @@ where
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareIsBordered) private var isBordered
 
     // MARK: Fields
@@ -739,7 +740,7 @@ where
                 Section {
                     if items.isEmpty {
                         emptyView()
-                            .frame(minHeight: 50)
+                            .frame(minHeight: minHeight)
                     } else {
                         List(selection: $selection) {
                             ForEach($items, id: id) { item in
@@ -788,7 +789,7 @@ where
                             .listRowInsets(.init())
                             .padding(.horizontal, -10)
                         }
-                        .frame(height: CGFloat(items.count * 50))
+                        .frame(height: CGFloat(items.count) * minHeight)
                         .scrollContentBackground(.hidden)
                         .scrollDisabled(true)
                         .listStyle(.plain)
@@ -816,6 +817,7 @@ where
                                         isLastChild: false
                                     )
                                 )
+                                .luminareMinHeight(actionsMaxHeight ?? 0)
                                 .frame(maxHeight: actionsMaxHeight)
                                 .padding(.vertical, 4)
 
@@ -837,10 +839,11 @@ where
                                 }
                             }
                             .luminareBordered(true)
+                            .luminareMinHeight(actionsMaxHeight ?? 0)
                             .frame(maxHeight: actionsMaxHeight)
                             .padding(.horizontal, -4)
                             .padding(.top, 4)
-                            .padding(.bottom, 6)
+                            .padding(.bottom, 8)
                         }
                     }
                 }
@@ -952,6 +955,7 @@ where Content: View, V: Hashable {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
 
@@ -999,7 +1003,7 @@ where Content: View, V: Hashable {
 
     public var body: some View {
         Color.clear
-            .frame(height: 50)
+            .frame(minHeight: minHeight)
             .overlay {
                 content($item)
                     .environment(\.hoveringOverLuminareItem, isHovering)
@@ -1317,6 +1321,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
+        .luminareMinHeight(50)
 //        .luminareBordered(false)
     }
     .frame(height: 350)
