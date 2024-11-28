@@ -93,7 +93,7 @@ extension Color {
             return self
         }
         let blend = { (color1: CGFloat, color2: CGFloat) -> CGFloat in color1 + (color2 - color1) * amount }
-        let selfComponents = self.components
+        let selfComponents = components
         let otherComponents = other.components
         return Color(
             red: blend(selfComponents.red, otherComponents.red),

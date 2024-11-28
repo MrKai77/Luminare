@@ -21,10 +21,10 @@ public enum LuminareStepperAlignment {
     ///  ``LuminareStepperDirection/horizontal`` and to left if ``LuminareStepperDirection`` is
     ///  ``LuminareStepperDirection/vertical``.
     case leading // the left side of the growth direction, typically the top if horizontal and the left if vertical
-    /// The center indicator is larger than others and points to the direction negatively normals to the 
+    /// The center indicator is larger than others and points to the direction negatively normals to the
     /// ``LuminareStepperDirection``.
     ///
-    /// In left-to-right layouts, the indicators point to bottom if ``LuminareStepperDirection`` is 
+    /// In left-to-right layouts, the indicators point to bottom if ``LuminareStepperDirection`` is
     /// ``LuminareStepperDirection/horizontal`` and to right if ``LuminareStepperDirection`` is
     /// ``LuminareStepperDirection/vertical``.
     case trailing // opposite to `leading`
@@ -39,24 +39,24 @@ public enum LuminareStepperAlignment {
         case .leading:
             switch direction {
             case .horizontal:
-                    .bottom
+                .bottom
             case .horizontalAlternate:
-                    .top
+                .top
             case .vertical:
-                    .trailing
+                .trailing
             case .verticalAlternate:
-                    .leading
+                .leading
             }
         case .trailing:
             switch direction {
             case .horizontal:
-                    .top
+                .top
             case .horizontalAlternate:
-                    .bottom
+                .bottom
             case .vertical:
-                    .leading
+                .leading
             case .verticalAlternate:
-                    .trailing
+                .trailing
             }
         }
     }
@@ -71,24 +71,24 @@ public enum LuminareStepperAlignment {
         case .leading:
             switch direction {
             case .horizontal:
-                    .top
+                .top
             case .horizontalAlternate:
-                    .bottom
+                .bottom
             case .vertical:
-                    .leading
+                .leading
             case .verticalAlternate:
-                    .trailing
+                .trailing
             }
         case .trailing:
             switch direction {
             case .horizontal:
-                    .bottom
+                .bottom
             case .horizontalAlternate:
-                    .top
+                .top
             case .vertical:
-                    .trailing
+                .trailing
             case .verticalAlternate:
-                    .leading
+                .leading
             }
         }
     }
@@ -118,9 +118,9 @@ public enum LuminareStepperDirection {
     var axis: Axis {
         switch self {
         case .horizontal, .horizontalAlternate:
-                .horizontal
+            .horizontal
         case .vertical, .verticalAlternate:
-                .vertical
+            .vertical
         }
     }
 
@@ -153,9 +153,9 @@ public enum LuminareStepperDirection {
     var paddingEdges: Edge.Set {
         switch self {
         case .horizontal, .horizontalAlternate:
-                .vertical
+            .vertical
         case .vertical, .verticalAlternate:
-                .horizontal
+            .horizontal
         }
     }
 
@@ -274,7 +274,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     var count: Int? {
         switch self {
-        case .finite(let range, let step), .finiteContinuous(let range, let step):
+        case let .finite(range, step), let .finiteContinuous(range, step):
             Int(((range.upperBound - range.lowerBound) / step).rounded(.down)) + 1
         default:
             nil
@@ -283,7 +283,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     var total: V? {
         switch self {
-        case .finite(let range, _), .finiteContinuous(let range, _):
+        case let .finite(range, _), let .finiteContinuous(range, _):
             range.upperBound - range.lowerBound
         case .infinite, .infiniteContinuous:
             nil
@@ -292,19 +292,19 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     var step: V {
         switch self {
-        case .finite(_, let step), .finiteContinuous(_, let step),
-                .infinite(let step), .infiniteContinuous(let step):
+        case let .finite(_, step), let .finiteContinuous(_, step),
+             let .infinite(step), let .infiniteContinuous(step):
             step
         }
     }
 
     func round(_ value: V) -> (value: V, offset: V) {
         switch self {
-        case .finite(let range, let step), .finiteContinuous(let range, let step):
+        case let .finite(range, step), let .finiteContinuous(range, step):
             let page = value - range.lowerBound
             let remainder = page.truncatingRemainder(dividingBy: step)
             return (value - remainder, remainder)
-        case .infinite(let step), .infiniteContinuous(let step):
+        case let .infinite(step), let .infiniteContinuous(step):
             let remainder = value.truncatingRemainder(dividingBy: step)
             return (value - remainder, remainder)
         }
@@ -312,7 +312,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     func continuousIndex(of value: V) -> V? {
         switch self {
-        case .finite(let range, let step), .finiteContinuous(let range, let step):
+        case let .finite(range, step), let .finiteContinuous(range, step):
             (value - range.lowerBound) / step
         default:
             nil
@@ -321,7 +321,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     func isEdgeCase(_ value: V) -> Bool {
         switch self {
-        case .finite(let range, let step), .finiteContinuous(let range, let step):
+        case let .finite(range, step), let .finiteContinuous(range, step):
             let min = range.lowerBound + step
             let max = range.upperBound - step
 
@@ -333,7 +333,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     func reachedUpperBound(_ value: V, padding: V = .zero) -> Bool {
         switch self {
-        case .finite(let range, _), .finiteContinuous(let range, _):
+        case let .finite(range, _), let .finiteContinuous(range, _):
             value + padding >= range.upperBound
         case .infinite, .infiniteContinuous:
             false
@@ -342,7 +342,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     func reachedLowerBound(_ value: V, padding: V = .zero) -> Bool {
         switch self {
-        case .finite(let range, _), .finiteContinuous(let range, _):
+        case let .finite(range, _), let .finiteContinuous(range, _):
             value - padding <= range.lowerBound
         case .infinite, .infiniteContinuous:
             false
@@ -369,7 +369,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 
     func wrap(_ value: V, padding: V = .zero) -> V {
         switch self {
-        case .finite(let range, _), .finiteContinuous(let range, _):
+        case let .finite(range, _), let .finiteContinuous(range, _):
             max(range.lowerBound + padding, min(range.upperBound - padding, value))
         case .infinite, .infiniteContinuous:
             value
@@ -400,7 +400,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
 /// A custom delegate to customize any indicators of a ``LuminareStepper``.
 @available(macOS 15.0, *)
 public struct LuminareStepperProminentIndicators<V>
-where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @ViewBuilder let color: (V) -> Color?
 
     /// Initializes a ``LuminareStepperProminentIndicators``.
@@ -461,7 +461,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
-    private let onRoundedValueChange: (V, V) -> Void
+    private let onRoundedValueChange: (V, V) -> ()
 
     @State private var containerSize: CGSize = .zero
     @State private var page: Int = .zero
@@ -508,7 +508,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
-        onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
+        onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
     ) {
         self._value = value
         self.source = source
@@ -551,7 +551,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - hasMask: whether to apply the gradient mask to the indicators to form a faded effect.
     ///   - hasBlur: whether to blur the edged indicators.
     ///   - prominentValues: the values marked as prominent.
-    ///   - prominentColor: defines the colors of the indicators whose represented values are filtered by 
+    ///   - prominentColor: defines the colors of the indicators whose represented values are filtered by
     ///   `prominentValues`.
     ///   - feedback: provides feedback when received changes of certain strided values.
     ///   - onRoundedValueChange: callback when rounded value changes.
@@ -574,7 +574,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentValues: [V]? = nil,
         prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
-        onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
+        onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
     ) {
         self.init(
             value: value,
@@ -601,7 +601,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     public var body: some View {
         direction.stack(spacing: indicatorSpacing) {
-            ForEach(0..<indicatorCount, id: \.self) { index in
+            ForEach(0 ..< indicatorCount, id: \.self) { index in
                 let relativeIndex = index - centerIndicatorIndex
                 let index = direction.offsetBy(
                     centerIndicatorIndex,
@@ -658,17 +658,17 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             let indexSpanEnd = max(0, CGFloat(centerIndicatorIndex) - (CGFloat(count) - 1 - CGFloat(index)))
 
             let offsetStart = direction.offsetBy(
-                    nonAlternateOffset: direction.offsetBy(
-                        bentOffset,
-                        nonAlternateOffset: indicatorSpacing
-                    )
+                nonAlternateOffset: direction.offsetBy(
+                    bentOffset,
+                    nonAlternateOffset: indicatorSpacing
                 )
+            )
             let offsetEnd = direction.offsetBy(
-                    nonAlternateOffset: direction.offsetBy(
-                        -bentOffset,
-                         nonAlternateOffset: indicatorSpacing
-                    )
+                nonAlternateOffset: direction.offsetBy(
+                    -bentOffset,
+                    nonAlternateOffset: indicatorSpacing
                 )
+            )
 
             let offsetCompensate = -indicatorSpacing / 2
 
@@ -708,46 +708,46 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             Color.clear
                 .overlay {
                     infiniteScrollView(proxy: proxy)
-                    .onChange(of: page) { oldValue, newValue in
-                        // do not use `+=`, otherwise causing multiple assignments
-                        roundedValue = source.offsetBy(
-                            roundedValue,
-                            direction: direction,
-                            nonAlternateOffset: V(newValue - oldValue) * source.step
-                        )
-                    }
-                    .onChange(of: offset) { _, newValue in
-                        let offset = newValue / indicatorSpacing
-                        let correctedOffset = if source.reachedStartingBound(roundedValue, direction: direction) {
-                            direction.offsetBy(offset, nonAlternateOffset: 1)
-                        } else if source.reachedEndingBound(roundedValue, direction: direction) {
-                            direction.offsetBy(offset, nonAlternateOffset: -1)
-                        } else {
-                            offset
+                        .onChange(of: page) { oldValue, newValue in
+                            // do not use `+=`, otherwise causing multiple assignments
+                            roundedValue = source.offsetBy(
+                                roundedValue,
+                                direction: direction,
+                                nonAlternateOffset: V(newValue - oldValue) * source.step
+                            )
                         }
+                        .onChange(of: offset) { _, newValue in
+                            let offset = newValue / indicatorSpacing
+                            let correctedOffset = if source.reachedStartingBound(roundedValue, direction: direction) {
+                                direction.offsetBy(offset, nonAlternateOffset: 1)
+                            } else if source.reachedEndingBound(roundedValue, direction: direction) {
+                                direction.offsetBy(offset, nonAlternateOffset: -1)
+                            } else {
+                                offset
+                            }
 
-                        let valueOffset = V(correctedOffset) * source.step
-                        internalValue = source.offsetBy(
-                            roundedValue,
-                            direction: direction,
-                            nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.step)
-                        )
-                    }
-                    .onChange(of: internalValue) { _, _ in
-                        value = internalValue
-                    }
-                    .onChange(of: value) { _, newValue in
-                        // check if changed externally
-                        guard newValue != internalValue else { return }
-                        internalValue = newValue
+                            let valueOffset = V(correctedOffset) * source.step
+                            internalValue = source.offsetBy(
+                                roundedValue,
+                                direction: direction,
+                                nonAlternateOffset: valueOffset.truncatingRemainder(dividingBy: source.step)
+                            )
+                        }
+                        .onChange(of: internalValue) { _, _ in
+                            value = internalValue
+                        }
+                        .onChange(of: value) { _, newValue in
+                            // check if changed externally
+                            guard newValue != internalValue else { return }
+                            internalValue = newValue
 
-                        let rounded = source.round(newValue)
-                        roundedValue = rounded.value
-                        offset = CGFloat(rounded.offset)
-                    }
-                    .onChange(of: roundedValue, initial: true) { oldValue, newValue in
-                        onRoundedValueChange(oldValue, newValue)
-                    }
+                            let rounded = source.round(newValue)
+                            roundedValue = rounded.value
+                            offset = CGFloat(rounded.offset)
+                        }
+                        .onChange(of: roundedValue, initial: true) { oldValue, newValue in
+                            onRoundedValueChange(oldValue, newValue)
+                        }
                 }
         }
     }
@@ -841,7 +841,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     // MARK: Functions
 
     private func getOnlyBinding<Value>(value: @Sendable @escaping () -> Value) -> Binding<Value>
-    where Value: Hashable {
+        where Value: Hashable {
         .init(get: value) { _ in }
     }
 
@@ -895,7 +895,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         curvature: Double = 7.5
     ) -> Double {
         guard curvature != 0 else { return value }
-        guard value >= -1 && value <= 1 else { return value }
+        guard value >= -1, value <= 1 else { return value }
 
         return if value >= 0 {
             1 / (1 + exp(-curvature * (value - 0.5)))
@@ -909,7 +909,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
 @available(macOS 15.0, *)
 private struct StepperPreview<Label, V>: View
-where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
+    where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @State var value: V
     var source: LuminareStepperSource<V>
     var alignment: LuminareStepperAlignment = .trailing
@@ -928,7 +928,7 @@ where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloating
                 direction: direction,
                 prominentValues: prominentValues
             ) { _ in
-                    .accentColor
+                .accentColor
             } onRoundedValueChange: { _, newValue in
                 print(newValue)
             }

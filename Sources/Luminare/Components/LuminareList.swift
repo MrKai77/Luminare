@@ -687,7 +687,7 @@ public struct LuminareList<Header, ContentA, ContentB, Actions, RemoveView, Foot
         actionsMaxHeight: CGFloat? = 40,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
     ) where Header == EmptyView, ContentB == EmptyView,
-    Actions == EmptyView, RemoveView == EmptyView, Footer == EmptyView {
+        Actions == EmptyView, RemoveView == EmptyView, Footer == EmptyView {
         self.init(
             items: items,
             selection: selection, id: id,
@@ -1149,7 +1149,7 @@ public struct LuminareListItem<Content, V>: View where Content: View, V: Hashabl
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> Void
+    let add: (inout [V]) -> ()
 
     var body: some View {
         LuminareList(
@@ -1168,8 +1168,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                     }
                 }
                 .swipeActions {
-                    Button("Swipe me!") {
-                    }
+                    Button("Swipe me!") {}
                 }
         } emptyView: {
             Text("Empty")
@@ -1197,9 +1196,11 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
 ) {
     ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
         guard items.count < 100 else { return }
-        let random = { Int.random(in: 0..<100) }
+        let random = { Int.random(in: 0 ..< 100) }
         var new = random()
-        while items.contains([new]) { new = random() }
+        while items.contains([new]) {
+            new = random()
+        }
         items.append(new)
     }
 }

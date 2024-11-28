@@ -11,7 +11,7 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
     public static let cornerRadius: CGFloat = 12
     public static let contentPadding: CGFloat = 6, sectionPadding: CGFloat = 8
 
-    @Published public var closeHandler: (() -> Void)?
+    @Published public var closeHandler: (() -> ())?
 
     public init() {
         super.init(

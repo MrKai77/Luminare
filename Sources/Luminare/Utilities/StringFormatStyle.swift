@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Formats `String` into multiple styles.
 ///
-/// This is presently used as a `parseStrategy` parameter in ``LuminareColorPicker`` to format the hex string 
+/// This is presently used as a `parseStrategy` parameter in ``LuminareColorPicker`` to format the hex string
 /// representing a color.
 ///
 /// See ``HexStrategy`` for more information on how to parse a hex string, or use the `Strategy.identity` as a
@@ -96,7 +96,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
                 return try "#" + Self.lowercased.parse(value)
             case .uppercasedWithWell:
                 return try "#" + Self.uppercased.parse(value)
-            case .custom(let textCase, let prefix):
+            case let .custom(textCase, prefix):
                 let branch = switch textCase {
                 case .uppercase:
                     Self.uppercased
@@ -108,7 +108,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
             }
         }
     }
-    
+
     public init(parseStrategy: Strategy = .identity) {
         self.parseStrategy = parseStrategy
     }

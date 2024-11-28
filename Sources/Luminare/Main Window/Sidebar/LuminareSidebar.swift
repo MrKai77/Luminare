@@ -33,7 +33,6 @@ public struct LuminareSidebar<Content>: View where Content: View {
             .scrollContentBackground(.hidden)
             .padding(.horizontal, 12)
             .frame(maxHeight: .infinity, alignment: .top)
-
             .padding(.top, -overflow)
             .contentMargins(.top, overflow)
             .mask {
@@ -81,7 +80,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 .zIndex(1)
 
             LuminareSidebar {
-                ForEach(0..<100) { num in
+                ForEach(0 ..< 100) { num in
                     Text("\(num)")
                         .frame(width: 150, height: 40)
                         .modifier(LuminareBordered())
@@ -98,7 +97,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 .zIndex(1)
 
             LuminareSidebar {
-                ForEach(0..<5) { num in
+                ForEach(0 ..< 5) { num in
                     Text("\(num)")
                         .frame(width: 150, height: 40)
                         .modifier(LuminareBordered())

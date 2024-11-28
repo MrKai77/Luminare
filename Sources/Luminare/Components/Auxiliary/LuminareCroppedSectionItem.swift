@@ -1,6 +1,6 @@
 //
 //  LuminareCroppedSectionItem.swift
-//  
+//
 //
 //  Created by KrLite on 2024/11/15.
 //
@@ -12,13 +12,13 @@ import SwiftUI
 /// An item with a cropped appearance, typically used in sections.
 public struct LuminareCroppedSectionItem: ViewModifier {
     // MARK: Fields
-    
+
     private let innerPadding: CGFloat
     private let cornerRadius: CGFloat, buttonCornerRadius: CGFloat
     private let isFirstChild: Bool, isLastChild: Bool
-    
+
     // MARK: Initializers
-    
+
     /// Initializes a ``LuminareCroppedItem``.
     ///
     /// - Parameters:
@@ -38,15 +38,15 @@ public struct LuminareCroppedSectionItem: ViewModifier {
         self.isFirstChild = isFirstChild
         self.isLastChild = isLastChild
     }
-    
+
     // MARK: Body
-    
+
     public func body(content: Content) -> some View {
         content
             .mask(mask())
             .padding(.horizontal, innerPadding)
     }
-    
+
     @ViewBuilder private func mask() -> some View {
         if isFirstChild, isLastChild {
             UnevenRoundedRectangle(
