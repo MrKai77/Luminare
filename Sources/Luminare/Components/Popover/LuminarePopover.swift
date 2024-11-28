@@ -246,8 +246,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
 
 #Preview {
     LuminareSection {
-        LuminareCompose {
-        } label: {
+        LuminareCompose {} label: {
             LuminarePopover {
                 Text("Here's to the *crazy* ones.")
                     .padding()

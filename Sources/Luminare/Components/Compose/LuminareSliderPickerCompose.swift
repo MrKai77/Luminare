@@ -200,7 +200,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                     .foregroundStyle(.secondary)
             }
         }
-        
+
         LuminareSliderPickerCompose(
             Array(0...4), selection: $selection
         ) { value in

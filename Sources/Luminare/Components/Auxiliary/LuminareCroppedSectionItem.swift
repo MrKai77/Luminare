@@ -12,10 +12,10 @@ import SwiftUI
 /// An item with a cropped appearance, typically used in sections.
 public struct LuminareCroppedSectionItem: ViewModifier {
     // MARK: Environments
-    
+
     @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
-    
+
     // MARK: Fields
 
     private let innerPadding: CGFloat

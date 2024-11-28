@@ -12,10 +12,10 @@ import SwiftUI
 /// A stylized content wrapper with a header and a footer.
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Environments
-    
+
     @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
-    
+
     // MARK: Fields
 
     private let hasPadding: Bool, hasDividers: Bool

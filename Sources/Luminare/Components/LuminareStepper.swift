@@ -456,11 +456,11 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     private let indicatorSpacing: CGFloat, maxSize: CGFloat, margin: CGFloat
 
     private let hasHierarchy: Bool, hasMask: Bool, hasBlur: Bool
-    
+
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
-    
-    private let onRoundedValueChange: (V, V) -> Void
+
+    private let onRoundedValueChange: (V, V) -> ()
 
     @State private var containerSize: CGSize = .zero
     @State private var page: Int = .zero
@@ -503,8 +503,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
-        
-        onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
+
+        onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
     ) {
         self._value = value
         self.source = source
@@ -520,7 +520,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
-        
+
         self.onRoundedValueChange = onRoundedValueChange
 
         let rounded = source.round(value.wrappedValue)
@@ -565,8 +565,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentValues: [V]? = nil,
         prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
-        
-        onRoundedValueChange: @escaping (V, V) -> Void = { _, _ in }
+
+        onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
     ) {
         self.init(
             value: value,
@@ -583,7 +583,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             prominentIndicators: .init(prominentValues, color: prominentColor),
             feedback: feedback,
-            
+
             onRoundedValueChange: onRoundedValueChange
         )
     }

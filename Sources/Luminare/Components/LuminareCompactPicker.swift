@@ -241,7 +241,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
         }
 
         LuminareCompose("Pick from a menu", reducesTrailingSpace: true) {
-            PickerPreview(elements: Array(0..<200), selection: 42)
+            PickerPreview(elements: Array(0 ..< 200), selection: 42)
         }
 
         VStack {

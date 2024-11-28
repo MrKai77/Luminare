@@ -17,16 +17,16 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
-    
+
     @State private var isHovering: Bool = false
 
-#if DEBUG
-    init(
-        isHovering: Bool = false
-    ) {
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            isHovering: Bool = false
+        ) {
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -63,13 +63,13 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 
     @State private var isHovering: Bool
 
-#if DEBUG
-    init(
-        isHovering: Bool = false
-    ) {
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            isHovering: Bool = false
+        ) {
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -106,13 +106,13 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
 
     @State private var isHovering: Bool
 
-#if DEBUG
-    init(
-        isHovering: Bool = false
-    ) {
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            isHovering: Bool = false
+        ) {
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -189,15 +189,15 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        isHovering: Bool = false,
-        @ViewBuilder icon: @escaping () -> Image
-    ) {
-        self.icon = icon
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            isHovering: Bool = false,
+            @ViewBuilder icon: @escaping () -> Image
+        ) {
+            self.icon = icon
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -259,15 +259,15 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-#if DEBUG
-    init(
-        extraCompact: Bool = false,
-        isHovering: Bool = false
-    ) {
-        self.extraCompact = extraCompact
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            extraCompact: Bool = false,
+            isHovering: Bool = false
+        ) {
+            self.extraCompact = extraCompact
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -319,7 +319,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 /// }
 public struct LuminareBordered: ViewModifier {
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
-    
+
     private let isHighlighted: Bool
 
     /// Initializes a ``LuminareBordered``.
@@ -369,16 +369,16 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareIsBordered) private var isBordered
-    
+
     @State private var isHovering: Bool = false
 
-#if DEBUG
-    init(
-        isHovering: Bool = false
-    ) {
-        self.isHovering = isHovering
-    }
-#endif
+    #if DEBUG
+        init(
+            isHovering: Bool = false
+        ) {
+            self.isHovering = isHovering
+        }
+    #endif
 
     public func body(content: Content) -> some View {
         content
