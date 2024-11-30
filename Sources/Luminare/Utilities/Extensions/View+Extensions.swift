@@ -145,4 +145,12 @@ public extension View {
     @ViewBuilder func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle = .menu) -> some View {
         environment(\.luminareCompactPickerStyle, style)
     }
+    
+    @ViewBuilder func luminareListItemHeight(_ height: CGFloat = 50) -> some View {
+        environment(\.luminareListItemHeight, height)
+    }
+    
+    @ViewBuilder func luminareListActionsHeight(_ height: CGFloat? = 40) -> some View {
+        environment(\.luminareListActionsHeight, height)
+    }
 }

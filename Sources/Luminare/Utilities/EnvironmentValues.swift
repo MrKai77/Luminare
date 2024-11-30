@@ -61,4 +61,9 @@ public extension EnvironmentValues {
     // MARK: Luminare Compact Picker
 
     @Entry var luminareCompactPickerStyle: LuminareCompactPickerStyle = .menu
+    
+    // MARK: Luminare List
+    
+    @Entry var luminareListItemHeight: CGFloat = 50
+    @Entry var luminareListActionsHeight: CGFloat? = 40
 }

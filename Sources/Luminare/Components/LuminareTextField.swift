@@ -11,14 +11,6 @@ import SwiftUI
 
 /// A stylized text field.
 public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
-    // MARK: Environments
-
-    @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareCornerRadius) private var cornerRadius
-    @Environment(\.luminareIsBordered) private var isBordered
-
     // MARK: Fields
 
     @Binding private var value: F.FormatInput?
