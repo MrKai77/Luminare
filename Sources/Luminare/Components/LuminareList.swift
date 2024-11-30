@@ -16,7 +16,7 @@ public struct LuminareList<
 where
     Header: View, ContentA: View, ContentB: View, Actions: View,
     RemoveView: View, Footer: View, V: Hashable, ID: Hashable
-{  // swiftlint:disable:this line_length
+{
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
@@ -932,7 +932,7 @@ where
 
         eventMonitor =
             NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                let kVK_Escape: CGKeyCode = 0x35  // swiftlint:disable:this identifier_name
+                let kVK_Escape: CGKeyCode = 0x35
 
                 if event.keyCode == kVK_Escape {
                     withAnimation(animation) {

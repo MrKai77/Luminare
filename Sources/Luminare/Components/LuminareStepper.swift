@@ -29,7 +29,6 @@ public enum LuminareStepperAlignment {
     /// ``LuminareStepperDirection/vertical``.
     case trailing // opposite to `leading`
 
-    // swiftlint:disable:next cyclomatic_complexity
     func hardPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {
         case .none:
@@ -61,7 +60,6 @@ public enum LuminareStepperAlignment {
         }
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
     func softPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {
         case .none:
@@ -226,7 +224,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     /// - Parameters:
     ///   - in: the closed range of the available values.
     ///   - step: the step between two snapped values.
-    case finite(in: ClosedRange<V>, step: V = 1) // swiftlint:disable:this identifier_name
+    case finite(in: ClosedRange<V>, step: V = 1)
     /// The value is finely ranged but continuous.
     ///
     /// The value will be strictly clamped inside a closed range, but won't be snapped.
@@ -236,7 +234,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     /// - Parameters:
     ///   - in: the closed range of the available values.
     ///   - step: the step between two indicators.
-    case finiteContinuous(in: ClosedRange<V>, step: V = 1) // swiftlint:disable:this identifier_name
+    case finiteContinuous(in: ClosedRange<V>, step: V = 1)
     /// The value is strideable but infinite.
     ///
     /// The value will be snapped to the nearest value according to the step, but won't be clamped.

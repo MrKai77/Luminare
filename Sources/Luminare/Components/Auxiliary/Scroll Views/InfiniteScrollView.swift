@@ -262,7 +262,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
             self.parent = parent
         }
 
-        // swiftlint:disable:next cyclomatic_complexity
         func initializeScroll(_ scrollView: NSScrollView) {
             let clipView = scrollView.contentView
 
