@@ -170,7 +170,7 @@ where
                                             isLastChild: false
                                         )
                                     )
-                                    .luminareMinHeight(actionsHeight)
+                                    .luminareMinHeight(actionsHeight ?? itemHeight)
                                     .frame(maxHeight: actionsHeight)
                                     .padding(.vertical, 4)
                                     
@@ -192,7 +192,7 @@ where
                                     }
                                 }
                                 .luminareBordered(true)
-                                .luminareMinHeight(actionsHeight)
+                                .luminareMinHeight(actionsHeight ?? itemHeight)
                                 .frame(maxHeight: actionsHeight)
                                 .padding(.horizontal, -4)
                                 .padding(.top, 4)
@@ -416,18 +416,20 @@ where Content: View, V: Hashable {
 
     @ViewBuilder private func itemBackground() -> some View {
         ZStack {
-            itemBackgroundShape
+            Rectangle()
                 .foregroundStyle(.tint)
                 .opacity(tintOpacity)
 
             if isHovering {
-                itemBackgroundShape
+                Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
                     .opacity(
                         (maxTintOpacity - tintOpacity) * (1 / maxTintOpacity)
                     )
             }
         }
+        .clipShape(itemBackgroundShape)
+        .padding(isBordered ? 0 : 1)
     }
 
     @ViewBuilder private func itemBorder() -> some View {
