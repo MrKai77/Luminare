@@ -119,6 +119,10 @@ public extension View {
     @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
         environment(\.luminareIsBordered, bordered)
     }
+    
+    @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat? = .infinity) -> some View {
+        environment(\.luminareSectionMaxWidth, maxWidth)
+    }
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)

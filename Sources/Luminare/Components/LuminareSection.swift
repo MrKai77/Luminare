@@ -14,6 +14,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     // MARK: Environments
 
     @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareIsBordered) private var isBordered
 
     // MARK: Fields
@@ -66,7 +67,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
                         content()
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: maxWidth)
                     .background(.ultraThickMaterial)
                     .background(.quinary.opacity(0.5))
                     .clipShape(.rect(cornerRadius: cornerRadius))
