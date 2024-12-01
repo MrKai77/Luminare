@@ -61,7 +61,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
 
-    @State private var isHovering: Bool
+    @State private var isHovering: Bool = false
 
     #if DEBUG
         init(
@@ -104,7 +104,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
 
-    @State private var isHovering: Bool
+    @State private var isHovering: Bool = false
 
     #if DEBUG
         init(
@@ -176,7 +176,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 
     @ViewBuilder private let icon: () -> Image
 
-    @State private var isHovering: Bool
+    @State private var isHovering: Bool = false
 
     /// Initializes a ``LuminareCosmeticButtonStyle``.
     ///
@@ -186,7 +186,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
         @ViewBuilder icon: @escaping () -> Image
     ) {
         self.icon = icon
-        self.isHovering = false
     }
 
     #if DEBUG
@@ -246,7 +245,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 
     private let extraCompact: Bool
 
-    @State var isHovering: Bool
+    @State private var isHovering: Bool = false
 
     /// Initializes a ``LuminareButtonStyle``.
     ///
@@ -256,7 +255,6 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         extraCompact: Bool = false
     ) {
         self.extraCompact = extraCompact
-        self.isHovering = false
     }
 
     #if DEBUG
