@@ -19,6 +19,8 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
 
     @State private var isHovering: Bool = false
+    
+    public init() {}
 
     #if DEBUG
         init(
@@ -62,6 +64,8 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
 
     @State private var isHovering: Bool = false
+    
+    public init() {}
 
     #if DEBUG
         init(
@@ -105,6 +109,8 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
 
     @State private var isHovering: Bool = false
+    
+    public init() {}
 
     #if DEBUG
         init(
@@ -369,6 +375,8 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareIsBordered) private var isBordered
 
     @State private var isHovering: Bool = false
+    
+    public init() {}
 
     #if DEBUG
         init(
