@@ -16,6 +16,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareSectionIsMasked) private var isMasked
 
     // MARK: Fields
 
@@ -77,6 +78,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     }
                 } else {
                     content()
+                        .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
                 }
             }
             .padding(innerPadding)

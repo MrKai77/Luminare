@@ -45,6 +45,7 @@ public extension EnvironmentValues {
     // MARK: Luminare Section
     
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
+    @Entry var luminareSectionIsMasked: Bool = false
 
     // MARK: Luminare Compose
 
@@ -68,6 +69,7 @@ public extension EnvironmentValues {
     
     // MARK: Luminare List
     
+    @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListActionsHeight: CGFloat? = 40
     @Entry var luminareListActionsStyle: LuminareListActionsStyle = .bordered

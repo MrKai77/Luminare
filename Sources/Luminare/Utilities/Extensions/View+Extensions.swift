@@ -123,6 +123,10 @@ public extension View {
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat? = .infinity) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
+    
+    @ViewBuilder func luminareSectionMasked(_ masked: Bool = false) -> some View {
+        environment(\.luminareSectionIsMasked, masked)
+    }
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
@@ -148,6 +152,10 @@ public extension View {
 
     @ViewBuilder func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle = .menu) -> some View {
         environment(\.luminareCompactPickerStyle, style)
+    }
+    
+    @ViewBuilder func luminareListItemCornerRadius(_ radius: CGFloat = 2) -> some View {
+        environment(\.luminareListItemCornerRadius, radius)
     }
     
     @ViewBuilder func luminareListItemHeight(_ height: CGFloat = 50) -> some View {

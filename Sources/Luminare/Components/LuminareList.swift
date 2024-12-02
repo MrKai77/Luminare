@@ -7,25 +7,18 @@
 
 import SwiftUI
 
-public enum LuminareListActionsStyle: Hashable, Equatable, Codable {
+public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
+    CaseIterable, Codable
+{
     case bordered
-    case borderless(rounded: Bool = true)
-    
-    public static var borderless: Self {
-        borderless()
-    }
-    
+    case borderless
+
+    public var id: String { rawValue }
+
     var isBordered: Bool {
         switch self {
         case .bordered: true
         case .borderless: false
-        }
-    }
-    
-    var isRounded: Bool {
-        switch self {
-        case .bordered: false
-        case .borderless(let rounded): rounded
         }
     }
 }
@@ -47,6 +40,7 @@ where
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareSectionIsMasked) private var isMasked
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListActionsHeight) private var actionsHeight
     @Environment(\.luminareListActionsStyle) private var actionsStyle
@@ -131,7 +125,8 @@ where
                                             item: item,
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
-                                            roundedTop: !hasActions && !hasRemoveView,
+                                            roundedTop: !hasActions
+                                                && !hasRemoveView,
                                             roundedBottom: isBordered,
                                             canRefreshSelection:
                                                 $canRefreshSelection,
@@ -145,7 +140,8 @@ where
                                             item: item,
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
-                                            roundedTop: hasActions || hasRemoveView,
+                                            roundedTop: hasActions
+                                                || hasRemoveView,
                                             roundedBottom: isBordered,
                                             canRefreshSelection:
                                                 $canRefreshSelection,
@@ -175,58 +171,8 @@ where
                         .listStyle(.plain)
                     }
                 } header: {
-                    Group {
-                        if hasActions || hasRemoveView {
-                            if isBordered {
-                                VStack(spacing: 0) {
-                                    HStack(spacing: 2) {
-                                        if hasActions {
-                                            actions()
-                                                .buttonStyle(LuminareButtonStyle())
-                                        }
-                                        
-                                        if hasRemoveView {
-                                            removeButton()
-                                        }
-                                    }
-                                    .modifier(
-                                        LuminareCroppedSectionItem(
-                                            isFirstChild: true,
-                                            isLastChild: false
-                                        )
-                                    )
-                                    .luminareMinHeight(actionsHeight ?? itemHeight)
-                                    .frame(maxHeight: actionsHeight)
-                                    .padding(.vertical, 4)
-                                    
-                                    Divider()
-                                        .padding(.vertical, -1) // it's nuanced
-                                }
-                                .background(.ultraThickMaterial)
-                            } else {
-                                LuminareSection {
-                                    HStack(spacing: 2) {
-                                        if hasActions {
-                                            actions()
-                                                .buttonStyle(LuminareButtonStyle())
-                                        }
-                                        
-                                        if hasRemoveView {
-                                            removeButton()
-                                        }
-                                    }
-                                    .clipShape(.rect(cornerRadius: actionsStyle.isRounded ? cornerRadius : 0))
-                                }
-                                .luminareBordered(actionsStyle.isBordered)
-                                .luminareMinHeight(actionsHeight ?? itemHeight)
-                                .frame(maxHeight: actionsHeight)
-                                .padding(.horizontal, -4)
-                                .padding(.top, 4)
-                                .padding(.bottom, 8)
-                            }
-                        }
-                    }
-                    .luminareButtonCornerRadius()
+                    controls(
+                        hasActions: hasActions, hasRemoveView: hasRemoveView)
                 }
             }
         } header: {
@@ -234,6 +180,7 @@ where
         } footer: {
             footer()
         }
+        .luminareSectionMasked(false)
         .onChange(of: luminareClickedOutside) { _ in
             withAnimation(animation) {
                 selection = []
@@ -255,6 +202,60 @@ where
         }
         .onDisappear {
             removeEventMonitor()
+        }
+    }
+
+    @ViewBuilder private func controls(hasActions: Bool, hasRemoveView: Bool)
+        -> some View
+    {
+        if hasActions || hasRemoveView {
+            if isBordered {
+                VStack(spacing: 0) {
+                    HStack(spacing: 2) {
+                        if hasActions {
+                            actions()
+                                .buttonStyle(LuminareButtonStyle())
+                        }
+
+                        if hasRemoveView {
+                            removeButton()
+                        }
+                    }
+                    .modifier(
+                        LuminareCroppedSectionItem(
+                            isFirstChild: true,
+                            isLastChild: false
+                        )
+                    )
+                    .luminareMinHeight(actionsHeight ?? itemHeight)
+                    .frame(maxHeight: actionsHeight)
+                    .padding(.vertical, 4)
+
+                    Divider()
+                        .padding(.vertical, -1)  // it's nuanced
+                }
+                .background(.ultraThickMaterial)
+            } else {
+                LuminareSection {
+                    HStack(spacing: 2) {
+                        if hasActions {
+                            actions()
+                                .buttonStyle(LuminareButtonStyle())
+                        }
+
+                        if hasRemoveView {
+                            removeButton()
+                        }
+                    }
+                }
+                .luminareBordered(actionsStyle.isBordered)
+                .luminareMinHeight(actionsHeight ?? itemHeight)
+                .luminareSectionMasked(isMasked)
+                .frame(maxHeight: actionsHeight)
+                .padding(.horizontal, -4)
+                .padding(.top, 4)
+                .padding(.bottom, 8)
+            }
         }
     }
 
@@ -337,8 +338,8 @@ where Content: View, V: Hashable {
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareCornerRadius) private var cornerRadius
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareListItemCornerRadius) private var itemCornerRadius
     @Environment(\.luminareListItemHeight) private var itemHeight
 
     // MARK: Fields
@@ -349,7 +350,7 @@ where Content: View, V: Hashable {
     @Binding var item: V
     @Binding var firstItem: V?
     @Binding var lastItem: V?
-    
+
     var roundedTop: Bool = true
     var roundedBottom: Bool = true
     @Binding var canRefreshSelection: Bool
@@ -430,13 +431,17 @@ where Content: View, V: Hashable {
     private var isLast: Bool {
         item == items.last
     }
-    
+
     private var itemBackgroundShape: UnevenRoundedRectangle {
         .init(
-            topLeadingRadius: isFirst && roundedTop ? cornerRadius : buttonCornerRadius,
-            bottomLeadingRadius: isLast && roundedBottom ? cornerRadius : buttonCornerRadius,
-            bottomTrailingRadius: isLast && roundedBottom ? cornerRadius : buttonCornerRadius,
-            topTrailingRadius: isFirst && roundedTop ? cornerRadius : buttonCornerRadius
+            topLeadingRadius: isFirst && roundedTop
+                ? cornerRadius : itemCornerRadius,
+            bottomLeadingRadius: isLast && roundedBottom
+                ? cornerRadius : itemCornerRadius,
+            bottomTrailingRadius: isLast && roundedBottom
+                ? cornerRadius : itemCornerRadius,
+            topTrailingRadius: isFirst && roundedTop
+                ? cornerRadius : itemCornerRadius
         )
     }
 
@@ -477,11 +482,11 @@ where Content: View, V: Hashable {
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: isFirst && roundedTop
-                        ? cornerRadius : buttonCornerRadius,
+                        ? cornerRadius : itemCornerRadius,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
                     topTrailingRadius: isFirst && roundedTop
-                        ? cornerRadius : buttonCornerRadius
+                        ? cornerRadius : itemCornerRadius
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
 
@@ -538,9 +543,9 @@ where Content: View, V: Hashable {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
                     bottomLeadingRadius: isLast && roundedBottom
-                        ? cornerRadius : buttonCornerRadius,
+                        ? cornerRadius : itemCornerRadius,
                     bottomTrailingRadius: isLast && roundedBottom
-                        ? cornerRadius : buttonCornerRadius,
+                        ? cornerRadius : itemCornerRadius,
                     topTrailingRadius: 0
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
@@ -580,13 +585,13 @@ where Content: View, V: Hashable {
     @ViewBuilder private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: isFirst && roundedTop
-                ? cornerRadius : buttonCornerRadius,
+                ? cornerRadius : itemCornerRadius,
             bottomLeadingRadius: isLast && roundedBottom
-                ? cornerRadius : buttonCornerRadius,
+                ? cornerRadius : itemCornerRadius,
             bottomTrailingRadius: isLast && roundedBottom
-                ? cornerRadius : buttonCornerRadius,
+                ? cornerRadius : itemCornerRadius,
             topTrailingRadius: isFirst && roundedTop
-                ? cornerRadius : buttonCornerRadius
+                ? cornerRadius : itemCornerRadius
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
     }
@@ -688,10 +693,10 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
-        .luminareMinHeight(50)
 //        .luminareBordered(false)
-//        .luminareListActionsStyle(.borderless(rounded: true))
-//        .luminareButtonCornerRadius(8)
+//        .luminareSectionMasked(true)
+//        .luminareListItemCornerRadius(8)
+//        .luminareListActionsStyle(.borderless)
     }
     .frame(height: 350)
 }
