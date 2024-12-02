@@ -7,6 +7,29 @@
 
 import SwiftUI
 
+public enum LuminareListActionsStyle: Hashable, Equatable, Codable {
+    case bordered
+    case borderless(rounded: Bool = true)
+    
+    public static var borderless: Self {
+        borderless()
+    }
+    
+    var isBordered: Bool {
+        switch self {
+        case .bordered: true
+        case .borderless: false
+        }
+    }
+    
+    var isRounded: Bool {
+        switch self {
+        case .bordered: false
+        case .borderless(let rounded): rounded
+        }
+    }
+}
+
 // MARK: - List
 
 /// A stylized list.
@@ -22,9 +45,11 @@ where
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListActionsHeight) private var actionsHeight
+    @Environment(\.luminareListActionsStyle) private var actionsStyle
 
     // MARK: Fields
 
@@ -190,8 +215,9 @@ where
                                             removeButton()
                                         }
                                     }
+                                    .clipShape(.rect(cornerRadius: actionsStyle.isRounded ? cornerRadius : 0))
                                 }
-                                .luminareBordered(true)
+                                .luminareBordered(actionsStyle.isBordered)
                                 .luminareMinHeight(actionsHeight ?? itemHeight)
                                 .frame(maxHeight: actionsHeight)
                                 .padding(.horizontal, -4)
@@ -664,6 +690,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         }
         .luminareMinHeight(50)
 //        .luminareBordered(false)
+//        .luminareListActionsStyle(.borderless(rounded: true))
 //        .luminareButtonCornerRadius(8)
     }
     .frame(height: 350)

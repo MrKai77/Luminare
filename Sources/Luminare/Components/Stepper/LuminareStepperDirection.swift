@@ -9,7 +9,7 @@ import SwiftUI
 
 /// The direction of a ``LuminareStepper``.
 @available(macOS 15.0, *)
-public enum LuminareStepperDirection {
+public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
     /// In left-to-right layouts, the larger values are right-sided.
     case horizontal // the growth direction is typically right
     /// In left-to-right layouts, the larger values are left-sided.
@@ -18,6 +18,8 @@ public enum LuminareStepperDirection {
     case vertical // the growth direction is typically up
     /// In left-to-right layouts, the larger values are downward.
     case verticalAlternate // opposite to `vertical`
+    
+    public var id: String { rawValue }
     
     var isAlternate: Bool {
         switch self {

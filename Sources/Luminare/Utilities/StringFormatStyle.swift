@@ -18,13 +18,13 @@ import SwiftUI
 /// ## Topics
 ///
 /// - ``HexStrategy``
-public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatStyle {
+public struct StringFormatStyle: Equatable, Hashable, Codable, ParseableFormatStyle {
     public var parseStrategy: Strategy = .identity
 
     public typealias FormatInput = String
     public typealias FormatOutput = String
 
-    public enum Strategy: Codable, Equatable, Hashable, ParseStrategy {
+    public enum Strategy: Equatable, Hashable, Codable, ParseStrategy {
         public typealias ParseInput = String
         public typealias ParseOutput = String
 
@@ -42,7 +42,7 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
     }
 
     /// A strategy to parse a hex string.
-    public enum HexStrategy: Codable, Equatable, Hashable, ParseStrategy {
+    public enum HexStrategy: Equatable, Hashable, Codable, ParseStrategy {
         public typealias ParseInput = String
         public typealias ParseOutput = String
 
@@ -124,9 +124,11 @@ public struct StringFormatStyle: Codable, Equatable, Hashable, ParseableFormatSt
 }
 
 /// Represents a text case.
-public enum TextCase: String, Equatable, Hashable, Codable {
+public enum TextCase: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
     /// The uppercase.
     case uppercase
     /// The lowercase.
     case lowercase
+    
+    public var id: String { rawValue }
 }

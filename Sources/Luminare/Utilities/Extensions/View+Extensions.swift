@@ -157,4 +157,8 @@ public extension View {
     @ViewBuilder func luminareListActionsHeight(_ height: CGFloat? = 40) -> some View {
         environment(\.luminareListActionsHeight, height)
     }
+    
+    @ViewBuilder func luminareListActionsStyle(_ style: LuminareListActionsStyle = .bordered) -> some View {
+        environment(\.luminareListActionsStyle, style)
+    }
 }

@@ -10,11 +10,13 @@ import SwiftUI
 /// The control size for views based on ``LuminareCompose``.
 ///
 /// Typically, this is eligible for views that have additional controls beside static contents.
-public enum LuminareComposeControlSize {
+public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
     /// The regular size where the content is separated into two lines.
     case regular
     /// The compact size where the content is in one single line.
     case compact
+
+    public var id: String { rawValue }
 
     var height: CGFloat {
         switch self {
@@ -27,7 +29,8 @@ public enum LuminareComposeControlSize {
 // MARK: - Compose
 
 /// A stylized view that composes a content with a label.
-public struct LuminareCompose<Label, Content>: View where Label: View, Content: View {
+public struct LuminareCompose<Label, Content>: View
+where Label: View, Content: View {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -134,7 +137,8 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
 ) {
     LuminareSection {
         LuminareCompose("Label", reducesTrailingSpace: true) {
-            Button {} label: {
+            Button {
+            } label: {
                 Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
@@ -143,7 +147,8 @@ public struct LuminareCompose<Label, Content>: View where Label: View, Content: 
         }
 
         LuminareCompose("Label", reducesTrailingSpace: true) {
-            Button {} label: {
+            Button {
+            } label: {
                 Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)

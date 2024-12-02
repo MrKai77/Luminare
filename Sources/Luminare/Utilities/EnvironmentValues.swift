@@ -70,4 +70,5 @@ public extension EnvironmentValues {
     
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListActionsHeight: CGFloat? = 40
+    @Entry var luminareListActionsStyle: LuminareListActionsStyle = .bordered
 }
