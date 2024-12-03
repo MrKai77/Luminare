@@ -36,14 +36,18 @@ public extension EnvironmentValues {
     // MARK: General
 
     @Entry var luminareCornerRadius: CGFloat = 12
-    @Entry var luminareButtonCornerRadius: CGFloat = 2
-    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
     
+    // MARK: Luminare Button Style
+    @Entry var luminareButtonMaterial: Material? = nil
+    @Entry var luminareButtonCornerRadius: CGFloat = 2
+    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
+    
     // MARK: Luminare Section
     
+    @Entry var luminareSectionMaterial: Material? = nil
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
     @Entry var luminareSectionIsMasked: Bool = false
 
@@ -71,6 +75,7 @@ public extension EnvironmentValues {
     
     @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
+    @Entry var luminareListActionsMaterial: Material? = nil
     @Entry var luminareListActionsHeight: CGFloat? = 40
     @Entry var luminareListActionsStyle: LuminareListActionsStyle = .bordered
 }

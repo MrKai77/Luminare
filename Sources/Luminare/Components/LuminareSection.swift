@@ -16,6 +16,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareSectionMaterial) private var material
     @Environment(\.luminareSectionIsMasked) private var isMasked
 
     // MARK: Fields
@@ -69,8 +70,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                         content()
                     }
                     .frame(maxWidth: maxWidth)
-                    .background(.ultraThickMaterial)
-                    .background(.quinary.opacity(0.5))
+                    .background(.quinary, with: material)
                     .clipShape(.rect(cornerRadius: cornerRadius))
                     .overlay {
                         RoundedRectangle(cornerRadius: cornerRadius)
@@ -81,7 +81,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                         .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
                 }
             }
-            .padding(innerPadding)
+            .padding(hasPadding ? innerPadding : 0)
         } header: {
             if Header.self != EmptyView.self {
                 Group {

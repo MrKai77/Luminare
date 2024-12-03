@@ -15,8 +15,9 @@ import SwiftUI
 public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
     
@@ -33,7 +34,7 @@ public struct LuminareButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
+            .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
                     styles: (
@@ -60,8 +61,9 @@ public struct LuminareButtonStyle: ButtonStyle {
 public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
     
@@ -78,7 +80,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
+            .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
                     layered: .red
@@ -105,8 +107,9 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
 public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
     
@@ -123,7 +126,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
+            .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
                     layered: .tint
@@ -177,8 +180,9 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
 public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @ViewBuilder private let icon: () -> Image
 
@@ -207,7 +211,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
+            .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
                     styles: (
@@ -246,8 +250,9 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     private let extraCompact: Bool
 
@@ -277,7 +282,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
+            .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
                     styles: (
@@ -322,7 +327,8 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 ///     }
 /// }
 public struct LuminareBordered: ViewModifier {
-    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     private let isHighlighted: Bool
 
@@ -339,7 +345,7 @@ public struct LuminareBordered: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .background {
+            .background(with: material) {
                 if isHighlighted {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 } else {
@@ -369,10 +375,11 @@ public struct LuminareBordered: ViewModifier {
 /// }
 public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
     
@@ -395,7 +402,7 @@ public struct LuminareHoverable: ViewModifier {
             }
             .frame(minHeight: minHeight)
             .padding(.horizontal, horizontalPadding)
-            .background {
+            .background(with: material) {
                 if isHovering {
                     Rectangle()
                         .foregroundStyle(.quinary)

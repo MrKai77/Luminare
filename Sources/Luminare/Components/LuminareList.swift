@@ -42,6 +42,7 @@ where
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareSectionIsMasked) private var isMasked
     @Environment(\.luminareListItemHeight) private var itemHeight
+    @Environment(\.luminareListActionsMaterial) private var actionsMaterial
     @Environment(\.luminareListActionsHeight) private var actionsHeight
     @Environment(\.luminareListActionsStyle) private var actionsStyle
 
@@ -165,10 +166,10 @@ where
                             .listRowInsets(.init())
                             .padding(.horizontal, -10)
                         }
+                        .listStyle(.plain)
                         .frame(height: CGFloat(items.count) * itemHeight)
                         .scrollContentBackground(.hidden)
                         .scrollDisabled(true)
-                        .listStyle(.plain)
                     }
                 } header: {
                     controls(
@@ -181,6 +182,7 @@ where
             footer()
         }
         .luminareSectionMasked(false)
+        
         .onChange(of: luminareClickedOutside) { _ in
             withAnimation(animation) {
                 selection = []
@@ -210,13 +212,13 @@ where
     {
         if hasActions || hasRemoveView {
             if isBordered {
-                VStack(spacing: 0) {
+                LuminareSection(hasPadding: false) {
                     HStack(spacing: 2) {
                         if hasActions {
                             actions()
                                 .buttonStyle(LuminareButtonStyle())
                         }
-
+                        
                         if hasRemoveView {
                             removeButton()
                         }
@@ -230,11 +232,11 @@ where
                     .luminareMinHeight(actionsHeight ?? itemHeight)
                     .frame(maxHeight: actionsHeight)
                     .padding(.vertical, 4)
-
+                    
                     Divider()
-                        .padding(.vertical, -1)  // it's nuanced
                 }
-                .background(.ultraThickMaterial)
+                .luminareBordered(false)
+                .luminareSectionMaterial(actionsMaterial)
             } else {
                 LuminareSection {
                     HStack(spacing: 2) {
@@ -242,7 +244,7 @@ where
                             actions()
                                 .buttonStyle(LuminareButtonStyle())
                         }
-
+                        
                         if hasRemoveView {
                             removeButton()
                         }
@@ -250,10 +252,12 @@ where
                 }
                 .luminareBordered(actionsStyle.isBordered)
                 .luminareMinHeight(actionsHeight ?? itemHeight)
+                .luminareButtonMaterial(actionsStyle.isBordered ? nil : actionsMaterial)
+                .luminareSectionMaterial(actionsMaterial)
                 .luminareSectionMasked(isMasked)
                 .frame(maxHeight: actionsHeight)
                 .padding(.horizontal, -4)
-                .padding(.top, 4)
+                .padding(.top, actionsStyle.isBordered ? 6 : 0)
                 .padding(.bottom, 8)
             }
         }
@@ -670,10 +674,6 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
         } removeView: {
             Text("Remove")
-        } header: {
-            Text("List Header")
-        } footer: {
-            Text("List Footer")
         }
     }
 }
@@ -693,6 +693,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
+//        .luminareListActionsMaterial(.ultraThin)
 //        .luminareBordered(false)
 //        .luminareSectionMasked(true)
 //        .luminareListItemCornerRadius(8)
