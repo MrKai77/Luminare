@@ -78,6 +78,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     }
                 } else {
                     content()
+                        .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
                 }
             }
             .padding(hasPadding ? innerPadding : 0)
@@ -118,7 +119,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .foregroundStyle(.secondary)
             }
         }
-        .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
     }
 }
 
