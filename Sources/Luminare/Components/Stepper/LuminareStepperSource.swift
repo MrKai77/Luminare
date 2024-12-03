@@ -45,15 +45,15 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
     /// - Parameters:
     ///   - step: the step between two indicators.
     case infiniteContinuous(step: V = 1)
-    
+
     public static var infinite: Self {
         .infinite()
     }
-    
+
     public static var infiniteContinuous: Self {
         .infiniteContinuous()
     }
-    
+
     var isFinite: Bool {
         switch self {
         case .finite, .finiteContinuous:
@@ -62,7 +62,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             false
         }
     }
-    
+
     var isContinuous: Bool {
         switch self {
         case .finiteContinuous, .infiniteContinuous:
@@ -71,7 +71,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             false
         }
     }
-    
+
     var count: Int? {
         switch self {
         case let .finite(range, step), let .finiteContinuous(range, step):
@@ -80,7 +80,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             nil
         }
     }
-    
+
     var total: V? {
         switch self {
         case let .finite(range, _), let .finiteContinuous(range, _):
@@ -89,15 +89,15 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             nil
         }
     }
-    
+
     var step: V {
         switch self {
         case let .finite(_, step), let .finiteContinuous(_, step),
-            let .infinite(step), let .infiniteContinuous(step):
+             let .infinite(step), let .infiniteContinuous(step):
             step
         }
     }
-    
+
     func round(_ value: V) -> (value: V, offset: V) {
         switch self {
         case let .finite(range, step), let .finiteContinuous(range, step):
@@ -109,7 +109,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             return (value - remainder, remainder)
         }
     }
-    
+
     func continuousIndex(of value: V) -> V? {
         switch self {
         case let .finite(range, step), let .finiteContinuous(range, step):
@@ -118,19 +118,19 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             nil
         }
     }
-    
+
     func isEdgeCase(_ value: V) -> Bool {
         switch self {
         case let .finite(range, step), let .finiteContinuous(range, step):
             let min = range.lowerBound + step
             let max = range.upperBound - step
-            
+
             return value < min || value > max
         case .infinite, .infiniteContinuous:
             return false
         }
     }
-    
+
     func reachedUpperBound(_ value: V, padding: V = .zero) -> Bool {
         switch self {
         case let .finite(range, _), let .finiteContinuous(range, _):
@@ -139,7 +139,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             false
         }
     }
-    
+
     func reachedLowerBound(_ value: V, padding: V = .zero) -> Bool {
         switch self {
         case let .finite(range, _), let .finiteContinuous(range, _):
@@ -148,7 +148,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             false
         }
     }
-    
+
     func reachedStartingBound(_ value: V, padding: V = .zero, direction: LuminareStepperDirection) -> Bool {
         switch direction {
         case .horizontal, .vertical:
@@ -157,7 +157,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             reachedUpperBound(value, padding: padding)
         }
     }
-    
+
     func reachedEndingBound(_ value: V, padding: V = .zero, direction: LuminareStepperDirection) -> Bool {
         switch direction {
         case .horizontal, .vertical:
@@ -166,7 +166,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             reachedLowerBound(value, padding: padding)
         }
     }
-    
+
     func wrap(_ value: V, padding: V = .zero) -> V {
         switch self {
         case let .finite(range, _), let .finiteContinuous(range, _):
@@ -175,7 +175,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
             value
         }
     }
-    
+
     func offsetBy(
         _ value: V = .zero,
         direction: LuminareStepperDirection,
@@ -188,7 +188,7 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         case .vertical, .horizontalAlternate:
             value - offset
         }
-        
+
         return if wrap {
             self.wrap(result)
         } else {

@@ -88,7 +88,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     if Header.self == Text.self {
                         HStack {
                             header()
-                            
+
                             Spacer()
                         }
                     } else {
@@ -96,7 +96,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     }
                 }
                 .foregroundStyle(.secondary)
-                
+
                 Spacer()
                     .frame(height: headerSpacing)
             }
@@ -104,12 +104,12 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             if Footer.self != EmptyView.self {
                 Spacer()
                     .frame(height: footerSpacing)
-                
+
                 Group {
                     if Footer.self == Text.self {
                         HStack {
                             footer()
-                            
+
                             Spacer()
                         }
                     } else {

@@ -30,7 +30,7 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
 
 /// A stylized view that composes a content with a label.
 public struct LuminareCompose<Label, Content>: View
-where Label: View, Content: View {
+    where Label: View, Content: View {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -137,8 +137,7 @@ where Label: View, Content: View {
 ) {
     LuminareSection {
         LuminareCompose("Label", reducesTrailingSpace: true) {
-            Button {
-            } label: {
+            Button {} label: {
                 Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
@@ -147,8 +146,7 @@ where Label: View, Content: View {
         }
 
         LuminareCompose("Label", reducesTrailingSpace: true) {
-            Button {
-            } label: {
+            Button {} label: {
                 Text("Button")
                     .frame(height: 30)
                     .padding(.horizontal, 8)

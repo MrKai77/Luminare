@@ -18,9 +18,9 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
     case vertical // the growth direction is typically up
     /// In left-to-right layouts, the larger values are downward.
     case verticalAlternate // opposite to `vertical`
-    
+
     public var id: String { rawValue }
-    
+
     var isAlternate: Bool {
         switch self {
         case .horizontal, .vertical:
@@ -29,16 +29,16 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             true
         }
     }
-    
+
     var axis: Axis {
         switch self {
         case .horizontal, .horizontalAlternate:
-                .horizontal
+            .horizontal
         case .vertical, .verticalAlternate:
-                .vertical
+            .vertical
         }
     }
-    
+
     var unitSpan: (start: UnitPoint, end: UnitPoint) {
         switch self {
         case .horizontal:
@@ -51,7 +51,7 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             (start: .top, end: .bottom)
         }
     }
-    
+
     var paddingSpan: (start: Edge.Set, end: Edge.Set) {
         switch self {
         case .horizontal:
@@ -64,16 +64,16 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             (start: .top, end: .bottom)
         }
     }
-    
+
     var paddingEdges: Edge.Set {
         switch self {
         case .horizontal, .horizontalAlternate:
-                .vertical
+            .vertical
         case .vertical, .verticalAlternate:
-                .horizontal
+            .horizontal
         }
     }
-    
+
     @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
         switch self {
         case .horizontal, .horizontalAlternate:
@@ -82,7 +82,7 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             VStack(alignment: .center, spacing: spacing, content: content)
         }
     }
-    
+
     func frame(_ value: CGFloat?, fallback: CGFloat? = nil) -> (width: CGFloat?, height: CGFloat?) {
         switch self {
         case .horizontal, .horizontalAlternate:
@@ -91,7 +91,7 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             (width: fallback, height: value)
         }
     }
-    
+
     func length(of size: CGSize) -> CGFloat {
         switch self {
         case .horizontal, .horizontalAlternate:
@@ -100,7 +100,7 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             size.height
         }
     }
-    
+
     func offset(of point: CGPoint) -> CGFloat {
         switch self {
         case .horizontal, .horizontalAlternate:
@@ -109,7 +109,7 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             point.y
         }
     }
-    
+
     func percentage(in total: CGFloat, at index: CGFloat) -> CGFloat {
         let percentage = index / total
         return switch self {
@@ -119,7 +119,7 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             1 - percentage
         }
     }
-    
+
     func offsetBy<Value: Numeric>(_ value: Value = .zero, nonAlternateOffset offset: Value) -> Value {
         switch self {
         case .horizontal, .verticalAlternate:

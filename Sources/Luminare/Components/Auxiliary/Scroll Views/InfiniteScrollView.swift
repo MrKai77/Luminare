@@ -14,7 +14,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
     case horizontal
     /// The view can, and can only be scrolled vertically.
     case vertical
-    
+
     public var id: String { rawValue }
 
     /// Initializes an ``InfiniteScrollViewDirection`` from an `Axis`.

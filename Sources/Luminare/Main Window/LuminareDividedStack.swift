@@ -13,7 +13,7 @@ public enum LuminareDividedStackOrientation: String, Equatable, Hashable, Identi
     case vertical
     /// Stacks elements horizontally.
     case horizontal
-    
+
     public var id: String { rawValue }
 }
 

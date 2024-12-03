@@ -41,7 +41,7 @@ public extension LuminareSection {
             Text(footerKey)
         }
     }
-    
+
     /// Initializes a ``LuminareSection`` without a footer.
     ///
     /// - Parameters:
@@ -73,7 +73,7 @@ public extension LuminareSection {
             EmptyView()
         }
     }
-    
+
     /// Initializes a ``LuminareSection`` without a footer, whose header is a localized text.
     ///
     /// - Parameters:
@@ -103,7 +103,7 @@ public extension LuminareSection {
             Text(headerKey)
         }
     }
-    
+
     /// Initializes a ``LuminareSection`` without a header.
     ///
     /// - Parameters:
@@ -135,7 +135,7 @@ public extension LuminareSection {
             footer()
         }
     }
-    
+
     /// Initializes a ``LuminareSection`` without a header, whose footer is a localized text.
     ///
     /// - Parameters:
@@ -165,7 +165,7 @@ public extension LuminareSection {
             Text(footerKey)
         }
     }
-    
+
     /// Initializes a ``LuminareSection`` without a header and a footer.
     ///
     /// - Parameters:

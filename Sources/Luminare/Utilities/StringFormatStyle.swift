@@ -129,6 +129,6 @@ public enum TextCase: String, Equatable, Hashable, Identifiable, CaseIterable, C
     case uppercase
     /// The lowercase.
     case lowercase
-    
+
     public var id: String { rawValue }
 }

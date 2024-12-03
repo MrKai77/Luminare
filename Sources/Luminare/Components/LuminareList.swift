@@ -8,8 +8,7 @@
 import SwiftUI
 
 public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
-    CaseIterable, Codable
-{
+    CaseIterable, Codable {
     case bordered
     case borderless
 
@@ -27,12 +26,10 @@ public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
 
 /// A stylized list.
 public struct LuminareList<
-    Header, ContentA, ContentB, Actions, RemoveView, Footer, V, ID
+    Header, ContentA, ContentB, Actions, Footer, V, ID
 >: View
-where
-    Header: View, ContentA: View, ContentB: View, Actions: View,
-    RemoveView: View, Footer: View, V: Hashable, ID: Hashable
-{
+    where
+    Header: View, ContentA: View, ContentB: View, Actions: View, Footer: View, V: Hashable, ID: Hashable {
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
@@ -53,15 +50,13 @@ where
     private let id: KeyPath<V, ID>
 
     @ViewBuilder private let content: (Binding<V>) -> ContentA,
-        emptyView: () -> ContentB
-    @ViewBuilder private let actions: () -> Actions,
-        removeView: () -> RemoveView
+                             emptyView: () -> ContentB
+    @ViewBuilder private let actions: () -> Actions
     @ViewBuilder private let header: () -> Header, footer: () -> Footer
 
     @State private var firstItem: V?
     @State private var lastItem: V?
 
-    @State private var canRefreshSelection = true
     @State private var eventMonitor: AnyObject?
 
     // MARK: Initializers
@@ -76,7 +71,6 @@ where
     ///   - emptyView: the view to display when nothing is inside the list.
     ///   - actions: the actions placed next to the **remove** button.
     ///   Typically buttons that manipulate the listed items.
-    ///   - removeView: the view inside the **remove** button.
     ///   - header: the header.
     ///   - footer: the footer.
     public init(
@@ -85,7 +79,6 @@ where
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB,
         @ViewBuilder actions: @escaping () -> Actions,
-        @ViewBuilder removeView: @escaping () -> RemoveView,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
@@ -95,7 +88,6 @@ where
         self.content = content
         self.emptyView = emptyView
         self.actions = actions
-        self.removeView = removeView
         self.header = header
         self.footer = footer
     }
@@ -106,7 +98,6 @@ where
         LuminareSection(hasPadding: false) {
             LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
                 let hasActions = Actions.self != EmptyView.self
-                let hasRemoveView = RemoveView.self != EmptyView.self
 
                 Section {
                     if items.isEmpty {
@@ -116,7 +107,7 @@ where
                         List(selection: $selection) {
                             ForEach($items, id: id) { item in
                                 let isDisabled = isDisabled(item.wrappedValue)
-                                let tint = getTint(of: item.wrappedValue)
+                                let tint = tint(of: item.wrappedValue)
 
                                 Group {
                                     if #available(macOS 14.0, *) {
@@ -126,11 +117,8 @@ where
                                             item: item,
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
-                                            roundedTop: !hasActions
-                                                && !hasRemoveView,
+                                            roundedTop: !hasActions,
                                             roundedBottom: isBordered,
-                                            canRefreshSelection:
-                                                $canRefreshSelection,
                                             content: content
                                         )
                                         .selectionDisabled(isDisabled)
@@ -141,11 +129,8 @@ where
                                             item: item,
                                             firstItem: $firstItem,
                                             lastItem: $lastItem,
-                                            roundedTop: hasActions
-                                                || hasRemoveView,
+                                            roundedTop: hasActions,
                                             roundedBottom: isBordered,
-                                            canRefreshSelection:
-                                                $canRefreshSelection,
                                             content: content
                                         )
                                     }
@@ -158,13 +143,15 @@ where
                                 withAnimation(animation) {
                                     items.move(
                                         fromOffsets: indices,
-                                        toOffset: newOffset)
+                                        toOffset: newOffset
+                                    )
                                 }
                             }
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
                             .listRowInsets(.init())
                             .padding(.horizontal, -10)
+                            .transition(.slide)
                         }
                         .listStyle(.plain)
                         .frame(height: CGFloat(items.count) * itemHeight)
@@ -172,8 +159,9 @@ where
                         .scrollDisabled(true)
                     }
                 } header: {
-                    controls(
-                        hasActions: hasActions, hasRemoveView: hasRemoveView)
+                    if hasActions {
+                        controls()
+                    }
                 }
             }
         } header: {
@@ -182,11 +170,19 @@ where
             footer()
         }
         .luminareSectionMasked(false)
-
+        .animation(animation, value: items)
         .onChange(of: luminareClickedOutside) { _ in
             withAnimation(animation) {
                 selection = []
             }
+        }
+        .onChange(of: items) { _ in
+            guard !items.isEmpty else {
+                selection = []
+                return
+            }
+
+            selection = selection.intersection(items)
         }
         .onChange(of: selection) { _ in
             processSelection()
@@ -207,85 +203,46 @@ where
         }
     }
 
-    @ViewBuilder private func controls(hasActions: Bool, hasRemoveView: Bool)
-        -> some View
-    {
-        if hasActions || hasRemoveView {
-            if isBordered {
-                LuminareSection(hasPadding: false) {
-                    HStack(spacing: 2) {
-                        if hasActions {
-                            actions()
-                                .buttonStyle(LuminareButtonStyle())
-                        }
-
-                        if hasRemoveView {
-                            removeButton()
-                        }
-                    }
-                    .modifier(
-                        LuminareCroppedSectionItem(
-                            isFirstChild: true,
-                            isLastChild: false
-                        )
+    @ViewBuilder private func controls() -> some View {
+        if isBordered {
+            LuminareSection(hasPadding: false) {
+                HStack(spacing: 2) {
+                    actions()
+                        .buttonStyle(LuminareButtonStyle())
+                }
+                .modifier(
+                    LuminareCroppedSectionItem(
+                        isFirstChild: true,
+                        isLastChild: false
                     )
-                    .luminareMinHeight(actionsHeight ?? itemHeight)
-                    .frame(maxHeight: actionsHeight)
-                    .padding(.vertical, 4)
-
-                    Divider()
-                }
-                .luminareBordered(false)
-                .luminareSectionMaterial(actionsMaterial)
-            } else {
-                LuminareSection {
-                    HStack(spacing: 2) {
-                        if hasActions {
-                            actions()
-                                .buttonStyle(LuminareButtonStyle())
-                        }
-
-                        if hasRemoveView {
-                            removeButton()
-                        }
-                    }
-                }
-                .luminareBordered(actionsStyle.isBordered)
-                .luminareMinHeight(actionsHeight ?? itemHeight)
-                .luminareButtonMaterial(
-                    actionsStyle.isBordered ? nil : actionsMaterial
                 )
-                .luminareSectionMaterial(actionsMaterial)
-                .luminareSectionMasked(isMasked)
+                .luminareMinHeight(actionsHeight ?? itemHeight)
                 .frame(maxHeight: actionsHeight)
-                .padding(.horizontal, -4)
-                .padding(.top, actionsStyle.isBordered ? 6 : 0)
-                .padding(.bottom, 8)
+                .padding(.vertical, 4)
+
+                Divider()
             }
-        }
-    }
-
-    @ViewBuilder private func removeButton() -> some View {
-        Button {
-            if !selection.isEmpty {
-                canRefreshSelection = false
-                items.removeAll(where: {
-                    selection.contains($0)
-                })
-
-                selection = []
-
-                DispatchQueue.main.asyncAfter(
-                    deadline: .now() + 0.25
-                ) {
-                    canRefreshSelection = true
+            .luminareBordered(false)
+            .luminareSectionMaterial(actionsMaterial)
+        } else {
+            LuminareSection {
+                HStack(spacing: 2) {
+                    actions()
+                        .buttonStyle(LuminareButtonStyle())
                 }
             }
-        } label: {
-            removeView()
+            .luminareBordered(actionsStyle.isBordered)
+            .luminareMinHeight(actionsHeight ?? itemHeight)
+            .luminareButtonMaterial(
+                actionsStyle.isBordered ? nil : actionsMaterial
+            )
+            .luminareSectionMaterial(actionsMaterial)
+            .luminareSectionMasked(isMasked)
+            .frame(maxHeight: actionsHeight)
+            .padding(.horizontal, -4)
+            .padding(.top, actionsStyle.isBordered ? 6 : 0)
+            .padding(.bottom, 8)
         }
-        .buttonStyle(LuminareDestructiveButtonStyle())
-        .disabled(selection.isEmpty)
     }
 
     // MARK: Functions
@@ -294,12 +251,12 @@ where
         (element as? LuminareSelectionData)?.isSelectable == false
     }
 
-    private func getTint(of element: V) -> Color {
+    private func tint(of element: V) -> Color {
         (element as? LuminareSelectionData)?.tint ?? tint()
     }
 
     private func processSelection() {
-        if selection.isEmpty {
+        if items.isEmpty || selection.isEmpty {
             firstItem = nil
             lastItem = nil
         } else {
@@ -336,7 +293,7 @@ where
 // MARK: - List Item
 
 public struct LuminareListItem<Content, V>: View
-where Content: View, V: Hashable {
+    where Content: View, V: Hashable {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -359,7 +316,6 @@ where Content: View, V: Hashable {
 
     var roundedTop: Bool = true
     var roundedBottom: Bool = true
-    @Binding var canRefreshSelection: Bool
     @ViewBuilder var content: (Binding<V>) -> Content
 
     @State private var isHovering = false
@@ -394,10 +350,10 @@ where Content: View, V: Hashable {
                     }
                 }
                 .padding(.horizontal, 1)
-                .padding(.leading, 1)  // somehow fixes
+                .padding(.leading, 1) // it's nuanced
             }
             .overlay {
-                if isBordered && !isLast {
+                if isBordered, !isLast {
                     VStack {
                         Spacer()
 
@@ -408,20 +364,17 @@ where Content: View, V: Hashable {
                 }
             }
 
-            .onChange(of: selection) { newSelection in
+            .onChange(of: selection) { _ in
                 guard isEnabled else { return }
-                guard canRefreshSelection else { return }
-                DispatchQueue.main.async {
-                    withAnimation(animation) {
-                        updateSelection(selection: newSelection)
-                    }
+                withAnimation(animation) {
+                    updateSelection()
                 }
             }
             .onAppear {
                 DispatchQueue.main.async {
                     withAnimation(animation) {
                         // initialize selection
-                        updateSelection(selection: selection)
+                        updateSelection()
 
                         // reset hovering state
                         isHovering = false
@@ -431,37 +384,38 @@ where Content: View, V: Hashable {
     }
 
     private var isFirst: Bool {
-        item == items.first
+        guard !items.isEmpty else { return false }
+        return item == items.first
     }
 
     private var isLast: Bool {
-        item == items.last
+        guard !items.isEmpty else { return false }
+        return item == items.last
     }
 
     private var isInSelection: Bool {
-        selection.contains(item)
+        guard !items.isEmpty else { return false }
+        return selection.contains(item)
     }
 
     private var isFirstInSelection: Bool {
-        if let firstIndex = items.firstIndex(of: item),
-            firstIndex > 0,
+        guard !items.isEmpty else { return false }
+        return if let firstIndex = items.firstIndex(of: item),
+                  firstIndex > 0 {
             !selection.contains(items[firstIndex - 1])
-        {
-            return true
+        } else {
+            item == firstItem
         }
-
-        return item == firstItem
     }
 
     private var isLastInSelection: Bool {
-        if let firstIndex = items.firstIndex(of: item),
-            firstIndex < items.count - 1,
+        guard !items.isEmpty else { return false }
+        return if let firstIndex = items.firstIndex(of: item),
+                  firstIndex < items.count - 1 {
             !selection.contains(items[firstIndex + 1])
-        {
-            return true
+        } else {
+            item == lastItem
         }
-
-        return item == lastItem
     }
 
     private var itemBackgroundShape: UnevenRoundedRectangle {
@@ -638,7 +592,13 @@ where Content: View, V: Hashable {
 
     // MARK: Functions
 
-    private func updateSelection(selection: Set<V>) {
+    private func updateSelection() {
+        guard !selection.isEmpty else {
+            tintOpacity = .zero
+            lineWidth = .zero
+            return
+        }
+
         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
         lineWidth = selection.contains(item) ? maxLineWidth : .zero
     }
@@ -649,7 +609,7 @@ where Content: View, V: Hashable {
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> Void
+    let add: (inout [V]) -> ()
 
     var body: some View {
         LuminareList(
@@ -660,11 +620,10 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             Text("\(value.wrappedValue)")
                 .contextMenu {
                     Button("Remove") {
-                        withAnimation {
-                            items.removeAll {
-                                selection.contains($0)
-                                    || value.wrappedValue == $0
-                            }
+                        if selection.isEmpty {
+                            items.removeAll { $0 == value.wrappedValue }
+                        } else {
+                            items.removeAll { selection.contains($0) }
                         }
                     }
                 }
@@ -686,8 +645,13 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                     items.sort(by: <)
                 }
             }
-        } removeView: {
-            Text("Remove")
+            .disabled(items.isEmpty)
+
+            Button("Remove") {
+                items.removeAll { selection.contains($0) }
+            }
+            .buttonStyle(LuminareDestructiveButtonStyle())
+            .disabled(selection.isEmpty)
         }
     }
 }
@@ -700,7 +664,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     ScrollView {
         ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
             guard items.count < 100 else { return }
-            let random = { Int.random(in: 0..<100) }
+            let random = { Int.random(in: 0 ..< 100) }
             var new = random()
             while items.contains([new]) {
                 new = random()

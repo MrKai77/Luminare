@@ -39,14 +39,15 @@ public extension EnvironmentValues {
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
-    
+
     // MARK: Luminare Button Style
+
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadius: CGFloat = 2
     @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
-    
+
     // MARK: Luminare Section
-    
+
     @Entry var luminareSectionMaterial: Material? = nil
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
     @Entry var luminareSectionIsMasked: Bool = false
@@ -70,9 +71,9 @@ public extension EnvironmentValues {
     // MARK: Luminare Compact Picker
 
     @Entry var luminareCompactPickerStyle: LuminareCompactPickerStyle = .menu
-    
+
     // MARK: Luminare List
-    
+
     @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListActionsMaterial: Material? = nil

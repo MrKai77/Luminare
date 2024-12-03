@@ -20,7 +20,7 @@ public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable {
     /// - Parameters:
     ///   - hasDividers: whether to display dividers between segmented knobs.
     case segmented(hasDividers: Bool = true)
-    
+
     public static var segmented: Self {
         .segmented()
     }

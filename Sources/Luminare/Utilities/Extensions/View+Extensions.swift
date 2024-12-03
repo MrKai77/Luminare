@@ -14,13 +14,13 @@ public extension View {
         luminareTint(tint)
             .tint(tint())
     }
-    
-    @ViewBuilder func background<S: ShapeStyle>(_ style: S, with material: Material?) -> some View {
+
+    @ViewBuilder func background(_ style: some ShapeStyle, with material: Material?) -> some View {
         background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
             .background(style.opacity(material == nil ? 1 : 0.5))
     }
-    
-    @ViewBuilder func background<Content: View>(with material: Material?, @ViewBuilder _ content: () -> Content) -> some View {
+
+    @ViewBuilder func background(with material: Material?, @ViewBuilder _ content: () -> some View) -> some View {
         background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
             .background {
                 content()
@@ -109,7 +109,7 @@ public extension View {
 
 public extension View {
     // MARK: General
-    
+
     @ViewBuilder func luminareCornerRadius(_ radius: CGFloat = 12) -> some View {
         environment(\.luminareCornerRadius, radius)
     }
@@ -125,41 +125,41 @@ public extension View {
     @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
         environment(\.luminareIsBordered, bordered)
     }
-    
+
     // MARK: Luminare Button Style
-    
+
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareButtonMaterial, material)
     }
-    
+
     @ViewBuilder func luminareButtonCornerRadius(_ radius: CGFloat = 2) -> some View {
         environment(\.luminareButtonCornerRadius, radius)
     }
-    
+
     @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
         environment(\.luminareCompactButtonCornerRadius, radius)
     }
-    
+
     // MARK: Luminare Section
-    
+
     @ViewBuilder func luminareSectionMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareSectionMaterial, material)
     }
-    
+
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat? = .infinity) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
-    
+
     @ViewBuilder func luminareSectionMasked(_ masked: Bool = false) -> some View {
         environment(\.luminareSectionIsMasked, masked)
     }
-    
+
     // MARK: Luminare Compose
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
     }
-    
+
     // MARK: Luminare Popover
 
     @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger = .hover) -> some View {
@@ -169,7 +169,7 @@ public extension View {
     @ViewBuilder func luminarePopoverShade(_ shade: LuminarePopoverShade = .styled) -> some View {
         environment(\.luminarePopoverShade, shade)
     }
-    
+
     // MARK: Luminare Stepper
 
     @available(macOS 15.0, *)
@@ -181,31 +181,31 @@ public extension View {
     @ViewBuilder func luminareStepperDirection(_ direction: LuminareStepperDirection = .horizontal) -> some View {
         environment(\.luminareStepperDirection, direction)
     }
-    
+
     // MARK: Luminare Compact Picker
 
     @ViewBuilder func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle = .menu) -> some View {
         environment(\.luminareCompactPickerStyle, style)
     }
-    
+
     // MARK: Luminare List
-    
+
     @ViewBuilder func luminareListItemCornerRadius(_ radius: CGFloat = 2) -> some View {
         environment(\.luminareListItemCornerRadius, radius)
     }
-    
+
     @ViewBuilder func luminareListItemHeight(_ height: CGFloat = 50) -> some View {
         environment(\.luminareListItemHeight, height)
     }
-    
+
     @ViewBuilder func luminareListActionsMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareListActionsMaterial, material)
     }
-    
+
     @ViewBuilder func luminareListActionsHeight(_ height: CGFloat? = 40) -> some View {
         environment(\.luminareListActionsHeight, height)
     }
-    
+
     @ViewBuilder func luminareListActionsStyle(_ style: LuminareListActionsStyle = .bordered) -> some View {
         environment(\.luminareListActionsStyle, style)
     }

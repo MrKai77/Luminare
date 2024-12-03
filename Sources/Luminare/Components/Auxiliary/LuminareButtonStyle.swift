@@ -20,7 +20,7 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
-    
+
     public init() {}
 
     #if DEBUG
@@ -66,7 +66,7 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
-    
+
     public init() {}
 
     #if DEBUG
@@ -112,7 +112,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
-    
+
     public init() {}
 
     #if DEBUG
@@ -382,7 +382,7 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
-    
+
     public init() {}
 
     #if DEBUG

@@ -137,7 +137,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         self.offset = .zero // apply later
         self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
-        
+
         self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
     }
 

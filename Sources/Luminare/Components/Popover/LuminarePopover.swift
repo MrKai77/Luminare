@@ -13,11 +13,11 @@ public enum LuminarePopoverTrigger {
         threshold: CGFloat = 0.5,
         onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> () = { _, _ in }
     )
-    
+
     public static var hover: Self {
         .hover()
     }
-    
+
     public static var forceTouch: Self {
         .forceTouch()
     }
@@ -26,7 +26,7 @@ public enum LuminarePopoverTrigger {
 public enum LuminarePopoverShade {
     case none
     case styled(_ style: AnyShapeStyle)
-    
+
     public static var styled: Self {
         .styled()
     }

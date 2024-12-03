@@ -28,9 +28,9 @@ public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable,
     /// ``LuminareStepperDirection/horizontal`` and to right if ``LuminareStepperDirection`` is
     /// ``LuminareStepperDirection/vertical``.
     case trailing // opposite to `leading`
-    
+
     public var id: String { rawValue }
-    
+
     func hardPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {
         case .none:
@@ -40,28 +40,28 @@ public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable,
         case .leading:
             switch direction {
             case .horizontal:
-                    .bottom
+                .bottom
             case .horizontalAlternate:
-                    .top
+                .top
             case .vertical:
-                    .trailing
+                .trailing
             case .verticalAlternate:
-                    .leading
+                .leading
             }
         case .trailing:
             switch direction {
             case .horizontal:
-                    .top
+                .top
             case .horizontalAlternate:
-                    .bottom
+                .bottom
             case .vertical:
-                    .leading
+                .leading
             case .verticalAlternate:
-                    .trailing
+                .trailing
             }
         }
     }
-    
+
     func softPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {
         case .none:
@@ -71,24 +71,24 @@ public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable,
         case .leading:
             switch direction {
             case .horizontal:
-                    .top
+                .top
             case .horizontalAlternate:
-                    .bottom
+                .bottom
             case .vertical:
-                    .leading
+                .leading
             case .verticalAlternate:
-                    .trailing
+                .trailing
             }
         case .trailing:
             switch direction {
             case .horizontal:
-                    .bottom
+                .bottom
             case .horizontalAlternate:
-                    .top
+                .top
             case .vertical:
-                    .trailing
+                .trailing
             case .verticalAlternate:
-                    .leading
+                .leading
             }
         }
     }

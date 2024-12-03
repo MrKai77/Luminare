@@ -127,7 +127,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
         if let element = getElement(row: row, column: column) {
             let isDisabled = isDisabled(element)
-            let tint = getTint(of: element)
+            let tint = tint(of: element)
 
             Button {
                 withAnimation(animation) {
@@ -182,7 +182,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         (element as? LuminareSelectionData)?.isSelectable == false
     }
 
-    private func getTint(of element: V) -> Color {
+    private func tint(of element: V) -> Color {
         (element as? LuminareSelectionData)?.tint ?? tint()
     }
 
