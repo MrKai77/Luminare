@@ -34,6 +34,13 @@ public struct LuminareButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onHover { hover in
+                withAnimation(animationFast) {
+                    isHovering = hover
+                }
+            }
+            .frame(minHeight: minHeight)
+            .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
@@ -41,15 +48,9 @@ public struct LuminareButtonStyle: ButtonStyle {
                         .quaternary, .quaternary.opacity(0.7), .quinary
                     )
                 )
+                .opacity(isEnabled ? 1 : 0.5)
             }
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
             .clipShape(.rect(cornerRadius: buttonCornerRadius))
-            .opacity(isEnabled ? 1 : 0.5)
     }
 }
 
@@ -80,20 +81,21 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
-                    layered: .red
-                )
-            }
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
             .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
+            .background(with: material) {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    layered: .red
+                )
+                .opacity(isEnabled ? 1 : 0.5)
+            }
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
     }
 }
 
@@ -126,20 +128,21 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
-                    layered: .tint
-                )
-            }
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
             .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .opacity(isEnabled ? 1 : 0.5)
+            .background(with: material) {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    layered: .tint
+                )
+                .opacity(isEnabled ? 1 : 0.5)
+            }
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
     }
 
     @ViewBuilder static func tintedBackgroundForState(
@@ -211,6 +214,13 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onHover { hover in
+                withAnimation(animationFast) {
+                    isHovering = hover
+                }
+            }
+            .frame(minHeight: minHeight)
+            .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
                     isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
@@ -218,15 +228,8 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                         .quaternary, .quaternary.opacity(0.7), .clear
                     )
                 )
+                .opacity(isEnabled ? 1 : 0.5)
             }
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
-            .opacity(isEnabled ? 1 : 0.5)
             .overlay {
                 HStack {
                     Spacer()
@@ -237,6 +240,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 .padding(24)
                 .allowsHitTesting(false)
             }
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
     }
 }
 
@@ -282,17 +286,8 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
-                    styles: (
-                        .quaternary, .quaternary.opacity(0.7), .quinary
-                    )
-                )
-            }
             .background(border())
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
@@ -300,6 +295,16 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
+            .background(with: material) {
+                LuminareProminentButtonStyle.tintedBackgroundForState(
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    styles: (
+                        .quaternary, .quaternary.opacity(0.7), .quinary
+                    )
+                )
+                .opacity(isEnabled ? 1 : 0.5)
+            }
+            .clipShape(.rect(cornerRadius: buttonCornerRadius))
     }
 
     @ViewBuilder private func border() -> some View {

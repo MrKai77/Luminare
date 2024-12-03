@@ -8,7 +8,8 @@
 import SwiftUI
 
 public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
-    CaseIterable, Codable {
+    CaseIterable, Codable
+{
     case bordered
     case borderless
 
@@ -28,8 +29,10 @@ public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
 public struct LuminareList<
     Header, ContentA, ContentB, Actions, Footer, V, ID
 >: View
-    where
-    Header: View, ContentA: View, ContentB: View, Actions: View, Footer: View, V: Hashable, ID: Hashable {
+where
+    Header: View, ContentA: View, ContentB: View, Actions: View, Footer: View,
+    V: Hashable, ID: Hashable
+{
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
@@ -50,7 +53,7 @@ public struct LuminareList<
     private let id: KeyPath<V, ID>
 
     @ViewBuilder private let content: (Binding<V>) -> ContentA,
-                             emptyView: () -> ContentB
+        emptyView: () -> ContentB
     @ViewBuilder private let actions: () -> Actions
     @ViewBuilder private let header: () -> Header, footer: () -> Footer
 
@@ -293,7 +296,7 @@ public struct LuminareList<
 // MARK: - List Item
 
 public struct LuminareListItem<Content, V>: View
-    where Content: View, V: Hashable {
+where Content: View, V: Hashable {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -350,7 +353,7 @@ public struct LuminareListItem<Content, V>: View
                     }
                 }
                 .padding(.horizontal, 1)
-                .padding(.leading, 1) // it's nuanced
+                .padding(.leading, 1)  // it's nuanced
             }
             .overlay {
                 if isBordered, !isLast {
@@ -400,8 +403,10 @@ public struct LuminareListItem<Content, V>: View
 
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return if let firstIndex = items.firstIndex(of: item),
-                  firstIndex > 0 {
+        return
+            if let firstIndex = items.firstIndex(of: item),
+            firstIndex > 0
+        {
             !selection.contains(items[firstIndex - 1])
         } else {
             item == firstItem
@@ -410,8 +415,10 @@ public struct LuminareListItem<Content, V>: View
 
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return if let firstIndex = items.firstIndex(of: item),
-                  firstIndex < items.count - 1 {
+        return
+            if let firstIndex = items.firstIndex(of: item),
+            firstIndex < items.count - 1
+        {
             !selection.contains(items[firstIndex + 1])
         } else {
             item == lastItem
@@ -609,7 +616,7 @@ public struct LuminareListItem<Content, V>: View
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> ()
+    let add: (inout [V]) -> Void
 
     var body: some View {
         LuminareList(
@@ -664,18 +671,18 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     ScrollView {
         ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
             guard items.count < 100 else { return }
-            let random = { Int.random(in: 0 ..< 100) }
+            let random = { Int.random(in: 0..<100) }
             var new = random()
             while items.contains([new]) {
                 new = random()
             }
             items.append(new)
         }
-        //        .luminareListActionsMaterial(.ultraThin)
-        //        .luminareBordered(false)
-        //        .luminareSectionMasked(true)
-        //        .luminareListItemCornerRadius(8)
-        //        .luminareListActionsStyle(.borderless)
+//        .luminareListActionsMaterial(.ultraThin)
+//        .luminareBordered(false)
+//        .luminareSectionMasked(true)
+//        .luminareListItemCornerRadius(8)
+//        .luminareListActionsStyle(.borderless)
     }
     .frame(height: 350)
 }
