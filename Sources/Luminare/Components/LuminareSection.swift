@@ -77,9 +77,10 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                             .strokeBorder(.quaternary)
                     }
                 } else {
-                    content()
-                        .compositingGroup()
-                        .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
+                    Section {
+                        content()
+                    }
+                    .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
                 }
             }
             .padding(hasPadding ? innerPadding : 0)
