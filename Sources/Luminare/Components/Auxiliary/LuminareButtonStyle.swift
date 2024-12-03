@@ -379,7 +379,7 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
 
     @State private var isHovering: Bool = false
     
