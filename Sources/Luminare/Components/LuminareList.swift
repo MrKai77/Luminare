@@ -182,7 +182,7 @@ where
             footer()
         }
         .luminareSectionMasked(false)
-        
+
         .onChange(of: luminareClickedOutside) { _ in
             withAnimation(animation) {
                 selection = []
@@ -218,7 +218,7 @@ where
                             actions()
                                 .buttonStyle(LuminareButtonStyle())
                         }
-                        
+
                         if hasRemoveView {
                             removeButton()
                         }
@@ -232,7 +232,7 @@ where
                     .luminareMinHeight(actionsHeight ?? itemHeight)
                     .frame(maxHeight: actionsHeight)
                     .padding(.vertical, 4)
-                    
+
                     Divider()
                 }
                 .luminareBordered(false)
@@ -244,7 +244,7 @@ where
                             actions()
                                 .buttonStyle(LuminareButtonStyle())
                         }
-                        
+
                         if hasRemoveView {
                             removeButton()
                         }
@@ -252,7 +252,9 @@ where
                 }
                 .luminareBordered(actionsStyle.isBordered)
                 .luminareMinHeight(actionsHeight ?? itemHeight)
-                .luminareButtonMaterial(actionsStyle.isBordered ? nil : actionsMaterial)
+                .luminareButtonMaterial(
+                    actionsStyle.isBordered ? nil : actionsMaterial
+                )
                 .luminareSectionMaterial(actionsMaterial)
                 .luminareSectionMasked(isMasked)
                 .frame(maxHeight: actionsHeight)
@@ -436,16 +438,51 @@ where Content: View, V: Hashable {
         item == items.last
     }
 
+    private var isInSelection: Bool {
+        selection.contains(item)
+    }
+
+    private var isFirstInSelection: Bool {
+        if let firstIndex = items.firstIndex(of: item),
+            firstIndex > 0,
+            !selection.contains(items[firstIndex - 1])
+        {
+            return true
+        }
+
+        return item == firstItem
+    }
+
+    private var isLastInSelection: Bool {
+        if let firstIndex = items.firstIndex(of: item),
+            firstIndex < items.count - 1,
+            !selection.contains(items[firstIndex + 1])
+        {
+            return true
+        }
+
+        return item == lastItem
+    }
+
     private var itemBackgroundShape: UnevenRoundedRectangle {
-        .init(
+        let topCornerRadius =
+            if isInSelection {
+                isFirstInSelection ? itemCornerRadius : 0
+            } else { itemCornerRadius }
+        let bottomCornerRadius =
+            if isInSelection {
+                isLastInSelection ? itemCornerRadius : 0
+            } else { itemCornerRadius }
+
+        return .init(
             topLeadingRadius: isFirst && roundedTop
-                ? cornerRadius : itemCornerRadius,
+                ? cornerRadius : topCornerRadius,
             bottomLeadingRadius: isLast && roundedBottom
-                ? cornerRadius : itemCornerRadius,
+                ? cornerRadius : bottomCornerRadius,
             bottomTrailingRadius: isLast && roundedBottom
-                ? cornerRadius : itemCornerRadius,
+                ? cornerRadius : bottomCornerRadius,
             topTrailingRadius: isFirst && roundedTop
-                ? cornerRadius : itemCornerRadius
+                ? cornerRadius : topCornerRadius
         )
     }
 
@@ -464,17 +501,16 @@ where Content: View, V: Hashable {
             }
         }
         .clipShape(itemBackgroundShape)
-        .padding(isBordered ? 0 : 1)
     }
 
     @ViewBuilder private func itemBorder() -> some View {
-        if isFirstInSelection(), isLastInSelection() {
+        if isFirstInSelection, isLastInSelection {
             singleSelectionPart()
-        } else if isFirstInSelection() {
+        } else if isFirstInSelection {
             firstItemPart()
-        } else if isLastInSelection() {
+        } else if isLastInSelection {
             lastItemPart()
-        } else if selection.contains(item) {
+        } else if isInSelection {
             doubleLinePart()
         }
     }
@@ -606,28 +642,6 @@ where Content: View, V: Hashable {
         tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
         lineWidth = selection.contains(item) ? maxLineWidth : .zero
     }
-
-    private func isFirstInSelection() -> Bool {
-        if let firstIndex = items.firstIndex(of: item),
-            firstIndex > 0,
-            !selection.contains(items[firstIndex - 1])
-        {
-            return true
-        }
-
-        return item == firstItem
-    }
-
-    private func isLastInSelection() -> Bool {
-        if let firstIndex = items.firstIndex(of: item),
-            firstIndex < items.count - 1,
-            !selection.contains(items[firstIndex + 1])
-        {
-            return true
-        }
-
-        return item == lastItem
-    }
 }
 
 // MARK: - Preview
@@ -693,11 +707,11 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
-//        .luminareListActionsMaterial(.ultraThin)
-//        .luminareBordered(false)
-//        .luminareSectionMasked(true)
-//        .luminareListItemCornerRadius(8)
-//        .luminareListActionsStyle(.borderless)
+        //        .luminareListActionsMaterial(.ultraThin)
+        .luminareBordered(false)
+        //        .luminareSectionMasked(true)
+        .luminareListItemCornerRadius(8)
+        //        .luminareListActionsStyle(.borderless)
     }
     .frame(height: 350)
 }
