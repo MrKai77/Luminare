@@ -256,7 +256,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
 
     private let extraCompact: Bool
 
@@ -286,14 +286,6 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, extraCompact ? 0 : 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(border())
-            .fixedSize(horizontal: extraCompact, vertical: extraCompact)
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
@@ -305,6 +297,14 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
                 .opacity(isEnabled ? 1 : 0.5)
             }
             .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .background(border())
+            .fixedSize(horizontal: extraCompact, vertical: extraCompact)
+            .onHover { hover in
+                withAnimation(animationFast) {
+                    isHovering = hover
+                }
+            }
+            .frame(minHeight: minHeight)
     }
 
     @ViewBuilder private func border() -> some View {
