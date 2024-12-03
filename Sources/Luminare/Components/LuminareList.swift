@@ -708,9 +708,9 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             items.append(new)
         }
         //        .luminareListActionsMaterial(.ultraThin)
-        .luminareBordered(false)
+        //        .luminareBordered(false)
         //        .luminareSectionMasked(true)
-        .luminareListItemCornerRadius(8)
+        //        .luminareListItemCornerRadius(8)
         //        .luminareListActionsStyle(.borderless)
     }
     .frame(height: 350)
