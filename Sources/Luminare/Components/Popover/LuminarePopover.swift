@@ -13,21 +13,33 @@ public enum LuminarePopoverTrigger {
         threshold: CGFloat = 0.5,
         onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> () = { _, _ in }
     )
+
+    public static var hover: Self {
+        .hover()
+    }
+
+    public static var forceTouch: Self {
+        .forceTouch()
+    }
 }
 
 public enum LuminarePopoverShade {
     case none
-    case some(_ style: AnyShapeStyle)
+    case styled(_ style: AnyShapeStyle)
+
+    public static var styled: Self {
+        .styled()
+    }
 
     var style: AnyShapeStyle? {
         switch self {
-        case let .some(style): style
+        case let .styled(style): style
         default: nil
         }
     }
 
     public static func styled(_ style: some ShapeStyle = .secondary) -> Self {
-        .some(.init(style))
+        .styled(.init(style))
     }
 }
 
@@ -40,14 +52,14 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     // MARK: Environments
 
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminarePopoverTrigger) private var trigger
+    @Environment(\.luminarePopoverShade) private var shade
+    @Environment(\.luminareCornerRadius) private var cornerRadius
 
     // MARK: Fields
 
     private let arrowEdge: Edge
-    private let trigger: Trigger
-    private let cornerRadius: CGFloat
     private let padding: CGFloat
-    private let shade: Shade
 
     @ViewBuilder private let content: () -> Content, badge: () -> Badge
 
@@ -64,18 +76,12 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
 
     public init(
         arrowEdge: Edge = .top,
-        trigger: Trigger = .hover(),
-        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
-        shade: Shade = .styled(),
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder badge: @escaping () -> Badge
     ) {
         self.arrowEdge = arrowEdge
-        self.trigger = trigger
-        self.cornerRadius = cornerRadius
         self.padding = padding
-        self.shade = shade
         self.content = content
         self.badge = badge
     }
@@ -83,19 +89,12 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     public init(
         _ key: LocalizedStringKey,
         arrowEdge: Edge = .top,
-        trigger: Trigger = .hover(),
-        highlight _: Bool = true,
-        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
-        shade: Shade = .styled(),
         @ViewBuilder badge: @escaping () -> Badge
     ) where Content == Text {
         self.init(
             arrowEdge: arrowEdge,
-            trigger: trigger,
-            cornerRadius: cornerRadius,
-            padding: padding,
-            shade: shade
+            padding: padding
         ) {
             Text(key)
         } badge: {
@@ -105,18 +104,13 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
 
     public init(
         arrowEdge: Edge = .top,
-        trigger: Trigger = .hover(),
-        cornerRadius: CGFloat = 8,
         padding: CGFloat = 4,
         badgeSize: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Badge == AnyView {
         self.init(
             arrowEdge: arrowEdge,
-            trigger: trigger,
-            cornerRadius: cornerRadius,
             padding: padding,
-            shade: .styled(.tint),
             content: content
         ) {
             AnyView(
@@ -238,9 +232,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
 
 private struct PopoverForceTouchPreview<Content, Badge>: View where Content: View, Badge: View {
     var arrowEdge: Edge = .bottom
-    var cornerRadius: CGFloat = 8
     var padding: CGFloat = 4
-    var shade: LuminarePopoverShade = .styled()
 
     @ViewBuilder var content: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> Content
     @ViewBuilder var badge: () -> Badge
@@ -251,30 +243,29 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
     var body: some View {
         LuminarePopover(
             arrowEdge: arrowEdge,
-            trigger: .forceTouch { gesture, recognized in
-                self.gesture = gesture
-                self.recognized = recognized
-            },
-            cornerRadius: cornerRadius,
-            padding: padding,
-            shade: shade
+            padding: padding
         ) {
             content(gesture, recognized)
         } badge: {
             badge()
         }
+        .luminarePopoverTrigger(.forceTouch { gesture, recognized in
+            self.gesture = gesture
+            self.recognized = recognized
+        })
     }
 }
 
 #Preview {
     LuminareSection {
         LuminareCompose {} label: {
-            LuminarePopover(shade: .none) {
+            LuminarePopover {
                 Text("Here's to the *crazy* ones.")
                     .padding()
             } badge: {
                 Text("Pops to bottom (hover me)")
             }
+            .luminarePopoverShade(.none)
         }
 
         LuminareCompose {} label: {

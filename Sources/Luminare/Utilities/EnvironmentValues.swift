@@ -7,89 +7,76 @@
 
 import SwiftUI
 
-// MARK: - Luminare
-
-// MARK: LuminareTint
-
-// currently, it is impossible to read the `.tint()` modifier on a view
-// this is a custom environement value as an alternative implementation of it
-// in practice, it should always be synchronized with `.tint()`
-public struct LuminareTintEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: () -> Color = { .accentColor }
-}
+// MARK: - Commons
 
 public extension EnvironmentValues {
-    var luminareTint: () -> Color {
-        get { self[LuminareTintEnvironmentKey.self] }
-        set { self[LuminareTintEnvironmentKey.self] = newValue }
-    }
+    // MARK: General
+
+    // currently, it is impossible to read the `.tint()` modifier on a view
+    // this is a custom environement value as an alternative implementation of it
+    // in practice, it should always be synchronized with `.tint()`
+    @Entry var luminareTint: () -> Color = { .accentColor }
+
+    @Entry var luminareAnimation: Animation = .smooth(duration: 0.2)
+    @Entry var luminareAnimationFast: Animation = .easeInOut(duration: 0.1)
+
+    // MARK: Auxiliary
+
+    @Entry var hoveringOverLuminareItem: Bool = false
+
+    // MARK: Window
+
+    @Entry var luminareWindow: NSWindow?
+    @Entry var luminareClickedOutside: Bool = false
 }
 
-// MARK: LuminareAnimation
-
-public struct LuminareAnimationEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: Animation = .smooth(duration: 0.2)
-}
+// MARK: - Initializers
 
 public extension EnvironmentValues {
-    var luminareAnimation: Animation {
-        get { self[LuminareAnimationEnvironmentKey.self] }
-        set { self[LuminareAnimationEnvironmentKey.self] = newValue }
-    }
-}
+    // MARK: General
 
-// MARK: LuminareAnimationFast
+    @Entry var luminareCornerRadius: CGFloat = 12
+    @Entry var luminareMinHeight: CGFloat = 34
+    @Entry var luminareHorizontalPadding: CGFloat = 8
+    @Entry var luminareIsBordered: Bool = true
 
-public struct LuminareAnimationFastEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: Animation = .easeInOut(duration: 0.1)
-}
+    // MARK: Luminare Button Style
 
-public extension EnvironmentValues {
-    var luminareAnimationFast: Animation {
-        get { self[LuminareAnimationFastEnvironmentKey.self] }
-        set { self[LuminareAnimationFastEnvironmentKey.self] = newValue }
-    }
-}
+    @Entry var luminareButtonMaterial: Material? = nil
+    @Entry var luminareButtonCornerRadius: CGFloat = 2
+    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
 
-// MARK: - Luminare Auxiliary
+    // MARK: Luminare Section
 
-// MARK: HoveringOverLuminareItem
+    @Entry var luminareSectionMaterial: Material? = nil
+    @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
+    @Entry var luminareSectionIsMasked: Bool = false
 
-public struct HoveringOverLuminareItemEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: Bool = false
-}
+    // MARK: Luminare Compose
 
-public extension EnvironmentValues {
-    var hoveringOverLuminareItem: Bool {
-        get { self[HoveringOverLuminareItemEnvironmentKey.self] }
-        set { self[HoveringOverLuminareItemEnvironmentKey.self] = newValue }
-    }
-}
+    @Entry var luminareComposeControlSize: LuminareComposeControlSize = .regular
 
-// MARK: - Luminare Window
+    // MARK: Luminare Popover
 
-// MARK: LuminareWindow
+    @Entry var luminarePopoverTrigger: LuminarePopoverTrigger = .hover
+    @Entry var luminarePopoverShade: LuminarePopoverShade = .styled
 
-public struct LuminareWindowEnvironmentKey: EnvironmentKey {
-    public static let defaultValue: NSWindow? = nil
-}
+    // MARK: Luminare Stepper
 
-public extension EnvironmentValues {
-    var luminareWindow: NSWindow? {
-        get { self[LuminareWindowEnvironmentKey.self] }
-        set { self[LuminareWindowEnvironmentKey.self] = newValue }
-    }
-}
+    @available(macOS 15.0, *)
+    @Entry var luminareStepperAlignment: LuminareStepperAlignment = .trailing
+    @available(macOS 15.0, *)
+    @Entry var luminareStepperDirection: LuminareStepperDirection = .horizontal
 
-// MARK: ClickedOutside (Private)
+    // MARK: Luminare Compact Picker
 
-struct ClickedOutsideFlagEnvironmentKey: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
+    @Entry var luminareCompactPickerStyle: LuminareCompactPickerStyle = .menu
 
-extension EnvironmentValues {
-    var clickedOutsideFlag: Bool {
-        get { self[ClickedOutsideFlagEnvironmentKey.self] }
-        set { self[ClickedOutsideFlagEnvironmentKey.self] = newValue }
-    }
+    // MARK: Luminare List
+
+    @Entry var luminareListItemCornerRadius: CGFloat = 2
+    @Entry var luminareListItemHeight: CGFloat = 50
+    @Entry var luminareListActionsMaterial: Material? = nil
+    @Entry var luminareListActionsHeight: CGFloat? = 40
+    @Entry var luminareListActionsStyle: LuminareListActionsStyle = .bordered
 }

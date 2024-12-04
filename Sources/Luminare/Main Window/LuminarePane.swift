@@ -17,7 +17,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     @ViewBuilder private let content: () -> Content, header: () -> Header
 
-    @State private var clickedOutsideFlag = false
+    @State private var luminareClickedOutside = false
 
     // MARK: Initializers
 
@@ -57,11 +57,11 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                     content()
                 }
                 .padding(12)
-                .environment(\.clickedOutsideFlag, clickedOutsideFlag)
+                .environment(\.luminareClickedOutside, luminareClickedOutside)
                 .background {
                     Color.white.opacity(0.0001)
                         .onTapGesture {
-                            clickedOutsideFlag.toggle()
+                            luminareClickedOutside.toggle()
                         }
                         .ignoresSafeArea()
                 }

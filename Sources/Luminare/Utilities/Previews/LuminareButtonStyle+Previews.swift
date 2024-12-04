@@ -258,10 +258,11 @@ import SwiftUI
             Text("Not bordered")
                 .fixedSize()
                 .modifier(LuminareHoverable())
+                .luminareBordered(false)
 
             Text("Bordered")
                 .fixedSize()
-                .modifier(LuminareHoverable(isBordered: true))
+                .modifier(LuminareHoverable())
 
             Text("Hovering")
                 .fixedSize()

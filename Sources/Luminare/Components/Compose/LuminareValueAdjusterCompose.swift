@@ -23,6 +23,8 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareComposeControlSize) private var controlSize
 
     // MARK: Fields
 
@@ -30,8 +32,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     private let range: ClosedRange<V>, step: V.Stride?
     private let format: F
     private let clampsUpper: Bool, clampsLower: Bool
-    private let horizontalPadding: CGFloat
-    private let controlSize: ControlSize
 
     @ViewBuilder private let content: (AnyView) -> Content, label: () -> Label
 
@@ -48,9 +48,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        horizontalPadding: CGFloat = 8,
-        controlSize: ControlSize = .regular,
-        decimalPlaces _: Int = 0,
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
@@ -60,8 +57,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         self.format = format
         self.clampsUpper = clampsUpper
         self.clampsLower = clampsLower
-        self.horizontalPadding = horizontalPadding
-        self.controlSize = controlSize
 
         self.content = content
         self.label = label
@@ -74,8 +69,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        horizontalPadding: CGFloat = 8,
-        controlSize: ControlSize = .regular,
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
@@ -84,8 +77,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
             format: format,
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
-            horizontalPadding: horizontalPadding,
-            controlSize: controlSize,
             content: content
         ) {
             Text(key)
@@ -98,10 +89,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         VStack {
             switch controlSize {
             case .regular:
-                LuminareCompose(
-                    horizontalPadding: horizontalPadding,
-                    reducesTrailingSpace: true
-                ) {
+                LuminareCompose(reducesTrailingSpace: true) {
                     text()
                 } label: {
                     label()
@@ -111,10 +99,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                     .padding(.horizontal, horizontalPadding)
                     .padding(.trailing, -2)
             case .compact:
-                LuminareCompose(
-                    horizontalPadding: horizontalPadding, spacing: 12,
-                    reducesTrailingSpace: true
-                ) {
+                LuminareCompose(reducesTrailingSpace: true) {
                     HStack(spacing: 12) {
                         slider()
 
@@ -326,8 +311,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         LuminareValueAdjusterCompose(
             value: $value,
             in: 0...128,
-            format: .number.precision(.fractionLength(0...3)),
-            controlSize: .compact
+            format: .number.precision(.fractionLength(0...3))
         ) { button in
             HStack(spacing: 0) {
                 Text("#")
@@ -343,5 +327,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                     .foregroundStyle(.secondary)
             }
         }
+        .luminareComposeControlSize(.compact)
     }
 }

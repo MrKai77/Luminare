@@ -7,396 +7,6 @@
 
 import SwiftUI
 
-/// The indicator alignment of a ``LuminareStepper``.
-@available(macOS 15.0, *)
-public enum LuminareStepperAlignment {
-    /// The indicators are of the equal lengths and expand to both edges.
-    case none
-    /// The indicators are of the equal lengths and have equal paddings from both edges.
-    case center
-    /// The center indicator is larger than others and points to the direction normals to the
-    /// ``LuminareStepperDirection``.
-    ///
-    /// In left-to-right layouts, the indicators point to top if ``LuminareStepperDirection`` is
-    ///  ``LuminareStepperDirection/horizontal`` and to left if ``LuminareStepperDirection`` is
-    ///  ``LuminareStepperDirection/vertical``.
-    case leading // the left side of the growth direction, typically the top if horizontal and the left if vertical
-    /// The center indicator is larger than others and points to the direction negatively normals to the
-    /// ``LuminareStepperDirection``.
-    ///
-    /// In left-to-right layouts, the indicators point to bottom if ``LuminareStepperDirection`` is
-    /// ``LuminareStepperDirection/horizontal`` and to right if ``LuminareStepperDirection`` is
-    /// ``LuminareStepperDirection/vertical``.
-    case trailing // opposite to `leading`
-
-    // swiftlint:disable:next cyclomatic_complexity
-    func hardPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
-        switch self {
-        case .none:
-            direction.paddingEdges
-        case .center:
-            []
-        case .leading:
-            switch direction {
-            case .horizontal:
-                .bottom
-            case .horizontalAlternate:
-                .top
-            case .vertical:
-                .trailing
-            case .verticalAlternate:
-                .leading
-            }
-        case .trailing:
-            switch direction {
-            case .horizontal:
-                .top
-            case .horizontalAlternate:
-                .bottom
-            case .vertical:
-                .leading
-            case .verticalAlternate:
-                .trailing
-            }
-        }
-    }
-
-    // swiftlint:disable:next cyclomatic_complexity
-    func softPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
-        switch self {
-        case .none:
-            []
-        case .center:
-            direction.paddingEdges
-        case .leading:
-            switch direction {
-            case .horizontal:
-                .top
-            case .horizontalAlternate:
-                .bottom
-            case .vertical:
-                .leading
-            case .verticalAlternate:
-                .trailing
-            }
-        case .trailing:
-            switch direction {
-            case .horizontal:
-                .bottom
-            case .horizontalAlternate:
-                .top
-            case .vertical:
-                .trailing
-            case .verticalAlternate:
-                .leading
-            }
-        }
-    }
-}
-
-/// The direction of a ``LuminareStepper``.
-@available(macOS 15.0, *)
-public enum LuminareStepperDirection {
-    /// In left-to-right layouts, the larger values are right-sided.
-    case horizontal // the growth direction is typically right
-    /// In left-to-right layouts, the larger values are left-sided.
-    case horizontalAlternate // opposite to `horizontal`
-    /// In left-to-right layouts, the larger values are upward.
-    case vertical // the growth direction is typically up
-    /// In left-to-right layouts, the larger values are downward.
-    case verticalAlternate // opposite to `vertical`
-
-    var isAlternate: Bool {
-        switch self {
-        case .horizontal, .vertical:
-            false
-        case .horizontalAlternate, .verticalAlternate:
-            true
-        }
-    }
-
-    var axis: Axis {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            .horizontal
-        case .vertical, .verticalAlternate:
-            .vertical
-        }
-    }
-
-    var unitSpan: (start: UnitPoint, end: UnitPoint) {
-        switch self {
-        case .horizontal:
-            (start: .leading, end: .trailing)
-        case .horizontalAlternate:
-            (start: .trailing, end: .leading)
-        case .vertical:
-            (start: .bottom, end: .top)
-        case .verticalAlternate:
-            (start: .top, end: .bottom)
-        }
-    }
-
-    var paddingSpan: (start: Edge.Set, end: Edge.Set) {
-        switch self {
-        case .horizontal:
-            (start: .leading, end: .trailing)
-        case .horizontalAlternate:
-            (start: .trailing, end: .leading)
-        case .vertical:
-            (start: .bottom, end: .top)
-        case .verticalAlternate:
-            (start: .top, end: .bottom)
-        }
-    }
-
-    var paddingEdges: Edge.Set {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            .vertical
-        case .vertical, .verticalAlternate:
-            .horizontal
-        }
-    }
-
-    @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            HStack(alignment: .center, spacing: spacing, content: content)
-        case .vertical, .verticalAlternate:
-            VStack(alignment: .center, spacing: spacing, content: content)
-        }
-    }
-
-    func frame(_ value: CGFloat?, fallback: CGFloat? = nil) -> (width: CGFloat?, height: CGFloat?) {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            (width: value, height: fallback)
-        case .vertical, .verticalAlternate:
-            (width: fallback, height: value)
-        }
-    }
-
-    func length(of size: CGSize) -> CGFloat {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            size.width
-        case .vertical, .verticalAlternate:
-            size.height
-        }
-    }
-
-    func offset(of point: CGPoint) -> CGFloat {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            point.x
-        case .vertical, .verticalAlternate:
-            point.y
-        }
-    }
-
-    func percentage(in total: CGFloat, at index: CGFloat) -> CGFloat {
-        let percentage = index / total
-        return switch self {
-        case .horizontal, .verticalAlternate:
-            percentage
-        case .vertical, .horizontalAlternate:
-            1 - percentage
-        }
-    }
-
-    func offsetBy<Value: Numeric>(_ value: Value = .zero, nonAlternateOffset offset: Value) -> Value {
-        switch self {
-        case .horizontal, .verticalAlternate:
-            value + offset
-        case .vertical, .horizontalAlternate:
-            value - offset
-        }
-    }
-}
-
-/// Specifies how a ``LuminareStepper`` ranges and snaps its value.
-@available(macOS 15.0, *)
-public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    /// The value is finely ranged and strideable.
-    ///
-    /// The value will be strictly clamped inside a closed range and snapped to the nearest value according to the
-    /// step.
-    ///
-    /// - Parameters:
-    ///   - in: the closed range of the available values.
-    ///   - step: the step between two snapped values.
-    case finite(in: ClosedRange<V>, step: V = 1) // swiftlint:disable:this identifier_name
-    /// The value is finely ranged but continuous.
-    ///
-    /// The value will be strictly clamped inside a closed range, but won't be snapped.
-    ///
-    /// In this case, the step only defines how many values are between two indicators.
-    ///
-    /// - Parameters:
-    ///   - in: the closed range of the available values.
-    ///   - step: the step between two indicators.
-    case finiteContinuous(in: ClosedRange<V>, step: V = 1) // swiftlint:disable:this identifier_name
-    /// The value is strideable but infinite.
-    ///
-    /// The value will be snapped to the nearest value according to the step, but won't be clamped.
-    ///
-    /// - Parameters:
-    ///   - step: the step between two snapped values.
-    case infinite(step: V = 1)
-    /// The value is infinite and continuous.
-    ///
-    /// The value will be neither clamped nor snapped. All legal values of the type will be acceptable.
-    ///
-    /// In this case, the step only defines how many values are between two indicators.
-    ///
-    /// - Parameters:
-    ///   - step: the step between two indicators.
-    case infiniteContinuous(step: V = 1)
-
-    var isFinite: Bool {
-        switch self {
-        case .finite, .finiteContinuous:
-            true
-        case .infinite, .infiniteContinuous:
-            false
-        }
-    }
-
-    var isContinuous: Bool {
-        switch self {
-        case .finiteContinuous, .infiniteContinuous:
-            true
-        case .finite, .infinite:
-            false
-        }
-    }
-
-    var count: Int? {
-        switch self {
-        case let .finite(range, step), let .finiteContinuous(range, step):
-            Int(((range.upperBound - range.lowerBound) / step).rounded(.down)) + 1
-        default:
-            nil
-        }
-    }
-
-    var total: V? {
-        switch self {
-        case let .finite(range, _), let .finiteContinuous(range, _):
-            range.upperBound - range.lowerBound
-        case .infinite, .infiniteContinuous:
-            nil
-        }
-    }
-
-    var step: V {
-        switch self {
-        case let .finite(_, step), let .finiteContinuous(_, step),
-             let .infinite(step), let .infiniteContinuous(step):
-            step
-        }
-    }
-
-    func round(_ value: V) -> (value: V, offset: V) {
-        switch self {
-        case let .finite(range, step), let .finiteContinuous(range, step):
-            let page = value - range.lowerBound
-            let remainder = page.truncatingRemainder(dividingBy: step)
-            return (value - remainder, remainder)
-        case let .infinite(step), let .infiniteContinuous(step):
-            let remainder = value.truncatingRemainder(dividingBy: step)
-            return (value - remainder, remainder)
-        }
-    }
-
-    func continuousIndex(of value: V) -> V? {
-        switch self {
-        case let .finite(range, step), let .finiteContinuous(range, step):
-            (value - range.lowerBound) / step
-        default:
-            nil
-        }
-    }
-
-    func isEdgeCase(_ value: V) -> Bool {
-        switch self {
-        case let .finite(range, step), let .finiteContinuous(range, step):
-            let min = range.lowerBound + step
-            let max = range.upperBound - step
-
-            return value < min || value > max
-        case .infinite, .infiniteContinuous:
-            return false
-        }
-    }
-
-    func reachedUpperBound(_ value: V, padding: V = .zero) -> Bool {
-        switch self {
-        case let .finite(range, _), let .finiteContinuous(range, _):
-            value + padding >= range.upperBound
-        case .infinite, .infiniteContinuous:
-            false
-        }
-    }
-
-    func reachedLowerBound(_ value: V, padding: V = .zero) -> Bool {
-        switch self {
-        case let .finite(range, _), let .finiteContinuous(range, _):
-            value - padding <= range.lowerBound
-        case .infinite, .infiniteContinuous:
-            false
-        }
-    }
-
-    func reachedStartingBound(_ value: V, padding: V = .zero, direction: LuminareStepperDirection) -> Bool {
-        switch direction {
-        case .horizontal, .vertical:
-            reachedLowerBound(value, padding: padding)
-        case .horizontalAlternate, .verticalAlternate:
-            reachedUpperBound(value, padding: padding)
-        }
-    }
-
-    func reachedEndingBound(_ value: V, padding: V = .zero, direction: LuminareStepperDirection) -> Bool {
-        switch direction {
-        case .horizontal, .vertical:
-            reachedUpperBound(value, padding: padding)
-        case .horizontalAlternate, .verticalAlternate:
-            reachedLowerBound(value, padding: padding)
-        }
-    }
-
-    func wrap(_ value: V, padding: V = .zero) -> V {
-        switch self {
-        case let .finite(range, _), let .finiteContinuous(range, _):
-            max(range.lowerBound + padding, min(range.upperBound - padding, value))
-        case .infinite, .infiniteContinuous:
-            value
-        }
-    }
-
-    func offsetBy(
-        _ value: V = .zero,
-        direction: LuminareStepperDirection,
-        nonAlternateOffset offset: V,
-        wrap: Bool = true
-    ) -> V {
-        let result = switch direction {
-        case .horizontal, .verticalAlternate:
-            value + offset
-        case .vertical, .horizontalAlternate:
-            value - offset
-        }
-
-        return if wrap {
-            self.wrap(result)
-        } else {
-            result
-        }
-    }
-}
-
 /// A custom delegate to customize any indicators of a ``LuminareStepper``.
 @available(macOS 15.0, *)
 public struct LuminareStepperProminentIndicators<V>
@@ -435,8 +45,6 @@ public struct LuminareStepperProminentIndicators<V>
 /// A stylized, abstract stepper that provides vague yet elegant control to numeric values.
 @available(macOS 15.0, *)
 public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
-    public typealias Alignment = LuminareStepperAlignment
-    public typealias Direction = LuminareStepperDirection
     public typealias Source = LuminareStepperSource<V>
     public typealias ProminentIndicators = LuminareStepperProminentIndicators<V>
 
@@ -444,6 +52,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareStepperAlignment) private var alignment
+    @Environment(\.luminareStepperDirection) private var direction
 
     // MARK: Fields
 
@@ -452,8 +62,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
     private let source: Source
 
-    private let alignment: Alignment
-    private let direction: Direction
     private let allowsDragging: Bool
     private let indicatorSpacing: CGFloat, maxSize: CGFloat, margin: CGFloat
 
@@ -461,6 +69,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
+
     private let onRoundedValueChange: (V, V) -> ()
 
     @State private var containerSize: CGSize = .zero
@@ -478,8 +87,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
     ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
     ///   Overscrolling is not allowed when dragging inside a finite range.
-    ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
-    ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - indicatorSpacing: the spacing between indicators.
     ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
@@ -495,8 +102,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         source: Source,
 
-        alignment: Alignment = .trailing,
-        direction: Direction = .horizontal,
         allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
@@ -508,13 +113,12 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
+
         onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
     ) {
         self._value = value
         self.source = source
 
-        self.alignment = alignment
-        self.direction = direction
         self.allowsDragging = allowsDragging
         self.indicatorSpacing = indicatorSpacing
         self.maxSize = maxSize
@@ -526,12 +130,15 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
         self.prominentIndicators = prominentIndicators
         self.feedback = feedback
+
         self.onRoundedValueChange = onRoundedValueChange
 
         let rounded = source.round(value.wrappedValue)
-        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
+        self.offset = .zero // apply later
         self.roundedValue = rounded.value
         self.internalValue = value.wrappedValue
+
+        self.offset = direction.offsetBy(nonAlternateOffset: CGFloat(rounded.offset / source.step) * indicatorSpacing)
     }
 
     /// Initializes a ``LuminareStepper``.
@@ -539,8 +146,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     /// - Parameters:
     ///   - value: the value to be edited.
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
-    ///   - alignment: the ``LuminareStepperAlignment`` that defines the alignment of the indicators.
-    ///   - direction: the ``LuminareStepperDirection`` that defines the direction of the stepper.
     ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
     ///   Overscrolling is not allowed when dragging inside a finite range.
     ///   - indicatorSpacing: the spacing between indicators.
@@ -560,8 +165,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         source: Source,
 
-        alignment: Alignment = .trailing,
-        direction: Direction = .horizontal,
         allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
@@ -574,14 +177,13 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentValues: [V]? = nil,
         prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
+
         onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
     ) {
         self.init(
             value: value,
             source: source,
 
-            alignment: alignment,
-            direction: direction,
             allowsDragging: allowsDragging,
             indicatorSpacing: indicatorSpacing,
             maxSize: maxSize,
@@ -593,6 +195,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
             prominentIndicators: .init(prominentValues, color: prominentColor),
             feedback: feedback,
+
             onRoundedValueChange: onRoundedValueChange
         )
     }
@@ -912,8 +515,6 @@ private struct StepperPreview<Label, V>: View
     where Label: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint {
     @State var value: V
     var source: LuminareStepperSource<V>
-    var alignment: LuminareStepperAlignment = .trailing
-    var direction: LuminareStepperDirection = .horizontal
     var prominentValues: [V]
     @ViewBuilder var label: () -> Label
 
@@ -924,8 +525,6 @@ private struct StepperPreview<Label, V>: View
             LuminareStepper(
                 value: $value,
                 source: source,
-                alignment: alignment,
-                direction: direction,
                 prominentValues: prominentValues
             ) { _ in
                 .accentColor
@@ -960,7 +559,6 @@ private struct StepperPopoverPreview: View {
                 LuminareStepper(
                     value: $value,
                     source: .finite(in: 0...100, step: 1),
-                    direction: .horizontal,
                     indicatorSpacing: 10,
                     maxSize: 32
                 )
@@ -988,7 +586,6 @@ private struct StepperPopoverPreview: View {
                 StepperPreview(
                     value: 42,
                     source: .finite(in: -100...50, step: 2),
-                    direction: .horizontal,
                     prominentValues: [0, 42, 50]
                 ) {
                     VStack {
@@ -1004,7 +601,6 @@ private struct StepperPopoverPreview: View {
                 StepperPreview(
                     value: 45,
                     source: .infiniteContinuous(step: 2),
-                    direction: .horizontalAlternate,
                     prominentValues: [0, 42]
                 ) {
                     VStack {
@@ -1016,12 +612,11 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperDirection(.horizontalAlternate)
 
                 StepperPreview(
                     value: 42,
                     source: .infinite(step: 2),
-                    alignment: .center,
-                    direction: .horizontal,
                     prominentValues: [0, 26, 30, 34, 38, 42, 46, 50, 54, 58]
                 ) {
                     VStack {
@@ -1033,6 +628,8 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperAlignment(.center)
+                .luminareStepperDirection(.horizontal)
             }
             .frame(width: 450)
 
@@ -1040,8 +637,6 @@ private struct StepperPopoverPreview: View {
                 StepperPreview(
                     value: 42,
                     source: .finite(in: -100...50, step: 2),
-                    alignment: .center,
-                    direction: .vertical,
                     prominentValues: [0, 38, 40, 42]
                 ) {
                     VStack {
@@ -1053,11 +648,12 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperAlignment(.center)
+                .luminareStepperDirection(.vertical)
 
                 StepperPreview(
                     value: 42,
                     source: .finiteContinuous(in: -100...50, step: 2),
-                    direction: .verticalAlternate,
                     prominentValues: [0, 38, 40, 42]
                 ) {
                     VStack {
@@ -1069,6 +665,7 @@ private struct StepperPopoverPreview: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .luminareStepperDirection(.verticalAlternate)
             }
             .frame(width: 250)
         }

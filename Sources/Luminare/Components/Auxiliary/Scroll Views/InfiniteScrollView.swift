@@ -9,11 +9,13 @@ import AppKit
 import SwiftUI
 
 /// The direction of an ``InfiniteScrollView``.
-public enum InfiniteScrollViewDirection: Equatable {
+public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
     /// The view can, and can only be scrolled horizontally.
     case horizontal
     /// The view can, and can only be scrolled vertically.
     case vertical
+
+    public var id: String { rawValue }
 
     /// Initializes an ``InfiniteScrollViewDirection`` from an `Axis`.
     public init(axis: Axis) {
@@ -262,7 +264,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
             self.parent = parent
         }
 
-        // swiftlint:disable:next cyclomatic_complexity
         func initializeScroll(_ scrollView: NSScrollView) {
             let clipView = scrollView.contentView
 

@@ -15,11 +15,12 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
 
     // MARK: Fields
 
     private let innerPadding: CGFloat
-    private let cornerRadius: CGFloat, buttonCornerRadius: CGFloat
 
     private let elements2D: [[V]]
     private let rows: Int, columns: Int
@@ -42,8 +43,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - roundedTop: whether to have top corners rounded.
     ///   - roundedBottom: whether to have bottom corners rounded.
     ///   - innerPadding: the padding between the buttons.
-    ///   - cornerRadius: the radius of the corners.
-    ///   - buttonCornerRadius: the radius of the corners of the button.
     ///   - content: the content generator that accepts a value.
     public init(
         elements: [V],
@@ -51,7 +50,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         columns: Int = 4,
         roundedTop: Bool = true, roundedBottom: Bool = true,
         innerPadding: CGFloat = 4,
-        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.elements2D = elements.slice(size: columns)
@@ -60,8 +58,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         self.roundedTop = roundedTop
         self.roundedBottom = roundedBottom
         self.innerPadding = innerPadding
-        self.cornerRadius = cornerRadius
-        self.buttonCornerRadius = buttonCornerRadius
         self.content = content
 
         self._selectedItem = selection
@@ -76,16 +72,13 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     ///   - selection: the binding of the selected value.
     ///   - roundedTop: whether to have top corners rounded.
     ///   - roundedBottom: whether to have bottom corners rounded.
-    ///   - cornerRadius: the radius of the corners.
     ///   - innerPadding: the padding between the buttons.
-    ///   - buttonCornerRadius: the radius of the corners of the button.
     ///   - content: the content generator that accepts a value.
     public init(
         compactElements: [V],
         selection: Binding<V>,
         roundedTop: Bool = true, roundedBottom: Bool = true,
         innerPadding: CGFloat = 4,
-        cornerRadius: CGFloat = 12, buttonCornerRadius: CGFloat = 2,
         @ViewBuilder content: @escaping (V) -> Content
     ) {
         self.init(
@@ -94,7 +87,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             columns: compactElements.count,
             roundedTop: roundedTop, roundedBottom: roundedBottom,
             innerPadding: innerPadding,
-            cornerRadius: cornerRadius, buttonCornerRadius: buttonCornerRadius,
             content: content
         )
     }
@@ -135,7 +127,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
         if let element = getElement(row: row, column: column) {
             let isDisabled = isDisabled(element)
-            let tint = getTint(of: element)
+            let tint = tint(of: element)
 
             Button {
                 withAnimation(animation) {
@@ -190,7 +182,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         (element as? LuminareSelectionData)?.isSelectable == false
     }
 
-    private func getTint(of element: V) -> Color {
+    private func tint(of element: V) -> Color {
         (element as? LuminareSelectionData)?.tint ?? tint()
     }
 
