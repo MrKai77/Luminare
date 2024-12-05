@@ -45,6 +45,7 @@ public extension EnvironmentValues {
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadius: CGFloat = 2
     @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
+    @Entry var luminareButtonHighlightOnHover: Bool = true
 
     // MARK: Luminare Section
 
@@ -76,6 +77,7 @@ public extension EnvironmentValues {
 
     @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
+    @Entry var luminareListItemHighlightOnHover: Bool = true
     @Entry var luminareListActionsMaterial: Material? = nil
     @Entry var luminareListActionsHeight: CGFloat? = 40
     @Entry var luminareListActionsStyle: LuminareListActionsStyle = .bordered

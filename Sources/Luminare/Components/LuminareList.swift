@@ -307,6 +307,7 @@ where Content: View, V: Hashable {
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareListItemCornerRadius) private var itemCornerRadius
     @Environment(\.luminareListItemHeight) private var itemHeight
+    @Environment(\.luminareListItemHighlightOnHover) private var highlightOnHover
 
     // MARK: Fields
 
@@ -453,7 +454,7 @@ where Content: View, V: Hashable {
                 .foregroundStyle(.tint)
                 .opacity(tintOpacity)
 
-            if isHovering {
+            if highlightOnHover, isHovering {
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
                     .opacity(
@@ -682,6 +683,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
 //        .luminareBordered(false)
 //        .luminareSectionMasked(true)
 //        .luminareListItemCornerRadius(8)
+        .luminareListItemHighlightOnHover(false)
 //        .luminareListActionsStyle(.borderless)
     }
     .frame(height: 350)
