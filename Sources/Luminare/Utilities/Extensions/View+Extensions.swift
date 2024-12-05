@@ -139,7 +139,7 @@ public extension View {
     @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
         environment(\.luminareCompactButtonCornerRadius, radius)
     }
-    
+
     @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareButtonHighlightOnHover, highlight)
     }
@@ -201,7 +201,7 @@ public extension View {
     @ViewBuilder func luminareListItemHeight(_ height: CGFloat = 50) -> some View {
         environment(\.luminareListItemHeight, height)
     }
-    
+
     @ViewBuilder func luminareListItemHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareListItemHighlightOnHover, highlight)
     }

@@ -8,8 +8,7 @@
 import SwiftUI
 
 public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
-    CaseIterable, Codable
-{
+    CaseIterable, Codable {
     case bordered
     case borderless
 
@@ -29,10 +28,9 @@ public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
 public struct LuminareList<
     Header, ContentA, ContentB, Actions, Footer, V, ID
 >: View
-where
+    where
     Header: View, ContentA: View, ContentB: View, Actions: View, Footer: View,
-    V: Hashable, ID: Hashable
-{
+    V: Hashable, ID: Hashable {
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
@@ -53,7 +51,7 @@ where
     private let id: KeyPath<V, ID>
 
     @ViewBuilder private let content: (Binding<V>) -> ContentA,
-        emptyView: () -> ContentB
+                             emptyView: () -> ContentB
     @ViewBuilder private let actions: () -> Actions
     @ViewBuilder private let header: () -> Header, footer: () -> Footer
 
@@ -296,7 +294,7 @@ where
 // MARK: - List Item
 
 public struct LuminareListItem<Content, V>: View
-where Content: View, V: Hashable {
+    where Content: View, V: Hashable {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -354,7 +352,7 @@ where Content: View, V: Hashable {
                     }
                 }
                 .padding(.horizontal, 1)
-                .padding(.leading, 1)  // it's nuanced
+                .padding(.leading, 1) // it's nuanced
             }
             .overlay {
                 if isBordered, !isLast {
@@ -405,9 +403,8 @@ where Content: View, V: Hashable {
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
         return
-            if let firstIndex = items.firstIndex(of: item),
-            firstIndex > 0
-        {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex > 0 {
             !selection.contains(items[firstIndex - 1])
         } else {
             item == firstItem
@@ -417,9 +414,8 @@ where Content: View, V: Hashable {
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
         return
-            if let firstIndex = items.firstIndex(of: item),
-            firstIndex < items.count - 1
-        {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex < items.count - 1 {
             !selection.contains(items[firstIndex + 1])
         } else {
             item == lastItem
@@ -617,7 +613,7 @@ where Content: View, V: Hashable {
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> Void
+    let add: (inout [V]) -> ()
 
     var body: some View {
         LuminareList(
@@ -672,7 +668,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     ScrollView {
         ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
             guard items.count < 100 else { return }
-            let random = { Int.random(in: 0..<100) }
+            let random = { Int.random(in: 0 ..< 100) }
             var new = random()
             while items.contains([new]) {
                 new = random()
@@ -683,7 +679,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
 //        .luminareBordered(false)
 //        .luminareSectionMasked(true)
 //        .luminareListItemCornerRadius(8)
-        .luminareListItemHighlightOnHover(false)
+//        .luminareListItemHighlightOnHover(false)
 //        .luminareListActionsStyle(.borderless)
     }
     .frame(height: 350)
