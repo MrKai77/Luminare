@@ -7,32 +7,11 @@
 
 import SwiftUI
 
-public enum LuminareListActionsStyle: String, Hashable, Equatable, Identifiable,
-    CaseIterable, Codable
-{
-    case bordered
-    case borderless
-
-    public var id: String { rawValue }
-
-    var isBordered: Bool {
-        switch self {
-        case .bordered: true
-        case .borderless: false
-        }
-    }
-}
-
 // MARK: - List
 
 /// A stylized list.
-public struct LuminareList<
-    ContentA, ContentB, V, ID
->: View
-where
-    ContentA: View, ContentB: View,
-    V: Hashable, ID: Hashable
-{
+public struct LuminareList<ContentA, ContentB, V, ID>: View
+where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside

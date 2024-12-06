@@ -93,7 +93,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         _VariadicView.Tree(layout, content: content)
     }
 
-    // MARK: - Layouts
+    // MARK: - Layout
 
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
