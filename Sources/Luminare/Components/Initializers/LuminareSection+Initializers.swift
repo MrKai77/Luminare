@@ -14,7 +14,6 @@ public extension LuminareSection {
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
@@ -23,14 +22,12 @@ public extension LuminareSection {
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == Text {
         self.init(
             hasPadding: hasPadding,
-            hasDividers: hasDividers,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             innerPadding: innerPadding
         ) {
@@ -46,7 +43,6 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
@@ -54,7 +50,6 @@ public extension LuminareSection {
     ///   - header: the header.
     init(
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
@@ -62,7 +57,6 @@ public extension LuminareSection {
     ) where Footer == EmptyView {
         self.init(
             hasPadding: hasPadding,
-            hasDividers: hasDividers,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             innerPadding: innerPadding
         ) {
@@ -79,7 +73,6 @@ public extension LuminareSection {
     /// - Parameters:
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
@@ -87,14 +80,12 @@ public extension LuminareSection {
     init(
         _ headerKey: LocalizedStringKey,
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == EmptyView {
         self.init(
             hasPadding: hasPadding,
-            hasDividers: hasDividers,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             innerPadding: innerPadding
         ) {
@@ -108,7 +99,6 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
@@ -116,7 +106,6 @@ public extension LuminareSection {
     ///   - footer: the footer.
     init(
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
@@ -124,7 +113,6 @@ public extension LuminareSection {
     ) where Header == EmptyView {
         self.init(
             hasPadding: hasPadding,
-            hasDividers: hasDividers,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             innerPadding: innerPadding
         ) {
@@ -141,7 +129,6 @@ public extension LuminareSection {
     /// - Parameters:
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
@@ -149,14 +136,12 @@ public extension LuminareSection {
     init(
         footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == Text {
         self.init(
             hasPadding: hasPadding,
-            hasDividers: hasDividers,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             innerPadding: innerPadding
         ) {
@@ -170,21 +155,18 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
     ///   - content: the content.
     init(
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == EmptyView {
         self.init(
             hasPadding: hasPadding,
-            hasDividers: hasDividers,
             headerSpacing: headerSpacing, footerSpacing: footerSpacing,
             innerPadding: innerPadding
         ) {

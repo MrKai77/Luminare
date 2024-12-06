@@ -17,7 +17,8 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool = false
 
@@ -43,14 +44,14 @@ public struct LuminareButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
                     styles: (
                         .quaternary, .quaternary.opacity(0.7), .quinary
                     )
                 )
                 .opacity(isEnabled ? 1 : 0.5)
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }
 
@@ -64,7 +65,8 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool = false
 
@@ -90,12 +92,12 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
                     layered: .red
                 )
                 .opacity(isEnabled ? 1 : 0.5)
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }
 
@@ -111,7 +113,8 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool = false
 
@@ -137,12 +140,12 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
                     layered: .tint
                 )
                 .opacity(isEnabled ? 1 : 0.5)
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
     }
 
     @ViewBuilder static func tintedBackgroundForState(
@@ -185,7 +188,8 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @ViewBuilder private let icon: () -> Image
 
@@ -223,7 +227,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
                     styles: (
                         .quaternary, .quaternary.opacity(0.7), .clear
                     )
@@ -240,7 +244,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 .padding(24)
                 .allowsHitTesting(false)
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }
 
@@ -256,7 +260,8 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     private let extraCompact: Bool
 
@@ -289,14 +294,14 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .opacity(isEnabled ? 1 : 0.5)
             .background(with: material) {
                 LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: isHovering,
+                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
                     styles: (
                         .quaternary, .quaternary.opacity(0.7), .quinary
                     )
                 )
                 .opacity(isEnabled ? 1 : 0.5)
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .background(border())
             .fixedSize(horizontal: extraCompact, vertical: extraCompact)
             .onHover { hover in
@@ -310,9 +315,9 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @ViewBuilder private func border() -> some View {
         Group {
             if isHovering {
-                RoundedRectangle(cornerRadius: buttonCornerRadius).strokeBorder(.quaternary)
+                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary)
             } else {
-                RoundedRectangle(cornerRadius: buttonCornerRadius).strokeBorder(.quaternary.opacity(0.7))
+                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary.opacity(0.7))
             }
         }
     }
@@ -333,7 +338,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 /// }
 public struct LuminareBordered: ViewModifier {
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
 
     private let isHighlighted: Bool
 
@@ -341,7 +346,7 @@ public struct LuminareBordered: ViewModifier {
     ///
     /// - Parameters:
     ///   - isHighlighted: whether to display a highlighted overlay.
-    ///   - buttonCornerRadius: the corner radius of the button.
+    ///   - cornerRadius: the corner radius of the button.
     public init(
         isHighlighted: Bool = false
     ) {
@@ -357,9 +362,9 @@ public struct LuminareBordered: ViewModifier {
                     Rectangle().foregroundStyle(.quinary)
                 }
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .background {
-                RoundedRectangle(cornerRadius: buttonCornerRadius)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(.quaternary)
             }
     }
@@ -384,7 +389,8 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareCompactButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool = false
 
@@ -408,7 +414,7 @@ public struct LuminareHoverable: ViewModifier {
             .frame(minHeight: minHeight)
             .padding(.horizontal, horizontalPadding)
             .background(with: material) {
-                if isHovering {
+                if highlightOnHover, isHovering {
                     Rectangle()
                         .foregroundStyle(.quinary)
                 } else {
@@ -416,13 +422,13 @@ public struct LuminareHoverable: ViewModifier {
                         .foregroundStyle(.clear)
                 }
             }
-            .clipShape(.rect(cornerRadius: buttonCornerRadius))
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .background {
                 if isHovering {
-                    RoundedRectangle(cornerRadius: buttonCornerRadius)
+                    RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary)
                 } else if isBordered {
-                    RoundedRectangle(cornerRadius: buttonCornerRadius)
+                    RoundedRectangle(cornerRadius: cornerRadius)
                         .strokeBorder(.quaternary.opacity(0.7))
                 }
             }

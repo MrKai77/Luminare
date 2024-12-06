@@ -15,15 +15,8 @@ public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable {
     case menu
     /// A row of segmented knobs, each representing a selectable value.
     ///
-    /// Often used for brief, flatten choises .
-    ///
-    /// - Parameters:
-    ///   - hasDividers: whether to display dividers between segmented knobs.
-    case segmented(hasDividers: Bool = true)
-
-    public static var segmented: Self {
-        .segmented()
-    }
+    /// Often used for brief, flatten choises.
+    case segmented
 
     var style: any PickerStyle {
         switch self {
@@ -42,9 +35,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     // MARK: Environments
 
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareCompactPickerStyle) private var style
 
@@ -81,11 +72,8 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     .pickerStyle(.menu)
                     .buttonStyle(.borderless)
                     .padding(.trailing, -2)
-            case let .segmented(hasDividers):
+            case .segmented:
                 _VariadicView.Tree(SegmentedLayout(
-                    minHeight: minHeight,
-                    cornerRadius: cornerRadius,
-                    hasDividers: hasDividers,
                     isHovering: isHovering,
                     selection: $selection
                 ), content: content)
@@ -105,14 +93,13 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         _VariadicView.Tree(layout, content: content)
     }
 
-    // MARK: - Layouts
+    // MARK: - Layout
 
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
+        @Environment(\.luminareMinHeight) private var minHeight
+        @Environment(\.luminareHasDividers) private var hasDividers
 
-        var minHeight: CGFloat
-        var cornerRadius: CGFloat
-        var hasDividers: Bool
         var isHovering: Bool
 
         @Binding var selection: V
@@ -128,7 +115,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     if let value = child.id(as: V.self) {
                         SegmentedKnob(
                             namespace: namespace,
-                            cornerRadius: cornerRadius,
                             isParentHovering: isHovering,
                             selection: $selection, value: value,
                             view: child
@@ -144,15 +130,15 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     }
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.horizontal, -2)
         }
 
         struct SegmentedKnob: View {
             @Environment(\.luminareAnimation) private var animation
             @Environment(\.luminareAnimationFast) private var animationFast
+            @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
             var namespace: Namespace.ID
-            var cornerRadius: CGFloat
             var isParentHovering: Bool
 
             @Binding var selection: V
@@ -256,8 +242,9 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
                 selection: "macOS"
             )
             .luminareAnimation(.bouncy)
-            .luminareCompactPickerStyle(.segmented(hasDividers: false))
+            .luminareCompactPickerStyle(.segmented)
             .luminareBordered(false)
+            .luminareHasDividers(false)
 
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42)
                 .luminareCompactPickerStyle(.segmented)

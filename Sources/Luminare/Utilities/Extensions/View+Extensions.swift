@@ -140,6 +140,14 @@ public extension View {
         environment(\.luminareCompactButtonCornerRadius, radius)
     }
 
+    @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
+        environment(\.luminareButtonHighlightOnHover, highlight)
+    }
+    
+    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
+        environment(\.luminareHasDividers, hasDividers)
+    }
+
     // MARK: Luminare Section
 
     @ViewBuilder func luminareSectionMaterial(_ material: Material? = nil) -> some View {
@@ -189,6 +197,15 @@ public extension View {
     }
 
     // MARK: Luminare List
+    
+    @ViewBuilder func luminareListContentMargins(_ margins: CGFloat) -> some View {
+        luminareListContentMargins(top: margins, bottom: margins)
+    }
+    
+    @ViewBuilder func luminareListContentMargins(top: CGFloat = 0, bottom: CGFloat = 0) -> some View {
+        environment(\.luminareListContentMarginsTop, top)
+            .environment(\.luminareListContentMarginsBottom, bottom)
+    }
 
     @ViewBuilder func luminareListItemCornerRadius(_ radius: CGFloat = 2) -> some View {
         environment(\.luminareListItemCornerRadius, radius)
@@ -198,15 +215,7 @@ public extension View {
         environment(\.luminareListItemHeight, height)
     }
 
-    @ViewBuilder func luminareListActionsMaterial(_ material: Material? = nil) -> some View {
-        environment(\.luminareListActionsMaterial, material)
-    }
-
-    @ViewBuilder func luminareListActionsHeight(_ height: CGFloat? = 40) -> some View {
-        environment(\.luminareListActionsHeight, height)
-    }
-
-    @ViewBuilder func luminareListActionsStyle(_ style: LuminareListActionsStyle = .bordered) -> some View {
-        environment(\.luminareListActionsStyle, style)
+    @ViewBuilder func luminareListItemHighlightOnHover(_ highlight: Bool = true) -> some View {
+        environment(\.luminareListItemHighlightOnHover, highlight)
     }
 }
