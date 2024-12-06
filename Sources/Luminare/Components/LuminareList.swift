@@ -18,7 +18,8 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareCornerRadius) private var cornerRadius
-    @Environment(\.luminareListItemHeight) private var itemHeight
+    @Environment(\.luminareListContentMarginsTop) private var marginsTop
+    @Environment(\.luminareListContentMarginsBottom) private var marginsBottom
 
     // MARK: Fields
 
@@ -71,6 +72,11 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
                 emptyView()
             } else {
                 List(selection: $selection) {
+                    if marginsTop > 0 {
+                        Spacer()
+                            .frame(height: marginsTop)
+                    }
+                    
                     ForEach($items, id: id) { item in
                         let isDisabled = isDisabled(item.wrappedValue)
                         let tint = tint(of: item.wrappedValue)
@@ -118,6 +124,11 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
                     .listRowInsets(.init())
                     .padding(.horizontal, -10)
                     .transition(.slide)
+                    
+                    if marginsBottom > 0 {
+                        Spacer()
+                            .frame(height: marginsBottom)
+                    }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
@@ -597,5 +608,6 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         items.append(new)
     }
     //    .luminareHasDividers(false)
+//    .luminareListContentMargins(50)
     .frame(height: 350)
 }

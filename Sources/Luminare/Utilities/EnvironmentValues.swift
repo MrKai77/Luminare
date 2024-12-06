@@ -76,6 +76,8 @@ public extension EnvironmentValues {
 
     // MARK: Luminare List
 
+    @Entry var luminareListContentMarginsTop: CGFloat = 0
+    @Entry var luminareListContentMarginsBottom: CGFloat = 0
     @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListItemHighlightOnHover: Bool = true

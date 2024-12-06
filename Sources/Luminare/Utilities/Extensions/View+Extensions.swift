@@ -197,6 +197,15 @@ public extension View {
     }
 
     // MARK: Luminare List
+    
+    @ViewBuilder func luminareListContentMargins(_ margins: CGFloat) -> some View {
+        luminareListContentMargins(top: margins, bottom: margins)
+    }
+    
+    @ViewBuilder func luminareListContentMargins(top: CGFloat = 0, bottom: CGFloat = 0) -> some View {
+        environment(\.luminareListContentMarginsTop, top)
+            .environment(\.luminareListContentMarginsBottom, bottom)
+    }
 
     @ViewBuilder func luminareListItemCornerRadius(_ radius: CGFloat = 2) -> some View {
         environment(\.luminareListItemCornerRadius, radius)
