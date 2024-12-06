@@ -71,7 +71,7 @@ where
     public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
-        roundedTop: Bool = true, roundedBottom: Bool = true,
+        roundedTop: Bool = false, roundedBottom: Bool = false,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB
     ) {
@@ -87,59 +87,66 @@ where
     // MARK: Body
 
     public var body: some View {
-        List(selection: $selection) {
-            ForEach($items, id: id) { item in
-                let isDisabled = isDisabled(item.wrappedValue)
-                let tint = tint(of: item.wrappedValue)
+        Group {
+            if items.isEmpty {
+                emptyView()
+            } else {
+                List(selection: $selection) {
+                    ForEach($items, id: id) { item in
+                        let isDisabled = isDisabled(item.wrappedValue)
+                        let tint = tint(of: item.wrappedValue)
 
-                Group {
-                    if #available(macOS 14.0, *) {
-                        LuminareListItem(
-                            items: $items,
-                            selection: $selection,
-                            item: item,
-                            firstItem: $firstItem,
-                            lastItem: $lastItem,
-                            roundedTop: roundedTop,
-                            roundedBottom: roundedBottom,
-                            content: content
-                        )
-                        .selectionDisabled(isDisabled)
-                    } else {
-                        LuminareListItem(
-                            items: $items,
-                            selection: $selection,
-                            item: item,
-                            firstItem: $firstItem,
-                            lastItem: $lastItem,
-                            roundedTop: roundedTop,
-                            roundedBottom: roundedBottom,
-                            content: content
-                        )
+                        Group {
+                            if #available(macOS 14.0, *) {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    roundedTop: roundedTop,
+                                    roundedBottom: roundedBottom,
+                                    content: content
+                                )
+                                .selectionDisabled(isDisabled)
+                            } else {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    roundedTop: roundedTop,
+                                    roundedBottom: roundedBottom,
+                                    content: content
+                                )
+                            }
+                        }
+                        .disabled(isDisabled)
+                        .animation(animation, value: isDisabled)
+                        .overrideTint { tint }
                     }
+                    .onMove { indices, newOffset in
+                        withAnimation(animation) {
+                            items.move(
+                                fromOffsets: indices,
+                                toOffset: newOffset
+                            )
+                        }
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.init())
+                    .padding(.horizontal, -10)
+                    .transition(.slide)
                 }
-                .disabled(isDisabled)
-                .animation(animation, value: isDisabled)
-                .overrideTint { tint }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
-            .onMove { indices, newOffset in
-                withAnimation(animation) {
-                    items.move(
-                        fromOffsets: indices,
-                        toOffset: newOffset
-                    )
-                }
-            }
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-            .listRowInsets(.init())
-            .padding(.horizontal, -10)
-            .transition(.slide)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
 
         .animation(animation, value: items)
+        .animation(animation, value: selection)
         .onChange(of: luminareClickedOutside) { _ in
             withAnimation(animation) {
                 selection = []
@@ -152,6 +159,7 @@ where
             }
 
             selection = selection.intersection(items)
+            processSelection() // update first and last item
         }
         .onChange(of: selection) { _ in
             processSelection()
@@ -228,7 +236,7 @@ where Content: View, V: Hashable {
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareCornerRadius) private var cornerRadius
-    @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareHasDividers) private var hasDividers
     @Environment(\.luminareListItemCornerRadius) private var itemCornerRadius
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListItemHighlightOnHover) private
@@ -282,7 +290,7 @@ where Content: View, V: Hashable {
                 .padding(.leading, 1)  // it's nuanced
             }
             .overlay {
-                if isBordered, !isLast {
+                if hasDividers, !isLast {
                     VStack {
                         Spacer()
 
@@ -545,27 +553,52 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     let add: (inout [V]) -> Void
 
     var body: some View {
-        LuminareList(
-            items: $items,
-            selection: $selection,
-            id: \.self
-        ) { value in
-            Text("\(value.wrappedValue)")
-                .contextMenu {
-                    Button("Remove") {
-                        if selection.isEmpty {
-                            items.removeAll { $0 == value.wrappedValue }
-                        } else {
-                            items.removeAll { selection.contains($0) }
-                        }
+        LuminareSection {
+            HStack(spacing: 2) {
+                Button("Add") {
+                    withAnimation {
+                        add(&items)
                     }
                 }
-                .swipeActions {
-                    Button("Swipe me!") {}
+
+                Button("Sort") {
+                    withAnimation {
+                        items.sort(by: <)
+                    }
                 }
-        } emptyView: {
-            Text("Empty")
-                .foregroundStyle(.secondary)
+                .disabled(items.isEmpty)
+
+                Button("Remove") {
+                    items.removeAll { selection.contains($0) }
+                }
+                .buttonStyle(LuminareDestructiveButtonStyle())
+                .disabled(selection.isEmpty)
+            }
+            .buttonStyle(LuminareButtonStyle())
+            .frame(height: 34)
+
+            LuminareList(
+                items: $items,
+                selection: $selection,
+                id: \.self
+            ) { value in
+                Text("\(value.wrappedValue)")
+                    .contextMenu {
+                        Button("Remove") {
+                            if selection.isEmpty {
+                                items.removeAll { $0 == value.wrappedValue }
+                            } else {
+                                items.removeAll { selection.contains($0) }
+                            }
+                        }
+                    }
+                    .swipeActions {
+                        Button("Swipe me!") {}
+                    }
+            } emptyView: {
+                Text("Empty")
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }
@@ -584,11 +617,6 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         }
         items.append(new)
     }
-    //        .luminareListActionsMaterial(.ultraThin)
-    //        .luminareBordered(false)
-    //        .luminareSectionMasked(true)
-    //        .luminareListItemCornerRadius(8)
-    //        .luminareListItemHighlightOnHover(false)
-    //        .luminareListActionsStyle(.borderless)
+//    .luminareHasDividers(false)
     .frame(height: 350)
 }
