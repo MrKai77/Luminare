@@ -159,7 +159,7 @@ where
             }
 
             selection = selection.intersection(items)
-            processSelection() // update first and last item
+            processSelection()  // update first and last item
         }
         .onChange(of: selection) { _ in
             processSelection()
@@ -617,6 +617,6 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         }
         items.append(new)
     }
-//    .luminareHasDividers(false)
+    //    .luminareHasDividers(false)
     .frame(height: 350)
 }
