@@ -143,6 +143,10 @@ public extension View {
     @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareButtonHighlightOnHover, highlight)
     }
+    
+    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
+        environment(\.luminareHasDividers, hasDividers)
+    }
 
     // MARK: Luminare Section
 
@@ -204,17 +208,5 @@ public extension View {
 
     @ViewBuilder func luminareListItemHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareListItemHighlightOnHover, highlight)
-    }
-
-    @ViewBuilder func luminareListActionsMaterial(_ material: Material? = nil) -> some View {
-        environment(\.luminareListActionsMaterial, material)
-    }
-
-    @ViewBuilder func luminareListActionsHeight(_ height: CGFloat? = 40) -> some View {
-        environment(\.luminareListActionsHeight, height)
-    }
-
-    @ViewBuilder func luminareListActionsStyle(_ style: LuminareListActionsStyle = .bordered) -> some View {
-        environment(\.luminareListActionsStyle, style)
     }
 }

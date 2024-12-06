@@ -39,6 +39,7 @@ public extension EnvironmentValues {
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
+    @Entry var luminareHasDividers: Bool = true
 
     // MARK: Luminare Button Style
 
@@ -78,7 +79,4 @@ public extension EnvironmentValues {
     @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListItemHighlightOnHover: Bool = true
-    @Entry var luminareListActionsMaterial: Material? = nil
-    @Entry var luminareListActionsHeight: CGFloat? = 40
-    @Entry var luminareListActionsStyle: LuminareListActionsStyle = .bordered
 }

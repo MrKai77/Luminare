@@ -16,12 +16,13 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @Environment(\.luminareCornerRadius) private var cornerRadius
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareHasDividers) private var hasDividers
     @Environment(\.luminareSectionMaterial) private var material
     @Environment(\.luminareSectionIsMasked) private var isMasked
 
     // MARK: Fields
 
-    private let hasPadding: Bool, hasDividers: Bool
+    private let hasPadding: Bool
 
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
     private let innerPadding: CGFloat
@@ -34,7 +35,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///
     /// - Parameters:
     ///   - hasPadding: whether to have paddings between divided contents.
-    ///   - hasDividers: whether to display dividers between contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - innerPadding: the padding around the contents.
@@ -43,7 +43,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - footer: the footer.
     public init(
         hasPadding: Bool = true,
-        hasDividers: Bool = true,
         headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
@@ -51,7 +50,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
         self.hasPadding = hasPadding
-        self.hasDividers = hasDividers
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
         self.innerPadding = innerPadding
