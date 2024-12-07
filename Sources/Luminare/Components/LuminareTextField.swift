@@ -56,7 +56,8 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     public var body: some View {
         TextField(placeholder, value: $value, format: format)
             .textFieldStyle(.plain)
-            .modifier(LuminareHoverable(extraCompact: [.vertical]))
+            .modifier(LuminareHoverable())
+
             .onAppear {
                 guard monitor != nil else { return }
 
@@ -100,4 +101,5 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                 .disabled(true)
         }
     }
+    .luminareButtonAspectRatio(contentMode: .fill)
 }

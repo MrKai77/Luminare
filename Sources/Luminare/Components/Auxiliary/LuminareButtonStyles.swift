@@ -7,7 +7,31 @@
 
 import SwiftUI
 
-// MARK: - Button Style
+struct AspectRatioModifier: ViewModifier {
+    @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareButtonAspectRatio) private var aspectRatio
+    @Environment(\.luminareButtonIsVerticallyCompact) private var isVerticallyCompact
+    
+    @ViewBuilder func body(content: Content) -> some View {
+        Group {
+            if isConstrained {
+                content
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: minHeight, maxHeight: isVerticallyCompact ? nil : .infinity)
+                    .aspectRatio(aspectRatio.aspectRatio, contentMode: aspectRatio.contentMode)
+            } else {
+                content
+                    .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
+            }
+        }
+        .fixedSize(horizontal: aspectRatio.contentMode == .fit, vertical: isVerticallyCompact)
+    }
+    
+    private var isConstrained: Bool {
+        aspectRatio.contentMode == .fit || isVerticallyCompact
+    }
+}
+
+// MARK: - Button Styles
 
 /// A stylized button style.
 ///
@@ -225,22 +249,14 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    private let extraCompact: Axis.Set
-
     @State private var isHovering: Bool = false
 
-    public init(
-        extraCompact: Axis.Set = []
-    ) {
-        self.extraCompact = extraCompact
-    }
+    public init() {}
 
     #if DEBUG
         init(
-            extraCompact: Axis.Set = [],
             isHovering: Bool = false
         ) {
-            self.extraCompact = extraCompact
             self.isHovering = isHovering
         }
     #endif
@@ -248,7 +264,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, horizontalPadding)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
         
             .modifier(LuminareFilled(
@@ -257,14 +273,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             ))
             .modifier(LuminareBordered(isHovering: isHovering))
         
-            .frame(minHeight: minHeight)
-            .fixedSize(horizontal: extraCompact.contains(.horizontal), vertical: extraCompact.contains(.vertical))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
-            .frame(minHeight: minHeight)
     }
 }
 
@@ -443,18 +456,15 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    private let extraCompact: Axis.Set
     private let isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
 
     @State private var isHovering: Bool = false
 
     public init(
-        extraCompact: Axis.Set = [],
         isPressed: Bool = false,
         fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle
     ) {
-        self.extraCompact = extraCompact
         self.isPressed = isPressed
         self.fill = .init(fill)
         self.hovering = .init(hovering)
@@ -462,12 +472,10 @@ public struct LuminareHoverable: ViewModifier {
     }
     
     public init(
-        extraCompact: Axis.Set = [],
         isPressed: Bool = false,
         cascading: some ShapeStyle
     ) {
         self.init(
-            extraCompact: extraCompact,
             isPressed: isPressed,
             fill: cascading.opacity(0.15),
             hovering: cascading.opacity(0.25),
@@ -476,23 +484,19 @@ public struct LuminareHoverable: ViewModifier {
     }
     
     public init(
-        extraCompact: Axis.Set = [],
         isPressed: Bool = false,
         pressed: some ShapeStyle
     ) {
         self.init(
-            extraCompact: extraCompact,
             isPressed: isPressed,
             fill: .clear, hovering: pressed, pressed: pressed
         )
     }
     
     public init(
-        extraCompact: Axis.Set = [],
         isPressed: Bool = false
     ) {
         self.init(
-            extraCompact: extraCompact,
             isPressed: isPressed,
             pressed: .quinary
         )
@@ -500,12 +504,10 @@ public struct LuminareHoverable: ViewModifier {
 
     #if DEBUG
         init(
-            extraCompact: Axis.Set = [],
             isPressed: Bool = false,
             fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle,
             isHovering: Bool = false
         ) {
-            self.extraCompact = extraCompact
             self.isPressed = isPressed
             self.fill = .init(fill)
             self.hovering = .init(hovering)
@@ -517,7 +519,7 @@ public struct LuminareHoverable: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .padding(.horizontal, horizontalPadding)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
         
             .modifier(LuminareFilled(
@@ -526,8 +528,6 @@ public struct LuminareHoverable: ViewModifier {
             ))
             .modifier(LuminareBordered(isHovering: isHovering))
         
-            .frame(minHeight: minHeight)
-            .fixedSize(horizontal: extraCompact.contains(.horizontal), vertical: extraCompact.contains(.vertical))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover

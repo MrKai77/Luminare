@@ -93,7 +93,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             }
         }
         .padding(.horizontal, -4)
-        .modifier(LuminareHoverable(extraCompact: style.extraCompact))
+//        .modifier(LuminareHoverable(extraCompact: style.extraCompact))
     }
 
     @ViewBuilder private func variadic(
@@ -249,7 +249,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             Button {} label: {
                 Text("42")
             }
-            .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
+//            .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
         }
         .luminareComposeStyle(.inline)
 

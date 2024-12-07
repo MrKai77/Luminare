@@ -125,6 +125,24 @@ public extension View {
     @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
         environment(\.luminareIsBordered, bordered)
     }
+    
+    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
+        environment(\.luminareHasDividers, hasDividers)
+    }
+    
+    // MARK: Modal
+    
+    @ViewBuilder func luminareModalCancel(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
+        environment(\.luminareModalCancel) {
+            cancel().map(AnyView.init(_:))
+        }
+    }
+    
+    @ViewBuilder func luminareModalDone(@ViewBuilder _ done: @escaping () -> (some View)?) -> some View {
+        environment(\.luminareModalDone) {
+            done().map(AnyView.init(_:))
+        }
+    }
 
     // MARK: Luminare Button Styles
 
@@ -144,8 +162,16 @@ public extension View {
         environment(\.luminareButtonHighlightOnHover, highlight)
     }
     
-    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
-        environment(\.luminareHasDividers, hasDividers)
+    @ViewBuilder func luminareButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
+        environment(\.luminareButtonAspectRatio, (aspectRatio, contentMode))
+    }
+    
+    @ViewBuilder func luminareButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
+        environment(\.luminareButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
+    }
+    
+    @ViewBuilder func luminareButtonVerticallyCompact(_ compact: Bool = true) -> some View {
+        environment(\.luminareButtonIsVerticallyCompact, compact)
     }
 
     // MARK: Luminare Section

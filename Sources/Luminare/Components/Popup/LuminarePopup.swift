@@ -198,6 +198,6 @@ private struct PopupPreview<Label, Content>: View where Label: View, Content: Vi
         Text("Toggle Popup")
             .padding()
     }
-    .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
+//    .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
     .padding()
 }

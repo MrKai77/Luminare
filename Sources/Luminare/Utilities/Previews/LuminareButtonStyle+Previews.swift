@@ -97,6 +97,8 @@ import SwiftUI
                 HStack {
                     Button("Compact") {}
                         .buttonStyle(LuminareCompactButtonStyle())
+                        .luminareButtonAspectRatio(contentMode: .fill)
+                        .luminareButtonVerticallyCompact(false)
                 }
                 .frame(height: 40)
             }
@@ -225,6 +227,8 @@ import SwiftUI
         LuminareSection {
             Button("Click me!") {}
                 .buttonStyle(LuminareCompactButtonStyle())
+                .luminareButtonAspectRatio(contentMode: .fill)
+                .luminareButtonVerticallyCompact(false)
                 .frame(height: 40)
         }
     }
@@ -257,12 +261,12 @@ import SwiftUI
         VStack {
             Text("Not bordered")
                 .fixedSize()
-                .modifier(LuminareHoverable(extraCompact: [.horizontal, .vertical]))
+                .modifier(LuminareHoverable())
                 .luminareBordered(false)
 
             Text("Bordered")
                 .fixedSize()
-                .modifier(LuminareHoverable(extraCompact: [.horizontal, .vertical]))
+                .modifier(LuminareHoverable())
         }
     }
 #endif
