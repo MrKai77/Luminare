@@ -143,7 +143,7 @@ public struct LuminareCompose<Label, Content>: View
             Button {} label: {
                 Text("Button")
             }
-//            .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
+            .buttonStyle(LuminareCompactButtonStyle())
         }
         .luminareComposeStyle(.inline)
 
@@ -151,7 +151,7 @@ public struct LuminareCompose<Label, Content>: View
             Button {} label: {
                 Text("Button")
             }
-//            .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
+            .buttonStyle(LuminareCompactButtonStyle())
         }
         .luminareComposeStyle(.inline)
         .disabled(true)

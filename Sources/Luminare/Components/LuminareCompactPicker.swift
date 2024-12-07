@@ -24,13 +24,6 @@ public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable {
         case .segmented: .segmented
         }
     }
-    
-    var extraCompact: Axis.Set {
-        switch self {
-        case .menu: [.horizontal, .vertical]
-        case .segmented: .vertical
-        }
-    }
 }
 
 // MARK: - Compact Picker
@@ -93,7 +86,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             }
         }
         .padding(.horizontal, -4)
-//        .modifier(LuminareHoverable(extraCompact: style.extraCompact))
+        .modifier(LuminareHoverable())
     }
 
     @ViewBuilder private func variadic(
@@ -166,7 +159,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     }
                 } label: {
                     view
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: minHeight - 8)
                         .padding(.horizontal, horizontalPadding)
                 }
                 .buttonStyle(.borderless)
@@ -249,7 +242,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             Button {} label: {
                 Text("42")
             }
-//            .buttonStyle(LuminareCompactButtonStyle(extraCompact: [.horizontal, .vertical]))
+            .buttonStyle(LuminareCompactButtonStyle())
         }
         .luminareComposeStyle(.inline)
 
@@ -279,6 +272,8 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42)
                 .luminareCompactPickerStyle(.segmented)
                 .padding(2)
+                .luminareButtonAspectRatio(contentMode: .fit)
         }
+        .luminareButtonAspectRatio(contentMode: .fill)
     }
 }
