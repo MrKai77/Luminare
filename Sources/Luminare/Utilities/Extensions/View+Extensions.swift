@@ -126,7 +126,7 @@ public extension View {
         environment(\.luminareIsBordered, bordered)
     }
 
-    // MARK: Luminare Button Style
+    // MARK: Luminare Button Styles
 
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareButtonMaterial, material)
@@ -166,6 +166,10 @@ public extension View {
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
+    }
+    
+    @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .regular) -> some View {
+        environment(\.luminareComposeStyle, style)
     }
 
     // MARK: Luminare Popover

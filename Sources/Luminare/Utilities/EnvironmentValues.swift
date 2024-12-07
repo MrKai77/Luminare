@@ -41,7 +41,7 @@ public extension EnvironmentValues {
     @Entry var luminareIsBordered: Bool = true
     @Entry var luminareHasDividers: Bool = true
 
-    // MARK: Luminare Button Style
+    // MARK: Luminare Button Styles
 
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadius: CGFloat = 2
@@ -57,6 +57,7 @@ public extension EnvironmentValues {
     // MARK: Luminare Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .regular
+    @Entry var luminareComposeStyle: LuminareComposeStyle = .regular
 
     // MARK: Luminare Popover
 

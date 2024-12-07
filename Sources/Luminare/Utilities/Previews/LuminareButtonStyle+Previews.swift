@@ -257,16 +257,12 @@ import SwiftUI
         VStack {
             Text("Not bordered")
                 .fixedSize()
-                .modifier(LuminareHoverable())
+                .modifier(LuminareHoverable(extraCompact: [.horizontal, .vertical]))
                 .luminareBordered(false)
 
             Text("Bordered")
                 .fixedSize()
-                .modifier(LuminareHoverable())
-
-            Text("Hovering")
-                .fixedSize()
-                .modifier(LuminareHoverable(isHovering: true))
+                .modifier(LuminareHoverable(extraCompact: [.horizontal, .vertical]))
         }
     }
 #endif

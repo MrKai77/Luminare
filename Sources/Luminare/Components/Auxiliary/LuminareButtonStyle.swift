@@ -42,15 +42,11 @@ public struct LuminareButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
-                    styles: (
-                        .quaternary, .quaternary.opacity(0.7), .quinary
-                    )
-                )
-                .opacity(isEnabled ? 1 : 0.5)
-            }
+        
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
+            ))
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }
@@ -90,13 +86,11 @@ public struct LuminareDestructiveButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
-                    layered: .red
-                )
-                .opacity(isEnabled ? 1 : 0.5)
-            }
+        
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                cascading: .red
+            ))
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
 }
@@ -138,40 +132,12 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
-                    layered: .tint
-                )
-                .opacity(isEnabled ? 1 : 0.5)
-            }
+        
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                cascading: .tint
+            ))
             .clipShape(.rect(cornerRadius: cornerRadius))
-    }
-
-    @ViewBuilder static func tintedBackgroundForState(
-        isPressed: Bool, isEnabled: Bool, isHovering: Bool,
-        layered: some ShapeStyle
-    ) -> some View {
-        tintedBackgroundForState(isPressed: isPressed, isEnabled: isEnabled, isHovering: isHovering, styles: (
-            layered.opacity(0.4),
-            layered.opacity(0.25),
-            layered.opacity(0.15)
-        ))
-    }
-
-    @ViewBuilder static func tintedBackgroundForState(
-        isPressed: Bool, isEnabled: Bool, isHovering: Bool,
-        styles: (some ShapeStyle, some ShapeStyle, some ShapeStyle)
-    ) -> some View {
-        Group {
-            if isPressed, isEnabled {
-                Rectangle().foregroundStyle(styles.0)
-            } else if isHovering, isEnabled {
-                Rectangle().foregroundStyle(styles.1)
-            } else {
-                Rectangle().foregroundStyle(styles.2)
-            }
-        }
     }
 }
 
@@ -225,15 +191,10 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
-                    styles: (
-                        .quaternary, .quaternary.opacity(0.7), .clear
-                    )
-                )
-                .opacity(isEnabled ? 1 : 0.5)
-            }
+        
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed
+            ))
             .overlay {
                 HStack {
                     Spacer()
@@ -259,27 +220,24 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    private let extraCompact: Bool
+    private let extraCompact: Axis.Set
 
     @State private var isHovering: Bool = false
 
-    /// Initializes a ``LuminareButtonStyle``.
-    ///
-    /// - Parameters:
-    ///   - extraCompact: whether to eliminate the padding around the content.
     public init(
-        extraCompact: Bool = false
+        extraCompact: Axis.Set = []
     ) {
         self.extraCompact = extraCompact
     }
 
     #if DEBUG
         init(
-            extraCompact: Bool = false,
+            extraCompact: Axis.Set = [],
             isHovering: Bool = false
         ) {
             self.extraCompact = extraCompact
@@ -289,21 +247,18 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding(.horizontal, extraCompact ? 0 : 12)
+            .padding(.horizontal, horizontalPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
-            .background(with: material) {
-                LuminareProminentButtonStyle.tintedBackgroundForState(
-                    isPressed: configuration.isPressed, isEnabled: isEnabled, isHovering: highlightOnHover && isHovering,
-                    styles: (
-                        .quaternary, .quaternary.opacity(0.7), .quinary
-                    )
-                )
-                .opacity(isEnabled ? 1 : 0.5)
-            }
-            .clipShape(.rect(cornerRadius: cornerRadius))
-            .background(border())
-            .fixedSize(horizontal: extraCompact, vertical: extraCompact)
+        
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
+            ))
+            .modifier(LuminareBordered(isHovering: isHovering))
+        
+            .frame(minHeight: minHeight)
+            .fixedSize(horizontal: extraCompact.contains(.horizontal), vertical: extraCompact.contains(.vertical))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
@@ -311,15 +266,82 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
     }
+}
 
-    @ViewBuilder private func border() -> some View {
-        Group {
-            if isHovering {
-                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary)
-            } else {
-                RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(.quaternary.opacity(0.7))
+// MARK: - Filled
+
+public struct LuminareFilled: ViewModifier {
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareButtonMaterial) private var material
+    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
+    
+    private let isHovering: Bool, isPressed: Bool
+    private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
+    
+    public init(
+        isHovering: Bool = false, isPressed: Bool = false,
+        fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle
+    ) {
+        self.isHovering = isHovering
+        self.isPressed = isPressed
+        self.fill = .init(fill)
+        self.hovering = .init(hovering)
+        self.pressed = .init(pressed)
+    }
+    
+    public init(
+        isHovering: Bool = false, isPressed: Bool = false,
+        cascading: some ShapeStyle
+    ) {
+        self.init(
+            isHovering: isHovering, isPressed: isPressed,
+            fill: cascading.opacity(0.15),
+            hovering: cascading.opacity(0.25),
+            pressed: cascading.opacity(0.4)
+        )
+    }
+    
+    public init(
+        isHovering: Bool = false, isPressed: Bool = false,
+        pressed: some ShapeStyle
+    ) {
+        self.init(
+            isHovering: isHovering, isPressed: isPressed,
+            fill: .clear, hovering: pressed, pressed: pressed
+        )
+    }
+    
+    public init(
+        isHovering: Bool = false, isPressed: Bool = false
+    ) {
+        self.init(
+            isHovering: isHovering, isPressed: isPressed,
+            pressed: .quinary
+        )
+    }
+    
+    public func body(content: Content) -> some View {
+        content
+            .background(with: material) {
+                Group {
+                    if isEnabled {
+                        if isPressed {
+                            Rectangle()
+                                .foregroundStyle(pressed)
+                        } else if highlightOnHover, isHovering {
+                            Rectangle()
+                                .foregroundStyle(hovering)
+                        } else {
+                            Rectangle()
+                                .foregroundStyle(fill)
+                        }
+                    } else {
+                        Rectangle()
+                            .foregroundStyle(fill)
+                    }
+                }
+                .opacity(isEnabled ? 1 : 0.5)
             }
-        }
     }
 }
 
@@ -337,35 +359,63 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 ///     }
 /// }
 public struct LuminareBordered: ViewModifier {
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareIsBordered) private var isBordered
 
-    private let isHighlighted: Bool
+    private let isHovering: Bool
+    private let fill: AnyShapeStyle, hovering: AnyShapeStyle
 
-    /// Initializes a ``LuminareBordered``.
-    ///
-    /// - Parameters:
-    ///   - isHighlighted: whether to display a highlighted overlay.
-    ///   - cornerRadius: the corner radius of the button.
     public init(
-        isHighlighted: Bool = false
+        isHovering: Bool = false,
+        fill: some ShapeStyle, hovering: some ShapeStyle
     ) {
-        self.isHighlighted = isHighlighted
+        self.isHovering = isHovering
+        self.fill = .init(fill)
+        self.hovering = .init(hovering)
+    }
+    
+    public init(
+        isHovering: Bool = false,
+        cascading: some ShapeStyle
+    ) {
+        self.init(
+            isHovering: isHovering,
+            fill: cascading.opacity(0.7),
+            hovering: cascading
+        )
+    }
+    
+    public init(
+        isHovering: Bool = false,
+        hovering: some ShapeStyle
+    ) {
+        self.init(
+            isHovering: isHovering,
+            fill: .clear, hovering: hovering
+        )
+    }
+    
+    public init(
+        isHovering: Bool = false
+    ) {
+        self.init(
+            isHovering: isHovering,
+            cascading: .quaternary
+        )
     }
 
     public func body(content: Content) -> some View {
         content
-            .background(with: material) {
-                if isHighlighted {
-                    Rectangle().foregroundStyle(.quaternary.opacity(0.7))
-                } else {
-                    Rectangle().foregroundStyle(.quinary)
-                }
-            }
             .clipShape(.rect(cornerRadius: cornerRadius))
             .background {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .strokeBorder(.quaternary)
+                if isHovering {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(fill)
+                } else if isBordered {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(hovering)
+                }
             }
     }
 }
@@ -384,52 +434,103 @@ public struct LuminareBordered: ViewModifier {
 ///     }
 /// }
 public struct LuminareHoverable: ViewModifier {
+    @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
+
+    private let extraCompact: Axis.Set
+    private let isPressed: Bool
+    private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
 
     @State private var isHovering: Bool = false
 
-    public init() {}
+    public init(
+        extraCompact: Axis.Set = [],
+        isPressed: Bool = false,
+        fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle
+    ) {
+        self.extraCompact = extraCompact
+        self.isPressed = isPressed
+        self.fill = .init(fill)
+        self.hovering = .init(hovering)
+        self.pressed = .init(pressed)
+    }
+    
+    public init(
+        extraCompact: Axis.Set = [],
+        isPressed: Bool = false,
+        cascading: some ShapeStyle
+    ) {
+        self.init(
+            extraCompact: extraCompact,
+            isPressed: isPressed,
+            fill: cascading.opacity(0.15),
+            hovering: cascading.opacity(0.25),
+            pressed: cascading.opacity(0.4)
+        )
+    }
+    
+    public init(
+        extraCompact: Axis.Set = [],
+        isPressed: Bool = false,
+        pressed: some ShapeStyle
+    ) {
+        self.init(
+            extraCompact: extraCompact,
+            isPressed: isPressed,
+            fill: .clear, hovering: pressed, pressed: pressed
+        )
+    }
+    
+    public init(
+        extraCompact: Axis.Set = [],
+        isPressed: Bool = false
+    ) {
+        self.init(
+            extraCompact: extraCompact,
+            isPressed: isPressed,
+            pressed: .quinary
+        )
+    }
 
     #if DEBUG
         init(
+            extraCompact: Axis.Set = [],
+            isPressed: Bool = false,
+            fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle,
             isHovering: Bool = false
         ) {
+            self.extraCompact = extraCompact
+            self.isPressed = isPressed
+            self.fill = .init(fill)
+            self.hovering = .init(hovering)
+            self.pressed = .init(pressed)
             self.isHovering = isHovering
         }
     #endif
 
     public func body(content: Content) -> some View {
         content
+            .padding(.horizontal, horizontalPadding)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .opacity(isEnabled ? 1 : 0.5)
+        
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: isPressed,
+                fill: fill, hovering: hovering, pressed: pressed
+            ))
+            .modifier(LuminareBordered(isHovering: isHovering))
+        
+            .frame(minHeight: minHeight)
+            .fixedSize(horizontal: extraCompact.contains(.horizontal), vertical: extraCompact.contains(.vertical))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
-            .padding(.horizontal, horizontalPadding)
-            .background(with: material) {
-                if highlightOnHover, isHovering {
-                    Rectangle()
-                        .foregroundStyle(.quinary)
-                } else {
-                    Rectangle()
-                        .foregroundStyle(.clear)
-                }
-            }
-            .clipShape(.rect(cornerRadius: cornerRadius))
-            .background {
-                if isHovering {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.quaternary)
-                } else if isBordered {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .strokeBorder(.quaternary.opacity(0.7))
                 }
             }
     }

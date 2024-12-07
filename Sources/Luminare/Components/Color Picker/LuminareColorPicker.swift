@@ -197,7 +197,7 @@ public struct LuminareColorPicker<F, R, G, B, Done>: View
                         .padding(4)
                         .modifier(LuminareBordered())
                 }
-                .buttonStyle(PlainButtonStyle())
+                .buttonStyle(.plain)
                 .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true, isCompact: true) {
                     ColorPickerModalView(
                         selectedColor: $currentColor.hsb,
