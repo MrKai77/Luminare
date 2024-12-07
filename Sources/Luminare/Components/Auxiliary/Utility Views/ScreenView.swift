@@ -42,7 +42,7 @@ public struct ScreenView<Content>: View where Content: View {
                         .blur(radius: isBlurred ? 10 : 0)
                         .opacity(isBlurred ? 0.5 : 1)
                 } else {
-                    tint()
+                    tint
                         .opacity(0.1)
                 }
             }

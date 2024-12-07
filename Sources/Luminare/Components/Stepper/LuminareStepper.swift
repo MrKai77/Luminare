@@ -242,7 +242,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                 .overlay {
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
-                        .tint(prominentTint ?? tint())
+                        .tint(prominentTint ?? tint)
                         .foregroundStyle(
                             .tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1)
                         )
@@ -531,7 +531,7 @@ private struct StepperPreview<Label, V>: View
             } onRoundedValueChange: { _, newValue in
                 print(newValue)
             }
-            .overrideTint { .primary }
+            .overrideTint(.primary)
 //            .background(.quinary)
 
             HStack {
@@ -562,7 +562,7 @@ private struct StepperPopoverPreview: View {
                     indicatorSpacing: 10,
                     maxSize: 32
                 )
-                .overrideTint { .primary }
+                .overrideTint(.primary)
                 .frame(width: 100, height: 32)
             }
 

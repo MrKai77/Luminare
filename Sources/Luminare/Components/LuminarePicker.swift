@@ -153,7 +153,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             }
             .disabled(isDisabled)
             .animation(animation, value: isDisabled)
-            .overrideTint { tint }
+            .overrideTint(tint)
         } else {
             getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
@@ -183,7 +183,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     }
 
     private func tint(of element: V) -> Color {
-        (element as? LuminareSelectionData)?.tint ?? tint()
+        (element as? LuminareSelectionData)?.tint ?? tint
     }
 
     private func getElement(row: Int, column: Int) -> V? {

@@ -10,9 +10,9 @@ import SwiftUI
 public extension View {
     /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
     /// value.
-    @ViewBuilder func overrideTint(_ tint: @escaping () -> Color) -> some View {
+    @ViewBuilder func overrideTint(_ tint: Color) -> some View {
         luminareTint(tint)
-            .tint(tint())
+            .tint(tint)
     }
 
     @ViewBuilder func background(_ style: some ShapeStyle, with material: Material?) -> some View {
@@ -94,7 +94,7 @@ public extension View {
 // MARK: - Environment Values
 
 public extension View {
-    @ViewBuilder func luminareTint(_ tint: @escaping () -> Color) -> some View {
+    @ViewBuilder func luminareTint(_ tint: Color) -> some View {
         environment(\.luminareTint, tint)
     }
 

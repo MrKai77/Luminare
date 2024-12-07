@@ -109,7 +109,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
                         }
                         .disabled(isDisabled)
                         .animation(animation, value: isDisabled)
-                        .overrideTint { tint }
+                        .overrideTint(tint)
                     }
                     .onMove { indices, newOffset in
                         withAnimation(animation) {
@@ -177,7 +177,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     }
 
     private func tint(of element: V) -> Color {
-        (element as? LuminareSelectionData)?.tint ?? tint()
+        (element as? LuminareSelectionData)?.tint ?? tint
     }
 
     private func processSelection() {
