@@ -101,5 +101,5 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                 .disabled(true)
         }
     }
-    .luminareButtonAspectRatio(contentMode: .fill)
+    .luminareCompactButtonAspectRatio(contentMode: .fill)
 }

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareButtonAspectRatio) private var aspectRatio
-    @Environment(\.luminareButtonIsVerticallyCompact) private var isVerticallyCompact
+    @Environment(\.luminareCompactButtonAspectRatio) private var aspectRatio
+    @Environment(\.luminareCompactButtonHasFixedHeight) private var hasFixedHeight
     
     @ViewBuilder func body(content: Content) -> some View {
         Group {
@@ -18,7 +18,7 @@ struct AspectRatioModifier: ViewModifier {
                 content
                     .frame(
                         minWidth: minWidth, maxWidth: .infinity,
-                        minHeight: minHeight, maxHeight: isVerticallyCompact ? nil : .infinity
+                        minHeight: minHeight, maxHeight: hasFixedHeight ? nil : .infinity
                     )
                     .aspectRatio(aspectRatio.aspectRatio, contentMode: aspectRatio.contentMode)
             } else {
@@ -26,15 +26,15 @@ struct AspectRatioModifier: ViewModifier {
                     .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             }
         }
-        .fixedSize(horizontal: aspectRatio.contentMode == .fit, vertical: isVerticallyCompact)
+        .fixedSize(horizontal: aspectRatio.contentMode == .fit, vertical: hasFixedHeight)
     }
     
     private var isConstrained: Bool {
-        aspectRatio.contentMode == .fit || isVerticallyCompact
+        aspectRatio.contentMode == .fit || hasFixedHeight
     }
     
     private var minWidth: CGFloat? {
-        if isVerticallyCompact, let aspectRatio = aspectRatio.aspectRatio {
+        if hasFixedHeight, let aspectRatio = aspectRatio.aspectRatio {
             minHeight * aspectRatio
         } else {
             nil
@@ -257,8 +257,8 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     @State private var isHovering: Bool = false
 
@@ -384,8 +384,8 @@ public struct LuminareFilled: ViewModifier {
 /// }
 public struct LuminareBordered: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     private let isHovering: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle
@@ -462,10 +462,10 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     private let isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle

@@ -50,10 +50,10 @@ public extension EnvironmentValues {
 
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadius: CGFloat = 2
-    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
     @Entry var luminareButtonHighlightOnHover: Bool = true
-    @Entry var luminareButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
-    @Entry var luminareButtonIsVerticallyCompact: Bool = true
+    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
+    @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
+    @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
     // MARK: Luminare Section
 

@@ -97,8 +97,8 @@ import SwiftUI
                 HStack {
                     Button("Compact") {}
                         .buttonStyle(LuminareCompactButtonStyle())
-                        .luminareButtonAspectRatio(contentMode: .fill)
-                        .luminareButtonVerticallyCompact(false)
+                        .luminareCompactButtonAspectRatio(contentMode: .fill)
+                        .luminareCompactButtonHasFixedHeight(false)
                 }
                 .frame(height: 40)
             }
@@ -227,8 +227,8 @@ import SwiftUI
         LuminareSection {
             Button("Click me!") {}
                 .buttonStyle(LuminareCompactButtonStyle())
-                .luminareButtonAspectRatio(contentMode: .fill)
-                .luminareButtonVerticallyCompact(false)
+                .luminareCompactButtonAspectRatio(contentMode: .fill)
+                .luminareCompactButtonHasFixedHeight(false)
                 .frame(height: 40)
         }
     }

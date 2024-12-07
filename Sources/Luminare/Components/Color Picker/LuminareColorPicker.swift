@@ -141,7 +141,7 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 }
                 .buttonStyle(LuminareCompactButtonStyle())
                 .luminareHorizontalPadding(0)
-                .luminareButtonAspectRatio(1/1, contentMode: .fit)
+                .luminareCompactButtonAspectRatio(1/1, contentMode: .fit)
                 .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true, isCompact: true) {
                     ColorPickerModalView(
                         selectedColor: $color.hsb,
@@ -180,7 +180,7 @@ public struct LuminareColorPicker<F, R, G, B>: View
             }
         )
     )
-    .luminareButtonAspectRatio(contentMode: .fill)
+    .luminareCompactButtonAspectRatio(contentMode: .fill)
     .monospaced()
     .frame(width: 300)
 }

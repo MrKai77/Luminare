@@ -155,11 +155,11 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                 } label: {
                     Image(systemName: "eyedropper.halffull")
                 }
-                .luminareButtonAspectRatio(1/1, contentMode: .fit)
+                .luminareCompactButtonAspectRatio(1/1, contentMode: .fit)
                 .buttonStyle(LuminareCompactButtonStyle())
             }
         }
-        .luminareButtonAspectRatio(contentMode: .fill)
+        .luminareCompactButtonAspectRatio(contentMode: .fill)
     }
     
     @ViewBuilder private func controls() -> some View {
@@ -191,7 +191,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                     }
                 }
                 .buttonStyle(LuminareCompactButtonStyle())
-                .luminareButtonAspectRatio(contentMode: .fill)
+                .luminareCompactButtonAspectRatio(contentMode: .fill)
             }
         }
     }

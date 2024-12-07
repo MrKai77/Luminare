@@ -154,24 +154,24 @@ public extension View {
         environment(\.luminareButtonCornerRadius, radius)
     }
 
-    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
-        environment(\.luminareCompactButtonCornerRadius, radius)
-    }
-
     @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareButtonHighlightOnHover, highlight)
     }
     
-    @ViewBuilder func luminareButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
-        environment(\.luminareButtonAspectRatio, (aspectRatio, contentMode))
+    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
+        environment(\.luminareCompactButtonCornerRadius, radius)
     }
     
-    @ViewBuilder func luminareButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
-        environment(\.luminareButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
+    @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
+        environment(\.luminareCompactButtonAspectRatio, (aspectRatio, contentMode))
     }
     
-    @ViewBuilder func luminareButtonVerticallyCompact(_ compact: Bool = true) -> some View {
-        environment(\.luminareButtonIsVerticallyCompact, compact)
+    @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
+        environment(\.luminareCompactButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
+    }
+    
+    @ViewBuilder func luminareCompactButtonHasFixedHeight(_ hasFixedHeight: Bool = true) -> some View {
+        environment(\.luminareCompactButtonHasFixedHeight, hasFixedHeight)
     }
 
     // MARK: Luminare Section
