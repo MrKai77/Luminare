@@ -80,10 +80,14 @@ public struct LuminareColorPicker<F, R, G, B>: View
     where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
     R: View, G: View, B: View {
     public typealias Style = LuminareColorPickerStyle<F, R, G, B>
+    
+    // MARK: Environments
+    
+    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     // MARK: Fields
 
-    @Binding var currentColor: Color
+    @Binding var color: Color
 
     private let style: Style
 
@@ -101,7 +105,7 @@ public struct LuminareColorPicker<F, R, G, B>: View
         color: Binding<Color>,
         style: Style
     ) {
-        self._currentColor = color
+        self._color = color
         self._text = State(initialValue: color.wrappedValue.toHex())
         self.style = style
     }
@@ -118,11 +122,11 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 )
                 .onSubmit {
                     if let newColor = Color(hex: text) {
-                        currentColor = newColor
+                        color = newColor
                         text = newColor.toHex()
                     } else {
                         // revert to last valid color
-                        text = currentColor.toHex()
+                        text = color.toHex()
                     }
                 }
             }
@@ -131,16 +135,16 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 Button {
                     isColorPickerPresented.toggle()
                 } label: {
-                    RoundedRectangle(cornerRadius: 4)
-                        .foregroundStyle(currentColor)
-                        .frame(width: 26, height: 26)
+                    RoundedRectangle(cornerRadius: max(0, cornerRadius - 4))
+                        .foregroundStyle(color)
                         .padding(4)
-                        .modifier(LuminareBordered())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(LuminareCompactButtonStyle())
+                .luminareHorizontalPadding(0)
+                .luminareButtonAspectRatio(1/1, contentMode: .fit)
                 .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true, isCompact: true) {
                     ColorPickerModalView(
-                        selectedColor: $currentColor.hsb,
+                        selectedColor: $color.hsb,
                         hexColor: $text,
                         colorNames: colorNames
                     )
@@ -148,8 +152,8 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 }
             }
         }
-        .onChange(of: currentColor) { _ in
-            text = currentColor.toHex()
+        .onChange(of: color) { _ in
+            text = color.toHex()
         }
     }
 }
@@ -176,6 +180,7 @@ public struct LuminareColorPicker<F, R, G, B>: View
             }
         )
     )
+    .luminareButtonAspectRatio(contentMode: .fill)
     .monospaced()
     .frame(width: 300)
 }

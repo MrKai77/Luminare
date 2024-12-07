@@ -183,6 +183,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                     if let doneView {
                         Button {
                             selectedColor = internalColor
+                            initialColor = selectedColor
                             dismiss()
                         } label: {
                             doneView
@@ -244,5 +245,5 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
         }
     }
     .frame(width: 300)
-//    .foregroundStyle(color.rgb)
+    .foregroundStyle(color.rgb)
 }

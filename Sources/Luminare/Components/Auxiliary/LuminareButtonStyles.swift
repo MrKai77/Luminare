@@ -16,7 +16,10 @@ struct AspectRatioModifier: ViewModifier {
         Group {
             if isConstrained {
                 content
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: minHeight, maxHeight: isVerticallyCompact ? nil : .infinity)
+                    .frame(
+                        minWidth: minWidth, maxWidth: .infinity,
+                        minHeight: minHeight, maxHeight: isVerticallyCompact ? nil : .infinity
+                    )
                     .aspectRatio(aspectRatio.aspectRatio, contentMode: aspectRatio.contentMode)
             } else {
                 content
@@ -28,6 +31,14 @@ struct AspectRatioModifier: ViewModifier {
     
     private var isConstrained: Bool {
         aspectRatio.contentMode == .fit || isVerticallyCompact
+    }
+    
+    private var minWidth: CGFloat? {
+        if isVerticallyCompact, let aspectRatio = aspectRatio.aspectRatio {
+            minHeight * aspectRatio
+        } else {
+            nil
+        }
     }
 }
 
