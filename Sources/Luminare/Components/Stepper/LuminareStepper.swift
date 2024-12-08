@@ -309,6 +309,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     @ViewBuilder private func scrollOverlay() -> some View {
         GeometryReader { proxy in
             Color.clear
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .overlay {
                     infiniteScrollView(proxy: proxy)
                         .onChange(of: page) { oldValue, newValue in
@@ -357,28 +358,20 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     @ViewBuilder private func infiniteScrollView(proxy: GeometryProxy) -> some View {
         InfiniteScrollView(
+            debug: true,
             direction: .init(axis: direction.axis),
 
-            size: getOnlyBinding {
-                proxy.size
-            },
-            spacing: getOnlyBinding {
-                indicatorSpacing
-            },
-            snapping: getOnlyBinding {
-                snapping
-            },
-            wrapping: getOnlyBinding {
-                wrapping
-            },
-            initialOffset: getOnlyBinding {
-                initialOffset
-            },
+            size: .constant(proxy.size),
+            spacing: .constant(indicatorSpacing),
+            snapping: .constant(snapping),
+            wrapping: .constant(wrapping),
+            initialOffset: .constant(initialOffset),
 
             shouldReset: $shouldScrollViewReset,
             offset: $offset,
             page: $page
         )
+        .frame(width: proxy.size.width, height: proxy.size.height)
     }
 
     private var snapping: Bool {
