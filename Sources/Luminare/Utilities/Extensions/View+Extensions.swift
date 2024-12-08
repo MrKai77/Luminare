@@ -72,7 +72,6 @@ public extension View {
 public extension View {
     @ViewBuilder func luminareModal(
         isPresented: Binding<Bool>,
-        edge: Edge = .top,
         isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> some View

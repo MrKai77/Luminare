@@ -18,7 +18,6 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     
     init(
         isPresented: Binding<Bool>,
-        edge: Edge = .top,
         isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
         presentation: LuminareModalPresentation,
@@ -36,7 +35,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         )
         
         let view = NSHostingView(
-            rootView: LuminareModalView(edge: edge, content: content)
+            rootView: LuminareModalView(content: content)
                 .environmentObject(self)
         )
         self.view = view
@@ -54,16 +53,9 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         titleVisibility = .hidden
         animationBehavior = .documentWindow
         
-        view.postsFrameChangedNotifications = true
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(self.frameDidChange(_:)),
-            name: NSView.frameDidChangeNotification,
-            object: view
-        )
-        
         DispatchQueue.main.async {
-            self.updatePosition(for: view.frame.size)
+            self.display()
+            self.updatePosition()
         }
     }
     
@@ -81,14 +73,8 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         }
     }
     
-    private func updatePosition(for size: CGSize) {
-        guard let view else { return }
-        setFrameOrigin(presentation.origin(of: view, for: size))
-    }
-    
-    @objc func frameDidChange(_ notification: Notification) {
-        guard let view = notification.object as? NSView else { return }
-        updatePosition(for: view.frame.size)
+    private func updatePosition() {
+        setFrameOrigin(presentation.origin(of: frame))
     }
 
     override func close() {
