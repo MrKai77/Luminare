@@ -29,7 +29,7 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
 public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
     case regular
     case inline
-    
+
     public var id: String { rawValue }
 }
 
@@ -122,7 +122,7 @@ public struct LuminareCompose<Label, Content>: View
         .frame(maxWidth: .infinity, minHeight: minHeight)
         .padding(insets)
     }
-    
+
     private var insets: EdgeInsets {
         switch style {
         case .regular: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
@@ -143,7 +143,7 @@ public struct LuminareCompose<Label, Content>: View
             Button {} label: {
                 Text("Button")
             }
-            .buttonStyle(LuminareCompactButtonStyle())
+            .buttonStyle(.luminareCompact)
         }
         .luminareComposeStyle(.inline)
 
@@ -151,7 +151,7 @@ public struct LuminareCompose<Label, Content>: View
             Button {} label: {
                 Text("Button")
             }
-            .buttonStyle(LuminareCompactButtonStyle())
+            .buttonStyle(.luminareCompact)
         }
         .luminareComposeStyle(.inline)
         .disabled(true)

@@ -33,7 +33,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
 
     var colorNames: ColorNames
     var hasColorPicker: Bool = true
-    
+
     @State private var initialColor: HSBColor = .init(rgb: .black)
 
     @State private var redComponent: Double = .zero
@@ -59,7 +59,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                         updateComponents(newValue)
                         selectedColor = newValue
                     }
-                    
+
                     ColorSaturationBrightnessView(selectedColor: color)
                         .scaledToFill()
                         .clipShape(
@@ -112,39 +112,39 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
             hsb
         }
     }
-    
+
     @ViewBuilder private func rgbInputFields() -> some View {
         HStack(alignment: .bottom, spacing: 4) {
             RGBInputField(value: $redComponent) {
                 colorNames.red()
             } color: { value in
-                    .init(
-                        red: value / 255.0,
-                        green: greenComponent / 255.0,
-                        blue: blueComponent / 255.0
-                    )
+                .init(
+                    red: value / 255.0,
+                    green: greenComponent / 255.0,
+                    blue: blueComponent / 255.0
+                )
             }
-            
+
             RGBInputField(value: $greenComponent) {
                 colorNames.green()
             } color: { value in
-                    .init(
-                        red: redComponent / 255.0,
-                        green: value / 255.0,
-                        blue: blueComponent / 255.0
-                    )
+                .init(
+                    red: redComponent / 255.0,
+                    green: value / 255.0,
+                    blue: blueComponent / 255.0
+                )
             }
-            
+
             RGBInputField(value: $blueComponent) {
                 colorNames.blue()
             } color: { value in
-                    .init(
-                        red: redComponent / 255.0,
-                        green: greenComponent / 255.0,
-                        blue: value / 255.0
-                    )
+                .init(
+                    red: redComponent / 255.0,
+                    green: greenComponent / 255.0,
+                    blue: value / 255.0
+                )
             }
-            
+
             if hasColorPicker {
                 Button {
                     colorSampler.show { nsColor in
@@ -155,17 +155,17 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                 } label: {
                     Image(systemName: "eyedropper.halffull")
                 }
-                .luminareCompactButtonAspectRatio(1/1, contentMode: .fit)
-                .buttonStyle(LuminareCompactButtonStyle())
+                .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
+                .buttonStyle(.luminareCompact)
             }
         }
         .luminareCompactButtonAspectRatio(contentMode: .fill)
     }
-    
+
     @ViewBuilder private func controls() -> some View {
         let cancelView = cancelView(), hasCancel = cancelView != nil
         let doneView = doneView(), hasDone = doneView != nil
-        
+
         if hasCancel || hasDone {
             HStack(spacing: 4) {
                 Group {
@@ -179,7 +179,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                         }
                         .foregroundStyle(.red)
                     }
-                    
+
                     if let doneView {
                         Button {
                             selectedColor = internalColor
@@ -190,7 +190,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                         }
                     }
                 }
-                .buttonStyle(LuminareCompactButtonStyle())
+                .buttonStyle(.luminareCompact)
                 .luminareCompactButtonAspectRatio(contentMode: .fill)
             }
         }
@@ -201,7 +201,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
     private func updateComponents(_ color: HSBColor) {
         // check if changed externally
         guard color != internalColor else { return }
-        
+
         let rgb = color.rgb
         hexColor = rgb.toHex()
 
@@ -221,7 +221,7 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
 ) {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
     @Previewable @State var hexColor = ""
-    
+
     Color(hsb: color)
         .frame(width: 50, height: 50)
 

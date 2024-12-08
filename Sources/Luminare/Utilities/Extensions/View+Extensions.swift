@@ -125,19 +125,19 @@ public extension View {
     @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
         environment(\.luminareIsBordered, bordered)
     }
-    
+
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
         environment(\.luminareHasDividers, hasDividers)
     }
-    
+
     // MARK: Modal
-    
+
     @ViewBuilder func luminareModalCancel(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
         environment(\.luminareModalCancel) {
             cancel().map(AnyView.init(_:))
         }
     }
-    
+
     @ViewBuilder func luminareModalDone(@ViewBuilder _ done: @escaping () -> (some View)?) -> some View {
         environment(\.luminareModalDone) {
             done().map(AnyView.init(_:))
@@ -157,19 +157,19 @@ public extension View {
     @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareButtonHighlightOnHover, highlight)
     }
-    
+
     @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
         environment(\.luminareCompactButtonCornerRadius, radius)
     }
-    
+
     @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
         environment(\.luminareCompactButtonAspectRatio, (aspectRatio, contentMode))
     }
-    
+
     @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
         environment(\.luminareCompactButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
     }
-    
+
     @ViewBuilder func luminareCompactButtonHasFixedHeight(_ hasFixedHeight: Bool = true) -> some View {
         environment(\.luminareCompactButtonHasFixedHeight, hasFixedHeight)
     }
@@ -193,7 +193,7 @@ public extension View {
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
     }
-    
+
     @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .regular) -> some View {
         environment(\.luminareComposeStyle, style)
     }
@@ -227,11 +227,11 @@ public extension View {
     }
 
     // MARK: Luminare List
-    
+
     @ViewBuilder func luminareListContentMargins(_ margins: CGFloat) -> some View {
         luminareListContentMargins(top: margins, bottom: margins)
     }
-    
+
     @ViewBuilder func luminareListContentMargins(top: CGFloat = 0, bottom: CGFloat = 0) -> some View {
         environment(\.luminareListContentMarginsTop, top)
             .environment(\.luminareListContentMarginsBottom, bottom)

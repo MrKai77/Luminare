@@ -57,7 +57,6 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
         TextField(placeholder, value: $value, format: format)
             .textFieldStyle(.plain)
             .modifier(LuminareHoverable())
-
             .onAppear {
                 guard monitor != nil else { return }
 

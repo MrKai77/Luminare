@@ -181,5 +181,5 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
     .frame(width: 450)
-    .buttonStyle(LuminareCompactButtonStyle())
+    .buttonStyle(.luminareCompact)
 }

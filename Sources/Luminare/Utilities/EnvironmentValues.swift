@@ -28,9 +28,9 @@ public extension EnvironmentValues {
 
     @Entry var luminareWindow: NSWindow?
     @Entry var luminareClickedOutside: Bool = false
-    
+
     // MARK: Modal
-    
+
     @Entry var luminareModalCancel: () -> AnyView? = { nil }
     @Entry var luminareModalDone: () -> AnyView? = { nil }
 }

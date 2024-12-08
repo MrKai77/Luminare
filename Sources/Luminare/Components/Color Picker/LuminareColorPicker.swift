@@ -10,12 +10,12 @@ import SwiftUI
 /// The style of a ``LuminareColorPicker``.
 public struct LuminareColorPickerStyle<F, R, G, B>
     where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
-          R: View, G: View, B: View {
+    R: View, G: View, B: View {
     public typealias ColorNames = RGBColorNames<R, G, B>
-    
+
     let format: F?
     let colorNames: ColorNames?
-    
+
     /// Has a color well that can present a color picker modal.
     ///
     /// - Parameters:
@@ -26,16 +26,16 @@ public struct LuminareColorPickerStyle<F, R, G, B>
     ) -> Self where F == StringFormatStyle {
         .init(format: nil, colorNames: colorNames)
     }
-    
+
     /// Has a text field with a custom format.
     ///
     /// - Parameters:
     ///   - format: the `ParseableFormatStyle` to parse the color string.
     public static func textField(format: F) -> Self
-    where R == EmptyView, G == EmptyView, B == EmptyView {
+        where R == EmptyView, G == EmptyView, B == EmptyView {
         .init(format: format, colorNames: nil)
     }
-    
+
     /// Has a text field with a hex format strategy.
     ///
     /// - Parameters:
@@ -45,7 +45,7 @@ public struct LuminareColorPickerStyle<F, R, G, B>
     ) -> Self where F == StringFormatStyle, R == EmptyView, G == EmptyView, B == EmptyView {
         .textField(format: .init(parseStrategy: parseStrategy))
     }
-    
+
     /// Has both a text field with a custom format and a color well.
     ///
     /// - Parameters:
@@ -58,7 +58,7 @@ public struct LuminareColorPickerStyle<F, R, G, B>
     ) -> Self {
         .init(format: format, colorNames: colorNames)
     }
-    
+
     /// Has both a text field with a hex format strategy and a color well.
     ///
     /// - Parameters:
@@ -80,9 +80,9 @@ public struct LuminareColorPicker<F, R, G, B>: View
     where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
     R: View, G: View, B: View {
     public typealias Style = LuminareColorPickerStyle<F, R, G, B>
-    
+
     // MARK: Environments
-    
+
     @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     // MARK: Fields
@@ -139,9 +139,9 @@ public struct LuminareColorPicker<F, R, G, B>: View
                         .foregroundStyle(color)
                         .padding(4)
                 }
-                .buttonStyle(LuminareCompactButtonStyle())
+                .buttonStyle(.luminareCompact)
                 .luminareHorizontalPadding(0)
-                .luminareCompactButtonAspectRatio(1/1, contentMode: .fit)
+                .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
                 .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true, isCompact: true) {
                     ColorPickerModalView(
                         selectedColor: $color.hsb,

@@ -1,5 +1,5 @@
 //
-//  LuminareButtonStyle.swift
+//  LuminareButtonStyles.swift
 //
 //
 //  Created by Kai Azim on 2024-04-02.
@@ -11,7 +11,7 @@ struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareCompactButtonAspectRatio) private var aspectRatio
     @Environment(\.luminareCompactButtonHasFixedHeight) private var hasFixedHeight
-    
+
     @ViewBuilder func body(content: Content) -> some View {
         Group {
             if isConstrained {
@@ -28,11 +28,11 @@ struct AspectRatioModifier: ViewModifier {
         }
         .fixedSize(horizontal: aspectRatio.contentMode == .fit, vertical: hasFixedHeight)
     }
-    
+
     private var isConstrained: Bool {
         aspectRatio.contentMode == .fit || hasFixedHeight
     }
-    
+
     private var minWidth: CGFloat? {
         if hasFixedHeight, let aspectRatio = aspectRatio.aspectRatio {
             minHeight * aspectRatio
@@ -77,54 +77,9 @@ public struct LuminareButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-        
             .modifier(LuminareFilled(
                 isHovering: isHovering, isPressed: configuration.isPressed,
                 fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
-            ))
-            .clipShape(.rect(cornerRadius: cornerRadius))
-    }
-}
-
-// MARK: - Button Style (Destructive)
-
-/// A stylized button style tinted in red, typically used for indicating a destructive action.
-///
-/// ![LuminareDestructiveButtonStyle](LuminareDestructiveButtonStyle)
-public struct LuminareDestructiveButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
-
-    @State private var isHovering: Bool = false
-
-    public init() {}
-
-    #if DEBUG
-        init(
-            isHovering: Bool = false
-        ) {
-            self.isHovering = isHovering
-        }
-    #endif
-
-    public func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
-            .opacity(isEnabled ? 1 : 0.5)
-        
-            .modifier(LuminareFilled(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                cascading: .red
             ))
             .clipShape(.rect(cornerRadius: cornerRadius))
     }
@@ -167,12 +122,24 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-        
             .modifier(LuminareFilled(
                 isHovering: isHovering, isPressed: configuration.isPressed,
-                cascading: .tint
+                cascading: tint(configuration: configuration)
             ))
             .clipShape(.rect(cornerRadius: cornerRadius))
+    }
+
+    private func tint(configuration: Configuration) -> AnyShapeStyle {
+        if let role = configuration.role {
+            switch role {
+            case .cancel, .destructive:
+                AnyShapeStyle(.red)
+            default:
+                AnyShapeStyle(.tint)
+            }
+        } else {
+            AnyShapeStyle(.tint)
+        }
     }
 }
 
@@ -226,7 +193,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-        
             .modifier(LuminareFilled(
                 isHovering: isHovering, isPressed: configuration.isPressed
             ))
@@ -277,13 +243,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .padding(.horizontal, horizontalPadding)
             .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-        
             .modifier(LuminareFilled(
                 isHovering: isHovering, isPressed: configuration.isPressed,
                 fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
             ))
             .modifier(LuminareBordered(isHovering: isHovering))
-        
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
@@ -298,10 +262,10 @@ public struct LuminareFilled: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
-    
+
     private let isHovering: Bool, isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
-    
+
     public init(
         isHovering: Bool = false, isPressed: Bool = false,
         fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle
@@ -312,7 +276,7 @@ public struct LuminareFilled: ViewModifier {
         self.hovering = .init(hovering)
         self.pressed = .init(pressed)
     }
-    
+
     public init(
         isHovering: Bool = false, isPressed: Bool = false,
         cascading: some ShapeStyle
@@ -324,7 +288,7 @@ public struct LuminareFilled: ViewModifier {
             pressed: cascading.opacity(0.4)
         )
     }
-    
+
     public init(
         isHovering: Bool = false, isPressed: Bool = false,
         pressed: some ShapeStyle
@@ -334,7 +298,7 @@ public struct LuminareFilled: ViewModifier {
             fill: .clear, hovering: pressed, pressed: pressed
         )
     }
-    
+
     public init(
         isHovering: Bool = false, isPressed: Bool = false
     ) {
@@ -343,7 +307,7 @@ public struct LuminareFilled: ViewModifier {
             pressed: .quinary
         )
     }
-    
+
     public func body(content: Content) -> some View {
         content
             .background(with: material) {
@@ -398,7 +362,7 @@ public struct LuminareBordered: ViewModifier {
         self.fill = .init(fill)
         self.hovering = .init(hovering)
     }
-    
+
     public init(
         isHovering: Bool = false,
         cascading: some ShapeStyle
@@ -409,7 +373,7 @@ public struct LuminareBordered: ViewModifier {
             hovering: cascading
         )
     }
-    
+
     public init(
         isHovering: Bool = false,
         hovering: some ShapeStyle
@@ -419,7 +383,7 @@ public struct LuminareBordered: ViewModifier {
             fill: .clear, hovering: hovering
         )
     }
-    
+
     public init(
         isHovering: Bool = false
     ) {
@@ -481,7 +445,7 @@ public struct LuminareHoverable: ViewModifier {
         self.hovering = .init(hovering)
         self.pressed = .init(pressed)
     }
-    
+
     public init(
         isPressed: Bool = false,
         cascading: some ShapeStyle
@@ -493,7 +457,7 @@ public struct LuminareHoverable: ViewModifier {
             pressed: cascading.opacity(0.4)
         )
     }
-    
+
     public init(
         isPressed: Bool = false,
         pressed: some ShapeStyle
@@ -503,7 +467,7 @@ public struct LuminareHoverable: ViewModifier {
             fill: .clear, hovering: pressed, pressed: pressed
         )
     }
-    
+
     public init(
         isPressed: Bool = false
     ) {
@@ -532,13 +496,11 @@ public struct LuminareHoverable: ViewModifier {
             .padding(.horizontal, horizontalPadding)
             .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-        
             .modifier(LuminareFilled(
                 isHovering: isHovering, isPressed: isPressed,
                 fill: fill, hovering: hovering, pressed: pressed
             ))
             .modifier(LuminareBordered(isHovering: isHovering))
-        
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover

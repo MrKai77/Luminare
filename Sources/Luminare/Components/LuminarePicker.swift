@@ -121,7 +121,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 selectedItem = internalSelection
             }
         }
-        .buttonStyle(LuminareButtonStyle())
+        .buttonStyle(.luminare)
     }
 
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {

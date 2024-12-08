@@ -62,7 +62,7 @@ struct LuminareModalView<Content>: View where Content: View {
                         }
                 }
             }
-            .buttonStyle(LuminareButtonStyle())
+            .buttonStyle(.luminare)
             .overrideTint(tint)
             .ignoresSafeArea()
         }

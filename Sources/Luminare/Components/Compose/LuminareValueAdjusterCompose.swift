@@ -185,7 +185,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(.plain)
                 }
             }
 

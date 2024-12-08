@@ -184,7 +184,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 .padding(.vertical, 4)
                 .frame(minHeight: minHeight)
             }
-            
+
             private var constrainedCornerRadius: CGFloat {
                 if isBordered || isParentHovering {
                     max(0, cornerRadius - 2)
@@ -242,7 +242,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             Button {} label: {
                 Text("42")
             }
-            .buttonStyle(LuminareCompactButtonStyle())
+            .buttonStyle(.luminareCompact)
         }
         .luminareComposeStyle(.inline)
 
