@@ -10,18 +10,18 @@ import SwiftUI
 public enum LuminarePickerRoundedCornerBehavior: String, Hashable, Equatable, Identifiable, CaseIterable, Codable {
     case never
     case always
-    
+
     public var id: String { rawValue }
-    
+
     public var negate: Self {
         switch self {
         case .never:
-                .always
+            .always
         case .always:
-                .never
+            .never
         }
     }
-    
+
     var isRounded: Bool {
         switch self {
         case .never:
@@ -209,16 +209,16 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     private func getShape(row: Int, column: Int) -> some InsettableShape {
         let roundedTop = topCorner.isRounded, roundedBottom = bottomCorner.isRounded
-        
+
         // top left
         if column == 0, row == 0, roundedTop {
             return UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadius - innerPadding,
                 bottomLeadingRadius:
-                    (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
+                (isVerticallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
                 bottomTrailingRadius: buttonCornerRadius,
                 topTrailingRadius:
-                    isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius
+                isHorizontallyCompact ? cornerRadius - innerPadding : buttonCornerRadius
             )
         }
 
@@ -239,7 +239,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topLeadingRadius: buttonCornerRadius,
                 bottomLeadingRadius: buttonCornerRadius,
                 bottomTrailingRadius:
-                    (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
+                (isHorizontallyCompact && roundedBottom) ? cornerRadius - innerPadding : buttonCornerRadius,
                 topTrailingRadius: cornerRadius - innerPadding
             )
         }

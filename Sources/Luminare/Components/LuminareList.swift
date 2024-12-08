@@ -12,22 +12,22 @@ public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable, Iden
     case always
     case fixedHeight
     case variableHeight
-    
+
     public var id: String { rawValue }
-    
+
     public var negate: Self {
         switch self {
         case .never:
-                .always
+            .always
         case .always:
-                .never
+            .never
         case .fixedHeight:
-                .variableHeight
+            .variableHeight
         case .variableHeight:
-                .fixedHeight
+            .fixedHeight
         }
     }
-    
+
     func isRounded(hasFixedHeight: Bool) -> Bool {
         switch self {
         case .never:
@@ -46,9 +46,9 @@ public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable, Iden
 
 /// A stylized list.
 public struct LuminareList<ContentA, ContentB, V, ID>: View
-where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
+    where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     // MARK: Environments
-    
+
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
@@ -59,23 +59,23 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     @Environment(\.luminareListFixedHeightUntil) private var fixedHeight
     @Environment(\.luminareListRoundedTopCornerBehavior) private var topCorner
     @Environment(\.luminareListRoundedBottomCornerBehavior) private var bottomCorner
-    
+
     // MARK: Fields
-    
+
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
     private let id: KeyPath<V, ID>
-    
+
     @ViewBuilder private var content: (Binding<V>) -> ContentA,
                              emptyView: () -> ContentB
-    
+
     @State private var firstItem: V?
     @State private var lastItem: V?
-    
+
     @State private var eventMonitor: AnyObject?
-    
+
     // MARK: Initializers
-    
+
     /// Initializes a ``LuminareList``.
     ///
     /// - Parameters:
@@ -96,7 +96,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
         self.content = content
         self.emptyView = emptyView
     }
-    
+
     /// Initializes a ``LuminareList`` that displays literally nothing when nothing is inside the list.
     ///
     /// - Parameters:
@@ -117,9 +117,9 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
             EmptyView()
         }
     }
-    
+
     // MARK: Body
-    
+
     public var body: some View {
         Group {
             if items.isEmpty {
@@ -130,14 +130,14 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
                         Spacer()
                             .frame(height: marginsTop)
                     }
-                    
+
                     ForEach($items, id: id) { item in
                         let isDisabled = isDisabled(item.wrappedValue)
                         let tint = tint(of: item.wrappedValue)
-                        
+
                         let roundedTop = topCorner.isRounded(hasFixedHeight: hasFixedHeight)
                         let roundedBottom = bottomCorner.isRounded(hasFixedHeight: hasFixedHeight)
-                        
+
                         Group {
                             if #available(macOS 14.0, *) {
                                 LuminareListItem(
@@ -181,7 +181,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
                     .listRowInsets(.init())
                     .padding(.horizontal, -10)
                     .transition(.slide)
-                    
+
                     if marginsBottom > 0 {
                         Spacer()
                             .frame(height: marginsBottom)
@@ -194,7 +194,6 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
         }
         .frame(height: hasFixedHeight ? totalHeight : nil)
         .frame(maxHeight: hasFixedHeight ? nil : fixedHeight)
-        
         .animation(animation, value: items)
         .animation(animation, value: selection)
         .onChange(of: luminareClickedOutside) { _ in
@@ -207,13 +206,13 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
                 selection = []
                 return
             }
-            
+
             selection = selection.intersection(items)
             processSelection() // update first and last item
         }
         .onChange(of: selection) { _ in
             processSelection()
-            
+
             if selection.isEmpty {
                 removeEventMonitor()
             } else {
@@ -229,26 +228,26 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
             removeEventMonitor()
         }
     }
-    
+
     private var totalHeight: CGFloat {
         CGFloat(max(1, items.count)) * itemHeight + marginsTop + marginsBottom
     }
-    
+
     private var hasFixedHeight: Bool {
         guard let fixedHeight else { return false }
         return totalHeight <= fixedHeight
     }
-    
+
     // MARK: Functions
-    
+
     private func isDisabled(_ element: V) -> Bool {
         (element as? LuminareSelectionData)?.isSelectable == false
     }
-    
+
     private func tint(of element: V) -> Color {
         (element as? LuminareSelectionData)?.tint ?? tint
     }
-    
+
     private func processSelection() {
         if items.isEmpty || selection.isEmpty {
             firstItem = nil
@@ -258,24 +257,24 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
             lastItem = items.last(where: { selection.contains($0) })
         }
     }
-    
+
     private func addEventMonitor() {
         guard eventMonitor == nil else { return }
-        
+
         eventMonitor =
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            let kVK_Escape: CGKeyCode = 0x35
-            
-            if event.keyCode == kVK_Escape {
-                withAnimation(animation) {
-                    selection = []
+            NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                let kVK_Escape: CGKeyCode = 0x35
+
+                if event.keyCode == kVK_Escape {
+                    withAnimation(animation) {
+                        selection = []
+                    }
+                    return nil
                 }
-                return nil
-            }
-            return event
-        } as? NSObject
+                return event
+            } as? NSObject
     }
-    
+
     private func removeEventMonitor() {
         if let eventMonitor {
             NSEvent.removeMonitor(eventMonitor)
@@ -677,7 +676,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         //    .luminareListContentMargins(50)
         .luminareListFixedHeight(until: 315)
         .luminareListRoundedCorner(bottom: .always)
-        
+
         Spacer()
     }
     .frame(height: 500)

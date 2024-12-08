@@ -85,7 +85,7 @@ public extension View {
             )
         )
     }
-    
+
     @ViewBuilder func luminareModalWithPredefinedPadding(
         isPresented: Binding<Bool>,
         isMovableByWindowBackground: Bool = false,
@@ -154,7 +154,7 @@ public extension View {
     }
 
     // MARK: Modal
-    
+
     @ViewBuilder func luminareModalCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
         environment(\.luminareModalCornerRadii, radii)
     }
@@ -162,17 +162,17 @@ public extension View {
     @ViewBuilder func luminareModalCornerRadius(_ radius: CGFloat = 12) -> some View {
         luminareModalCornerRadii(.init(topLeading: radius, bottomLeading: radius, bottomTrailing: radius, topTrailing: radius))
     }
-    
+
     @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
         environment(\.luminareModalPresentation, presentation)
     }
-    
+
     // MARK: Popup
 
     @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 12) -> some View {
         environment(\.luminarePopupPadding, padding)
     }
-    
+
     // MARK: Luminare Color Picker
 
     @ViewBuilder func luminareColorPickerCancelView(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
@@ -291,27 +291,27 @@ public extension View {
     @ViewBuilder func luminareListItemHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareListItemHighlightOnHover, highlight)
     }
-    
+
     @ViewBuilder func luminareListFixedHeight(until height: CGFloat? = nil) -> some View {
         environment(\.luminareListFixedHeightUntil, height)
     }
-    
+
     @ViewBuilder func luminareListRoundedCorner(top: LuminareListRoundedCornerBehavior = .never, bottom: LuminareListRoundedCornerBehavior = .never) -> some View {
         environment(\.luminareListRoundedTopCornerBehavior, top)
             .environment(\.luminareListRoundedBottomCornerBehavior, bottom)
     }
-    
+
     @ViewBuilder func luminareListRoundedCorner(_ all: LuminareListRoundedCornerBehavior = .never) -> some View {
         luminareListRoundedCorner(top: all, bottom: all)
     }
-    
+
     // MARK: Luminare Picker
-    
+
     @ViewBuilder func luminarePickerRoundedCorner(top: LuminarePickerRoundedCornerBehavior = .never, bottom: LuminarePickerRoundedCornerBehavior = .never) -> some View {
         environment(\.luminarePickerRoundedTopCornerBehavior, top)
             .environment(\.luminarePickerRoundedBottomCornerBehavior, bottom)
     }
-    
+
     @ViewBuilder func luminarePickerRoundedCorner(_ all: LuminarePickerRoundedCornerBehavior = .never) -> some View {
         luminarePickerRoundedCorner(top: all, bottom: all)
     }

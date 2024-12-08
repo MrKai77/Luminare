@@ -33,13 +33,13 @@ public extension EnvironmentValues {
 
     @Entry var luminareModalCornerRadii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)
     @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
-    
+
     // MARK: Popup
-    
+
     @Entry var luminarePopupPadding: CGFloat = 12
-    
+
     // MARK: Luminare Color Picker
-    
+
     @Entry var luminareColorPickerCancelView: () -> AnyView? = { nil }
     @Entry var luminareColorPickerDoneView: () -> AnyView? = { nil }
 }
@@ -101,9 +101,9 @@ public extension EnvironmentValues {
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil
     @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never
     @Entry var luminareListRoundedBottomCornerBehavior: LuminareListRoundedCornerBehavior = .never
-    
+
     // MARK: Luminare Picker
-    
+
     @Entry var luminarePickerRoundedTopCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
     @Entry var luminarePickerRoundedBottomCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
 }
