@@ -68,15 +68,15 @@ public extension View {
 public extension View {
     @ViewBuilder func luminareModal(
         isPresented: Binding<Bool>,
+        isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
-        isCompact: Bool = false,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
             LuminareModalModifier(
                 isPresented: isPresented,
+                isMovableByWindowBackground: isMovableByWindowBackground,
                 closesOnDefocus: closesOnDefocus,
-                isCompact: isCompact,
                 content: content
             )
         )

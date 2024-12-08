@@ -16,7 +16,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     @Binding private var selection: Tab
     private let items: [Tab]
 
-    @ViewBuilder private let label: () -> Label
+    @ViewBuilder private var label: () -> Label
 
     // MARK: Initializers
 

@@ -27,7 +27,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
     private let innerPadding: CGFloat
 
-    @ViewBuilder private let content: () -> Content, header: () -> Header, footer: () -> Footer
+    @ViewBuilder private var content: () -> Content, header: () -> Header, footer: () -> Footer
 
     // MARK: Initializers
 

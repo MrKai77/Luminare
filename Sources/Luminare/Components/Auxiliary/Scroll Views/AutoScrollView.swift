@@ -11,7 +11,7 @@ import SwiftUI
 public struct AutoScrollView<Content>: View where Content: View {
     private let axes: Axis.Set
     private let showsIndicators: Bool
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     @State private var contentSize: CGSize = .zero
     @State private var containerSize: CGSize = .zero

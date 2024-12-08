@@ -159,7 +159,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadius) private var cornerRadius
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    @ViewBuilder private let icon: () -> Image
+    @ViewBuilder private var icon: () -> Image
 
     @State private var isHovering: Bool = false
 

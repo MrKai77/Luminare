@@ -50,7 +50,7 @@ public struct LuminareCompose<Label, Content>: View
     let contentMaxWidth: CGFloat?
     let spacing: CGFloat?
 
-    @ViewBuilder private let content: () -> Content, label: () -> Label
+    @ViewBuilder private var content: () -> Content, label: () -> Label
 
     // MARK: Initializers
 

@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A stylized sidebar for ``LuminareWindow``.
 public struct LuminareSidebar<Content>: View where Content: View {
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     /// Initializes a ``LuminareSidebar``.
     ///

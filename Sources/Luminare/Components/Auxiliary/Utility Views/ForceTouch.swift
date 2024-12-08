@@ -84,7 +84,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     private let threshold: CGFloat
     @Binding private var gesture: ForceTouchGesture
 
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     @State private var timestamp: Date?
     @State private var state: NSPressGestureRecognizer.State = .ended

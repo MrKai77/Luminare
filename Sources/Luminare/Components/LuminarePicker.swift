@@ -30,7 +30,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     private let roundedTop: Bool, roundedBottom: Bool
 
-    @ViewBuilder private let content: (V) -> Content
+    @ViewBuilder private var content: (V) -> Content
 
     // MARK: Initializers
 

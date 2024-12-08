@@ -43,7 +43,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     // MARK: Fields
 
     @Binding private var selection: V
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     @State private var isHovering: Bool = false
 

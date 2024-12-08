@@ -19,7 +19,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     // MARK: Fields
 
-    @ViewBuilder private let content: (V) -> Content, label: () -> Label
+    @ViewBuilder private var content: (V) -> Content, label: () -> Label
 
     private let options: [V]
     @Binding private var selection: V

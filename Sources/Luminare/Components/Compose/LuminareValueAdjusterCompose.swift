@@ -33,7 +33,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     private let format: F
     private let clampsUpper: Bool, clampsLower: Bool
 
-    @ViewBuilder private let content: (AnyView) -> Content, label: () -> Label
+    @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
     @State private var isShowingTextBox = false
     @State var eventMonitor: Any?

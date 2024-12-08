@@ -17,7 +17,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     private let material: NSVisualEffectView.Material
     @Binding private var isPresented: Bool
 
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     public init(
         material: NSVisualEffectView.Material = .popover,
@@ -44,8 +44,6 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     public func makeCoordinator() -> Coordinator<some View> {
         Coordinator(self) {
             content()
-                .environment(\.luminareAnimation, animation)
-                .environment(\.luminareAnimationFast, animationFast)
                 .overrideTint(tint)
         }
     }
@@ -53,10 +51,10 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     // MARK: - Coordinator
 
     @MainActor
-    public class Coordinator<InnerContent>: NSObject, NSWindowDelegate where InnerContent: View {
+    public class Coordinator<InnerContent>: NSObject, NSWindowDelegate
+    where InnerContent: View {
         private let view: LuminarePopup
         private var content: () -> InnerContent
-        private var originalYPoint: CGFloat?
         var panel: LuminarePopupPanel?
 
         private var monitor: Any?
@@ -75,37 +73,31 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 return
             }
 
-            guard let view else { return }
-
+            guard let view, let window = view.window else { return }
             guard panel == nil else { return }
 
             initializePopup()
             guard let panel else { return }
 
-            // panel size
-            let targetSize = NSSize(width: 300, height: 300)
-            let extraPadding: CGFloat = 10
-
             // get coordinates to place popopver
-            guard let windowFrame = view.window?.frame else { return }
+            let windowFrame = window.frame
             let viewBounds = view.bounds
-            var targetPoint = view.convert(viewBounds, to: nil).origin // convert to window coordinates
-            originalYPoint = targetPoint.y
+            var targetPoint = view.convert(viewBounds, to: nil).origin  // convert to window coordinates
 
             // correct panel position
             targetPoint.y += windowFrame.minY
             targetPoint.x += windowFrame.minX
-            targetPoint.y -= targetSize.height + extraPadding
 
             // set position and show panel
-            panel.setContentSize(targetSize)
+            panel.setContentSize(viewBounds.size)
             panel.setFrameOrigin(targetPoint)
             panel.makeKeyAndOrderFront(nil)
 
             if monitor == nil {
                 DispatchQueue.main.async { [weak self] in
                     self?.monitor = NSEvent.addLocalMonitorForEvents(matching: [
-                        .scrollWheel, .leftMouseDown, .rightMouseDown, .otherMouseDown
+                        .scrollWheel, .leftMouseDown, .rightMouseDown,
+                        .otherMouseDown,
                     ]) { [weak self] event in
                         if event.window != self?.panel {
                             self?.setVisible(false)
@@ -118,7 +110,11 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
         public func windowWillClose(_: Notification) {
             Task { @MainActor in
-                removeMonitor()
+                if monitor != nil {
+                    NSEvent.removeMonitor(monitor!)
+                    monitor = nil
+                }
+                
                 view.isPresented = false
                 self.panel = nil
             }
@@ -131,41 +127,25 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             panel.delegate = self
             panel.contentViewController = NSHostingController(
                 rootView: content()
-                    .background(VisualEffectView(material: view.material, blendingMode: .behindWindow))
-                    .overlay {
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: LuminarePopupPanel.cornerRadius,
-                            bottomLeadingRadius: LuminarePopupPanel.cornerRadius,
-                            bottomTrailingRadius: LuminarePopupPanel.cornerRadius,
-                            topTrailingRadius: LuminarePopupPanel.cornerRadius
+                    .background {
+                        VisualEffectView(
+                            material: view.material, blendingMode: .behindWindow
                         )
-                        .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                     }
                     .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: LuminarePopupPanel.cornerRadius,
-                            bottomLeadingRadius: LuminarePopupPanel.cornerRadius,
-                            bottomTrailingRadius: LuminarePopupPanel.cornerRadius,
-                            topTrailingRadius: LuminarePopupPanel.cornerRadius
-                        )
+                        .rect(cornerRadius: LuminarePopupPanel.cornerRadius)
                     )
                     .ignoresSafeArea()
                     .environmentObject(panel)
             )
-        }
-
-        func removeMonitor() {
-            if monitor != nil {
-                NSEvent.removeMonitor(monitor!)
-                monitor = nil
-            }
         }
     }
 }
 
 // MARK: - Preview
 
-private struct PopupPreview<Label, Content>: View where Label: View, Content: View {
+private struct PopupPreview<Label, Content>: View
+where Label: View, Content: View {
     @State var isPresented: Bool = false
 
     @ViewBuilder let content: () -> Content
@@ -189,13 +169,17 @@ private struct PopupPreview<Label, Content>: View where Label: View, Content: Vi
 }
 
 // preview as app
+@available(macOS 15.0, *)
 #Preview {
     PopupPreview {
-        Text("Test")
+        Text("Content")
+            .font(.title)
             .padding()
+            .fixedSize()
     } label: {
         Text("Toggle Popup")
     }
     .buttonStyle(.luminareCompact)
     .padding()
+    .frame(width: 500, height: 300)
 }

@@ -9,24 +9,19 @@
 import SwiftUI
 
 class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
-    @Environment(\.luminareTint) private var tint
-    @Environment(\.luminareAnimation) private var animation
-    @Environment(\.luminareAnimationFast) private var animationFast
-
     @Binding private var isPresented: Bool
 
     private let closesOnDefocus: Bool
-    private let isCompact: Bool
 
     init(
         isPresented: Binding<Bool>,
-        closesOnDefocus: Bool,
-        isCompact: Bool,
+        isMovableByWindowBackground: Bool = false,
+        closesOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
         self.closesOnDefocus = closesOnDefocus
-        self.isCompact = isCompact
+        
         super.init(
             contentRect: .zero,
             styleMask: [.fullSizeContentView],
@@ -35,13 +30,11 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         )
 
         let hostingView = NSHostingView(
-            rootView: LuminareModalView(isCompact: isCompact, content: content)
-                .environment(\.luminareAnimation, animation)
-                .environment(\.luminareAnimationFast, animationFast)
-                .overrideTint(tint)
+            rootView: LuminareModalView(content: content)
                 .environmentObject(self)
         )
 
+        self.isMovableByWindowBackground = isMovableByWindowBackground
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
         backgroundColor = .clear
@@ -90,15 +83,6 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         super.keyDown(with: event)
     }
 
-    override func mouseDown(with event: NSEvent) {
-        let titlebarHeight: CGFloat = isCompact ? 12 : 16
-        if event.locationInWindow.y > frame.height - titlebarHeight {
-            super.performDrag(with: event)
-        } else {
-            super.mouseDragged(with: event)
-        }
-    }
-
     override var canBecomeKey: Bool {
         true
     }
@@ -118,8 +102,8 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
     @State private var panel: LuminareModal<PanelContent>?
 
     @Binding var isPresented: Bool
-    let closesOnDefocus: Bool
-    let isCompact: Bool
+    var isMovableByWindowBackground: Bool = false
+    var closesOnDefocus: Bool = false
     @ViewBuilder var content: () -> PanelContent
 
     func body(content: Content) -> some View {
@@ -141,8 +125,8 @@ struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: Vie
         guard panel == nil else { return }
         panel = LuminareModal(
             isPresented: $isPresented,
+            isMovableByWindowBackground: isMovableByWindowBackground,
             closesOnDefocus: closesOnDefocus,
-            isCompact: isCompact,
             content: content
         )
 

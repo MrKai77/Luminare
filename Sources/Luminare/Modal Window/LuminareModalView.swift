@@ -7,52 +7,76 @@
 
 import SwiftUI
 
+public enum LuminareModalPresentationTarget: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+    case screen
+    case window
+    
+    public var id: String { rawValue }
+}
+
+public enum LuminareModalPresentationAlignment: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+    case centered
+    case origin
+    
+    public var id: String { rawValue }
+}
+
+public struct LuminareModalPresentation: Equatable, Hashable, Codable {
+    var target: LuminareModalPresentationTarget
+    var alignment: LuminareModalPresentationAlignment
+    var offset: CGPoint
+    
+    init(
+        _ alignment: LuminareModalPresentationAlignment = .centered,
+        offset: CGPoint = .init(),
+        relativeTo target: LuminareModalPresentationTarget = .window
+    ) {
+        self.target = target
+        self.alignment = alignment
+        self.offset = offset
+    }
+    
+    public static var windowCenter: Self { .init() }
+    
+    public static var screenCenter: Self { .init(relativeTo: .screen) }
+    
+//    func origin(view: NSView) -> CGPoint {
+//        let viewBounds = view.bounds
+//        
+//        switch target {
+//        case .screen:
+//            <#code#>
+//        case .window:
+//            guard let windowFrame = view.window?.frame else {
+//                // fallback to screen center
+//                return Self.screenCenter.origin(view: view)
+//            }
+//        }
+//    }
+}
+
 struct LuminareModalView<Content>: View where Content: View {
     @EnvironmentObject private var floatingPanel: LuminareModal<Content>
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareCornerRadius) private var cornerRadius
 
-    private let sectionSpacing: CGFloat
-    private let outerPadding: CGFloat
+    @ViewBuilder private var content: () -> Content
 
-    @ViewBuilder private let content: () -> Content
-
-    init(isCompact: Bool, @ViewBuilder content: @escaping () -> Content) {
-        self.sectionSpacing = isCompact ? 8 : 16
-        self.outerPadding = isCompact ? 8 : 16
+    init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content
     }
 
     var body: some View {
         Group {
-            VStack(spacing: sectionSpacing) {
-                content()
-            }
-            .padding(outerPadding)
+            content()
+            .padding()
             .fixedSize()
             .background {
                 VisualEffectView(
                     material: .fullScreenUI,
                     blendingMode: .behindWindow
                 )
-                .overlay {
-                    // the bottom has a smaller corner radius because a compact button will be used there
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 12 + outerPadding,
-                        bottomLeadingRadius: 8 + outerPadding,
-                        bottomTrailingRadius: 8 + outerPadding,
-                        topTrailingRadius: 12 + outerPadding
-                    )
-                    .strokeBorder(.white.opacity(0.1), lineWidth: 1)
-                }
             }
-            .clipShape(
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 12 + outerPadding,
-                    bottomLeadingRadius: 8 + outerPadding,
-                    bottomTrailingRadius: 8 + outerPadding,
-                    topTrailingRadius: 12 + outerPadding
-                )
-            )
+            .clipShape(.rect(cornerRadius: cornerRadius))
 
             .background {
                 GeometryReader { proxy in
@@ -63,9 +87,38 @@ struct LuminareModalView<Content>: View where Content: View {
                 }
             }
             .buttonStyle(.luminare)
-            .overrideTint(tint)
             .ignoresSafeArea()
         }
         .frame(maxHeight: .infinity, alignment: .top)
     }
+}
+
+// preview as app
+@available(macOS 15.0, *)
+#Preview {
+    @Previewable @State var isPresented: Bool = false
+    @Previewable @State var isExpanded: Bool = false
+    
+    Button("Toggle Modal") {
+        isPresented.toggle()
+    }
+    .luminareModal(isPresented: $isPresented) {
+        VStack {
+            Button("Toggle Expansion") {
+                isExpanded.toggle()
+            }
+            .padding()
+            
+            if isExpanded {
+                Text("Content")
+                    .font(.title)
+                    .padding()
+            } else {
+                Text("Nothing")
+                    .font(.title)
+                    .padding()
+            }
+        }
+    }
+    .frame(width: 500, height: 300)
 }

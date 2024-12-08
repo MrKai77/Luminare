@@ -18,7 +18,7 @@ public struct DividedVStack<Content>: View where Content: View {
     private let isMasked: Bool
     private let hasDividers: Bool
 
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     // MARK: Initializers
 
