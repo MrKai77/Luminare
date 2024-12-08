@@ -92,4 +92,12 @@ public extension EnvironmentValues {
     @Entry var luminareListItemCornerRadius: CGFloat = 2
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListItemHighlightOnHover: Bool = true
+    @Entry var luminareListFixedHeightUntil: CGFloat? = nil
+    @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never
+    @Entry var luminareListRoundedBottomCornerBehavior: LuminareListRoundedCornerBehavior = .never
+    
+    // MARK: Luminare Picker
+    
+    @Entry var luminarePickerRoundedTopCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
+    @Entry var luminarePickerRoundedBottomCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
 }

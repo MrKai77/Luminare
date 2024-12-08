@@ -264,4 +264,28 @@ public extension View {
     @ViewBuilder func luminareListItemHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareListItemHighlightOnHover, highlight)
     }
+    
+    @ViewBuilder func luminareListFixedHeight(until height: CGFloat? = nil) -> some View {
+        environment(\.luminareListFixedHeightUntil, height)
+    }
+    
+    @ViewBuilder func luminareListRoundedCorner(top: LuminareListRoundedCornerBehavior = .never, bottom: LuminareListRoundedCornerBehavior = .never) -> some View {
+        environment(\.luminareListRoundedTopCornerBehavior, top)
+            .environment(\.luminareListRoundedBottomCornerBehavior, bottom)
+    }
+    
+    @ViewBuilder func luminareListRoundedCorner(_ all: LuminareListRoundedCornerBehavior = .never) -> some View {
+        luminareListRoundedCorner(top: all, bottom: all)
+    }
+    
+    // MARK: Luminare Picker
+    
+    @ViewBuilder func luminarePickerRoundedCorner(top: LuminarePickerRoundedCornerBehavior = .never, bottom: LuminarePickerRoundedCornerBehavior = .never) -> some View {
+        environment(\.luminarePickerRoundedTopCornerBehavior, top)
+            .environment(\.luminarePickerRoundedBottomCornerBehavior, bottom)
+    }
+    
+    @ViewBuilder func luminarePickerRoundedCorner(_ all: LuminarePickerRoundedCornerBehavior = .never) -> some View {
+        luminarePickerRoundedCorner(top: all, bottom: all)
+    }
 }

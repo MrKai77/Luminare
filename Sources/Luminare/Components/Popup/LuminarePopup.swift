@@ -138,7 +138,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 }
                 .frame(
                     maxWidth: .infinity, maxHeight: .infinity,
-                    alignment: parent.edge.opposite.alignment
+                    alignment: parent.edge.negate.alignment
                 )
             )
             panel.contentView = view
