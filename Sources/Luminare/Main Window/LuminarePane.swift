@@ -15,7 +15,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     private let titlebarHeight: CGFloat = 50
 
-    @ViewBuilder private let content: () -> Content, header: () -> Header
+    @ViewBuilder private var content: () -> Content, header: () -> Header
 
     @State private var luminareClickedOutside = false
 

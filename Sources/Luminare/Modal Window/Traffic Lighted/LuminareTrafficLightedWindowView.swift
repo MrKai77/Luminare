@@ -58,7 +58,7 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
 
             Spacer()
         }
-        .buttonStyle(LuminareButtonStyle())
+        .buttonStyle(.luminare)
         .ignoresSafeArea()
     }
 }

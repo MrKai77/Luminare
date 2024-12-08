@@ -15,7 +15,7 @@ public extension EnvironmentValues {
     // currently, it is impossible to read the `.tint()` modifier on a view
     // this is a custom environement value as an alternative implementation of it
     // in practice, it should always be synchronized with `.tint()`
-    @Entry var luminareTint: () -> Color = { .accentColor }
+    @Entry var luminareTint: Color = .accentColor
 
     @Entry var luminareAnimation: Animation = .smooth(duration: 0.2)
     @Entry var luminareAnimationFast: Animation = .easeInOut(duration: 0.1)
@@ -28,6 +28,14 @@ public extension EnvironmentValues {
 
     @Entry var luminareWindow: NSWindow?
     @Entry var luminareClickedOutside: Bool = false
+
+    // MARK: Modal
+
+    @Entry var luminareModalCornerRadius: CGFloat = 12
+    @Entry var luminareModalPadding: CGFloat = 12
+    @Entry var luminareModalCancel: () -> AnyView? = { nil }
+    @Entry var luminareModalDone: () -> AnyView? = { nil }
+    @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
 }
 
 // MARK: - Initializers
@@ -41,12 +49,14 @@ public extension EnvironmentValues {
     @Entry var luminareIsBordered: Bool = true
     @Entry var luminareHasDividers: Bool = true
 
-    // MARK: Luminare Button Style
+    // MARK: Luminare Button Styles
 
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadius: CGFloat = 2
-    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
     @Entry var luminareButtonHighlightOnHover: Bool = true
+    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
+    @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
+    @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
     // MARK: Luminare Section
 
@@ -57,6 +67,7 @@ public extension EnvironmentValues {
     // MARK: Luminare Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .regular
+    @Entry var luminareComposeStyle: LuminareComposeStyle = .regular
 
     // MARK: Luminare Popover
 

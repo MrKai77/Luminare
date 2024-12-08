@@ -10,9 +10,9 @@ import SwiftUI
 public extension View {
     /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
     /// value.
-    @ViewBuilder func overrideTint(_ tint: @escaping () -> Color) -> some View {
+    @ViewBuilder func overrideTint(_ tint: Color) -> some View {
         luminareTint(tint)
-            .tint(tint())
+            .tint(tint)
     }
 
     @ViewBuilder func background(_ style: some ShapeStyle, with material: Material?) -> some View {
@@ -35,7 +35,7 @@ public extension View {
     @ViewBuilder func luminarePopover(
         arrowEdge: Edge = .bottom,
         padding: CGFloat = 4,
-        @ViewBuilder content: @escaping () -> some View
+        @ViewBuilder _ content: @escaping () -> some View
     ) -> some View {
         LuminarePopover(
             arrowEdge: arrowEdge,
@@ -51,14 +51,18 @@ public extension View {
 
 public extension View {
     @ViewBuilder func luminarePopup(
+        isPresented: Binding<Bool>,
+        edge: Edge = .bottom,
         material: NSVisualEffectView.Material = .popover,
-        isPresented: Binding<Bool>
+        @ViewBuilder _ content: @escaping () -> some View
     ) -> some View {
-        LuminarePopup(
-            material: material,
-            isPresented: isPresented
-        ) {
-            self
+        background {
+            LuminarePopup(
+                isPresented: isPresented,
+                edge: edge,
+                material: material,
+                content: content
+            )
         }
     }
 }
@@ -68,15 +72,15 @@ public extension View {
 public extension View {
     @ViewBuilder func luminareModal(
         isPresented: Binding<Bool>,
+        isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
-        isCompact: Bool = false,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
             LuminareModalModifier(
                 isPresented: isPresented,
+                isMovableByWindowBackground: isMovableByWindowBackground,
                 closesOnDefocus: closesOnDefocus,
-                isCompact: isCompact,
                 content: content
             )
         )
@@ -94,7 +98,7 @@ public extension View {
 // MARK: - Environment Values
 
 public extension View {
-    @ViewBuilder func luminareTint(_ tint: @escaping () -> Color) -> some View {
+    @ViewBuilder func luminareTint(_ tint: Color) -> some View {
         environment(\.luminareTint, tint)
     }
 
@@ -126,7 +130,37 @@ public extension View {
         environment(\.luminareIsBordered, bordered)
     }
 
-    // MARK: Luminare Button Style
+    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
+        environment(\.luminareHasDividers, hasDividers)
+    }
+
+    // MARK: Modal
+
+    @ViewBuilder func luminareModalCornerRadius(_ radius: CGFloat = 12) -> some View {
+        environment(\.luminareModalCornerRadius, radius)
+    }
+
+    @ViewBuilder func luminareModaePadding(_ padding: CGFloat = 12) -> some View {
+        environment(\.luminareModalPadding, padding)
+    }
+
+    @ViewBuilder func luminareModalCancel(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
+        environment(\.luminareModalCancel) {
+            cancel().map(AnyView.init(_:))
+        }
+    }
+
+    @ViewBuilder func luminareModalDone(@ViewBuilder _ done: @escaping () -> (some View)?) -> some View {
+        environment(\.luminareModalDone) {
+            done().map(AnyView.init(_:))
+        }
+    }
+
+    @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
+        environment(\.luminareModalPresentation, presentation)
+    }
+
+    // MARK: Luminare Button Styles
 
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareButtonMaterial, material)
@@ -136,16 +170,24 @@ public extension View {
         environment(\.luminareButtonCornerRadius, radius)
     }
 
+    @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
+        environment(\.luminareButtonHighlightOnHover, highlight)
+    }
+
     @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
         environment(\.luminareCompactButtonCornerRadius, radius)
     }
 
-    @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
-        environment(\.luminareButtonHighlightOnHover, highlight)
+    @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
+        environment(\.luminareCompactButtonAspectRatio, (aspectRatio, contentMode))
     }
-    
-    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
-        environment(\.luminareHasDividers, hasDividers)
+
+    @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
+        environment(\.luminareCompactButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
+    }
+
+    @ViewBuilder func luminareCompactButtonHasFixedHeight(_ hasFixedHeight: Bool = true) -> some View {
+        environment(\.luminareCompactButtonHasFixedHeight, hasFixedHeight)
     }
 
     // MARK: Luminare Section
@@ -166,6 +208,10 @@ public extension View {
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
+    }
+
+    @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .regular) -> some View {
+        environment(\.luminareComposeStyle, style)
     }
 
     // MARK: Luminare Popover
@@ -197,11 +243,11 @@ public extension View {
     }
 
     // MARK: Luminare List
-    
+
     @ViewBuilder func luminareListContentMargins(_ margins: CGFloat) -> some View {
         luminareListContentMargins(top: margins, bottom: margins)
     }
-    
+
     @ViewBuilder func luminareListContentMargins(top: CGFloat = 0, bottom: CGFloat = 0) -> some View {
         environment(\.luminareListContentMarginsTop, top)
             .environment(\.luminareListContentMarginsBottom, bottom)

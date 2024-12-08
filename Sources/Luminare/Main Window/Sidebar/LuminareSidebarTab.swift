@@ -54,7 +54,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                                 .foregroundStyle(.tint)
                                 .frame(width: 4, height: 4)
                                 .padding(.leading, 4)
-                                .shadow(color: tint(), radius: 4)
+                                .shadow(color: tint, radius: 4)
 
                             Spacer()
                         }

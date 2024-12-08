@@ -8,10 +8,7 @@
 import SwiftUI
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
-    public static let cornerRadius: CGFloat = 12
-    public static let contentPadding: CGFloat = 6, sectionPadding: CGFloat = 8
-
-    @Published public var closeHandler: (() -> ())?
+    @Published public var onDismiss: (() -> ())?
 
     public init() {
         super.init(
@@ -20,17 +17,16 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
             backing: .buffered,
             defer: false
         )
+        collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
-        titleVisibility = .hidden
-        titlebarAppearsTransparent = true
-        animationBehavior = .utilityWindow
-
-        isOpaque = false
         backgroundColor = .clear
-        isMovable = false
-
+        contentView?.wantsLayer = true
         ignoresMouseEvents = false
-        becomesKeyOnlyIfNeeded = true
+        isOpaque = false
+        hasShadow = true
+        titlebarAppearsTransparent = true
+        titleVisibility = .hidden
+        animationBehavior = .utilityWindow
     }
 
     override public var canBecomeKey: Bool {
@@ -46,7 +42,7 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
     }
 
     override public func close() {
-        closeHandler?()
+        onDismiss?()
         super.close()
     }
 }

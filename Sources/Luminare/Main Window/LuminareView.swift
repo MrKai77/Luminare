@@ -37,7 +37,7 @@ public struct LuminareView<Content>: View where Content: View {
             }
             .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
             .focusable(false)
-            .buttonStyle(LuminareButtonStyle())
+            .buttonStyle(.luminare)
             .overrideTint(tint)
     }
 

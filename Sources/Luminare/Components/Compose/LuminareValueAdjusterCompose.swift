@@ -33,7 +33,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     private let format: F
     private let clampsUpper: Bool, clampsLower: Bool
 
-    @ViewBuilder private let content: (AnyView) -> Content, label: () -> Label
+    @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
     @State private var isShowingTextBox = false
     @State var eventMonitor: Any?
@@ -89,17 +89,18 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         VStack {
             switch controlSize {
             case .regular:
-                LuminareCompose(reducesTrailingSpace: true) {
+                LuminareCompose {
                     text()
                 } label: {
                     label()
                 }
+                .luminareComposeStyle(.inline)
 
                 slider()
                     .padding(.horizontal, horizontalPadding)
                     .padding(.trailing, -2)
             case .compact:
-                LuminareCompose(reducesTrailingSpace: true) {
+                LuminareCompose {
                     HStack(spacing: 12) {
                         slider()
 
@@ -108,6 +109,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                 } label: {
                     label()
                 }
+                .luminareComposeStyle(.inline)
             }
         }
         .frame(height: controlSize.height)
@@ -183,7 +185,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(.plain)
                 }
             }
 

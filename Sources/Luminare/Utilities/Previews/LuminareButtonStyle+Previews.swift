@@ -37,7 +37,7 @@ import SwiftUI
                     }
                     .padding(8)
                 }
-                .buttonStyle(LuminareCosmeticButtonStyle {
+                .buttonStyle(.luminareCosmetic {
                     Image(systemName: "star.fill")
                 })
                 .frame(height: 72)
@@ -71,24 +71,24 @@ import SwiftUI
             LuminareSection {
                 HStack {
                     Button("Prominent Tinted") {}
-                        .buttonStyle(LuminareProminentButtonStyle())
+                        .buttonStyle(.luminareProminent)
                         .tint(.purple)
 
                     Button("Prominent Tinted") {}
-                        .buttonStyle(LuminareProminentButtonStyle())
+                        .buttonStyle(.luminareProminent)
                         .tint(.teal)
 
                     Button("Prominent") {}
-                        .buttonStyle(LuminareProminentButtonStyle())
+                        .buttonStyle(.luminareProminent)
                 }
                 .frame(height: 40)
 
                 HStack {
                     Button("Normal") {}
-                        .buttonStyle(LuminareButtonStyle())
+                        .buttonStyle(.luminare)
 
-                    Button("Destructive") {}
-                        .buttonStyle(LuminareDestructiveButtonStyle())
+                    Button("Destructive", role: .destructive) {}
+                        .buttonStyle(.luminareProminent)
                 }
                 .frame(height: 40)
             }
@@ -96,7 +96,9 @@ import SwiftUI
             LuminareSection {
                 HStack {
                     Button("Compact") {}
-                        .buttonStyle(LuminareCompactButtonStyle())
+                        .buttonStyle(.luminareCompact)
+                        .luminareCompactButtonAspectRatio(contentMode: .fill)
+                        .luminareCompactButtonHasFixedHeight(false)
                 }
                 .frame(height: 40)
             }
@@ -114,7 +116,7 @@ import SwiftUI
     ) {
         LuminareSection {
             Button("Click me!") {}
-                .buttonStyle(LuminareButtonStyle())
+                .buttonStyle(.luminare)
                 .frame(height: 40)
         }
     }
@@ -129,8 +131,8 @@ import SwiftUI
         traits: .sizeThatFitsLayout
     ) {
         LuminareSection {
-            Button("Click me!") {}
-                .buttonStyle(LuminareDestructiveButtonStyle())
+            Button("Click me!", role: .destructive) {}
+                .buttonStyle(.luminareProminent)
                 .frame(height: 40)
         }
     }
@@ -146,7 +148,7 @@ import SwiftUI
     ) {
         LuminareSection {
             Button("Click me!") {}
-                .buttonStyle(LuminareProminentButtonStyle())
+                .buttonStyle(.luminareProminent)
                 .frame(height: 40)
         }
     }
@@ -181,7 +183,7 @@ import SwiftUI
                 }
                 .padding(8)
             }
-            .buttonStyle(LuminareCosmeticButtonStyle {
+            .buttonStyle(.luminareCosmetic {
                 Image(systemName: "star.fill")
             })
             .frame(height: 72)
@@ -224,7 +226,9 @@ import SwiftUI
     ) {
         LuminareSection {
             Button("Click me!") {}
-                .buttonStyle(LuminareCompactButtonStyle())
+                .buttonStyle(.luminareCompact)
+                .luminareCompactButtonAspectRatio(contentMode: .fill)
+                .luminareCompactButtonHasFixedHeight(false)
                 .frame(height: 40)
         }
     }
@@ -263,10 +267,6 @@ import SwiftUI
             Text("Bordered")
                 .fixedSize()
                 .modifier(LuminareHoverable())
-
-            Text("Hovering")
-                .fixedSize()
-                .modifier(LuminareHoverable(isHovering: true))
         }
     }
 #endif

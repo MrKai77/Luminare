@@ -35,6 +35,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     // MARK: Environments
 
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareCompactPickerStyle) private var style
@@ -42,7 +43,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     // MARK: Fields
 
     @Binding private var selection: V
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     @State private var isHovering: Bool = false
 
@@ -84,6 +85,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 isHovering = hover
             }
         }
+        .padding(.horizontal, -4)
         .modifier(LuminareHoverable())
     }
 
@@ -98,6 +100,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     struct SegmentedLayout: _VariadicView.UnaryViewRoot {
         @Environment(\.luminareAnimationFast) private var animationFast
         @Environment(\.luminareMinHeight) private var minHeight
+        @Environment(\.luminareHorizontalPadding) private var horizontalPadding
         @Environment(\.luminareHasDividers) private var hasDividers
 
         var isHovering: Bool
@@ -110,7 +113,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         private var mouseLocation: NSPoint { NSEvent.mouseLocation }
 
         @ViewBuilder func body(children: _VariadicView.Children) -> some View {
-            HStack {
+            HStack(spacing: horizontalPadding) {
                 ForEach(Array(children.enumerated()), id: \.offset) { _, child in
                     if let value = child.id(as: V.self) {
                         SegmentedKnob(
@@ -130,13 +133,15 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     }
                 }
             }
-            .padding(.horizontal, -2)
         }
 
         struct SegmentedKnob: View {
             @Environment(\.luminareAnimation) private var animation
             @Environment(\.luminareAnimationFast) private var animationFast
+            @Environment(\.luminareMinHeight) private var minHeight
+            @Environment(\.luminareHorizontalPadding) private var horizontalPadding
             @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+            @Environment(\.luminareIsBordered) private var isBordered
 
             var namespace: Namespace.ID
             var isParentHovering: Bool
@@ -154,8 +159,8 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     }
                 } label: {
                     view
-                        .frame(maxWidth: .infinity)
-                        .padding(4)
+                        .frame(maxWidth: .infinity, minHeight: minHeight - 8)
+                        .padding(.horizontal, horizontalPadding)
                 }
                 .buttonStyle(.borderless)
                 .onHover { hover in
@@ -164,15 +169,27 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     }
                 }
                 .background {
-                    if selection == value {
-                        knob()
-                            .matchedGeometryEffect(
-                                id: "knob", in: namespace
-                            )
-                    } else if isHovering {
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .foregroundStyle(.quinary)
+                    Group {
+                        if selection == value {
+                            knob()
+                                .matchedGeometryEffect(
+                                    id: "knob", in: namespace
+                                )
+                        } else if isHovering {
+                            RoundedRectangle(cornerRadius: constrainedCornerRadius)
+                                .foregroundStyle(.quinary)
+                        }
                     }
+                }
+                .padding(.vertical, 4)
+                .frame(minHeight: minHeight)
+            }
+
+            private var constrainedCornerRadius: CGFloat {
+                if isBordered || isParentHovering {
+                    max(0, cornerRadius - 2)
+                } else {
+                    cornerRadius
                 }
             }
 
@@ -194,7 +211,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                             .blendMode(.luminosity)
                     }
                 }
-                .clipShape(.rect(cornerRadius: cornerRadius))
+                .clipShape(.rect(cornerRadius: constrainedCornerRadius))
             }
         }
     }
@@ -221,21 +238,26 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
     traits: .sizeThatFitsLayout
 ) {
     LuminareSection {
-        LuminareCompose("Button", reducesTrailingSpace: true) {
+        LuminareCompose("Button") {
             Button {} label: {
                 Text("42")
-                    .frame(height: 30)
-                    .padding(.horizontal, 8)
             }
-            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+            .buttonStyle(.luminareCompact)
         }
+        .luminareComposeStyle(.inline)
 
-        LuminareCompose("Pick from a menu", reducesTrailingSpace: true) {
+        LuminareCompose("Pick from a menu") {
             PickerPreview(elements: Array(0 ..< 200), selection: 42)
         }
+        .luminareComposeStyle(.inline)
 
         VStack {
-            LuminareCompose("Pick from segments") {}
+            LuminareCompose("Pick from segments") {
+                PickerPreview(elements: ["Inline", "Fixed"], selection: "Inline")
+                    .luminareCompactPickerStyle(.segmented)
+                    .luminareBordered(false)
+            }
+            .luminareComposeStyle(.inline)
 
             PickerPreview(
                 elements: ["macOS", "Linux", "Windows"],
@@ -245,9 +267,13 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             .luminareCompactPickerStyle(.segmented)
             .luminareBordered(false)
             .luminareHasDividers(false)
+            .padding(2)
 
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42)
                 .luminareCompactPickerStyle(.segmented)
+                .padding(2)
+                .luminareCompactButtonAspectRatio(contentMode: .fit)
         }
+        .luminareCompactButtonAspectRatio(contentMode: .fill)
     }
 }

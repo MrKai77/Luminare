@@ -34,7 +34,7 @@ struct RGBInputField<Label>: View where Label: View {
                     )
                     .frame(width: 135, height: 32)
                     .padding(.vertical, 2)
-                    .overrideTint { .primary }
+                    .overrideTint(.primary)
                 } badge: {
                     LuminareTextField(
                         "", value: .init($value),

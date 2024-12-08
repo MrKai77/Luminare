@@ -30,7 +30,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     private let roundedTop: Bool, roundedBottom: Bool
 
-    @ViewBuilder private let content: (V) -> Content
+    @ViewBuilder private var content: (V) -> Content
 
     // MARK: Initializers
 
@@ -121,7 +121,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 selectedItem = internalSelection
             }
         }
-        .buttonStyle(LuminareButtonStyle())
+        .buttonStyle(.luminare)
     }
 
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
@@ -153,7 +153,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             }
             .disabled(isDisabled)
             .animation(animation, value: isDisabled)
-            .overrideTint { tint }
+            .overrideTint(tint)
         } else {
             getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
@@ -183,7 +183,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     }
 
     private func tint(of element: V) -> Color {
-        (element as? LuminareSelectionData)?.tint ?? tint()
+        (element as? LuminareSelectionData)?.tint ?? tint
     }
 
     private func getElement(row: Int, column: Int) -> V? {

@@ -32,7 +32,7 @@ public struct LuminareDividedStack<Content>: View where Content: View {
 
     private let orientation: Orientation
 
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private var content: () -> Content
 
     // MARK: Initializers
 

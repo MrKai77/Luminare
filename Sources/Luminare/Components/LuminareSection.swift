@@ -27,7 +27,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
     private let innerPadding: CGFloat
 
-    @ViewBuilder private let content: () -> Content, header: () -> Header, footer: () -> Footer
+    @ViewBuilder private var content: () -> Content, header: () -> Header, footer: () -> Footer
 
     // MARK: Initializers
 
@@ -137,13 +137,14 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
         .frame(height: 100)
 
-        LuminareCompose("Button", reducesTrailingSpace: true) {
+        LuminareCompose("Button") {
             Button {} label: {
                 Text("Click Me!")
                     .frame(height: 30)
                     .padding(.horizontal, 8)
             }
         }
+        .luminareComposeStyle(.inline)
 
         Text("""
         Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. \
@@ -180,5 +181,5 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
     .frame(width: 450)
-    .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+    .buttonStyle(.luminareCompact)
 }

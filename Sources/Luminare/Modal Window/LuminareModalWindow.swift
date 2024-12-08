@@ -8,25 +8,25 @@
 
 import SwiftUI
 
-class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
-    @Environment(\.luminareTint) private var tint
-    @Environment(\.luminareAnimation) private var animation
-    @Environment(\.luminareAnimationFast) private var animationFast
-
+class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: View {
     @Binding private var isPresented: Bool
 
     private let closesOnDefocus: Bool
-    private let isCompact: Bool
+    private let presentation: LuminareModalPresentation
+
+    private var view: NSView?
 
     init(
         isPresented: Binding<Bool>,
-        closesOnDefocus: Bool,
-        isCompact: Bool,
+        isMovableByWindowBackground: Bool = false,
+        closesOnDefocus: Bool = false,
+        presentation: LuminareModalPresentation,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
         self.closesOnDefocus = closesOnDefocus
-        self.isCompact = isCompact
+        self.presentation = presentation
+
         super.init(
             contentRect: .zero,
             styleMask: [.fullSizeContentView],
@@ -34,18 +34,17 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
             defer: false
         )
 
-        let hostingView = NSHostingView(
-            rootView: LuminareModalView(isCompact: isCompact, content: content)
-                .environment(\.luminareAnimation, animation)
-                .environment(\.luminareAnimationFast, animationFast)
-                .overrideTint(tint)
+        let view = NSHostingView(
+            rootView: LuminareModalView(content: content)
                 .environmentObject(self)
         )
+        self.view = view
 
+        self.isMovableByWindowBackground = isMovableByWindowBackground
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
         backgroundColor = .clear
-        contentView = hostingView
+        contentView = view
         contentView?.wantsLayer = true
         ignoresMouseEvents = false
         isOpaque = false
@@ -54,7 +53,10 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         titleVisibility = .hidden
         animationBehavior = .documentWindow
 
-        center()
+        DispatchQueue.main.async {
+            self.display()
+            self.updatePosition()
+        }
     }
 
     func updateShadow(for duration: Double) {
@@ -69,6 +71,10 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
                 self.invalidateShadow()
             }
         }
+    }
+
+    private func updatePosition() {
+        setFrameOrigin(presentation.origin(of: frame))
     }
 
     override func close() {
@@ -90,15 +96,6 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         super.keyDown(with: event)
     }
 
-    override func mouseDown(with event: NSEvent) {
-        let titlebarHeight: CGFloat = isCompact ? 12 : 16
-        if event.locationInWindow.y > frame.height - titlebarHeight {
-            super.performDrag(with: event)
-        } else {
-            super.mouseDragged(with: event)
-        }
-    }
-
     override var canBecomeKey: Bool {
         true
     }
@@ -111,50 +108,5 @@ class LuminareModal<Content>: NSWindow, ObservableObject where Content: View {
         if closesOnDefocus {
             close()
         }
-    }
-}
-
-struct LuminareModalModifier<PanelContent>: ViewModifier where PanelContent: View {
-    @State private var panel: LuminareModal<PanelContent>?
-
-    @Binding var isPresented: Bool
-    let closesOnDefocus: Bool
-    let isCompact: Bool
-    @ViewBuilder var content: () -> PanelContent
-
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: isPresented) { newValue in
-                if newValue {
-                    present()
-                } else {
-                    close()
-                }
-            }
-            .onDisappear {
-                isPresented = false
-                close()
-            }
-    }
-
-    private func present() {
-        guard panel == nil else { return }
-        panel = LuminareModal(
-            isPresented: $isPresented,
-            closesOnDefocus: closesOnDefocus,
-            isCompact: isCompact,
-            content: content
-        )
-
-        DispatchQueue.main.async {
-            panel?.center()
-            panel?.orderFrontRegardless()
-            panel?.makeKey()
-        }
-    }
-
-    private func close() {
-        panel?.close()
-        panel = nil
     }
 }

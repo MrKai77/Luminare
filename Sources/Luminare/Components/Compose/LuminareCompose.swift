@@ -26,6 +26,13 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
     }
 }
 
+public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+    case regular
+    case inline
+
+    public var id: String { rawValue }
+}
+
 // MARK: - Compose
 
 /// A stylized view that composes a content with a label.
@@ -36,14 +43,14 @@ public struct LuminareCompose<Label, Content>: View
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareComposeStyle) private var style
 
     // MARK: Fields
 
     let contentMaxWidth: CGFloat?
     let spacing: CGFloat?
-    let reducesTrailingSpace: Bool
 
-    @ViewBuilder private let content: () -> Content, label: () -> Label
+    @ViewBuilder private var content: () -> Content, label: () -> Label
 
     // MARK: Initializers
 
@@ -52,21 +59,16 @@ public struct LuminareCompose<Label, Content>: View
     /// - Parameters:
     ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
-    ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
-    ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
-    ///   padding around the content.
     ///   - content: the content.
     ///   - label: the label.
     public init(
         contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
-        reducesTrailingSpace: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.contentMaxWidth = contentMaxWidth
         self.spacing = spacing
-        self.reducesTrailingSpace = reducesTrailingSpace
         self.label = label
         self.content = content
     }
@@ -77,21 +79,16 @@ public struct LuminareCompose<Label, Content>: View
     ///   - key: the `LocalizedStringKey` to look up the label text.
     ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
-    ///   - reducesTrailingSpace: whether to reduce the trailing space to specially optimize for buttons and switches.
-    ///   Typically, reducing trailing spaces will work better with contents with borders, as this behavior unifies the
-    ///   padding around the content.
     ///   - content: the content.
     public init(
         _ key: LocalizedStringKey,
         contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
-        reducesTrailingSpace: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
             contentMaxWidth: contentMaxWidth,
-            spacing: spacing,
-            reducesTrailingSpace: reducesTrailingSpace
+            spacing: spacing
         ) {
             content()
         } label: {
@@ -122,9 +119,15 @@ public struct LuminareCompose<Label, Content>: View
                 content()
             }
         }
-        .padding(.horizontal, horizontalPadding)
-        .padding(.trailing, reducesTrailingSpace ? -4 : 0)
         .frame(maxWidth: .infinity, minHeight: minHeight)
+        .padding(insets)
+    }
+
+    private var insets: EdgeInsets {
+        switch style {
+        case .regular: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
+        case .inline: .init(top: 2, leading: horizontalPadding, bottom: 2, trailing: 2)
+        }
     }
 }
 
@@ -136,23 +139,21 @@ public struct LuminareCompose<Label, Content>: View
     traits: .sizeThatFitsLayout
 ) {
     LuminareSection {
-        LuminareCompose("Label", reducesTrailingSpace: true) {
+        LuminareCompose("Label") {
             Button {} label: {
                 Text("Button")
-                    .frame(height: 30)
-                    .padding(.horizontal, 8)
             }
-            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+            .buttonStyle(.luminareCompact)
         }
+        .luminareComposeStyle(.inline)
 
-        LuminareCompose("Label", reducesTrailingSpace: true) {
+        LuminareCompose("Label") {
             Button {} label: {
                 Text("Button")
-                    .frame(height: 30)
-                    .padding(.horizontal, 8)
             }
-            .buttonStyle(LuminareCompactButtonStyle(extraCompact: true))
+            .buttonStyle(.luminareCompact)
         }
+        .luminareComposeStyle(.inline)
         .disabled(true)
     }
 }

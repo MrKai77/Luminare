@@ -19,7 +19,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     // MARK: Fields
 
-    @ViewBuilder private let content: (V) -> Content, label: () -> Label
+    @ViewBuilder private var content: (V) -> Content, label: () -> Label
 
     private let options: [V]
     @Binding private var selection: V
@@ -116,17 +116,18 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         VStack {
             switch controlSize {
             case .regular:
-                LuminareCompose(reducesTrailingSpace: true) {
+                LuminareCompose {
                     text()
                 } label: {
                     label()
                 }
+                .luminareComposeStyle(.inline)
 
                 slider()
                     .padding(.horizontal, horizontalPadding)
                     .padding(.trailing, -2)
             case .compact:
-                LuminareCompose(spacing: 12, reducesTrailingSpace: true) {
+                LuminareCompose(spacing: 12) {
                     HStack(spacing: 12) {
                         slider()
 
@@ -135,6 +136,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                 } label: {
                     label()
                 }
+                .luminareComposeStyle(.inline)
             }
         }
         .frame(height: controlSize.height)
