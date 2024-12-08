@@ -68,28 +68,47 @@ struct LuminareModalView<Content>: View where Content: View {
     var body: some View {
         Group {
             content()
-            .padding()
-            .fixedSize()
-            .background {
-                VisualEffectView(
-                    material: .fullScreenUI,
-                    blendingMode: .behindWindow
-                )
-            }
-            .clipShape(.rect(cornerRadius: cornerRadius))
-
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .onChange(of: proxy.size) { _ in
-                            floatingPanel.updateShadow(for: 0.5)
-                        }
+                .fixedSize()
+                .background {
+                    VisualEffectView(
+                        material: .fullScreenUI,
+                        blendingMode: .behindWindow
+                    )
                 }
-            }
-            .buttonStyle(.luminare)
-            .ignoresSafeArea()
+                .clipShape(.rect(cornerRadius: cornerRadius))
+
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onChange(of: proxy.size) { _ in
+                                floatingPanel.updateShadow(for: 0.5)
+                            }
+                    }
+                }
+                .buttonStyle(.luminare)
+                .ignoresSafeArea()
         }
         .frame(maxHeight: .infinity, alignment: .top)
+    }
+}
+
+private struct ModalContent: View {
+    @State private var isExpanded: Bool = false
+    
+    var body: some View {
+        VStack {
+            Button("Toggle Expansion") {
+                isExpanded.toggle()
+            }
+            .padding()
+            .buttonStyle(.luminareCompact)
+            
+            if isExpanded {
+                Text("Expanded Content")
+                    .font(.title)
+                    .padding()
+            }
+        }
     }
 }
 
@@ -97,28 +116,12 @@ struct LuminareModalView<Content>: View where Content: View {
 @available(macOS 15.0, *)
 #Preview {
     @Previewable @State var isPresented: Bool = false
-    @Previewable @State var isExpanded: Bool = false
     
     Button("Toggle Modal") {
         isPresented.toggle()
     }
     .luminareModal(isPresented: $isPresented) {
-        VStack {
-            Button("Toggle Expansion") {
-                isExpanded.toggle()
-            }
-            .padding()
-            
-            if isExpanded {
-                Text("Content")
-                    .font(.title)
-                    .padding()
-            } else {
-                Text("Nothing")
-                    .font(.title)
-                    .padding()
-            }
-        }
+        ModalContent()
     }
     .frame(width: 500, height: 300)
 }
