@@ -104,7 +104,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     ///   - selection: the binding of the set of selected items.
     ///   - id: the key path for the identifiers of each element.
     ///   - content: the content generator that accepts a value binding.
-    init(
+    public init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>, id: KeyPath<V, ID>,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
