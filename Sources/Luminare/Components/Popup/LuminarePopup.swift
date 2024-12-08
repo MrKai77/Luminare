@@ -31,7 +31,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         self.content = content
     }
 
-    public func makeNSView(context: Context) -> NSView {
+    public func makeNSView(context _: Context) -> NSView {
         .init()
     }
 
@@ -53,7 +53,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
     @MainActor
     public class Coordinator<InnerContent>: NSObject, NSWindowDelegate
-    where InnerContent: View {
+        where InnerContent: View {
         private let parent: LuminarePopup
         private var content: () -> InnerContent
         var panel: LuminarePopupPanel?
@@ -88,14 +88,14 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             if dismissMonitor == nil {
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
-                    self.dismissMonitor = NSEvent.addLocalMonitorForEvents(
+                    dismissMonitor = NSEvent.addLocalMonitorForEvents(
                         matching: [
                             .scrollWheel, .leftMouseDown, .rightMouseDown,
-                            .otherMouseDown,
+                            .otherMouseDown
                         ]) { [weak self] event in
                             guard let self else { return event }
                             if event.window != self.panel {
-                                self.setVisible(false)
+                                setVisible(false)
                             }
                             return event
                         }
@@ -132,14 +132,14 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                             )
                         }
                         .clipShape(.rect(cornerRadius: parent.cornerRadius))
-
                         .buttonStyle(.luminare)
                         .ignoresSafeArea()
                         .environmentObject(panel)
                 }
                 .frame(
                     maxWidth: .infinity, maxHeight: .infinity,
-                    alignment: parent.edge.opposite.alignment)
+                    alignment: parent.edge.opposite.alignment
+                )
             )
             panel.contentView = view
 
@@ -159,11 +159,13 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             let windowFrame = window.frame
             let parentSize = parentView.frame.size
             let parentOrigin = parentView.convert(
-                parentView.frame.origin, to: nil)
+                parentView.frame.origin, to: nil
+            )
             let globalFrame = CGRect(
                 origin: .init(
                     x: windowFrame.origin.x + parentOrigin.x,
-                    y: windowFrame.origin.y + parentOrigin.y),
+                    y: windowFrame.origin.y + parentOrigin.y
+                ),
                 size: parentSize
             )
 
@@ -172,19 +174,23 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 case .top:
                     .init(
                         x: globalFrame.midX - size.width / 2,
-                        y: globalFrame.maxY + parent.padding)
+                        y: globalFrame.maxY + parent.padding
+                    )
                 case .leading:
                     .init(
                         x: globalFrame.minX - size.width - parent.padding,
-                        y: globalFrame.midY - size.height / 2)
+                        y: globalFrame.midY - size.height / 2
+                    )
                 case .bottom:
                     .init(
                         x: globalFrame.midX - size.width / 2,
-                        y: globalFrame.minY - size.height - parent.padding)
+                        y: globalFrame.minY - size.height - parent.padding
+                    )
                 case .trailing:
                     .init(
                         x: globalFrame.maxX + parent.padding,
-                        y: globalFrame.midY - size.height / 2)
+                        y: globalFrame.midY - size.height / 2
+                    )
                 }
 
             panel.setFrameOrigin(origin)
@@ -217,7 +223,6 @@ private struct PopupContent: View {
                     .font(.title)
                     .padding()
             } else {
-
                 Text("Normal Content")
                     .padding()
             }
@@ -228,7 +233,7 @@ private struct PopupContent: View {
 // preview as app
 @available(macOS 15.0, *)
 #Preview {
-    @Previewable @State var isPresented: Bool = false
+    @Previewable @State var isPresented = false
 
     Button("Toggle Popup") {
         isPresented.toggle()

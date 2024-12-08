@@ -16,7 +16,7 @@ extension Edge {
         case .trailing: .leading
         }
     }
-    
+
     var alignment: Alignment {
         switch self {
         case .top: .top

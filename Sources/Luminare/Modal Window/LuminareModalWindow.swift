@@ -10,12 +10,12 @@ import SwiftUI
 
 class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: View {
     @Binding private var isPresented: Bool
-    
+
     private let closesOnDefocus: Bool
     private let presentation: LuminareModalPresentation
-    
+
     private var view: NSView?
-    
+
     init(
         isPresented: Binding<Bool>,
         isMovableByWindowBackground: Bool = false,
@@ -26,20 +26,20 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         self._isPresented = isPresented
         self.closesOnDefocus = closesOnDefocus
         self.presentation = presentation
-        
+
         super.init(
             contentRect: .zero,
             styleMask: [.fullSizeContentView],
             backing: .buffered,
             defer: false
         )
-        
+
         let view = NSHostingView(
             rootView: LuminareModalView(content: content)
                 .environmentObject(self)
         )
         self.view = view
-        
+
         self.isMovableByWindowBackground = isMovableByWindowBackground
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
@@ -52,27 +52,27 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         animationBehavior = .documentWindow
-        
+
         DispatchQueue.main.async {
             self.display()
             self.updatePosition()
         }
     }
-    
+
     func updateShadow(for duration: Double) {
         guard isPresented else { return }
-        
+
         let frameRate: Double = 60
         let updatesCount = Int(duration * frameRate)
         let interval = duration / Double(updatesCount)
-        
+
         for index in 0...updatesCount {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * interval) {
                 self.invalidateShadow()
             }
         }
     }
-    
+
     private func updatePosition() {
         setFrameOrigin(presentation.origin(of: frame))
     }

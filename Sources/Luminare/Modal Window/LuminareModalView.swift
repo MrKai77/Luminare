@@ -8,8 +8,7 @@
 import SwiftUI
 
 public enum LuminareModalPresentationTarget: String, Equatable, Hashable,
-    Identifiable, CaseIterable, Codable
-{
+    Identifiable, CaseIterable, Codable {
     case screen
     case window
 
@@ -17,8 +16,7 @@ public enum LuminareModalPresentationTarget: String, Equatable, Hashable,
 }
 
 public enum LuminareModalPresentationAlignment: String, Equatable, Hashable,
-    Identifiable, CaseIterable, Codable
-{
+    Identifiable, CaseIterable, Codable {
     case centered
     case origin
 
@@ -43,7 +41,7 @@ public struct LuminareModalPresentation: Equatable, Hashable, Codable {
     public static var windowCenter: Self { .init() }
 
     public static var screenCenter: Self { .init(relativeTo: .screen) }
-    
+
     public func offset(_ offset: CGPoint) -> Self {
         .init(
             alignment,
@@ -51,7 +49,7 @@ public struct LuminareModalPresentation: Equatable, Hashable, Codable {
             relativeTo: target
         )
     }
-    
+
     public func offset(x: CGFloat, y: CGFloat) -> Self {
         offset(.init(x: x, y: y))
     }
@@ -65,11 +63,13 @@ public struct LuminareModalPresentation: Equatable, Hashable, Codable {
             case .centered:
                 .init(
                     x: screenFrame.midX - frame.width / 2 + offset.x,
-                    y: screenFrame.midY - frame.height / 2 + offset.y)
+                    y: screenFrame.midY - frame.height / 2 + offset.y
+                )
             case .origin:
                 .init(
                     x: frame.origin.x + offset.x,
-                    y: frame.origin.y + offset.y)
+                    y: frame.origin.y + offset.y
+                )
             }
         case .window:
             guard let window = NSApp.mainWindow else {
@@ -78,16 +78,18 @@ public struct LuminareModalPresentation: Equatable, Hashable, Codable {
             }
 
             let windowFrame = window.frame
-            
+
             return switch alignment {
             case .centered:
                 .init(
                     x: windowFrame.midX - frame.width / 2 + offset.x,
-                    y: windowFrame.midY - frame.height / 2 + offset.y)
+                    y: windowFrame.midY - frame.height / 2 + offset.y
+                )
             case .origin:
                 .init(
                     x: windowFrame.origin.x + offset.x,
-                    y: windowFrame.origin.y + offset.y)
+                    y: windowFrame.origin.y + offset.y
+                )
             }
         }
     }
@@ -119,7 +121,6 @@ struct LuminareModalView<Content>: View where Content: View {
                     )
                 }
                 .clipShape(.rect(cornerRadius: cornerRadius))
-
                 .background {
                     GeometryReader { proxy in
                         Color.clear
@@ -140,7 +141,7 @@ struct LuminareModalView<Content>: View where Content: View {
 // MARK: - Modal Modifier
 
 struct LuminareModalModifier<ModalContent>: ViewModifier
-where ModalContent: View {
+    where ModalContent: View {
     @Environment(\.luminareModalPresentation) private var presentation
 
     @State private var panel: LuminareModalWindow<ModalContent>?
@@ -214,26 +215,26 @@ private struct ModalContent: View {
 // preview as app
 @available(macOS 15.0, *)
 #Preview {
-    @Previewable @State var isPresented1: Bool = false
-    @Previewable @State var isPresented2: Bool = false
-    
+    @Previewable @State var isPresented1 = false
+    @Previewable @State var isPresented2 = false
+
     @Previewable @State var offsetX: Double = .zero
     @Previewable @State var offsetY: Double = .zero
-    
+
     VStack {
         Spacer()
-        
+
         HStack {
             TextField("Offset X", value: $offsetX, format: .number)
-            
+
             TextField("Offset Y", value: $offsetY, format: .number)
-            
+
             Button("Reset") {
                 offsetX = .zero
                 offsetY = .zero
             }
         }
-        
+
         HStack {
             Button("Toggle Modal (Screen Center)") {
                 isPresented1.toggle()
@@ -243,7 +244,7 @@ private struct ModalContent: View {
                     .frame(width: 400)
             }
             .luminareModalPresentation(.screenCenter.offset(x: CGFloat(offsetX), y: CGFloat(offsetY)))
-            
+
             Button("Toggle Modal (Window Center)") {
                 isPresented2.toggle()
             }

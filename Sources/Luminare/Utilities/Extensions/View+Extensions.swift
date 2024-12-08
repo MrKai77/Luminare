@@ -135,11 +135,11 @@ public extension View {
     }
 
     // MARK: Modal
-    
+
     @ViewBuilder func luminareModalCornerRadius(_ radius: CGFloat = 12) -> some View {
         environment(\.luminareModalCornerRadius, radius)
     }
-    
+
     @ViewBuilder func luminareModaePadding(_ padding: CGFloat = 12) -> some View {
         environment(\.luminareModalPadding, padding)
     }
@@ -155,7 +155,7 @@ public extension View {
             done().map(AnyView.init(_:))
         }
     }
-    
+
     @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
         environment(\.luminareModalPresentation, presentation)
     }
