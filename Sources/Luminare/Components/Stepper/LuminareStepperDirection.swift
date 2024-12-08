@@ -73,19 +73,6 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             .horizontal
         }
     }
-    
-    var opposite: Self {
-        switch self {
-        case .horizontal:
-                .vertical
-        case .horizontalAlternate:
-                .verticalAlternate
-        case .vertical:
-                .horizontal
-        case .verticalAlternate:
-                .horizontalAlternate
-        }
-    }
 
     @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
         switch self {

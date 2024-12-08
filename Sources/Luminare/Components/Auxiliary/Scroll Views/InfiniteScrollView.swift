@@ -36,30 +36,15 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
             .vertical
         }
     }
-    
-    /// The opposite direction.
-    public var opposite: Self {
-        switch self {
-        case .horizontal:
-                .vertical
-        case .vertical:
-                .horizontal
-        }
-    }
 
-    func stack(spacing: CGFloat, views: [NSView]) -> NSStackView {
-        let stackView = NSStackView(views: views)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = spacing
-        
+    // stacks the given elements according to the direction
+    @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
         switch self {
         case .horizontal:
-            stackView.orientation = .horizontal
+            HStack(alignment: .center, spacing: spacing, content: content)
         case .vertical:
-            stackView.orientation = .vertical
+            VStack(alignment: .center, spacing: spacing, content: content)
         }
-        
-        return stackView
     }
 
     // gets the length from the given 2D size according to the direction
@@ -169,9 +154,23 @@ public struct InfiniteScrollView: NSViewRepresentable {
         .init(origin: direction.point(from: (scrollableLength - length) / 2), size: size)
     }
 
-    private let firstSpacer: NSView = .init()
-    private let centerSpacer: NSView = .init()
-    private let lastSpacer: NSView = .init()
+    @ViewBuilder private func sideView() -> some View {
+        let size = direction.size(from: spacing, fallback: direction.length(of: size))
+
+        Group {
+            if debug {
+                Color.red
+            } else {
+                Color.clear
+            }
+        }
+        .frame(width: size.width, height: size.height)
+    }
+
+    @ViewBuilder private func centerView() -> some View {
+        Color.clear
+            .frame(width: size.width, height: size.height)
+    }
 
     func onBoundsChange(_ bounds: CGRect, animate: Bool = false) {
         let offset = direction.offset(of: bounds.origin) - direction.offset(of: centerRect.origin)
@@ -189,98 +188,20 @@ public struct InfiniteScrollView: NSViewRepresentable {
         scrollView.drawsBackground = false
         scrollView.hasVerticalScroller = false
         scrollView.hasHorizontalScroller = false
-        
-        // allocate the scrollable views
-        do {
-            let size = direction.size(from: spacing, fallback: direction.opposite.length(of: size))
-            firstSpacer.translatesAutoresizingMaskIntoConstraints = false
-            lastSpacer.translatesAutoresizingMaskIntoConstraints = false
-            
-            firstSpacer.wantsLayer = true
-            lastSpacer.wantsLayer = true
-            
-            firstSpacer.layer?.backgroundColor = debug ? NSColor.red.cgColor : .clear
-            lastSpacer.layer?.backgroundColor = debug ? NSColor.red.cgColor : .clear
-            
-            firstSpacer.setFrameSize(size)
-            lastSpacer.setFrameSize(size)
-        }
-        
-        do {
-            centerSpacer.translatesAutoresizingMaskIntoConstraints = false
-            centerSpacer.wantsLayer = true
-            centerSpacer.layer?.backgroundColor = debug ? NSColor.red.withAlphaComponent(0.1).cgColor : .clear
-            centerSpacer.setFrameSize(size)
-        }
-        
-        let clipView = NSClipView()
-        clipView.translatesAutoresizingMaskIntoConstraints = false
-        clipView.drawsBackground = false
-        scrollView.contentView = clipView
-        NSLayoutConstraint.activate([
-            .init(item: clipView, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0),
-            .init(item: clipView, attribute: .leading, relatedBy: .equal, toItem: scrollView, attribute: .leading, multiplier: 1, constant: 0),
-            .init(item: clipView, attribute: .bottom, relatedBy: .equal, toItem: scrollView, attribute: .bottom, multiplier: 1, constant: 0),
-            .init(item: clipView, attribute: .trailing, relatedBy: .equal, toItem: scrollView, attribute: .trailing, multiplier: 1, constant: 0)
-        ])
-        
-        let documentView = NSView()
-        documentView.translatesAutoresizingMaskIntoConstraints = false
+
+        // allocate the scrollable area
+        let documentView = NSHostingView(
+            rootView: direction.stack(spacing: 0) {
+                sideView()
+                centerView()
+                sideView()
+            }
+        )
         scrollView.documentView = documentView
-        
-        switch direction.axis {
-        case .horizontal:
-            NSLayoutConstraint.activate([
-                clipView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-                clipView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)
-            ])
-        case .vertical:
-            NSLayoutConstraint.activate([
-                clipView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-                clipView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
-            ])
-        }
-        
-        do {
-            let directionString = switch direction.axis {
-            case .horizontal: "V"
-            case .vertical: "H"
-            }
-            
-            documentView.addSubview(firstSpacer)
-            documentView.addConstraints(NSLayoutConstraint.constraints(
-                withVisualFormat: "\(directionString):|[first]|",
-                metrics: nil,
-                views: ["first": firstSpacer]
-            ))
-            
-            documentView.addSubview(centerSpacer)
-            documentView.addConstraints(NSLayoutConstraint.constraints(
-                withVisualFormat: "\(directionString):|[center]|",
-                metrics: nil,
-                views: ["center": centerSpacer]
-            ))
-            
-            documentView.addSubview(lastSpacer)
-            documentView.addConstraints(NSLayoutConstraint.constraints(
-                withVisualFormat: "\(directionString):|[last]|",
-                metrics: nil,
-                views: ["last": lastSpacer]
-            ))
-        }
-        
-        do {
-            let directionString = switch direction.axis {
-            case .horizontal: "H"
-            case .vertical: "V"
-            }
-            
-            documentView.addConstraints(NSLayoutConstraint.constraints(
-                withVisualFormat: "\(directionString):|[first(==\(spacing))][center][last(==\(spacing))]|",
-                metrics: nil,
-                views: ["first": firstSpacer, "center": centerSpacer, "last": lastSpacer]
-            ))
-        }
+
+        documentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentView.translatesAutoresizingMaskIntoConstraints = false
 
         // observe when scrolls
         NotificationCenter.default.addObserver(
@@ -310,12 +231,6 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
-        print(scrollableLength)
-        if let documentView = nsView.documentView {
-            documentView.heightAnchor.constraint(equalToConstant: scrollableLength).isActive = true
-            centerSpacer.heightAnchor.constraint(equalToConstant: length).isActive = true
-        }
-        
         DispatchQueue.main.async {
             context.coordinator.initializeScroll(nsView)
         }
