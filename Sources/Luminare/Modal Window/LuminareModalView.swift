@@ -100,7 +100,7 @@ public struct LuminareModalPresentation: Equatable, Hashable, Codable {
 struct LuminareModalView<Content>: View where Content: View {
     @EnvironmentObject private var floatingPanel: LuminareModalWindow<Content>
 
-    @Environment(\.luminareModalCornerRadius) private var cornerRadius
+    @Environment(\.luminareModalCornerRadii) private var cornerRadii
 
     @ViewBuilder private var content: () -> Content
 
@@ -120,7 +120,7 @@ struct LuminareModalView<Content>: View where Content: View {
                         blendingMode: .behindWindow
                     )
                 }
-                .clipShape(.rect(cornerRadius: cornerRadius))
+                .clipShape(.rect(cornerRadii: cornerRadii))
                 .background {
                     GeometryReader { proxy in
                         Color.clear
@@ -143,6 +143,7 @@ struct LuminareModalView<Content>: View where Content: View {
 struct LuminareModalModifier<ModalContent>: ViewModifier
     where ModalContent: View {
     @Environment(\.luminareModalPresentation) private var presentation
+    @Environment(\.luminareModalCornerRadii) private var cornerRadii
 
     @State private var panel: LuminareModalWindow<ModalContent>?
 
@@ -173,6 +174,7 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
             isMovableByWindowBackground: isMovableByWindowBackground,
             closesOnDefocus: closesOnDefocus,
             presentation: presentation,
+            cornerRadii: cornerRadii,
             content: content
         )
 

@@ -23,8 +23,8 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareModalCancel) private var cancelView
-    @Environment(\.luminareModalDone) private var doneView
+    @Environment(\.luminareColorPickerCancelView) private var cancelView
+    @Environment(\.luminareColorPickerDoneView) private var doneView
 
     // MARK: Fields
 
@@ -237,10 +237,10 @@ struct ColorPickerModalView<R, G, B>: View where R: View, G: View, B: View {
                 Text("Blue")
             }
         )
-        .luminareModalCancel {
+        .luminareColorPickerCancelView {
             Text("Cancel")
         }
-        .luminareModalDone {
+        .luminareColorPickerDoneView {
             Text("Done")
         }
     }

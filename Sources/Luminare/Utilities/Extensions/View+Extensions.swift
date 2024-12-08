@@ -85,6 +85,25 @@ public extension View {
             )
         )
     }
+    
+    @ViewBuilder func luminareModalWithPredefinedPadding(
+        isPresented: Binding<Bool>,
+        isMovableByWindowBackground: Bool = false,
+        closesOnDefocus: Bool = false,
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
+        modifier(
+            LuminareModalModifier(
+                isPresented: isPresented,
+                isMovableByWindowBackground: isMovableByWindowBackground,
+                closesOnDefocus: closesOnDefocus
+            ) {
+                content()
+                    .padding(8)
+            }
+        )
+        .luminareModalCornerRadii(.init(topLeading: 18, bottomLeading: 14, bottomTrailing: 14, topTrailing: 18))
+    }
 }
 
 // MARK: - Background
@@ -135,29 +154,37 @@ public extension View {
     }
 
     // MARK: Modal
+    
+    @ViewBuilder func luminareModalCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
+        environment(\.luminareModalCornerRadii, radii)
+    }
 
     @ViewBuilder func luminareModalCornerRadius(_ radius: CGFloat = 12) -> some View {
-        environment(\.luminareModalCornerRadius, radius)
+        luminareModalCornerRadii(.init(topLeading: radius, bottomLeading: radius, bottomTrailing: radius, topTrailing: radius))
     }
-
-    @ViewBuilder func luminareModaePadding(_ padding: CGFloat = 12) -> some View {
-        environment(\.luminareModalPadding, padding)
+    
+    @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
+        environment(\.luminareModalPresentation, presentation)
     }
+    
+    // MARK: Popup
 
-    @ViewBuilder func luminareModalCancel(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
-        environment(\.luminareModalCancel) {
+    @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 12) -> some View {
+        environment(\.luminarePopupPadding, padding)
+    }
+    
+    // MARK: Luminare Color Picker
+
+    @ViewBuilder func luminareColorPickerCancelView(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
+        environment(\.luminareColorPickerCancelView) {
             cancel().map(AnyView.init(_:))
         }
     }
 
-    @ViewBuilder func luminareModalDone(@ViewBuilder _ done: @escaping () -> (some View)?) -> some View {
-        environment(\.luminareModalDone) {
+    @ViewBuilder func luminareColorPickerDoneView(@ViewBuilder _ done: @escaping () -> (some View)?) -> some View {
+        environment(\.luminareColorPickerDoneView) {
             done().map(AnyView.init(_:))
         }
-    }
-
-    @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
-        environment(\.luminareModalPresentation, presentation)
     }
 
     // MARK: Luminare Button Styles

@@ -21,6 +21,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
         presentation: LuminareModalPresentation,
+        cornerRadii: RectangleCornerRadii,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
@@ -36,6 +37,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
 
         let view = NSHostingView(
             rootView: LuminareModalView(content: content)
+                .luminareModalCornerRadii(cornerRadii)
                 .environmentObject(self)
         )
         self.view = view

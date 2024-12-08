@@ -31,11 +31,17 @@ public extension EnvironmentValues {
 
     // MARK: Modal
 
-    @Entry var luminareModalCornerRadius: CGFloat = 12
-    @Entry var luminareModalPadding: CGFloat = 12
-    @Entry var luminareModalCancel: () -> AnyView? = { nil }
-    @Entry var luminareModalDone: () -> AnyView? = { nil }
+    @Entry var luminareModalCornerRadii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)
     @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
+    
+    // MARK: Popup
+    
+    @Entry var luminarePopupPadding: CGFloat = 12
+    
+    // MARK: Luminare Color Picker
+    
+    @Entry var luminareColorPickerCancelView: () -> AnyView? = { nil }
+    @Entry var luminareColorPickerDoneView: () -> AnyView? = { nil }
 }
 
 // MARK: - Initializers
