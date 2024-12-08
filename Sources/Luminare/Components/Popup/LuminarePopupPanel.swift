@@ -19,17 +19,16 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
             backing: .buffered,
             defer: false
         )
+        collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
-        titleVisibility = .hidden
-        titlebarAppearsTransparent = true
-        animationBehavior = .utilityWindow
-
-        isOpaque = false
         backgroundColor = .clear
-        isMovable = false
-
+        contentView?.wantsLayer = true
         ignoresMouseEvents = false
-        becomesKeyOnlyIfNeeded = true
+        isOpaque = false
+        hasShadow = true
+        titlebarAppearsTransparent = true
+        titleVisibility = .hidden
+        animationBehavior = .utilityWindow
     }
 
     override public var canBecomeKey: Bool {

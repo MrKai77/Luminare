@@ -119,16 +119,22 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             panel.delegate = self
             
             let view = NSHostingView(
-                rootView: content()
-                    .fixedSize()
-                    .background {
-                        VisualEffectView(
-                            material: self.view.material, blendingMode: .behindWindow
-                        )
-                    }
-                    .clipShape(.rect(cornerRadius: LuminarePopupPanel.cornerRadius))
-                    .ignoresSafeArea()
-                    .environmentObject(panel)
+                rootView: Group {
+                    content()
+                        .fixedSize()
+                        .background {
+                            VisualEffectView(
+                                material: self.view.material,
+                                blendingMode: .behindWindow
+                            )
+                        }
+                        .clipShape(.rect(cornerRadius: LuminarePopupPanel.cornerRadius))
+                    
+                        .buttonStyle(.luminare)
+                        .ignoresSafeArea()
+                        .environmentObject(panel)
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
             )
             panel.contentView = view
             

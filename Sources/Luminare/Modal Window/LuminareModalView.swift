@@ -98,7 +98,9 @@ private struct ModalContent: View {
     var body: some View {
         VStack {
             Button("Toggle Expansion") {
-                isExpanded.toggle()
+                withAnimation {
+                    isExpanded.toggle()
+                }
             }
             .padding()
             .buttonStyle(.luminareCompact)
