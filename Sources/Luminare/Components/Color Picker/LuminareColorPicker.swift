@@ -142,14 +142,14 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 .buttonStyle(.luminareCompact)
                 .luminareHorizontalPadding(0)
                 .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
-                .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true) {
-                    ColorPickerModalView(
-                        selectedColor: $color.hsb,
-                        hexColor: $text,
-                        colorNames: colorNames
-                    )
-                    .frame(width: 280)
-                }
+//                .luminareModal(isPresented: $isColorPickerPresented, closesOnDefocus: true) {
+//                    ColorPickerModalView(
+//                        selectedColor: $color.hsb,
+//                        hexColor: $text,
+//                        colorNames: colorNames
+//                    )
+//                    .frame(width: 280)
+//                }
             }
         }
         .onChange(of: color) { _ in

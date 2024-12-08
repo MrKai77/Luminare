@@ -35,7 +35,7 @@ public extension View {
     @ViewBuilder func luminarePopover(
         arrowEdge: Edge = .bottom,
         padding: CGFloat = 4,
-        @ViewBuilder content: @escaping () -> some View
+        @ViewBuilder _ content: @escaping () -> some View
     ) -> some View {
         LuminarePopover(
             arrowEdge: arrowEdge,
@@ -51,14 +51,18 @@ public extension View {
 
 public extension View {
     @ViewBuilder func luminarePopup(
+        isPresented: Binding<Bool>,
+        edge: Edge = .bottom,
         material: NSVisualEffectView.Material = .popover,
-        isPresented: Binding<Bool>
+        @ViewBuilder _ content: @escaping () -> some View
     ) -> some View {
-        LuminarePopup(
-            material: material,
-            isPresented: isPresented
-        ) {
-            self
+        background {
+            LuminarePopup(
+                isPresented: isPresented,
+                edge: edge,
+                material: material,
+                content: content
+            )
         }
     }
 }
@@ -68,6 +72,7 @@ public extension View {
 public extension View {
     @ViewBuilder func luminareModal(
         isPresented: Binding<Bool>,
+        edge: Edge = .top,
         isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> some View
@@ -131,6 +136,14 @@ public extension View {
     }
 
     // MARK: Modal
+    
+    @ViewBuilder func luminareModalCornerRadius(_ radius: CGFloat = 12) -> some View {
+        environment(\.luminareModalCornerRadius, radius)
+    }
+    
+    @ViewBuilder func luminareModaePadding(_ padding: CGFloat = 12) -> some View {
+        environment(\.luminareModalPadding, padding)
+    }
 
     @ViewBuilder func luminareModalCancel(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
         environment(\.luminareModalCancel) {
@@ -142,6 +155,10 @@ public extension View {
         environment(\.luminareModalDone) {
             done().map(AnyView.init(_:))
         }
+    }
+    
+    @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
+        environment(\.luminareModalPresentation, presentation)
     }
 
     // MARK: Luminare Button Styles

@@ -8,8 +8,6 @@
 import SwiftUI
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
-    public static let cornerRadius: CGFloat = 12
-
     @Published public var onDismiss: (() -> ())?
 
     public init() {

@@ -10,22 +10,24 @@ import SwiftUI
 // MARK: - Popup
 
 public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
-    @Environment(\.luminareTint) private var tint
-    @Environment(\.luminareAnimation) private var animation
-    @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareModalCornerRadius) private var cornerRadius
+    @Environment(\.luminareModalPadding) private var padding
 
-    private let material: NSVisualEffectView.Material
     @Binding private var isPresented: Bool
+    private let edge: Edge
+    private let material: NSVisualEffectView.Material
 
     @ViewBuilder private var content: () -> Content
 
     public init(
-        material: NSVisualEffectView.Material = .popover,
         isPresented: Binding<Bool>,
+        edge: Edge = .bottom,
+        material: NSVisualEffectView.Material = .popover,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.material = material
         self._isPresented = isPresented
+        self.edge = edge
+        self.material = material
         self.content = content
     }
 
@@ -37,14 +39,13 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     public func updateNSView(_ nsView: NSView, context: Context) {
         _ = isPresented
         DispatchQueue.main.async {
-            context.coordinator.setVisible(isPresented, in: nsView)
+            context.coordinator.setVisible(isPresented, relativeTo: nsView)
         }
     }
 
     public func makeCoordinator() -> Coordinator<some View> {
         Coordinator(self) {
             content()
-                .overrideTint(tint)
         }
     }
 
@@ -53,49 +54,51 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     @MainActor
     public class Coordinator<InnerContent>: NSObject, NSWindowDelegate
     where InnerContent: View {
-        private let view: LuminarePopup
+        private let parent: LuminarePopup
         private var content: () -> InnerContent
         var panel: LuminarePopupPanel?
 
-        private weak var window: NSWindow?
+        private weak var parentView: NSView?
         private var dismissMonitor: Any?
 
         init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
-            self.view = parent
+            self.parent = parent
             self.content = content
             super.init()
         }
 
         // view is optional bevause it is not needed to close the popup
-        func setVisible(_ isPresented: Bool, in view: NSView? = nil) {
+        func setVisible(
+            _ isPresented: Bool, relativeTo parentView: NSView? = nil
+        ) {
             // if we're going to be closing the window
             guard isPresented else {
                 panel?.close()
                 return
             }
 
-            guard let view else { return }
-            window = view.window
-            
+            self.parentView = parentView
             guard panel == nil else { return }
 
             initializePopup()
             guard let panel else { return }
-            
-            updatePosition(for: view.frame.size)
+
             panel.makeKeyAndOrderFront(nil)
 
             if dismissMonitor == nil {
                 DispatchQueue.main.async { [weak self] in
-                    self?.dismissMonitor = NSEvent.addLocalMonitorForEvents(matching: [
-                        .scrollWheel, .leftMouseDown, .rightMouseDown,
-                        .otherMouseDown,
-                    ]) { [weak self] event in
-                        if event.window != self?.panel {
-                            self?.setVisible(false)
+                    guard let self else { return }
+                    self.dismissMonitor = NSEvent.addLocalMonitorForEvents(
+                        matching: [
+                            .scrollWheel, .leftMouseDown, .rightMouseDown,
+                            .otherMouseDown,
+                        ]) { [weak self] event in
+                            guard let self else { return event }
+                            if event.window != self.panel {
+                                self.setVisible(false)
+                            }
+                            return event
                         }
-                        return event
-                    }
                 }
             }
         }
@@ -106,9 +109,9 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                     NSEvent.removeMonitor(dismissMonitor!)
                     dismissMonitor = nil
                 }
-                
-                view.isPresented = false
-                self.panel = nil
+
+                parent.isPresented = false
+                panel = nil
             }
         }
 
@@ -117,27 +120,29 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             guard let panel else { return }
 
             panel.delegate = self
-            
+
             let view = NSHostingView(
                 rootView: Group {
                     content()
                         .fixedSize()
                         .background {
                             VisualEffectView(
-                                material: self.view.material,
+                                material: self.parent.material,
                                 blendingMode: .behindWindow
                             )
                         }
-                        .clipShape(.rect(cornerRadius: LuminarePopupPanel.cornerRadius))
-                    
+                        .clipShape(.rect(cornerRadius: parent.cornerRadius))
+
                         .buttonStyle(.luminare)
                         .ignoresSafeArea()
                         .environmentObject(panel)
                 }
-                .frame(maxHeight: .infinity, alignment: .top)
+                .frame(
+                    maxWidth: .infinity, maxHeight: .infinity,
+                    alignment: parent.edge.opposite.alignment)
             )
             panel.contentView = view
-            
+
             view.postsFrameChangedNotifications = true
             NotificationCenter.default.addObserver(
                 self,
@@ -146,15 +151,45 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 object: view
             )
         }
-        
+
         private func updatePosition(for size: CGSize) {
-            guard let panel, let window else { return }
+            guard let panel, let parentView else { return }
+            guard let window = parentView.window else { return }
+
             let windowFrame = window.frame
-            let origin = NSPoint(x: windowFrame.midX - size.width / 2, y: windowFrame.midY - size.height / 2)
-            
+            let parentSize = parentView.frame.size
+            let parentOrigin = parentView.convert(
+                parentView.frame.origin, to: nil)
+            let globalFrame = CGRect(
+                origin: .init(
+                    x: windowFrame.origin.x + parentOrigin.x,
+                    y: windowFrame.origin.y + parentOrigin.y),
+                size: parentSize
+            )
+
+            let origin: CGPoint =
+                switch parent.edge {
+                case .top:
+                    .init(
+                        x: globalFrame.midX - size.width / 2,
+                        y: globalFrame.maxY + parent.padding)
+                case .leading:
+                    .init(
+                        x: globalFrame.minX - size.width - parent.padding,
+                        y: globalFrame.midY - size.height / 2)
+                case .bottom:
+                    .init(
+                        x: globalFrame.midX - size.width / 2,
+                        y: globalFrame.minY - size.height - parent.padding)
+                case .trailing:
+                    .init(
+                        x: globalFrame.maxX + parent.padding,
+                        y: globalFrame.midY - size.height / 2)
+                }
+
             panel.setFrameOrigin(origin)
         }
-        
+
         @objc func frameDidChange(_ notification: Notification) {
             guard let view = notification.object as? NSView else { return }
             updatePosition(for: view.frame.size)
@@ -166,7 +201,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
 private struct PopupContent: View {
     @State private var isExpanded: Bool = false
-    
+
     var body: some View {
         VStack {
             Button("Toggle Expansion") {
@@ -176,13 +211,13 @@ private struct PopupContent: View {
             }
             .padding()
             .buttonStyle(.luminareCompact)
-            
+
             if isExpanded {
                 Text("Expanded Content")
                     .font(.title)
                     .padding()
             } else {
-                
+
                 Text("Normal Content")
                     .padding()
             }
@@ -194,14 +229,12 @@ private struct PopupContent: View {
 @available(macOS 15.0, *)
 #Preview {
     @Previewable @State var isPresented: Bool = false
-    
+
     Button("Toggle Popup") {
         isPresented.toggle()
     }
-    .background {
-        LuminarePopup(isPresented: $isPresented) {
-            PopupContent()
-        }
+    .luminarePopup(isPresented: $isPresented, edge: .leading) {
+        PopupContent()
     }
     .padding()
     .frame(width: 500, height: 300)

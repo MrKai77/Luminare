@@ -32,8 +32,10 @@ public extension EnvironmentValues {
     // MARK: Modal
 
     @Entry var luminareModalCornerRadius: CGFloat = 12
+    @Entry var luminareModalPadding: CGFloat = 12
     @Entry var luminareModalCancel: () -> AnyView? = { nil }
     @Entry var luminareModalDone: () -> AnyView? = { nil }
+    @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
 }
 
 // MARK: - Initializers
