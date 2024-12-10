@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import VariadicViews
 
 /// The orientation of a ``LuminareDividedStack``.
 public enum LuminareDividedStackOrientation: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
@@ -62,15 +63,15 @@ public struct LuminareDividedStack<Content>: View where Content: View {
 
     @ViewBuilder
     private func makeHorizontalStack() -> some View {
-        _VariadicView.Tree(LuminareDividedHStackLayout()) {
-            content()
+        UnaryVariadicView(content()) { children in
+            LuminareDividedHStackVariadic(children: children)
         }
     }
 
     @ViewBuilder
     private func makeVerticalStack() -> some View {
-        _VariadicView.Tree(LuminareDividedVStackLayout()) {
-            content()
+        UnaryVariadicView(content()) { children in
+            LuminareDividedVStackVariadic(children: children)
         }
     }
 }
@@ -79,13 +80,14 @@ public struct LuminareDividedStack<Content>: View where Content: View {
 
 // MARK: Horizontal
 
-struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
-    @ViewBuilder
-    func body(children: _VariadicView.Children) -> some View {
+struct LuminareDividedHStackVariadic: View {
+    var children: VariadicViewChildren
+    
+    var body: some View {
         HStack(spacing: 0) {
             ForEach(children) { child in
                 child
-
+                
                 if child.id != children.last?.id {
                     Divider()
                         .edgesIgnoringSafeArea(.top)
@@ -99,13 +101,14 @@ struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
 
 // MARK: Vertical
 
-struct LuminareDividedVStackLayout: _VariadicView_UnaryViewRoot {
-    @ViewBuilder
-    func body(children: _VariadicView.Children) -> some View {
+struct LuminareDividedVStackVariadic: View {
+    var children: VariadicViewChildren
+    
+    var body: some View {
         VStack(spacing: 0) {
             ForEach(children) { child in
                 child
-
+                
                 if child.id != children.last?.id {
                     Divider()
                         .luminareBackground()

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import VariadicViews
 
 /// The style for a ``LuminareCompactPicker``.
 public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable {
@@ -74,10 +75,13 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                     .buttonStyle(.borderless)
                     .padding(.trailing, -2)
             case .segmented:
-                _VariadicView.Tree(SegmentedLayout(
-                    isHovering: isHovering,
-                    selection: $selection
-                ), content: content)
+                UnaryVariadicView(content()) { children in
+                    SegmentedVariadic(
+                        children: children,
+                        isHovering: isHovering,
+                        selection: $selection
+                    )
+                }
             }
         }
         .onHover { hover in
@@ -97,12 +101,13 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     // MARK: - Layout
 
-    struct SegmentedLayout: _VariadicView.UnaryViewRoot {
+    struct SegmentedVariadic: View {
         @Environment(\.luminareAnimationFast) private var animationFast
         @Environment(\.luminareMinHeight) private var minHeight
         @Environment(\.luminareHorizontalPadding) private var horizontalPadding
         @Environment(\.luminareHasDividers) private var hasDividers
 
+        var children: VariadicViewChildren
         var isHovering: Bool
 
         @Binding var selection: V
@@ -111,20 +116,20 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         @State private var isHolding: Bool = false
 
         private var mouseLocation: NSPoint { NSEvent.mouseLocation }
-
-        @ViewBuilder func body(children: _VariadicView.Children) -> some View {
+        
+        var body: some View {
             HStack(spacing: horizontalPadding) {
                 ForEach(Array(children.enumerated()), id: \.offset) { _, child in
                     if let value = child.id(as: V.self) {
                         SegmentedKnob(
+                            child: child,
                             namespace: namespace,
                             isParentHovering: isHovering,
-                            selection: $selection, value: value,
-                            view: child
+                            selection: $selection, value: value
                         )
                         .foregroundStyle(isHovering && selection == value ? .primary : .secondary)
                         .zIndex(1)
-
+                        
                         if hasDividers, child.id != children.last?.id {
                             Divider()
                                 .frame(width: 0, height: minHeight / 2)
@@ -143,12 +148,12 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
             @Environment(\.luminareIsBordered) private var isBordered
 
+            var child: VariadicViewChildren.Element
             var namespace: Namespace.ID
             var isParentHovering: Bool
 
             @Binding var selection: V
             var value: V
-            var view: _VariadicView.Children.Element
 
             @State private var isHovering: Bool = false
 
@@ -158,7 +163,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         selection = value
                     }
                 } label: {
-                    view
+                    child
                         .frame(maxWidth: .infinity, minHeight: minHeight - 8)
                         .padding(.horizontal, horizontalPadding)
                 }

@@ -4,9 +4,10 @@
 //
 //  Created by Kai Azim on 2024-04-02.
 //
-//  Thanks to https://movingparts.io/variadic-views-in-swiftui
+//  Thanks to https://movingparts.io/variadic-views-in-swiftui and https://github.com/lorenzofiamingo/swiftui-variadic-views
 
 import SwiftUI
+import VariadicViews
 
 // MARK: - Divided Vertical Stack
 
@@ -44,43 +45,44 @@ public struct DividedVStack<Content>: View where Content: View {
     // MARK: Body
 
     public var body: some View {
-        _VariadicView.Tree(
-            DividedVStackLayout(
+        UnaryVariadicView(content()) { children in
+            DividedVStackVariadic(
+                children: children,
                 spacing: isMasked ? spacing : 0,
                 isMasked: isMasked,
                 hasDividers: hasDividers
             )
-        ) {
-            content()
         }
     }
 }
 
 // MARK: - Layouts
 
-struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
+struct DividedVStackVariadic: View {
+    let children: VariadicViewChildren
     let spacing: CGFloat
     let innerPadding: CGFloat
     let isMasked: Bool
     let hasDividers: Bool
 
     init(
+        children: VariadicViewChildren,
         spacing: CGFloat?,
         innerPadding: CGFloat = 4,
         isMasked: Bool,
         hasDividers: Bool
     ) {
+        self.children = children
         self.spacing = spacing ?? innerPadding
         self.innerPadding = innerPadding
         self.isMasked = isMasked
         self.hasDividers = hasDividers
     }
-
-    @ViewBuilder
-    func body(children: _VariadicView.Children) -> some View {
+    
+    var body: some View {
         let first = children.first?.id
         let last = children.last?.id
-
+        
         VStack(spacing: hasDividers ? spacing : spacing / 2) {
             ForEach(children) { child in
                 Group {
@@ -101,7 +103,7 @@ struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
                             .padding(.vertical, -4)
                     }
                 }
-
+                
                 if hasDividers, child.id != last {
                     Divider()
                         .padding(.horizontal, 1)
