@@ -24,7 +24,6 @@ public extension View {
         background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
             .background {
                 content()
-                    .opacity(material == nil ? 1 : 0.5)
             }
     }
 }
