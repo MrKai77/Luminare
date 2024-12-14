@@ -145,7 +145,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             @Environment(\.luminareAnimationFast) private var animationFast
             @Environment(\.luminareMinHeight) private var minHeight
             @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-            @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+            @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
             @Environment(\.luminareIsBordered) private var isBordered
 
             var child: VariadicViewChildren.Element
@@ -181,7 +181,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                                     id: "knob", in: namespace
                                 )
                         } else if isHovering {
-                            RoundedRectangle(cornerRadius: constrainedCornerRadius)
+                            UnevenRoundedRectangle(cornerRadii: cornerRadii)
                                 .foregroundStyle(.quinary)
                         }
                     }
@@ -190,11 +190,11 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 .frame(minHeight: minHeight)
             }
 
-            private var constrainedCornerRadius: CGFloat {
+            private var constrainedCornerRadii: RectangleCornerRadii {
                 if isBordered || isParentHovering {
-                    max(0, cornerRadius - 2)
+                    cornerRadii.map { max(0, $0 - 2) }
                 } else {
-                    cornerRadius
+                    cornerRadii
                 }
             }
 
@@ -216,7 +216,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                             .blendMode(.luminosity)
                     }
                 }
-                .clipShape(.rect(cornerRadius: constrainedCornerRadius))
+                .clipShape(.rect(cornerRadii: constrainedCornerRadii))
             }
         }
     }

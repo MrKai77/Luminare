@@ -13,8 +13,8 @@ import SwiftUI
 public struct LuminareCroppedSectionItem: ViewModifier {
     // MARK: Environments
 
-    @Environment(\.luminareCornerRadius) private var cornerRadius
-    @Environment(\.luminareButtonCornerRadius) private var buttonCornerRadius
+    @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareButtonCornerRadii) private var buttonCornerRadii
 
     // MARK: Fields
 
@@ -49,32 +49,27 @@ public struct LuminareCroppedSectionItem: ViewModifier {
     @ViewBuilder private func mask() -> some View {
         if isFirstChild, isLastChild {
             UnevenRoundedRectangle(
-                topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: cornerRadius - innerPadding,
-                bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: cornerRadius - innerPadding
+                topLeadingRadius: cornerRadii.topLeading - innerPadding,
+                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
+                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
+                topTrailingRadius: cornerRadii.topTrailing - innerPadding
             )
         } else if isFirstChild {
             UnevenRoundedRectangle(
-                topLeadingRadius: cornerRadius - innerPadding,
-                bottomLeadingRadius: buttonCornerRadius,
-                bottomTrailingRadius: buttonCornerRadius,
-                topTrailingRadius: cornerRadius - innerPadding
+                topLeadingRadius: cornerRadii.topLeading - innerPadding,
+                bottomLeadingRadius: buttonCornerRadii.bottomLeading,
+                bottomTrailingRadius: buttonCornerRadii.bottomTrailing,
+                topTrailingRadius: cornerRadii.topTrailing - innerPadding
             )
         } else if isLastChild {
             UnevenRoundedRectangle(
-                topLeadingRadius: buttonCornerRadius,
-                bottomLeadingRadius: cornerRadius - innerPadding,
-                bottomTrailingRadius: cornerRadius - innerPadding,
-                topTrailingRadius: buttonCornerRadius
+                topLeadingRadius: buttonCornerRadii.topLeading,
+                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
+                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
+                topTrailingRadius: buttonCornerRadii.topTrailing
             )
         } else {
-            UnevenRoundedRectangle(
-                topLeadingRadius: buttonCornerRadius,
-                bottomLeadingRadius: buttonCornerRadius,
-                bottomTrailingRadius: buttonCornerRadius,
-                topTrailingRadius: buttonCornerRadius
-            )
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
         }
     }
 }

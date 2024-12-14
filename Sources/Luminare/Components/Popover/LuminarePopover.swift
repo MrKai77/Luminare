@@ -54,7 +54,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminarePopoverTrigger) private var trigger
     @Environment(\.luminarePopoverShade) private var shade
-    @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareCornerRadii) private var cornerRadii
 
     // MARK: Fields
 
@@ -172,9 +172,9 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                 Group {
                     switch trigger {
                     case .hover:
-                        RoundedRectangle(cornerRadius: cornerRadius)
+                        UnevenRoundedRectangle(cornerRadii: cornerRadii)
                     case .forceTouch:
-                        RoundedRectangle(cornerRadius: cornerRadius)
+                        UnevenRoundedRectangle(cornerRadii: cornerRadii)
                             .opacity(normalizedForceTouchProgress)
                     }
                 }

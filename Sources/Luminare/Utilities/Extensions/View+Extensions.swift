@@ -124,8 +124,12 @@ public extension View {
 public extension View {
     // MARK: General
     
+    @ViewBuilder func luminareCornerRadii(_ radii: RectangleCornerRadii = .init(12)) -> some View {
+        environment(\.luminareCornerRadii, radii)
+    }
+    
     @ViewBuilder func luminareCornerRadius(_ radius: CGFloat = 12) -> some View {
-        environment(\.luminareCornerRadius, radius)
+        luminareCornerRadii(.init(radius))
     }
     
     @ViewBuilder func luminareMinHeight(_ height: CGFloat = 34) -> some View {
@@ -160,12 +164,12 @@ public extension View {
     
     // MARK: Sheet
     
-    @ViewBuilder func luminareSheetCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
+    @ViewBuilder func luminareSheetCornerRadii(_ radii: RectangleCornerRadii = .init(12)) -> some View {
         environment(\.luminareSheetCornerRadii, radii)
     }
     
     @ViewBuilder func luminareSheetCornerRadius(_ radius: CGFloat = 12) -> some View {
-        luminareSheetCornerRadii(.init(topLeading: radius, bottomLeading: radius, bottomTrailing: radius, topTrailing: radius))
+        luminareSheetCornerRadii(.init(radius))
     }
     
     @ViewBuilder func luminareSheetPresentation(_ presentation: LuminareSheetPresentation) -> some View {
@@ -179,9 +183,9 @@ public extension View {
     @ViewBuilder func luminareSheetClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
         environment(\.luminareSheetClosesOnDefocus, closesOnDefocus)
     }
-
+    
     // MARK: Popup
-
+    
     @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 12) -> some View {
         environment(\.luminarePopupPadding, padding)
     }
@@ -189,109 +193,121 @@ public extension View {
     @ViewBuilder func luminarePopupCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
         environment(\.luminarePopupCornerRadii, radii)
     }
-
+    
     // MARK: Luminare Color Picker
-
+    
     @ViewBuilder func luminareColorPickerControls(hasCancel: Bool = false, hasDone: Bool = false) -> some View {
         environment(\.luminareColorPickerHasCancel, hasCancel)
             .environment(\.luminareColorPickerHasDone, hasDone)
     }
-
+    
     // MARK: Luminare Button Styles
-
+    
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareButtonMaterial, material)
     }
-
-    @ViewBuilder func luminareButtonCornerRadius(_ radius: CGFloat = 2) -> some View {
-        environment(\.luminareButtonCornerRadius, radius)
+    
+    @ViewBuilder func luminareButtonCornerRadii(_ radii: RectangleCornerRadii = .init(2)) -> some View {
+        environment(\.luminareButtonCornerRadii, radii)
     }
-
+    
+    @ViewBuilder func luminareButtonCornerRadius(_ radius: CGFloat = 2) -> some View {
+        luminareButtonCornerRadii(.init(radius))
+    }
+    
     @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool = true) -> some View {
         environment(\.luminareButtonHighlightOnHover, highlight)
     }
-
-    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
-        environment(\.luminareCompactButtonCornerRadius, radius)
+    
+    @ViewBuilder func luminareCompactButtonCornerRadii(_ radii: RectangleCornerRadii = .init(8)) -> some View {
+        environment(\.luminareCompactButtonCornerRadii, radii)
     }
-
+    
+    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
+        luminareCompactButtonCornerRadii(.init(radius))
+    }
+    
     @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
         environment(\.luminareCompactButtonAspectRatio, (aspectRatio, contentMode))
     }
-
+    
     @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
         environment(\.luminareCompactButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
     }
-
+    
     @ViewBuilder func luminareCompactButtonHasFixedHeight(_ hasFixedHeight: Bool = true) -> some View {
         environment(\.luminareCompactButtonHasFixedHeight, hasFixedHeight)
     }
-
+    
     // MARK: Luminare Section
-
+    
     @ViewBuilder func luminareSectionMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareSectionMaterial, material)
     }
-
+    
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat? = .infinity) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
-
+    
     @ViewBuilder func luminareSectionMasked(_ masked: Bool = false) -> some View {
         environment(\.luminareSectionIsMasked, masked)
     }
-
+    
     // MARK: Luminare Compose
-
+    
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
     }
-
+    
     @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .regular) -> some View {
         environment(\.luminareComposeStyle, style)
     }
-
+    
     // MARK: Luminare Popover
-
+    
     @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger = .hover) -> some View {
         environment(\.luminarePopoverTrigger, trigger)
     }
-
+    
     @ViewBuilder func luminarePopoverShade(_ shade: LuminarePopoverShade = .styled) -> some View {
         environment(\.luminarePopoverShade, shade)
     }
-
+    
     // MARK: Luminare Stepper
-
+    
     @available(macOS 15.0, *)
     @ViewBuilder func luminareStepperAlignment(_ alignment: LuminareStepperAlignment = .trailing) -> some View {
         environment(\.luminareStepperAlignment, alignment)
     }
-
+    
     @available(macOS 15.0, *)
     @ViewBuilder func luminareStepperDirection(_ direction: LuminareStepperDirection = .horizontal) -> some View {
         environment(\.luminareStepperDirection, direction)
     }
-
+    
     // MARK: Luminare Compact Picker
-
+    
     @ViewBuilder func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle = .menu) -> some View {
         environment(\.luminareCompactPickerStyle, style)
     }
-
+    
     // MARK: Luminare List
-
+    
     @ViewBuilder func luminareListContentMargins(_ margins: CGFloat) -> some View {
         luminareListContentMargins(top: margins, bottom: margins)
     }
-
+    
     @ViewBuilder func luminareListContentMargins(top: CGFloat = 0, bottom: CGFloat = 0) -> some View {
         environment(\.luminareListContentMarginsTop, top)
             .environment(\.luminareListContentMarginsBottom, bottom)
     }
+    
+    @ViewBuilder func luminareListItemCornerRadii(_ radii: RectangleCornerRadii = .init(2)) -> some View {
+        environment(\.luminareListItemCornerRadii, radii)
+    }
 
     @ViewBuilder func luminareListItemCornerRadius(_ radius: CGFloat = 2) -> some View {
-        environment(\.luminareListItemCornerRadius, radius)
+        luminareListItemCornerRadii(.init(radius))
     }
 
     @ViewBuilder func luminareListItemHeight(_ height: CGFloat = 50) -> some View {

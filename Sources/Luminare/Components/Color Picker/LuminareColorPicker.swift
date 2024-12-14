@@ -68,7 +68,7 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
 
     // MARK: Environments
 
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     // MARK: Fields
 
@@ -120,7 +120,7 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
                 Button {
                     isColorPickerPresented.toggle()
                 } label: {
-                    RoundedRectangle(cornerRadius: max(0, cornerRadius - 4))
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii.map { max(0, $0 - 4) })
                         .foregroundStyle(color)
                         .padding(4)
                 }

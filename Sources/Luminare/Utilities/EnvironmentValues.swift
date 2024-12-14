@@ -40,12 +40,7 @@ public extension EnvironmentValues {
     
     // MARK: Sheet
     
-    @Entry var luminareSheetCornerRadii: RectangleCornerRadii = .init(
-        topLeading: 12,
-        bottomLeading: 12,
-        bottomTrailing: 12,
-        topTrailing: 12
-    )
+    @Entry var luminareSheetCornerRadii: RectangleCornerRadii = .init(12)
     @Entry var luminareSheetPresentation: LuminareSheetPresentation = .windowCenter
     @Entry var luminareSheetIsMovableByWindowBackground: Bool = false
     @Entry var luminareSheetClosesOnDefocus: Bool = false
@@ -60,7 +55,7 @@ public extension EnvironmentValues {
         topTrailing: 12
     )
 
-    // MARK: Luminare Color Picker
+    // MARK: Color Picker
 
     @Entry var luminareColorPickerHasCancel: Bool = false
     @Entry var luminareColorPickerHasDone: Bool = false
@@ -71,7 +66,7 @@ public extension EnvironmentValues {
 public extension EnvironmentValues {
     // MARK: General
 
-    @Entry var luminareCornerRadius: CGFloat = 12
+    @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
@@ -80,9 +75,10 @@ public extension EnvironmentValues {
     // MARK: Luminare Button Styles
 
     @Entry var luminareButtonMaterial: Material? = nil
-    @Entry var luminareButtonCornerRadius: CGFloat = 2
+    @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
     @Entry var luminareButtonHighlightOnHover: Bool = true
-    @Entry var luminareCompactButtonCornerRadius: CGFloat = 8
+    
+    @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
     @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
     @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
@@ -117,7 +113,7 @@ public extension EnvironmentValues {
 
     @Entry var luminareListContentMarginsTop: CGFloat = 0
     @Entry var luminareListContentMarginsBottom: CGFloat = 0
-    @Entry var luminareListItemCornerRadius: CGFloat = 2
+    @Entry var luminareListItemCornerRadii: RectangleCornerRadii = .init(2)
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListItemHighlightOnHover: Bool = true
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil

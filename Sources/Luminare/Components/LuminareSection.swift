@@ -13,7 +13,7 @@ import SwiftUI
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Environments
 
-    @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareHasDividers) private var hasDividers
@@ -69,14 +69,14 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     }
                     .frame(maxWidth: maxWidth)
                     .background(.quinary, with: material)
-                    .clipShape(.rect(cornerRadius: cornerRadius))
+                    .clipShape(.rect(cornerRadii: cornerRadii))
                     .overlay {
-                        RoundedRectangle(cornerRadius: cornerRadius)
+                        UnevenRoundedRectangle(cornerRadii: cornerRadii)
                             .strokeBorder(.quaternary)
                     }
                 } else {
                     content()
-                        .clipShape(.rect(cornerRadius: isMasked ? cornerRadius : 0))
+                        .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
                 }
             }
             .padding(hasPadding ? innerPadding : 0)
