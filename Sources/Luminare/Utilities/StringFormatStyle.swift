@@ -19,8 +19,6 @@ import SwiftUI
 ///
 /// - ``HexStrategy``
 public struct StringFormatStyle: Equatable, Hashable, Codable, ParseableFormatStyle {
-    public var parseStrategy: Strategy = .identity
-
     public typealias FormatInput = String
     public typealias FormatOutput = String
 
@@ -108,27 +106,25 @@ public struct StringFormatStyle: Equatable, Hashable, Codable, ParseableFormatSt
             }
         }
     }
+    
+    public var parseStrategy: Strategy = .identity
 
     public init(parseStrategy: Strategy = .identity) {
         self.parseStrategy = parseStrategy
     }
 
     public func format(_ value: String) -> String {
-        do {
-            return try parseStrategy.parse(value)
-        } catch {
-            print("Error: \(error)")
-            return value
-        }
+        // don't need conversions
+        value
     }
-}
-
-/// Represents a text case.
-public enum TextCase: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
-    /// The uppercase.
-    case uppercase
-    /// The lowercase.
-    case lowercase
-
-    public var id: String { rawValue }
+    
+    /// Represents a text case.
+    public enum TextCase: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+        /// The uppercase.
+        case uppercase
+        /// The lowercase.
+        case lowercase
+        
+        public var id: String { rawValue }
+    }
 }

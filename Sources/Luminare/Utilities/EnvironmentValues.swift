@@ -40,8 +40,8 @@ public extension EnvironmentValues {
 
     // MARK: Luminare Color Picker
 
-    @Entry var luminareColorPickerCancelView: () -> AnyView? = { nil }
-    @Entry var luminareColorPickerDoneView: () -> AnyView? = { nil }
+    @Entry var luminareColorPickerHasCancel: Bool = false
+    @Entry var luminareColorPickerHasDone: Bool = false
 }
 
 // MARK: - Initializers

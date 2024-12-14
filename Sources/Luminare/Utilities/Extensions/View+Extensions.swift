@@ -174,16 +174,9 @@ public extension View {
 
     // MARK: Luminare Color Picker
 
-    @ViewBuilder func luminareColorPickerCancelView(@ViewBuilder _ cancel: @escaping () -> (some View)?) -> some View {
-        environment(\.luminareColorPickerCancelView) {
-            cancel().map(AnyView.init(_:))
-        }
-    }
-
-    @ViewBuilder func luminareColorPickerDoneView(@ViewBuilder _ done: @escaping () -> (some View)?) -> some View {
-        environment(\.luminareColorPickerDoneView) {
-            done().map(AnyView.init(_:))
-        }
+    @ViewBuilder func luminareColorPickerControls(hasCancel: Bool = false, hasDone: Bool = false) -> some View {
+        environment(\.luminareColorPickerHasCancel, hasCancel)
+            .environment(\.luminareColorPickerHasDone, hasDone)
     }
 
     // MARK: Luminare Button Styles

@@ -8,32 +8,24 @@
 import SwiftUI
 
 /// The style of a ``LuminareColorPicker``.
-public struct LuminareColorPickerStyle<F, R, G, B>
-    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
-    R: View, G: View, B: View {
-    public typealias ColorNames = RGBColorNames<R, G, B>
-
+public struct LuminareColorPickerStyle<F>
+    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     let format: F?
-    let colorNames: ColorNames?
+    let hasColorWell: Bool
 
     /// Has a color well that can present a color picker modal.
-    ///
-    /// - Parameters:
-    ///   - colorNames: the names of the red, green, and blue color input fields inside the color picker modal.
-    ///   - done: the **done** label inside the color picker modal.
-    public static func colorWell(
-        colorNames: ColorNames
-    ) -> Self where F == StringFormatStyle {
-        .init(format: nil, colorNames: colorNames)
+    public static func colorWell() -> Self where F == StringFormatStyle {
+        .init(format: nil, hasColorWell: true)
     }
-
+    
     /// Has a text field with a custom format.
     ///
     /// - Parameters:
-    ///   - format: the `ParseableFormatStyle` to parse the color string.
-    public static func textField(format: F) -> Self
-        where R == EmptyView, G == EmptyView, B == EmptyView {
-        .init(format: format, colorNames: nil)
+    ///   - parseStrategy: the ``StringFormatStyle/Strategy`` that specifies how the hex string will be formatted.
+    public static func textField(
+        format: F
+    ) -> Self where F == StringFormatStyle {
+        .init(format: format, hasColorWell: false)
     }
 
     /// Has a text field with a hex format strategy.
@@ -42,7 +34,7 @@ public struct LuminareColorPickerStyle<F, R, G, B>
     ///   - parseStrategy: the ``StringFormatStyle/Strategy`` that specifies how the hex string will be formatted.
     public static func textField(
         parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
-    ) -> Self where F == StringFormatStyle, R == EmptyView, G == EmptyView, B == EmptyView {
+    ) -> Self where F == StringFormatStyle {
         .textField(format: .init(parseStrategy: parseStrategy))
     }
 
@@ -50,36 +42,29 @@ public struct LuminareColorPickerStyle<F, R, G, B>
     ///
     /// - Parameters:
     ///   - format: the `ParseableFormatStyle` to parse the color string.
-    ///   - colorNames: the names of the red, green, and blue color input fields inside the color picker modal.
-    ///   - done: the **done** label inside the color picker modal.
     public static func textFieldWithColorWell(
-        format: F,
-        colorNames: ColorNames
+        format: F
     ) -> Self {
-        .init(format: format, colorNames: colorNames)
+        .init(format: format, hasColorWell: true)
     }
 
     /// Has both a text field with a hex format strategy and a color well.
     ///
     /// - Parameters:
     ///   - parseStrategy: the ``StringFormatStyle/Strategy`` that specifies how the hex string will be formatted.
-    ///   - colorNames: the names of the red, green, and blue color input fields inside the color picker modal.
-    ///   - done: the **done** label inside the color picker modal.
     public static func textFieldWithColorWell(
-        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell),
-        colorNames: ColorNames
+        parseStrategy: StringFormatStyle.Strategy = .hex(.lowercasedWithWell)
     ) -> Self where F == StringFormatStyle {
-        .textFieldWithColorWell(format: .init(parseStrategy: parseStrategy), colorNames: colorNames)
+        .textFieldWithColorWell(format: .init(parseStrategy: parseStrategy))
     }
 }
 
 // MARK: - Color Picker
 
 /// A stylized color picker.
-public struct LuminareColorPicker<F, R, G, B>: View
-    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String,
-    R: View, G: View, B: View {
-    public typealias Style = LuminareColorPickerStyle<F, R, G, B>
+public struct LuminareColorPicker<F>: View
+    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+    public typealias Style = LuminareColorPickerStyle<F>
 
     // MARK: Environments
 
@@ -131,7 +116,7 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 }
             }
 
-            if let colorNames = style.colorNames {
+            if style.hasColorWell {
                 Button {
                     isColorPickerPresented.toggle()
                 } label: {
@@ -145,9 +130,8 @@ public struct LuminareColorPicker<F, R, G, B>: View
                 .luminareModalWithPredefinedPadding(isPresented: $isColorPickerPresented, closesOnDefocus: true) {
                     VStack {
                         ColorPickerModalView(
-                            selectedColor: $color.hsb,
-                            hexColor: $text,
-                            colorNames: colorNames
+                            selectedColor: $color,
+                            hexColor: $text
                         )
                     }
                     .frame(width: 260)
@@ -172,15 +156,7 @@ public struct LuminareColorPicker<F, R, G, B>: View
 
     LuminareColorPicker(
         color: $color,
-        style: .textFieldWithColorWell(
-            colorNames: .init {
-                Text("Red")
-            } green: {
-                Text("Green")
-            } blue: {
-                Text("Blue")
-            }
-        )
+        style: .textFieldWithColorWell()
     )
     .luminareCompactButtonAspectRatio(contentMode: .fill)
     .monospaced()
