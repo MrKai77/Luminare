@@ -12,7 +12,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     @Binding private var isPresented: Bool
 
     private let closesOnDefocus: Bool
-    private let presentation: LuminareModalPresentation
+    private let presentation: LuminareSheetPresentation
 
     private var view: NSView?
 
@@ -20,7 +20,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         isPresented: Binding<Bool>,
         isMovableByWindowBackground: Bool = false,
         closesOnDefocus: Bool = false,
-        presentation: LuminareModalPresentation,
+        presentation: LuminareSheetPresentation,
         cornerRadii: RectangleCornerRadii,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -37,7 +37,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
 
         let view = NSHostingView(
             rootView: LuminareModalView(content: content)
-                .luminareModalCornerRadii(cornerRadii)
+                .luminareSheetCornerRadii(cornerRadii)
                 .environmentObject(self)
         )
         self.view = view

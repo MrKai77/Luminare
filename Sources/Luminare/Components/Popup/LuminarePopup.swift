@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Popup
 
 public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
-    @Environment(\.luminareModalCornerRadii) private var cornerRadii
+    @Environment(\.luminarePopupCornerRadii) private var cornerRadii
     @Environment(\.luminarePopupPadding) private var padding
 
     @Binding private var isPresented: Bool

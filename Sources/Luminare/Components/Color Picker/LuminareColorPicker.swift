@@ -63,7 +63,7 @@ public struct LuminareColorPickerStyle<F>
 
 /// A stylized color picker.
 public struct LuminareColorPicker<F>: View
-    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     public typealias Style = LuminareColorPickerStyle<F>
 
     // MARK: Environments
@@ -127,7 +127,7 @@ public struct LuminareColorPicker<F>: View
                 .buttonStyle(.luminareCompact)
                 .luminareHorizontalPadding(0)
                 .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
-                .luminareModalWithPredefinedPadding(isPresented: $isColorPickerPresented, closesOnDefocus: true) {
+                .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(
                             selectedColor: $color,
@@ -154,10 +154,23 @@ public struct LuminareColorPicker<F>: View
 ) {
     @Previewable @State var color: Color = .accentColor
 
-    LuminareColorPicker(
-        color: $color,
-        style: .textFieldWithColorWell()
-    )
+    VStack {
+        LuminareColorPicker(
+            color: $color,
+            style: .textFieldWithColorWell()
+        )
+        
+        LuminareColorPicker(
+            color: $color,
+            style: .textFieldWithColorWell()
+        )
+        .luminareModalStyle(.popover)
+        .luminareModalContentWrapper { view in
+            view
+                .luminareCompactButtonAspectRatio(contentMode: .fit)
+                .monospaced(false)
+        }
+    }
     .luminareCompactButtonAspectRatio(contentMode: .fill)
     .monospaced()
     .frame(width: 300)

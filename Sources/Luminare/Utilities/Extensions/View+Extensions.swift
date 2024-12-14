@@ -71,37 +71,29 @@ public extension View {
 public extension View {
     @ViewBuilder func luminareModal(
         isPresented: Binding<Bool>,
-        isMovableByWindowBackground: Bool = false,
-        closesOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
             LuminareModalModifier(
                 isPresented: isPresented,
-                isMovableByWindowBackground: isMovableByWindowBackground,
-                closesOnDefocus: closesOnDefocus,
                 content: content
             )
         )
     }
 
-    @ViewBuilder func luminareModalWithPredefinedPadding(
+    @ViewBuilder func luminareModalWithPredefinedSheetStyle(
         isPresented: Binding<Bool>,
-        isMovableByWindowBackground: Bool = false,
-        closesOnDefocus: Bool = false,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
             LuminareModalModifier(
-                isPresented: isPresented,
-                isMovableByWindowBackground: isMovableByWindowBackground,
-                closesOnDefocus: closesOnDefocus
+                isPresented: isPresented
             ) {
                 content()
                     .padding(8)
             }
         )
-        .luminareModalCornerRadii(.init(topLeading: 18, bottomLeading: 14, bottomTrailing: 14, topTrailing: 18))
+        .luminareSheetCornerRadii(.init(topLeading: 18, bottomLeading: 14, bottomTrailing: 14, topTrailing: 18))
     }
 }
 
@@ -131,45 +123,71 @@ public extension View {
 
 public extension View {
     // MARK: General
-
+    
     @ViewBuilder func luminareCornerRadius(_ radius: CGFloat = 12) -> some View {
         environment(\.luminareCornerRadius, radius)
     }
-
+    
     @ViewBuilder func luminareMinHeight(_ height: CGFloat = 34) -> some View {
         environment(\.luminareMinHeight, height)
     }
-
+    
     @ViewBuilder func luminareHorizontalPadding(_ padding: CGFloat = 8) -> some View {
         environment(\.luminareHorizontalPadding, padding)
     }
-
+    
     @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
         environment(\.luminareIsBordered, bordered)
     }
-
+    
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
         environment(\.luminareHasDividers, hasDividers)
     }
+}
 
+public extension View {
     // MARK: Modal
-
-    @ViewBuilder func luminareModalCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
-        environment(\.luminareModalCornerRadii, radii)
+    
+    @ViewBuilder func luminareModalStyle(_ style: LuminareModalStyle) -> some View {
+        environment(\.luminareModalStyle, style)
     }
-
-    @ViewBuilder func luminareModalCornerRadius(_ radius: CGFloat = 12) -> some View {
-        luminareModalCornerRadii(.init(topLeading: radius, bottomLeading: radius, bottomTrailing: radius, topTrailing: radius))
+    
+    @ViewBuilder func luminareModalContentWrapper(@ViewBuilder _ content: @escaping (AnyView) -> some View) -> some View {
+        environment(\.luminareModalContentWrapper) { view in
+            AnyView(content(view))
+        }
     }
-
-    @ViewBuilder func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
-        environment(\.luminareModalPresentation, presentation)
+    
+    // MARK: Sheet
+    
+    @ViewBuilder func luminareSheetCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
+        environment(\.luminareSheetCornerRadii, radii)
+    }
+    
+    @ViewBuilder func luminareSheetCornerRadius(_ radius: CGFloat = 12) -> some View {
+        luminareSheetCornerRadii(.init(topLeading: radius, bottomLeading: radius, bottomTrailing: radius, topTrailing: radius))
+    }
+    
+    @ViewBuilder func luminareSheetPresentation(_ presentation: LuminareSheetPresentation) -> some View {
+        environment(\.luminareSheetPresentation, presentation)
+    }
+    
+    @ViewBuilder func luminareSheetMovableByWindowBackground(_ movable: Bool = true) -> some View {
+        environment(\.luminareSheetIsMovableByWindowBackground, movable)
+    }
+    
+    @ViewBuilder func luminareSheetClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
+        environment(\.luminareSheetClosesOnDefocus, closesOnDefocus)
     }
 
     // MARK: Popup
 
     @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 12) -> some View {
         environment(\.luminarePopupPadding, padding)
+    }
+    
+    @ViewBuilder func luminarePopupCornerRadii(_ radii: RectangleCornerRadii = .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)) -> some View {
+        environment(\.luminarePopupCornerRadii, radii)
     }
 
     // MARK: Luminare Color Picker
