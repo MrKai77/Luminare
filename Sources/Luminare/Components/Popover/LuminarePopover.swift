@@ -54,11 +54,12 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminarePopoverTrigger) private var trigger
     @Environment(\.luminarePopoverShade) private var shade
-    @Environment(\.luminareCornerRadius) private var cornerRadius
+    @Environment(\.luminareCornerRadii) private var cornerRadii
 
     // MARK: Fields
 
-    private let arrowEdge: Edge
+    private let attachmentAnchor: PopoverAttachmentAnchor
+    private let arrowEdge: Edge?
     private let padding: CGFloat
 
     @ViewBuilder private var content: () -> Content, badge: () -> Badge
@@ -75,11 +76,13 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     // MARK: Initializers
 
     public init(
-        arrowEdge: Edge = .top,
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder badge: @escaping () -> Badge
     ) {
+        self.attachmentAnchor = attachmentAnchor
         self.arrowEdge = arrowEdge
         self.padding = padding
         self.content = content
@@ -88,11 +91,13 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
 
     public init(
         _ key: LocalizedStringKey,
-        arrowEdge: Edge = .top,
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         @ViewBuilder badge: @escaping () -> Badge
     ) where Content == Text {
         self.init(
+            attachmentAnchor: attachmentAnchor,
             arrowEdge: arrowEdge,
             padding: padding
         ) {
@@ -103,12 +108,14 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     }
 
     public init(
-        arrowEdge: Edge = .top,
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         badgeSize: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Badge == AnyView {
         self.init(
+            attachmentAnchor: attachmentAnchor,
             arrowEdge: arrowEdge,
             padding: padding,
             content: content
@@ -165,9 +172,9 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                 Group {
                     switch trigger {
                     case .hover:
-                        RoundedRectangle(cornerRadius: cornerRadius)
+                        UnevenRoundedRectangle(cornerRadii: cornerRadii)
                     case .forceTouch:
-                        RoundedRectangle(cornerRadius: cornerRadius)
+                        UnevenRoundedRectangle(cornerRadii: cornerRadii)
                             .opacity(normalizedForceTouchProgress)
                     }
                 }
@@ -199,7 +206,11 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                 break
             }
         }
-        .popover(isPresented: $isPopoverPresented, arrowEdge: arrowEdge) {
+        .popover(
+            isPresented: $isPopoverPresented,
+            attachmentAnchor: attachmentAnchor,
+            arrowEdge: arrowEdge
+        ) {
             Group {
                 switch trigger {
                 case .hover:

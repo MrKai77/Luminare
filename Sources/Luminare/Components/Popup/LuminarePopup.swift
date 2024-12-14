@@ -10,8 +10,8 @@ import SwiftUI
 // MARK: - Popup
 
 public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
-    @Environment(\.luminareModalCornerRadius) private var cornerRadius
-    @Environment(\.luminareModalPadding) private var padding
+    @Environment(\.luminarePopupCornerRadii) private var cornerRadii
+    @Environment(\.luminarePopupPadding) private var padding
 
     @Binding private var isPresented: Bool
     private let edge: Edge
@@ -131,14 +131,14 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                                 blendingMode: .behindWindow
                             )
                         }
-                        .clipShape(.rect(cornerRadius: parent.cornerRadius))
+                        .clipShape(.rect(cornerRadii: parent.cornerRadii))
                         .buttonStyle(.luminare)
                         .ignoresSafeArea()
                         .environmentObject(panel)
                 }
                 .frame(
                     maxWidth: .infinity, maxHeight: .infinity,
-                    alignment: parent.edge.opposite.alignment
+                    alignment: parent.edge.negate.alignment
                 )
             )
             panel.contentView = view

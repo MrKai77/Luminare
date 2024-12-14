@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Edge {
-    var opposite: Self {
+    var negate: Self {
         switch self {
         case .top: .bottom
         case .leading: .trailing

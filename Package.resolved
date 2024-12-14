@@ -1,5 +1,5 @@
 {
-  "originHash" : "ed31ca32dc2eaeeeac6cd0423ed78fa0a352bf7bc51e7550faa3ce07ce4c0d40",
+  "originHash" : "561b512b42be15f5de7739225ed1dd81d798ebdca0a4622529c61e9f81303c85",
   "pins" : [
     {
       "identity" : "swift-docc-plugin",
@@ -16,6 +16,15 @@
       "location" : "https://github.com/swiftlang/swift-docc-symbolkit",
       "state" : {
         "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "swiftui-variadic-views",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lorenzofiamingo/swiftui-variadic-views",
+      "state" : {
+        "revision" : "af67d0e85bd2b499fbfb4cda834117e7c52b12b0",
         "version" : "1.0.0"
       }
     }

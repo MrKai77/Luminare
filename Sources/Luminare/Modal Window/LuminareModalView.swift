@@ -7,7 +7,19 @@
 
 import SwiftUI
 
-public enum LuminareModalPresentationTarget: String, Equatable, Hashable,
+public enum LuminareModalStyle {
+    case sheet
+    case popover(
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil
+    )
+    
+    public static var popover: Self {
+        .popover()
+    }
+}
+
+public enum LuminareSheetPresentationTarget: String, Equatable, Hashable,
     Identifiable, CaseIterable, Codable {
     case screen
     case window
@@ -15,7 +27,7 @@ public enum LuminareModalPresentationTarget: String, Equatable, Hashable,
     public var id: String { rawValue }
 }
 
-public enum LuminareModalPresentationAlignment: String, Equatable, Hashable,
+public enum LuminareSheetPresentationAlignment: String, Equatable, Hashable,
     Identifiable, CaseIterable, Codable {
     case centered
     case origin
@@ -23,15 +35,15 @@ public enum LuminareModalPresentationAlignment: String, Equatable, Hashable,
     public var id: String { rawValue }
 }
 
-public struct LuminareModalPresentation: Equatable, Hashable, Codable {
-    var target: LuminareModalPresentationTarget
-    var alignment: LuminareModalPresentationAlignment
+public struct LuminareSheetPresentation: Equatable, Hashable, Codable {
+    var target: LuminareSheetPresentationTarget
+    var alignment: LuminareSheetPresentationAlignment
     var offset: CGPoint
 
     init(
-        _ alignment: LuminareModalPresentationAlignment = .centered,
+        _ alignment: LuminareSheetPresentationAlignment = .centered,
         offset: CGPoint = .zero,
-        relativeTo target: LuminareModalPresentationTarget = .window
+        relativeTo target: LuminareSheetPresentationTarget = .window
     ) {
         self.target = target
         self.alignment = alignment
@@ -100,7 +112,7 @@ public struct LuminareModalPresentation: Equatable, Hashable, Codable {
 struct LuminareModalView<Content>: View where Content: View {
     @EnvironmentObject private var floatingPanel: LuminareModalWindow<Content>
 
-    @Environment(\.luminareModalCornerRadius) private var cornerRadius
+    @Environment(\.luminareSheetCornerRadii) private var cornerRadii
 
     @ViewBuilder private var content: () -> Content
 
@@ -120,7 +132,7 @@ struct LuminareModalView<Content>: View where Content: View {
                         blendingMode: .behindWindow
                     )
                 }
-                .clipShape(.rect(cornerRadius: cornerRadius))
+                .clipShape(.rect(cornerRadii: cornerRadii))
                 .background {
                     GeometryReader { proxy in
                         Color.clear
@@ -138,43 +150,60 @@ struct LuminareModalView<Content>: View where Content: View {
     }
 }
 
-// MARK: - Modal Modifier
+// MARK: - Modifier
 
 struct LuminareModalModifier<ModalContent>: ViewModifier
     where ModalContent: View {
-    @Environment(\.luminareModalPresentation) private var presentation
+    @Environment(\.luminareModalStyle) private var style
+    @Environment(\.luminareModalContentWrapper) private var contentWrapper
+    @Environment(\.luminareSheetPresentation) private var sheetPresentation
+    @Environment(\.luminareSheetCornerRadii) private var sheetCornerRadii
+    @Environment(\.luminareSheetIsMovableByWindowBackground) private var sheetIsMovableByWindowBackground
+    @Environment(\.luminareSheetClosesOnDefocus) private var sheetClosesOnDefocus
 
-    @State private var panel: LuminareModalWindow<ModalContent>?
+    @State private var panel: LuminareModalWindow<AnyView>?
 
     @Binding var isPresented: Bool
-    var isMovableByWindowBackground: Bool = false
-    var closesOnDefocus: Bool = false
     @ViewBuilder var content: () -> ModalContent
 
     func body(content: Content) -> some View {
-        content
-            .onChange(of: isPresented) { newValue in
-                if newValue {
-                    present()
-                } else {
-                    close()
+        switch style {
+        case .sheet:
+            content
+                .onChange(of: isPresented) { newValue in
+                    if newValue {
+                        presentSheet()
+                    } else {
+                        closeSheet()
+                    }
                 }
-            }
-            .onDisappear {
-                isPresented = false
-                close()
-            }
+                .onDisappear {
+                    isPresented = false
+                    closeSheet()
+                }
+        case .popover(let attachmentAnchor, let arrowEdge):
+            content
+                .popover(
+                    isPresented: $isPresented,
+                    attachmentAnchor: attachmentAnchor,
+                    arrowEdge: arrowEdge
+                ) {
+                    contentWrapper(AnyView(self.content()))
+                }
+        }
     }
 
-    private func present() {
+    private func presentSheet() {
         guard panel == nil else { return }
         panel = LuminareModalWindow(
             isPresented: $isPresented,
-            isMovableByWindowBackground: isMovableByWindowBackground,
-            closesOnDefocus: closesOnDefocus,
-            presentation: presentation,
-            content: content
-        )
+            isMovableByWindowBackground: sheetIsMovableByWindowBackground,
+            closesOnDefocus: sheetClosesOnDefocus,
+            presentation: sheetPresentation,
+            cornerRadii: sheetCornerRadii
+        ) {
+            contentWrapper(AnyView(content()))
+        }
 
         DispatchQueue.main.async {
             panel?.orderFrontRegardless()
@@ -182,7 +211,7 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
         }
     }
 
-    private func close() {
+    private func closeSheet() {
         panel?.close()
         panel = nil
     }
@@ -243,7 +272,7 @@ private struct ModalContent: View {
                 ModalContent()
                     .frame(width: 400)
             }
-            .luminareModalPresentation(.screenCenter.offset(x: CGFloat(offsetX), y: CGFloat(offsetY)))
+            .luminareSheetPresentation(.screenCenter.offset(x: CGFloat(offsetX), y: CGFloat(offsetY)))
 
             Button("Toggle Modal (Window Center)") {
                 isPresented2.toggle()
@@ -252,7 +281,7 @@ private struct ModalContent: View {
                 ModalContent()
                     .frame(width: 400)
             }
-            .luminareModalPresentation(.windowCenter.offset(x: CGFloat(offsetX), y: CGFloat(offsetY)))
+            .luminareSheetPresentation(.windowCenter.offset(x: CGFloat(offsetX), y: CGFloat(offsetY)))
         }
     }
     .padding()

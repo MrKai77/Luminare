@@ -52,7 +52,7 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool = false
@@ -81,7 +81,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 isHovering: isHovering, isPressed: configuration.isPressed,
                 fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
             ))
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadii: cornerRadii))
     }
 }
 
@@ -97,7 +97,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool = false
@@ -126,7 +126,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
                 isHovering: isHovering, isPressed: configuration.isPressed,
                 cascading: tint(configuration: configuration)
             ))
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadii: cornerRadii))
     }
 
     private func tint(configuration: Configuration) -> AnyShapeStyle {
@@ -156,7 +156,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareButtonCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @ViewBuilder private var icon: () -> Image
@@ -206,7 +206,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 .padding(24)
                 .allowsHitTesting(false)
             }
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadii: cornerRadii))
     }
 }
 
@@ -220,11 +220,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     @State private var isHovering: Bool = false
 
@@ -349,7 +345,7 @@ public struct LuminareFilled: ViewModifier {
 public struct LuminareBordered: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareIsBordered) private var isBordered
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
+    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     private let isHovering: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle
@@ -395,13 +391,13 @@ public struct LuminareBordered: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .clipShape(.rect(cornerRadius: cornerRadius))
+            .clipShape(.rect(cornerRadii: cornerRadii))
             .background {
                 if isHovering {
-                    RoundedRectangle(cornerRadius: cornerRadius)
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .strokeBorder(fill)
                 } else if isBordered {
-                    RoundedRectangle(cornerRadius: cornerRadius)
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .strokeBorder(hovering)
                 }
             }
@@ -424,12 +420,7 @@ public struct LuminareBordered: ViewModifier {
 public struct LuminareHoverable: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled: Bool
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareIsBordered) private var isBordered
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
-    @Environment(\.luminareCompactButtonCornerRadius) private var cornerRadius
 
     private let isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle

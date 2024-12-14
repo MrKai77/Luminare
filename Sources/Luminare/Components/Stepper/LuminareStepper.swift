@@ -77,6 +77,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     @State private var offset: CGFloat
 
     @State private var shouldScrollViewReset: Bool = true
+    @State private var scrollViewID: UUID = .init() // used for trigger reinitializations
 
     // MARK: Initializers
 
@@ -278,11 +279,11 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             Color.white
                 .padding(
                     direction.paddingSpan.start,
-                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate
+                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate + 1
                 )
                 .padding(
                     direction.paddingSpan.end,
-                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate
+                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate + 1
                 )
         } else {
             Color.white
@@ -359,12 +360,8 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         InfiniteScrollView(
             direction: .init(axis: direction.axis),
 
-            size: getOnlyBinding {
-                proxy.size
-            },
-            spacing: getOnlyBinding {
-                indicatorSpacing
-            },
+            size: proxy.size,
+            spacing: indicatorSpacing,
             snapping: getOnlyBinding {
                 snapping
             },
@@ -379,6 +376,11 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             offset: $offset,
             page: $page
         )
+        .id(scrollViewID)
+        .onChange(of: proxy.size) {
+            // force reinitialize the scroll view to conform to the new size
+            scrollViewID = .init()
+        }
     }
 
     private var snapping: Bool {

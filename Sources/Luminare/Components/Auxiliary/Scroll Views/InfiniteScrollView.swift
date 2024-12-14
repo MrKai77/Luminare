@@ -110,9 +110,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
     public var allowsDragging: Bool = true
 
     /// The explicit size of the scroll view.
-    @Binding public var size: CGSize
+    public var size: CGSize
     /// the spacing between pages.
-    @Binding public var spacing: CGFloat
+    public var spacing: CGFloat
     /// Whether snapping is enabled.
     ///
     /// If snapping is enabled, the view will automatically snaps to the nearest available page anchor with animation.
@@ -532,8 +532,8 @@ private struct InfiniteScrollPreview: View {
             debug: true,
             direction: direction,
 
-            size: .constant(size),
-            spacing: .constant(50),
+            size: size,
+            spacing: 50,
             snapping: .constant(true),
             wrapping: $wrapping,
             initialOffset: .constant(0),
