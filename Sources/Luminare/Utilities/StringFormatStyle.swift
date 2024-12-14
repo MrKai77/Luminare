@@ -106,7 +106,7 @@ public struct StringFormatStyle: Equatable, Hashable, Codable, ParseableFormatSt
             }
         }
     }
-    
+
     public var parseStrategy: Strategy = .identity
 
     public init(parseStrategy: Strategy = .identity) {
@@ -117,14 +117,14 @@ public struct StringFormatStyle: Equatable, Hashable, Codable, ParseableFormatSt
         // don't need conversions
         value
     }
-    
+
     /// Represents a text case.
     public enum TextCase: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
         /// The uppercase.
         case uppercase
         /// The lowercase.
         case lowercase
-        
+
         public var id: String { rawValue }
     }
 }

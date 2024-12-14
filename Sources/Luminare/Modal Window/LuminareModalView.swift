@@ -13,7 +13,7 @@ public enum LuminareModalStyle {
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil
     )
-    
+
     public static var popover: Self {
         .popover()
     }
@@ -181,7 +181,7 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
                     isPresented = false
                     closeSheet()
                 }
-        case .popover(let attachmentAnchor, let arrowEdge):
+        case let .popover(attachmentAnchor, arrowEdge):
             content
                 .popover(
                     isPresented: $isPresented,

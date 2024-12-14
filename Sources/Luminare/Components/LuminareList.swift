@@ -424,13 +424,13 @@ public struct LuminareListItem<Content, V>: View
 
         return .init(
             topLeadingRadius: isFirst && roundedTop
-            ? cornerRadii.topLeading : topCornerRadii.topLeading,
+                ? cornerRadii.topLeading : topCornerRadii.topLeading,
             bottomLeadingRadius: isLast && roundedBottom
-            ? cornerRadii.bottomLeading : bottomCornerRadii.bottomLeading,
+                ? cornerRadii.bottomLeading : bottomCornerRadii.bottomLeading,
             bottomTrailingRadius: isLast && roundedBottom
-            ? cornerRadii.bottomTrailing : bottomCornerRadii.bottomTrailing,
+                ? cornerRadii.bottomTrailing : bottomCornerRadii.bottomTrailing,
             topTrailingRadius: isFirst && roundedTop
-            ? cornerRadii.topTrailing : topCornerRadii.topTrailing
+                ? cornerRadii.topTrailing : topCornerRadii.topTrailing
         )
     }
 
@@ -470,11 +470,11 @@ public struct LuminareListItem<Content, V>: View
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: isFirst && roundedTop
-                    ? cornerRadii.topLeading : itemCornerRadii.topLeading,
+                        ? cornerRadii.topLeading : itemCornerRadii.topLeading,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
                     topTrailingRadius: isFirst && roundedTop
-                    ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
+                        ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
 
@@ -531,9 +531,9 @@ public struct LuminareListItem<Content, V>: View
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
                     bottomLeadingRadius: isLast && roundedBottom
-                    ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
+                        ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
                     bottomTrailingRadius: isLast && roundedBottom
-                    ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
+                        ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
                     topTrailingRadius: 0
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
@@ -573,13 +573,13 @@ public struct LuminareListItem<Content, V>: View
     @ViewBuilder private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: isFirst && roundedTop
-            ? cornerRadii.topLeading : itemCornerRadii.topLeading,
+                ? cornerRadii.topLeading : itemCornerRadii.topLeading,
             bottomLeadingRadius: isLast && roundedBottom
-            ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
+                ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
             bottomTrailingRadius: isLast && roundedBottom
-            ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
+                ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
             topTrailingRadius: isFirst && roundedTop
-            ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
+                ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
     }

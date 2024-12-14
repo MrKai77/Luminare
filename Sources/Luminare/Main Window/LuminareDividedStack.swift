@@ -82,12 +82,12 @@ public struct LuminareDividedStack<Content>: View where Content: View {
 
 struct LuminareDividedHStackVariadic: View {
     var children: VariadicViewChildren
-    
+
     var body: some View {
         HStack(spacing: 0) {
             ForEach(children) { child in
                 child
-                
+
                 if child.id != children.last?.id {
                     Divider()
                         .edgesIgnoringSafeArea(.top)
@@ -103,12 +103,12 @@ struct LuminareDividedHStackVariadic: View {
 
 struct LuminareDividedVStackVariadic: View {
     var children: VariadicViewChildren
-    
+
     var body: some View {
         VStack(spacing: 0) {
             ForEach(children) { child in
                 child
-                
+
                 if child.id != children.last?.id {
                     Divider()
                         .luminareBackground()

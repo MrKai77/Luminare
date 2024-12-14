@@ -34,7 +34,7 @@ struct ColorPickerModalView: View {
     @State private var isRedStepperPresented: Bool = false
     @State private var isGreenStepperPresented: Bool = false
     @State private var isBlueStepperPresented: Bool = false
-    
+
     @State private var hueFallback: Double = .zero
 
     private let colorSampler = NSColorSampler()
@@ -206,7 +206,7 @@ struct ColorPickerModalView: View {
     "ColorPickerModalView",
     traits: .sizeThatFitsLayout
 ) {
-    @Previewable @State var color: Color = Color.accentColor
+    @Previewable @State var color = Color.accentColor
     @Previewable @State var hexColor = ""
 
     color

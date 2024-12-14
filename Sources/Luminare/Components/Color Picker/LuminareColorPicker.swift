@@ -17,7 +17,7 @@ public struct LuminareColorPickerStyle<F>
     public static func colorWell() -> Self where F == StringFormatStyle {
         .init(format: nil, hasColorWell: true)
     }
-    
+
     /// Has a text field with a custom format.
     ///
     /// - Parameters:
@@ -63,7 +63,7 @@ public struct LuminareColorPickerStyle<F>
 
 /// A stylized color picker.
 public struct LuminareColorPicker<F>: View
-where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
+    where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     public typealias Style = LuminareColorPickerStyle<F>
 
     // MARK: Environments
@@ -159,7 +159,7 @@ where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String
             color: $color,
             style: .textFieldWithColorWell()
         )
-        
+
         LuminareColorPicker(
             color: $color,
             style: .textFieldWithColorWell()

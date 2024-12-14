@@ -116,7 +116,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         @State private var isHolding: Bool = false
 
         private var mouseLocation: NSPoint { NSEvent.mouseLocation }
-        
+
         var body: some View {
             HStack(spacing: horizontalPadding) {
                 ForEach(Array(children.enumerated()), id: \.offset) { _, child in
@@ -129,7 +129,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         )
                         .foregroundStyle(isHovering && selection == value ? .primary : .secondary)
                         .zIndex(1)
-                        
+
                         if hasDividers, child.id != children.last?.id {
                             Divider()
                                 .frame(width: 0, height: minHeight / 2)

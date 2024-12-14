@@ -215,10 +215,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             return UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadii.topLeading - innerPadding,
                 bottomLeadingRadius:
-                    (isVerticallyCompact && roundedBottom) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
+                (isVerticallyCompact && roundedBottom) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
                 bottomTrailingRadius: buttonCornerRadii.bottomTrailing,
                 topTrailingRadius:
-                    isHorizontallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
+                isHorizontallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
 
@@ -228,7 +228,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
                 bottomTrailingRadius:
-                    isHorizontallyCompact ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
+                isHorizontallyCompact ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         }
@@ -239,7 +239,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: buttonCornerRadii.bottomLeading,
                 bottomTrailingRadius:
-                    (isHorizontallyCompact && roundedBottom) ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
+                (isHorizontallyCompact && roundedBottom) ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
                 topTrailingRadius: cornerRadii.topTrailing - innerPadding
             )
         }

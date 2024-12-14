@@ -78,11 +78,11 @@ struct DividedVStackVariadic: View {
         self.isMasked = isMasked
         self.hasDividers = hasDividers
     }
-    
+
     var body: some View {
         let first = children.first?.id
         let last = children.last?.id
-        
+
         VStack(spacing: hasDividers ? spacing : spacing / 2) {
             ForEach(children) { child in
                 Group {
@@ -103,7 +103,7 @@ struct DividedVStackVariadic: View {
                             .padding(.vertical, -4)
                     }
                 }
-                
+
                 if hasDividers, child.id != last {
                     Divider()
                         .padding(.horizontal, 1)
