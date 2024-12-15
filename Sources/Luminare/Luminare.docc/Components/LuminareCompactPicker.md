@@ -17,7 +17,7 @@
         ```swift
         LuminareCompactPicker(selection: $selection, style: .menu) {
             ForEach(data, id: \.keyPath) { element in
-                // content
+                // Content
             }
         }
         ```
@@ -34,7 +34,7 @@
         LuminareCompactPicker(selection: $selection, style: .segmented) {
             ForEach(data, id: \.self) { element in
                 Group {
-                    // content
+                    // Content
                 }
                 .id(element)
             }

@@ -12,7 +12,7 @@
             elements: [...],
             selection: $selection
         ) { element in
-            // content
+            // Content
         }
         ```
         

@@ -210,7 +210,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     private func getShape(row: Int, column: Int) -> some InsettableShape {
         let roundedTop = topCorner.isRounded, roundedBottom = bottomCorner.isRounded
 
-        // top left
+        // - Top leading
+        
         if column == 0, row == 0, roundedTop {
             return UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadii.topLeading - innerPadding,
@@ -222,7 +223,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             )
         }
 
-        // bottom left
+        // - Bottom leading
+        
         else if column == 0, row == maxRowIndex, roundedBottom {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
@@ -232,8 +234,20 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         }
+        
+        // - Bottom trailing
+        
+        else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
+            return UnevenRoundedRectangle(
+                topLeadingRadius: buttonCornerRadii.topLeading,
+                bottomLeadingRadius: buttonCornerRadii.bottomLeading,
+                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
+                topTrailingRadius: buttonCornerRadii.topTrailing
+            )
+        }
 
-        // top right
+        // - Top trailing
+        
         else if column == maxColumnIndex, row == 0, roundedTop {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
@@ -244,17 +258,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             )
         }
 
-        // bottom right
-        else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
-            return UnevenRoundedRectangle(
-                topLeadingRadius: buttonCornerRadii.topLeading,
-                bottomLeadingRadius: buttonCornerRadii.bottomLeading,
-                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
-                topTrailingRadius: buttonCornerRadii.topTrailing
-            )
-        }
-
-        // regular
+        // - Regular
+        
         else {
             return UnevenRoundedRectangle(cornerRadii: buttonCornerRadii)
         }

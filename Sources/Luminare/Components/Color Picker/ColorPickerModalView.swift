@@ -9,7 +9,6 @@ import SwiftUI
 
 // MARK: - Color Picker (Modal)
 
-// view for the color popup as a whole
 struct ColorPickerModalView: View {
     // MARK: Environments
 
@@ -41,7 +40,6 @@ struct ColorPickerModalView: View {
 
     // MARK: Body
 
-    // main view containing all components of the color picker
     var body: some View {
         Group {
             LuminareSection(hasPadding: false) {
@@ -100,7 +98,7 @@ struct ColorPickerModalView: View {
         let hsb = Color(red: redComponent / 255.0, green: greenComponent / 255.0, blue: blueComponent / 255.0).hsb
 
         if hsb.saturation == 0 || hsb.brightness == 0 {
-            // preserve hue
+            // Preserve hue
             return .init(
                 hue: hueFallback,
                 saturation: hsb.saturation,
@@ -166,7 +164,7 @@ struct ColorPickerModalView: View {
             HStack(spacing: 4) {
                 Group {
                     Button("Cancel") {
-                        // revert selected color
+                        // Revert selected color
                         selectedColor = initialColor
                         dismiss()
                     }
@@ -187,7 +185,7 @@ struct ColorPickerModalView: View {
     // MARK: Functions
 
     private func updateComponents(_ color: Color) {
-        // check if changed externally
+        // Check if changed externally
         guard color != .init(hsb: internalHSBColor) else { return }
 
         hexColor = color.toHex()

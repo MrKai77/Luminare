@@ -6,9 +6,9 @@ It's as simple as a `LabeledContent`.
     @Column {
         ```swift
         LuminareCompose {
-            // content
+            // Content
         } label: {
-            // label
+            // Label
         }
         ```
     }
@@ -16,7 +16,7 @@ It's as simple as a `LabeledContent`.
     @Column {
         ```swift
         LuminareCompose("Title") {
-            // content
+            // Content
         }
         ```
     }

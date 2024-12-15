@@ -89,7 +89,7 @@ public struct LuminareView<Content>: View where Content: View {
 
 // MARK: - NSWindow Animation
 
-// custom `NSWindow` resize animation so that it can be stopped midway
+// Vustom `NSWindow` resize animation so that it can be stopped midway
 class LuminareWindowAnimation: NSAnimation {
     let window: NSWindow
     let targetFrame: NSRect
@@ -108,7 +108,7 @@ class LuminareWindowAnimation: NSAnimation {
 
     override var currentProgress: NSAnimation.Progress {
         didSet {
-            // the last frame of this `NSAnimation` looks a little stuttery,
+            // The last frame of this `NSAnimation` looks a little stuttery,
             // so we multiply the progress by 1.01, and then make sure the last
             // frame doesn't draw
             let progress = CGFloat(currentProgress * 1.01)

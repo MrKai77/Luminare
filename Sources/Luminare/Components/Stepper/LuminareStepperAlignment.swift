@@ -20,14 +20,14 @@ public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable,
     /// In left-to-right layouts, the indicators point to top if ``LuminareStepperDirection`` is
     ///  ``LuminareStepperDirection/horizontal`` and to left if ``LuminareStepperDirection`` is
     ///  ``LuminareStepperDirection/vertical``.
-    case leading // the left side of the growth direction, typically the top if horizontal and the left if vertical
+    case leading
     /// The center indicator is larger than others and points to the direction negatively normals to the
     /// ``LuminareStepperDirection``.
     ///
     /// In left-to-right layouts, the indicators point to bottom if ``LuminareStepperDirection`` is
     /// ``LuminareStepperDirection/horizontal`` and to right if ``LuminareStepperDirection`` is
     /// ``LuminareStepperDirection/vertical``.
-    case trailing // opposite to `leading`
+    case trailing
 
     public var id: String { rawValue }
 

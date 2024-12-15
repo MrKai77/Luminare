@@ -35,7 +35,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         .init()
     }
 
-    // !!! referencing `isPresented` in this function is necessary for triggering view update
+    // !!! Referencing `isPresented` in this function is necessary for triggering view update
     public func updateNSView(_ nsView: NSView, context: Context) {
         _ = isPresented
         DispatchQueue.main.async {
@@ -67,11 +67,11 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             super.init()
         }
 
-        // view is optional bevause it is not needed to close the popup
+        // View is optional bevause it is not needed to close the popup
         func setVisible(
             _ isPresented: Bool, relativeTo parentView: NSView? = nil
         ) {
-            // if we're going to be closing the window
+            // If we're going to be closing the window
             guard isPresented else {
                 panel?.close()
                 return
@@ -230,7 +230,7 @@ private struct PopupContent: View {
     }
 }
 
-// preview as app
+// Preview as app
 @available(macOS 15.0, *)
 #Preview {
     @Previewable @State var isPresented = false

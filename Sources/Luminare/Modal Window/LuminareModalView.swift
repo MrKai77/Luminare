@@ -85,7 +85,7 @@ public struct LuminareSheetPresentation: Equatable, Hashable, Codable {
             }
         case .window:
             guard let window = NSApp.mainWindow else {
-                // fallback to screen center
+                // Fallback to screen center
                 return Self.screenCenter.origin(of: frame)
             }
 

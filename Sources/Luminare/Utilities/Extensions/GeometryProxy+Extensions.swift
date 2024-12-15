@@ -8,5 +8,5 @@
 import SwiftUI
 
 extension GeometryProxy: @retroactive @unchecked Sendable {
-    // make it sendable
+    // Make it sendable
 }

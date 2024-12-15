@@ -12,7 +12,7 @@ import SwiftUI
 public extension EnvironmentValues {
     // MARK: General
 
-    // currently, it is impossible to read the `.tint()` modifier on a view
+    // Currently, it is impossible to read the `.tint()` modifier on a view
     // this is a custom environement value as an alternative implementation of it
     // in practice, it should always be synchronized with `.tint()`
     @Entry var luminareTint: Color = .accentColor

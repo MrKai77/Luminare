@@ -313,7 +313,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                 .overlay {
                     infiniteScrollView(proxy: proxy)
                         .onChange(of: page) { oldValue, newValue in
-                            // do not use `+=`, otherwise causing multiple assignments
+                            // Do not use `+=`, otherwise causing multiple assignments
                             roundedValue = source.offsetBy(
                                 roundedValue,
                                 direction: direction,
@@ -341,7 +341,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                             value = internalValue
                         }
                         .onChange(of: value) { _, newValue in
-                            // check if changed externally
+                            // Check if changed externally
                             guard newValue != internalValue else { return }
                             internalValue = newValue
 
@@ -378,7 +378,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         )
         .id(scrollViewID)
         .onChange(of: proxy.size) {
-            // force reinitialize the scroll view to conform to the new size
+            // Force reinitialize the scroll view to conform to the new size
             scrollViewID = .init()
         }
     }

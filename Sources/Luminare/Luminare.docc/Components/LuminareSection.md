@@ -8,11 +8,11 @@
         
         ```swift
         LuminareSection {
-            // content
+            // Content
         } header: {
-            // header
+            // Header
         } footer: {
-            // footer
+            // Footer
         }
         ```
     }

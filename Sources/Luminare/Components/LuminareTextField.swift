@@ -64,7 +64,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
 
-                        // fixes cmd+w to close window.
+                        // Fixes cmd+w to close window.
                         let wKey = 13
                         if event.keyCode == wKey, event.modifierFlags.contains(.command) {
                             return nil

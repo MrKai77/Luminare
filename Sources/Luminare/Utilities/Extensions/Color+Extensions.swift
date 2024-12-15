@@ -8,7 +8,7 @@
 import AppKit
 import SwiftUI
 
-// a shorthand for storing color in HSB format
+// A shorthand for storing colors in hue-saturation-brightness format
 struct HSBColor: Equatable, Hashable, Codable {
     var hue: Double
     var saturation: Double
@@ -37,9 +37,9 @@ struct HSBColor: Equatable, Hashable, Codable {
     }
 }
 
-// adds functionality to `Color`
+// Adds functionality to `Color`
 extension Color {
-    // initializes with a hex value, supporting both 3 and 6 characters
+    // Initializes with a hex value, supporting both 3 and 6 characters
     init?(hex: String) {
         let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")
         let expandedHex: String = if hexSanitized.count == 3 {
@@ -66,7 +66,7 @@ extension Color {
         self.init(hue: hsb.hue, saturation: hsb.saturation, brightness: hsb.brightness, opacity: hsb.opacity)
     }
 
-    // converts to hex representation
+    // Converts to hex representation
     func toHex() -> String {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return String(
@@ -75,7 +75,7 @@ extension Color {
         )
     }
 
-    // converts to HSBA components
+    // Converts to HSB representatoin
     func toHSB() -> HSBColor {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
         var hue: CGFloat = 0
@@ -86,7 +86,7 @@ extension Color {
         return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
     }
 
-    // mixes with another color
+    // Mixes with another color
     func mixed(with other: Color, amount: CGFloat) -> Color {
         guard amount >= 0, amount <= 1 else {
             NSLog("Invalid mix amount: \(amount). Amount must be between 0 and 1.")
@@ -102,7 +102,7 @@ extension Color {
         )
     }
 
-    // extracts RGBA components
+    // Extracts RGBA components
     var components: (red: Double, green: Double, blue: Double, opacity: Double) {
         get {
             let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
@@ -129,9 +129,9 @@ extension Color {
         }
     }
 
-    // adjusts the brightness
+    // Adjusts the brightness
     func brightness(_ brightness: Double) -> Color {
-        // ensures the new brightness is within the range [0, 1]
+        // Ensures the new brightness is within the range [0, 1]
         let adjustedBrightness = max(0.0, min(brightness, 1.0))
         return Color(
             hue: Double(hsb.hue), saturation: Double(hsb.saturation), brightness: adjustedBrightness

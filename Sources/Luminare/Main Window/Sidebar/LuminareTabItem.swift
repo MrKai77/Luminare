@@ -53,7 +53,7 @@ public extension LuminareTabItem {
 
     func hash(into hasher: inout Hasher) {
         if Self.ID.self == Self.self {
-            // avoid recursive hashing
+            // Avoid recursive hashing
             hasher.combine(String(reflecting: self))
         } else {
             hasher.combine(id)

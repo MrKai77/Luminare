@@ -110,7 +110,7 @@ public struct LuminareColorPicker<F>: View
                         color = newColor
                         text = newColor.toHex()
                     } else {
-                        // revert to last valid color
+                        // Revert to last valid color
                         text = color.toHex()
                     }
                 }
@@ -146,7 +146,7 @@ public struct LuminareColorPicker<F>: View
 
 // MARK: - Previews
 
-// preview as app
+// Preview as app
 @available(macOS 15.0, *)
 #Preview(
     "LuminareColorPicker",

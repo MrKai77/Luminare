@@ -204,7 +204,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         Rectangle()
                             .foregroundStyle(.background.opacity(0.8))
                     } else {
-                        // the `.blendMode()` prevents `.quinary` style to be clipped
+                        // The `.blendMode()` prevents `.quinary` style to be clipped
                         Rectangle()
                             .foregroundStyle(.quinary.blendMode(.luminosity))
                     }

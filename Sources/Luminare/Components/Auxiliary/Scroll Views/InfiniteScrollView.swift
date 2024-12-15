@@ -37,7 +37,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // stacks the given elements according to the direction
+    // Stacks the given elements according to the direction
     @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
         switch self {
         case .horizontal:
@@ -47,7 +47,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // gets the length from the given 2D size according to the direction
+    // Gets the length from the given 2D size according to the direction
     func length(of size: CGSize) -> CGFloat {
         switch self {
         case .horizontal:
@@ -57,7 +57,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // gets the offset from the given 2D point according to the direction
+    // Gets the offset from the given 2D point according to the direction
     func offset(of point: CGPoint) -> CGFloat {
         switch self {
         case .horizontal:
@@ -67,7 +67,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // forms a point from the given offset according to the direction
+    // Forms a point from the given offset according to the direction
     func point(from offset: CGFloat) -> CGPoint {
         switch self {
         case .horizontal:
@@ -77,7 +77,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // forms a size from the given length according to the direction
+    // Forms a size from the given length according to the direction
     func size(from length: CGFloat, fallback: CGFloat) -> CGSize {
         switch self {
         case .horizontal:
@@ -189,7 +189,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         scrollView.hasVerticalScroller = false
         scrollView.hasHorizontalScroller = false
 
-        // allocate the scrollable area
+        // Allocate the scrollable area
         let documentView = NSHostingView(
             rootView: direction.stack(spacing: 0) {
                 sideView()
@@ -203,7 +203,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.contentView.translatesAutoresizingMaskIntoConstraints = false
 
-        // observe when scrolls
+        // Observe scrolls
         NotificationCenter.default.addObserver(
             context.coordinator,
             selector: #selector(context.coordinator.didLiveScroll(_:)),
@@ -211,7 +211,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             object: scrollView
         )
 
-        // observe when scrolling starts
+        // Observe when scrolling starts
         NotificationCenter.default.addObserver(
             context.coordinator,
             selector: #selector(context.coordinator.willStartLiveScroll(_:)),
@@ -219,7 +219,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             object: scrollView
         )
 
-        // observe when scrolling ends
+        // Observe when scrolling ends
         NotificationCenter.default.addObserver(
             context.coordinator,
             selector: #selector(context.coordinator.didEndLiveScroll(_:)),
@@ -267,13 +267,13 @@ public struct InfiniteScrollView: NSViewRepresentable {
         func initializeScroll(_ scrollView: NSScrollView) {
             let clipView = scrollView.contentView
 
-            // reset if required
+            // Reset if required
             if parent.shouldReset {
                 resetScrollViewPosition(clipView, offset: parent.direction.point(from: parent.initialOffset))
                 pageOrigin = parent.page
             }
 
-            // set dragging monitor if required
+            // Set dragging monitor if required
             if parent.allowsDragging {
                 // deduplicating
                 if let monitor {
@@ -292,7 +292,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
                     switch event.type {
                     case .leftMouseDown:
-                        // indicates dragging might start in the future
+                        // Indicates dragging might start in the future
                         draggingStage = .preparing
                     case .leftMouseUp:
                         switch draggingStage {
@@ -311,7 +311,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
                             )
                         }
                     case .leftMouseDragged:
-                        // always update view bounds first
+                        // Always update view bounds first
                         clipView.setBoundsOrigin(clipView.bounds.origin.applying(
                             .init(translationX: -event.deltaX, y: -event.deltaY)
                         ))
@@ -320,27 +320,24 @@ public struct InfiniteScrollView: NSViewRepresentable {
                         case .invalid:
                             break
                         case .preparing:
-                            // starts dragging
+                            // Starts dragging
                             draggingStage = .dragging
                             willStartLiveScroll(.init(
                                 name: NSScrollView.willStartLiveScrollNotification,
                                 object: scrollView
-                            )
-                            )
+                            ))
 
-                            // emits dragging
+                            // Emits dragging
                             didLiveScroll(.init(
                                 name: NSScrollView.didLiveScrollNotification,
                                 object: scrollView
-                            )
-                            )
+                            ))
                         case .dragging:
-                            // emits dragging
+                            // Emits dragging
                             didLiveScroll(.init(
                                 name: NSScrollView.didLiveScrollNotification,
                                 object: scrollView
-                            )
-                            )
+                            ))
                         }
                     default:
                         break
@@ -351,7 +348,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             }
         }
 
-        // should be called whenever a scroll happens.
+        // Should be called whenever a scroll happens.
         @objc func didLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
@@ -359,12 +356,12 @@ public struct InfiniteScrollView: NSViewRepresentable {
             let offset = parent.direction.offset(of: scrollView.contentView.bounds.origin)
             let relativeOffset = offset - center
 
-            // handles wrapping case
+            // Handles wrapping case
             if parent.wrapping {
                 lastOffset = offset
                 lastPageOffset = 0
 
-                // check if reaches next page
+                // Check if reaches next page
                 if abs(relativeOffset) >= parent.spacing {
                     resetScrollViewPosition(scrollView.contentView)
 
@@ -378,12 +375,12 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 }
             }
 
-            // handles non-wrapping case
+            // Handles non-wrapping case
             else {
                 let offset = max(0, min(2 * parent.spacing, offset))
                 let relativeOffset = offset - offsetOrigin
 
-                // arithmetic approach to achieve a undirectional paging effect
+                // Arithmetic approach to achieve a undirectional paging effect
                 let isIncremental = offset - lastOffset > 0
                 let comparation: (Int, Int) -> Int = isIncremental ? max : min
                 let pageOffset = comparation(
@@ -400,7 +397,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             updateBounds(scrollView.contentView)
         }
 
-        // should be called whenever a scroll starts.
+        // Should be called whenever a scroll starts.
         @objc func willStartLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
@@ -412,11 +409,11 @@ public struct InfiniteScrollView: NSViewRepresentable {
             updateBounds(scrollView.contentView)
         }
 
-        // should be called whenever a scroll ends.
+        // Should be called whenever a scroll ends.
         @objc func didEndLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
-            // snaps if required
+            // Snaps if required
             if parent.snapping {
                 NSAnimationContext.runAnimationGroup { context in
                     context.allowsImplicitAnimation = true
@@ -431,13 +428,13 @@ public struct InfiniteScrollView: NSViewRepresentable {
             parent.onBoundsChange(clipView.bounds, animate: animate)
         }
 
-        // accumulates the page for wrapping
+        // Accumulates the page for wrapping
         private func accumulatePage(_ offset: Int) {
             parent.page += offset
             pageOrigin = parent.page
         }
 
-        // overrides the page, not for wrapping
+        // Overrides the page, not for wrapping
         private func overridePage(_ offset: Int) {
             parent.page = pageOrigin + offset
         }
@@ -451,7 +448,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             updateBounds(clipView, animate: animate)
         }
 
-        // snaps to the nearest available page anchor
+        // Snaps to the nearest available page anchor
         private func snapScrollViewPosition(_ clipView: NSClipView) {
             let center = parent.direction.offset(of: parent.centerRect.origin)
             let offset = parent.direction.offset(of: clipView.bounds.origin)
@@ -466,9 +463,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 -parent.spacing
             } else { 0 }
 
-            // - paging logic
+            // - Paging logic
 
-            // handles wrapping case
+            // Handles wrapping case
             if parent.wrapping {
                 let pageOffset: Int = if snapsToNext {
                     +1
@@ -479,9 +476,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 accumulatePage(pageOffset)
             }
 
-            // handles non-wrapping case
+            // Handles non-wrapping case
             else {
-                // simply rounds the page toward zero to find the nearest page
+                // Simply rounds the page toward zero to find the nearest page
                 let relativeOffsetOrigin = offsetOrigin - center
                 let relativeOffset = localOffset - relativeOffsetOrigin
                 let pageOffset = Int((relativeOffset / parent.spacing).rounded(.towardZero))
@@ -489,11 +486,11 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 overridePage(pageOffset)
             }
 
-            // - animation logic (required for correctly presenting directional snapping animations)
+            // - Animation logic (required for correctly presenting directional snapping animations)
 
-            // handles wrapping case
+            // Handles wrapping case
             if parent.wrapping {
-                // overflow to corresponding edge in advance to correct the animation origin
+                // Overflow to corresponding edge in advance to correct the animation origin
                 if localOffset != 0 {
                     resetScrollViewPosition(
                         clipView,
@@ -504,7 +501,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
                 resetScrollViewPosition(clipView, animate: true)
             }
 
-            // handles non-wrapping case
+            // Handles non-wrapping case
             else {
                 resetScrollViewPosition(
                     clipView,

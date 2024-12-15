@@ -26,12 +26,12 @@ LuminareList(
     id: \.self,
     removeKey: .init("Remove")
 ) { value in
-    // content
+    // Content
 } emptyView: {
     Text("Empty")
         .foregroundStyle(.secondary)
         .swipeActions {
-            // swipe actions for row
+            // Wwipe actions for row
         }
 } actions: {
     Button("Add") {

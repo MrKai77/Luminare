@@ -367,10 +367,10 @@ public struct LuminareListItem<Content, V>: View
             .onAppear {
                 DispatchQueue.main.async {
                     withAnimation(animation) {
-                        // initialize selection
+                        // Initialize selection
                         updateSelection()
 
-                        // reset hovering state
+                        // Reset hovering state
                         isHovering = false
                     }
                 }
@@ -465,7 +465,7 @@ public struct LuminareListItem<Content, V>: View
 
     @ViewBuilder private func firstItemPart() -> some View {
         VStack(spacing: 0) {
-            // --- top half ---
+            // - Top half
 
             ZStack {
                 UnevenRoundedRectangle(
@@ -495,7 +495,7 @@ public struct LuminareListItem<Content, V>: View
             }
             .compositingGroup()
 
-            // --- bottom half ---
+            // - Bottom half
 
             HStack {
                 Rectangle()
@@ -512,7 +512,7 @@ public struct LuminareListItem<Content, V>: View
 
     @ViewBuilder private func lastItemPart() -> some View {
         VStack(spacing: 0) {
-            // --- top half ---
+            // - Top half
 
             HStack {
                 Rectangle()
@@ -525,7 +525,7 @@ public struct LuminareListItem<Content, V>: View
             }
             .foregroundStyle(.tint)
 
-            // --- bottom half ---
+            // - Bottom half
 
             ZStack {
                 UnevenRoundedRectangle(
