@@ -36,9 +36,10 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
     @State private var isShowingTextBox = false
-    @State var eventMonitor: Any?
 
     @FocusState private var focusedField: FocusedField?
+    
+    private let id = UUID()
 
     // MARK: Initializers
 
@@ -225,11 +226,10 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     // MARK: Functions
 
     func addEventMonitor() {
-        if eventMonitor != nil {
-            return
-        }
-
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+        EventMonitorManager.shared.addLocalMonitor(
+            for: id,
+            matching: .keyDown
+        ) { event in
             let downArrow: CGKeyCode = 0x7D
             let upArrow: CGKeyCode = 0x7E
 
@@ -269,14 +269,11 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
             }
 
             return nil
-        } as? NSObject
+        }
     }
 
     func removeEventMonitor() {
-        if let eventMonitor {
-            NSEvent.removeMonitor(eventMonitor)
-        }
-        eventMonitor = nil
+        EventMonitorManager.shared.removeMonitor(for: id)
     }
 }
 

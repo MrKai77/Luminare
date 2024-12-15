@@ -17,7 +17,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     private let format: F
     private let placeholder: LocalizedStringKey
 
-    @State private var monitor: Any?
+    private let id = UUID()
 
     // MARK: Initializers
 
@@ -58,9 +58,10 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
             .textFieldStyle(.plain)
             .modifier(LuminareHoverable())
             .onAppear {
-                guard monitor != nil else { return }
-
-                monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                EventMonitorManager.shared.addLocalMonitor(
+                    for: id,
+                    matching: .keyDown
+                ) { event in
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
 
@@ -74,10 +75,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                 }
             }
             .onDisappear {
-                if let monitor {
-                    NSEvent.removeMonitor(monitor)
-                }
-                monitor = nil
+                EventMonitorManager.shared.removeMonitor(for: id)
             }
     }
 }

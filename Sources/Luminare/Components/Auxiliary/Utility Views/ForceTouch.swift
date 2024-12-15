@@ -90,7 +90,8 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     @State private var state: NSPressGestureRecognizer.State = .ended
 
     @State private var longPressTimer: Timer?
-    @State private var monitor: Any?
+    
+    private let id = UUID()
 
     /// Initializes a ``ForceTouch``.
     ///
@@ -147,12 +148,15 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
             }
         }
 
-        monitor = NSEvent.addLocalMonitorForEvents(matching: [
-            .leftMouseDown,
-            .leftMouseUp,
-            .mouseMoved,
-            .mouseExited
-        ]) { event in
+        EventMonitorManager.shared.addLocalMonitor(
+            for: id,
+            matching: [
+                .leftMouseDown,
+                .leftMouseUp,
+                .mouseMoved,
+                .mouseExited
+            ]
+        ) { event in
             let locationInView = view.convert(event.locationInWindow, from: nil)
             guard view.bounds.contains(locationInView) else { return event }
 
@@ -169,7 +173,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
             return event
         }
 
-        recognizer.allowedTouchTypes = .direct // enable pressure-sensitive events
+        recognizer.allowedTouchTypes = .direct // Enables pressure-sensitive events
         view.addGestureRecognizer(recognizer)
         return view
     }

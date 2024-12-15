@@ -53,13 +53,14 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
     @MainActor
     public class Coordinator<InnerContent>: NSObject, NSWindowDelegate
-        where InnerContent: View {
+    where InnerContent: View {
         private let parent: LuminarePopup
         private var content: () -> InnerContent
         var panel: LuminarePopupPanel?
 
         private weak var parentView: NSView?
-        private var dismissMonitor: Any?
+
+        private let id = UUID()
 
         init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
             self.parent = parent
@@ -85,30 +86,24 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
             panel.makeKeyAndOrderFront(nil)
 
-            if dismissMonitor == nil {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self else { return }
-                    dismissMonitor = NSEvent.addLocalMonitorForEvents(
-                        matching: [
-                            .scrollWheel, .leftMouseDown, .rightMouseDown,
-                            .otherMouseDown
-                        ]) { [weak self] event in
-                            guard let self else { return event }
-                            if event.window != self.panel {
-                                setVisible(false)
-                            }
-                            return event
-                        }
+            EventMonitorManager.shared.addLocalMonitor(
+                for: id,
+                matching: [
+                    .scrollWheel, .leftMouseDown, .rightMouseDown,
+                    .otherMouseDown,
+                ]
+            ) { [weak self] event in
+                guard let self else { return event }
+                if event.window != self.panel {
+                    setVisible(false)
                 }
+                return event
             }
         }
 
         public func windowWillClose(_: Notification) {
             Task { @MainActor in
-                if dismissMonitor != nil {
-                    NSEvent.removeMonitor(dismissMonitor!)
-                    dismissMonitor = nil
-                }
+                EventMonitorManager.shared.removeMonitor(for: id)
 
                 parent.isPresented = false
                 panel = nil

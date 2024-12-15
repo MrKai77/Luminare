@@ -257,8 +257,9 @@ public struct InfiniteScrollView: NSViewRepresentable {
         private var lastOffset: CGFloat = .zero
         private var lastPageOffset: Int = .zero
 
-        private var monitor: Any?
         private var draggingStage: DraggingStage = .invalid
+        
+        private let id = UUID()
 
         init(_ parent: InfiniteScrollView) {
             self.parent = parent
@@ -275,14 +276,13 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
             // Set dragging monitor if required
             if parent.allowsDragging {
-                // deduplicating
-                if let monitor {
-                    NSEvent.removeMonitor(monitor)
-                }
-
-                monitor = NSEvent.addLocalMonitorForEvents(matching: [
-                    .leftMouseDown, .leftMouseUp, .leftMouseDragged
-                ]) { [weak self] event in
+                // Deduplicate
+                EventMonitorManager.shared.addLocalMonitor(
+                    for: id,
+                    matching: [
+                        .leftMouseDown, .leftMouseUp, .leftMouseDragged
+                    ]
+                ) { [weak self] event in
                     let location = clipView.convert(event.locationInWindow, from: nil)
                     guard let self else { return event }
 

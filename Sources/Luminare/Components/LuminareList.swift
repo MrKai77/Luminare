@@ -71,7 +71,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     @State private var firstItem: V?
     @State private var lastItem: V?
 
-    @State private var eventMonitor: AnyObject?
+    private let id = UUID()
 
     // MARK: Initializers
 
@@ -258,27 +258,24 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     }
 
     private func addEventMonitor() {
-        guard eventMonitor == nil else { return }
-
-        eventMonitor =
-            NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                let kVK_Escape: CGKeyCode = 0x35
-
-                if event.keyCode == kVK_Escape {
-                    withAnimation(animation) {
-                        selection = []
-                    }
-                    return nil
+        EventMonitorManager.shared.addLocalMonitor(
+            for: id,
+            matching: .keyDown
+        ) { event in
+            let kVK_Escape: CGKeyCode = 0x35
+            
+            if event.keyCode == kVK_Escape {
+                withAnimation(animation) {
+                    selection = []
                 }
-                return event
-            } as? NSObject
+                return nil
+            }
+            return event
+        }
     }
 
     private func removeEventMonitor() {
-        if let eventMonitor {
-            NSEvent.removeMonitor(eventMonitor)
-        }
-        eventMonitor = nil
+        EventMonitorManager.shared.removeMonitor(for: id)
     }
 }
 
