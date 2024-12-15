@@ -211,7 +211,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         let roundedTop = topCorner.isRounded, roundedBottom = bottomCorner.isRounded
 
         // - Top leading
-        
+
         if column == 0, row == 0, roundedTop {
             return UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadii.topLeading - innerPadding,
@@ -224,7 +224,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
 
         // - Bottom leading
-        
+
         else if column == 0, row == maxRowIndex, roundedBottom {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
@@ -234,9 +234,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         }
-        
+
         // - Bottom trailing
-        
+
         else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
@@ -247,7 +247,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
 
         // - Top trailing
-        
+
         else if column == maxColumnIndex, row == 0, roundedTop {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
@@ -259,7 +259,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
 
         // - Regular
-        
+
         else {
             return UnevenRoundedRectangle(cornerRadii: buttonCornerRadii)
         }
