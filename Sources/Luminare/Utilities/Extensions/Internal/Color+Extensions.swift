@@ -14,23 +14,23 @@ struct HSBColor: Equatable, Hashable, Codable {
     var saturation: Double
     var brightness: Double
     var opacity: Double
-
+    
     init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.hue = hue
         self.saturation = saturation
         self.brightness = brightness
         self.opacity = opacity
     }
-
+    
     init(rgb: Color) {
         self = rgb.toHSB()
     }
-
+    
     var rgb: Color {
         get {
             .init(hsb: self)
         }
-
+        
         set {
             self = .init(rgb: newValue)
         }
