@@ -89,15 +89,23 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     "LuminareTextField",
     traits: .sizeThatFitsLayout
 ) {
+    @Previewable @FocusState var isFocused: Bool
+    
     LuminareSection {
         VStack {
             LuminareTextField("Text Field", text: .constant("Bordered"))
+                .focused($isFocused)
 
             LuminareTextField("Text Field", text: .constant("Borderless"))
                 .luminareBordered(false)
+                .focused($isFocused)
 
             LuminareTextField("Text Field", text: .constant("Disabled"))
                 .disabled(true)
+                .focused($isFocused)
+        }
+        .onAppear {
+            isFocused = false
         }
     }
     .luminareCompactButtonAspectRatio(contentMode: .fill)

@@ -109,6 +109,14 @@ struct ColorPickerModalView: View {
             return hsb
         }
     }
+    
+    private var hasControls: Bool {
+        hasCancel || hasDone
+    }
+    
+    private var hasCancelAndDone: Bool {
+        hasCancel && hasDone
+    }
 
     @ViewBuilder private func rgbInputFields() -> some View {
         HStack(alignment: .bottom, spacing: 4) {
@@ -142,44 +150,58 @@ struct ColorPickerModalView: View {
                 )
             }
 
-            if hasColorPicker {
-                Button {
-                    colorSampler.show { nsColor in
-                        if let nsColor {
-                            updateComponents(Color(nsColor: nsColor))
-                        }
-                    }
-                } label: {
-                    Image(systemName: "eyedropper.halffull")
-                }
-                .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
-                .buttonStyle(.luminareCompact)
+            // Display color picker inline with RGB input fields
+            if (!hasControls && hasColorPicker) || hasCancelAndDone {
+                colorPicker()
             }
         }
         .luminareCompactButtonAspectRatio(contentMode: .fill)
     }
 
     @ViewBuilder private func controls() -> some View {
-        if hasCancel || hasDone {
+        if hasControls {
             HStack(spacing: 4) {
+                // Display color picker inline with controls
+                if !hasCancelAndDone, hasColorPicker {
+                    colorPicker()
+                }
+                
                 Group {
-                    Button("Cancel") {
-                        // Revert selected color
-                        selectedColor = initialColor
-                        dismiss()
+                    if hasCancel {
+                        Button("Cancel") {
+                            // Revert selected color
+                            selectedColor = initialColor
+                            dismiss()
+                        }
+                        .foregroundStyle(.red)
                     }
-                    .foregroundStyle(.red)
 
-                    Button("Done") {
-                        selectedColor = internalHSBColor.rgb
-                        initialColor = selectedColor
-                        dismiss()
+                    if hasDone {
+                        Button("Done") {
+                            selectedColor = internalHSBColor.rgb
+                            initialColor = selectedColor
+                            dismiss()
+                        }
                     }
                 }
                 .buttonStyle(.luminareCompact)
                 .luminareCompactButtonAspectRatio(contentMode: .fill)
             }
         }
+    }
+    
+    @ViewBuilder private func colorPicker() -> some View {
+        Button {
+            colorSampler.show { nsColor in
+                if let nsColor {
+                    updateComponents(Color(nsColor: nsColor))
+                }
+            }
+        } label: {
+            Image(systemName: "eyedropper.halffull")
+        }
+        .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
+        .buttonStyle(.luminareCompact)
     }
 
     // MARK: Functions
@@ -204,18 +226,27 @@ struct ColorPickerModalView: View {
     "ColorPickerModalView",
     traits: .sizeThatFitsLayout
 ) {
+    @Previewable @FocusState var isFocused: Bool
+    
     @Previewable @State var color = Color.accentColor
     @Previewable @State var hexColor = ""
 
-    color
-        .frame(width: 50, height: 50)
+//    color.frame(width: 50, height: 50)
 
-    LuminareSection {
+    VStack {
         ColorPickerModalView(
             selectedColor: $color,
             hexColor: $hexColor
         )
+        .luminareColorPickerControls(hasDone: true)
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear {
+            isFocused = true
+        }
     }
-    .frame(width: 300)
-    .foregroundStyle(color)
+    .frame(width: 260)
+    .fixedSize()
+//    .foregroundStyle(color)
 }

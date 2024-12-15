@@ -17,7 +17,8 @@ import SwiftUI
     ) {
         VStack {
             LuminareSection {
-                Button {} label: {
+                Button {
+                } label: {
                     HStack {
                         Image(systemName: "app.gift.fill")
                             .resizable()
@@ -37,12 +38,15 @@ import SwiftUI
                     }
                     .padding(8)
                 }
-                .buttonStyle(.luminareCosmetic {
-                    Image(systemName: "star.fill")
-                })
+                .buttonStyle(
+                    .luminareCosmetic {
+                        Image(systemName: "star.fill")
+                    }
+                )
                 .frame(height: 72)
 
-                Button {} label: {
+                Button {
+                } label: {
                     HStack {
                         Image(systemName: "app.gift.fill")
                             .resizable()
@@ -62,9 +66,11 @@ import SwiftUI
                     }
                     .padding(8)
                 }
-                .buttonStyle(LuminareCosmeticButtonStyle(isHovering: true) {
-                    Image(systemName: "star.fill")
-                })
+                .buttonStyle(
+                    LuminareCosmeticButtonStyle(isHovering: true) {
+                        Image(systemName: "star.fill")
+                    }
+                )
                 .frame(height: 72)
             }
 
@@ -114,27 +120,9 @@ import SwiftUI
         "LuminareButtonStyle",
         traits: .sizeThatFitsLayout
     ) {
-        LuminareSection {
-            Button("Click me!") {}
-                .buttonStyle(.luminare)
-                .frame(height: 40)
-        }
-    }
-#endif
-
-// MARK: - LuminareDestructiveButtonStyle
-
-#if DEBUG
-    @available(macOS 15.0, *)
-    #Preview(
-        "LuminareDestructiveButtonStyle",
-        traits: .sizeThatFitsLayout
-    ) {
-        LuminareSection {
-            Button("Click me!", role: .destructive) {}
-                .buttonStyle(.luminareProminent)
-                .frame(height: 40)
-        }
+        Button("Click Me!") {}
+            .buttonStyle(.luminare)
+            .frame(height: 40)
     }
 #endif
 
@@ -146,11 +134,13 @@ import SwiftUI
         "LuminareProminentButtonStyle",
         traits: .sizeThatFitsLayout
     ) {
-        LuminareSection {
-            Button("Click me!") {}
-                .buttonStyle(.luminareProminent)
-                .frame(height: 40)
-        }
+        Button("Click Me!") {}
+            .buttonStyle(.luminareProminent)
+            .frame(height: 40)
+
+        Button("My Role is Destructive", role: .destructive) {}
+            .buttonStyle(.luminareProminent)
+            .frame(height: 40)
     }
 #endif
 
@@ -162,57 +152,61 @@ import SwiftUI
         "LuminareCosmeticButtonStyle",
         traits: .sizeThatFitsLayout
     ) {
-        LuminareSection {
-            Button {} label: {
-                HStack {
-                    Image(systemName: "app.gift.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 60)
+        Button {
+        } label: {
+            HStack {
+                Image(systemName: "app.gift.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 60)
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Cosmetic")
-                            .fontWeight(.medium)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Cosmetic")
+                        .fontWeight(.medium)
 
-                        Text("Custom Layout")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
+                    Text("Custom Layout")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-                .padding(8)
+
+                Spacer()
             }
-            .buttonStyle(.luminareCosmetic {
-                Image(systemName: "star.fill")
-            })
-            .frame(height: 72)
-
-            Button {} label: {
-                HStack {
-                    Image(systemName: "app.gift.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 60)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Cosmetic Hovering")
-                            .fontWeight(.medium)
-
-                        Text("Custom Layout")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-                }
-                .padding(8)
-            }
-            .buttonStyle(LuminareCosmeticButtonStyle(isHovering: true) {
-                Image(systemName: "star.fill")
-            })
-            .frame(height: 72)
+            .padding(8)
         }
+        .buttonStyle(
+            .luminareCosmetic {
+                Image(systemName: "star.fill")
+            }
+        )
+        .frame(height: 72)
+
+        Button {
+        } label: {
+            HStack {
+                Image(systemName: "app.gift.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 60)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Cosmetic Hovering")
+                        .fontWeight(.medium)
+
+                    Text("Custom Layout")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(8)
+        }
+        .buttonStyle(
+            LuminareCosmeticButtonStyle(isHovering: true) {
+                Image(systemName: "star.fill")
+            }
+        )
+        .frame(height: 72)
     }
 #endif
 
@@ -224,13 +218,11 @@ import SwiftUI
         "LuminareCompactButtonStyle",
         traits: .sizeThatFitsLayout
     ) {
-        LuminareSection {
-            Button("Click me!") {}
-                .buttonStyle(.luminareCompact)
-                .luminareCompactButtonAspectRatio(contentMode: .fill)
-                .luminareCompactButtonHasFixedHeight(false)
-                .frame(height: 40)
-        }
+        Button("Click Me!") {}
+            .buttonStyle(.luminareCompact)
+            .luminareCompactButtonAspectRatio(contentMode: .fill)
+            .luminareCompactButtonHasFixedHeight(false)
+            .frame(height: 40)
     }
 #endif
 
@@ -242,7 +234,7 @@ import SwiftUI
         "LuminareBordered",
         traits: .sizeThatFitsLayout
     ) {
-        Text("Anything with a border")
+        Text("Anything with a Border")
             .fixedSize()
             .padding(8)
             .modifier(LuminareBordered())
@@ -258,15 +250,21 @@ import SwiftUI
         "LuminareHoverable",
         traits: .sizeThatFitsLayout
     ) {
-        VStack {
-            Text("Not bordered")
-                .fixedSize()
-                .modifier(LuminareHoverable())
-                .luminareBordered(false)
+        Text("Not Bordered")
+            .fixedSize()
+            .modifier(LuminareHoverable())
+            .luminareBordered(false)
 
-            Text("Bordered")
-                .fixedSize()
-                .modifier(LuminareHoverable())
-        }
+        Text("Bordered")
+            .fixedSize()
+            .modifier(LuminareHoverable())
+
+        Text("Bordered, Hovering")
+            .fixedSize()
+            .modifier(LuminareHoverable(isHovering: true))
+
+        Text("Bordered, Pressed")
+            .fixedSize()
+            .modifier(LuminareHoverable(isPressed: true))
     }
 #endif

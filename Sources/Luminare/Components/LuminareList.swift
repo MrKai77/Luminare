@@ -675,8 +675,5 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
         //    .luminareListContentMargins(50)
         .luminareListFixedHeight(until: 315)
         .luminareListRoundedCorner(bottom: .always)
-
-        Spacer()
     }
-    .frame(height: 500)
 }

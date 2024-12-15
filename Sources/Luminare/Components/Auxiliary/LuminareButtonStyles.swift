@@ -10,7 +10,8 @@ import SwiftUI
 struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareCompactButtonAspectRatio) private var aspectRatio
-    @Environment(\.luminareCompactButtonHasFixedHeight) private var hasFixedHeight
+    @Environment(\.luminareCompactButtonHasFixedHeight) private
+        var hasFixedHeight
 
     @ViewBuilder func body(content: Content) -> some View {
         Group {
@@ -18,15 +19,22 @@ struct AspectRatioModifier: ViewModifier {
                 content
                     .frame(
                         minWidth: minWidth, maxWidth: .infinity,
-                        minHeight: minHeight, maxHeight: hasFixedHeight ? nil : .infinity
+                        minHeight: minHeight,
+                        maxHeight: hasFixedHeight ? nil : .infinity
                     )
-                    .aspectRatio(aspectRatio.aspectRatio, contentMode: aspectRatio.contentMode)
+                    .aspectRatio(
+                        aspectRatio.aspectRatio,
+                        contentMode: aspectRatio.contentMode)
             } else {
                 content
-                    .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
+                    .frame(
+                        maxWidth: .infinity, minHeight: minHeight,
+                        maxHeight: .infinity)
             }
         }
-        .fixedSize(horizontal: aspectRatio.contentMode == .fit, vertical: hasFixedHeight)
+        .fixedSize(
+            horizontal: aspectRatio.contentMode == .fit,
+            vertical: hasFixedHeight)
     }
 
     private var isConstrained: Bool {
@@ -55,9 +63,11 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
 
-    public init() {}
+    public init() {
+        self.isHovering = false
+    }
 
     #if DEBUG
         init(
@@ -77,10 +87,13 @@ public struct LuminareButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilled(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
-            ))
+            .modifier(
+                LuminareFilled(
+                    isHovering: isHovering, isPressed: configuration.isPressed,
+                    fill: .quinary, hovering: .quaternary.opacity(0.7),
+                    pressed: .quaternary
+                )
+            )
             .clipShape(.rect(cornerRadii: cornerRadii))
     }
 }
@@ -100,9 +113,11 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
 
-    public init() {}
+    public init() {
+        self.isHovering = false
+    }
 
     #if DEBUG
         init(
@@ -122,10 +137,12 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilled(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                cascading: tint(configuration: configuration)
-            ))
+            .modifier(
+                LuminareFilled(
+                    isHovering: isHovering, isPressed: configuration.isPressed,
+                    cascading: tint(configuration: configuration)
+                )
+            )
             .clipShape(.rect(cornerRadii: cornerRadii))
     }
 
@@ -161,7 +178,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 
     @ViewBuilder private var icon: () -> Image
 
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
 
     /// Initializes a ``LuminareCosmeticButtonStyle``.
     ///
@@ -171,6 +188,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
         @ViewBuilder icon: @escaping () -> Image
     ) {
         self.icon = icon
+        self.isHovering = false
     }
 
     #if DEBUG
@@ -193,9 +211,11 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilled(
-                isHovering: isHovering, isPressed: configuration.isPressed
-            ))
+            .modifier(
+                LuminareFilled(
+                    isHovering: isHovering, isPressed: configuration.isPressed
+                )
+            )
             .overlay {
                 HStack {
                     Spacer()
@@ -222,9 +242,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
 
-    public init() {}
+    public init() {
+        self.isHovering = false
+    }
 
     #if DEBUG
         init(
@@ -239,10 +261,13 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .padding(.horizontal, horizontalPadding)
             .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilled(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                fill: .quinary, hovering: .quaternary.opacity(0.7), pressed: .quaternary
-            ))
+            .modifier(
+                LuminareFilled(
+                    isHovering: isHovering, isPressed: configuration.isPressed,
+                    fill: .quinary, hovering: .quaternary.opacity(0.7),
+                    pressed: .quaternary
+                )
+            )
             .modifier(LuminareBordered(isHovering: isHovering))
             .onHover { hover in
                 withAnimation(animationFast) {
@@ -260,11 +285,13 @@ public struct LuminareFilled: ViewModifier {
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     private let isHovering: Bool, isPressed: Bool
-    private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
+    private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
+        pressed: AnyShapeStyle
 
     public init(
         isHovering: Bool = false, isPressed: Bool = false,
-        fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle
+        fill: some ShapeStyle, hovering: some ShapeStyle,
+        pressed: some ShapeStyle
     ) {
         self.isHovering = isHovering
         self.isPressed = isPressed
@@ -423,18 +450,21 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     private let isPressed: Bool
-    private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
+    private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
+        pressed: AnyShapeStyle
 
-    @State private var isHovering: Bool = false
+    @State private var isHovering: Bool
 
     public init(
         isPressed: Bool = false,
-        fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle
+        fill: some ShapeStyle, hovering: some ShapeStyle,
+        pressed: some ShapeStyle
     ) {
         self.isPressed = isPressed
         self.fill = .init(fill)
         self.hovering = .init(hovering)
         self.pressed = .init(pressed)
+        self.isHovering = false
     }
 
     public init(
@@ -470,15 +500,46 @@ public struct LuminareHoverable: ViewModifier {
 
     #if DEBUG
         init(
-            isPressed: Bool = false,
-            fill: some ShapeStyle, hovering: some ShapeStyle, pressed: some ShapeStyle,
-            isHovering: Bool = false
+            isPressed: Bool = false, isHovering: Bool = false,
+            fill: some ShapeStyle, hovering: some ShapeStyle,
+            pressed: some ShapeStyle
         ) {
             self.isPressed = isPressed
             self.fill = .init(fill)
             self.hovering = .init(hovering)
             self.pressed = .init(pressed)
             self.isHovering = isHovering
+        }
+
+        init(
+            isPressed: Bool = false, isHovering: Bool = false,
+            cascading: some ShapeStyle
+        ) {
+            self.init(
+                isPressed: isPressed, isHovering: isHovering,
+                fill: cascading.opacity(0.15),
+                hovering: cascading.opacity(0.25),
+                pressed: cascading.opacity(0.4)
+            )
+        }
+
+        init(
+            isPressed: Bool = false, isHovering: Bool = false,
+            pressed: some ShapeStyle
+        ) {
+            self.init(
+                isPressed: isPressed, isHovering: isHovering,
+                fill: .clear, hovering: pressed, pressed: pressed
+            )
+        }
+
+        init(
+            isPressed: Bool = false, isHovering: Bool = false
+        ) {
+            self.init(
+                isPressed: isPressed, isHovering: isHovering,
+                pressed: .quinary
+            )
         }
     #endif
 
@@ -487,10 +548,12 @@ public struct LuminareHoverable: ViewModifier {
             .padding(.horizontal, horizontalPadding)
             .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilled(
-                isHovering: isHovering, isPressed: isPressed,
-                fill: fill, hovering: hovering, pressed: pressed
-            ))
+            .modifier(
+                LuminareFilled(
+                    isHovering: isHovering, isPressed: isPressed,
+                    fill: fill, hovering: hovering, pressed: pressed
+                )
+            )
             .modifier(LuminareBordered(isHovering: isHovering))
             .onHover { hover in
                 withAnimation(animationFast) {
