@@ -90,7 +90,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @FocusState var isFocused: Bool
-    
+
     LuminareSection {
         VStack {
             LuminareTextField("Text Field", text: .constant("Bordered"))

@@ -17,8 +17,7 @@ import SwiftUI
     ) {
         VStack {
             LuminareSection {
-                Button {
-                } label: {
+                Button {} label: {
                     HStack {
                         Image(systemName: "app.gift.fill")
                             .resizable()
@@ -45,8 +44,7 @@ import SwiftUI
                 )
                 .frame(height: 72)
 
-                Button {
-                } label: {
+                Button {} label: {
                     HStack {
                         Image(systemName: "app.gift.fill")
                             .resizable()
@@ -152,8 +150,7 @@ import SwiftUI
         "LuminareCosmeticButtonStyle",
         traits: .sizeThatFitsLayout
     ) {
-        Button {
-        } label: {
+        Button {} label: {
             HStack {
                 Image(systemName: "app.gift.fill")
                     .resizable()
@@ -180,8 +177,7 @@ import SwiftUI
         )
         .frame(height: 72)
 
-        Button {
-        } label: {
+        Button {} label: {
             HStack {
                 Image(systemName: "app.gift.fill")
                     .resizable()

@@ -109,11 +109,11 @@ struct ColorPickerModalView: View {
             return hsb
         }
     }
-    
+
     private var hasControls: Bool {
         hasCancel || hasDone
     }
-    
+
     private var hasCancelAndDone: Bool {
         hasCancel && hasDone
     }
@@ -165,7 +165,7 @@ struct ColorPickerModalView: View {
                 if !hasCancelAndDone, hasColorPicker {
                     colorPicker()
                 }
-                
+
                 Group {
                     if hasCancel {
                         Button("Cancel") {
@@ -189,7 +189,7 @@ struct ColorPickerModalView: View {
             }
         }
     }
-    
+
     @ViewBuilder private func colorPicker() -> some View {
         Button {
             colorSampler.show { nsColor in
@@ -227,7 +227,7 @@ struct ColorPickerModalView: View {
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @FocusState var isFocused: Bool
-    
+
     @Previewable @State var color = Color.accentColor
     @Previewable @State var hexColor = ""
 

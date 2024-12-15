@@ -11,7 +11,7 @@ struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareCompactButtonAspectRatio) private var aspectRatio
     @Environment(\.luminareCompactButtonHasFixedHeight) private
-        var hasFixedHeight
+    var hasFixedHeight
 
     @ViewBuilder func body(content: Content) -> some View {
         Group {
@@ -24,17 +24,20 @@ struct AspectRatioModifier: ViewModifier {
                     )
                     .aspectRatio(
                         aspectRatio.aspectRatio,
-                        contentMode: aspectRatio.contentMode)
+                        contentMode: aspectRatio.contentMode
+                    )
             } else {
                 content
                     .frame(
                         maxWidth: .infinity, minHeight: minHeight,
-                        maxHeight: .infinity)
+                        maxHeight: .infinity
+                    )
             }
         }
         .fixedSize(
             horizontal: aspectRatio.contentMode == .fit,
-            vertical: hasFixedHeight)
+            vertical: hasFixedHeight
+        )
     }
 
     private var isConstrained: Bool {
@@ -286,7 +289,7 @@ public struct LuminareFilled: ViewModifier {
 
     private let isHovering: Bool, isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
-        pressed: AnyShapeStyle
+                pressed: AnyShapeStyle
 
     public init(
         isHovering: Bool = false, isPressed: Bool = false,
@@ -451,7 +454,7 @@ public struct LuminareHoverable: ViewModifier {
 
     private let isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
-        pressed: AnyShapeStyle
+                pressed: AnyShapeStyle
 
     @State private var isHovering: Bool
 
