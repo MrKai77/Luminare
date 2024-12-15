@@ -1,6 +1,6 @@
 //
 //  LuminareButtonStyle+Previews.swift
-//
+//  Luminare
 //
 //  Created by KrLite on 2024/11/4.
 //

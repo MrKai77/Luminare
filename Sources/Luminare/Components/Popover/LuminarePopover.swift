@@ -1,6 +1,6 @@
 //
 //  LuminarePopover.swift
-//
+//  Luminare
 //
 //  Created by Kai Azim on 2024-06-02.
 //

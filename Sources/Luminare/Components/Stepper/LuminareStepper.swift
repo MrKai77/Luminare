@@ -1,6 +1,6 @@
 //
 //  LuminareStepper.swift
-//
+//  Luminare
 //
 //  Created by KrLite on 2024/10/31.
 //

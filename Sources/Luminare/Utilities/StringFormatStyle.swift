@@ -1,6 +1,6 @@
 //
 //  StringFormatStyle.swift
-//
+//  Luminare
 //
 //  Created by KrLite on 2024/7/7.
 //

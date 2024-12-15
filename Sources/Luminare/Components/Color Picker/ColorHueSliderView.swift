@@ -1,6 +1,6 @@
 //
 //  ColorHueSliderView.swift
-//
+//  Luminare
 //
 //  Created by Kai Azim on 2024-05-15.
 //

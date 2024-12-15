@@ -1,6 +1,6 @@
 //
 //  ScreenView.swift
-//  Luminare Tester
+//  Luminare
 //
 //  Created by Kai Azim on 2024-04-14.
 //
