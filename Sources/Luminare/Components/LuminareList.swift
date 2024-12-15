@@ -263,7 +263,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             matching: .keyDown
         ) { event in
             let kVK_Escape: CGKeyCode = 0x35
-            
+
             if event.keyCode == kVK_Escape {
                 withAnimation(animation) {
                     selection = []

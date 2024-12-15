@@ -90,7 +90,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     @State private var state: NSPressGestureRecognizer.State = .ended
 
     @State private var longPressTimer: Timer?
-    
+
     private let id = UUID()
 
     /// Initializes a ``ForceTouch``.

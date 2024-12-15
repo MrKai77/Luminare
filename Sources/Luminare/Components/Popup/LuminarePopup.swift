@@ -53,7 +53,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
     @MainActor
     public class Coordinator<InnerContent>: NSObject, NSWindowDelegate
-    where InnerContent: View {
+        where InnerContent: View {
         private let parent: LuminarePopup
         private var content: () -> InnerContent
         var panel: LuminarePopupPanel?
@@ -90,7 +90,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 for: id,
                 matching: [
                     .scrollWheel, .leftMouseDown, .rightMouseDown,
-                    .otherMouseDown,
+                    .otherMouseDown
                 ]
             ) { [weak self] event in
                 guard let self else { return event }

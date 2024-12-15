@@ -38,7 +38,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     @State private var isShowingTextBox = false
 
     @FocusState private var focusedField: FocusedField?
-    
+
     private let id = UUID()
 
     // MARK: Initializers

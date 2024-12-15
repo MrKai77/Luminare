@@ -258,7 +258,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         private var lastPageOffset: Int = .zero
 
         private var draggingStage: DraggingStage = .invalid
-        
+
         private let id = UUID()
 
         init(_ parent: InfiniteScrollView) {
