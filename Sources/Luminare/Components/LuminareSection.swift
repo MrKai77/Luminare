@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+public enum LuminareSectionLayout: Hashable, Equatable, Codable {
+    case section
+    case stacked(spacing: CGFloat = 4)
+
+    public static var stacked: Self {
+        .stacked()
+    }
+}
+
 // MARK: - Section
 
 /// A stylized content wrapper with a header and a footer.
@@ -14,10 +23,11 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     // MARK: Environments
 
     @Environment(\.luminareCornerRadii) private var cornerRadii
-    @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareHasDividers) private var hasDividers
+    @Environment(\.luminareSectionLayout) private var layout
     @Environment(\.luminareSectionMaterial) private var material
+    @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareSectionIsMasked) private var isMasked
 
     // MARK: Fields
@@ -61,30 +71,45 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     // MARK: Body
 
     public var body: some View {
-        Section {
-            Group {
-                if isBordered {
-                    DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
-                        content()
-                    }
-                    .frame(maxWidth: maxWidth)
-                    .background(.quinary, with: material)
-                    .clipShape(.rect(cornerRadii: cornerRadii))
-                    .overlay {
-                        UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                            .strokeBorder(.quaternary)
-                    }
-                } else {
-                    content()
-                        .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
-                }
+        switch layout {
+        case .section:
+            Section {
+                wrappedContent()
+            } header: {
+                wrappedHeader()
+            } footer: {
+                wrappedFooter()
             }
-            .padding(hasPadding ? innerPadding : 0)
-        } header: {
-            wrappedHeader()
-        } footer: {
-            wrappedFooter()
+        case let .stacked(spacing):
+            VStack(spacing: spacing) {
+                wrappedHeader()
+
+                wrappedContent()
+
+                wrappedFooter()
+            }
         }
+    }
+
+    @ViewBuilder private func wrappedContent() -> some View {
+        Group {
+            if isBordered {
+                DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
+                    content()
+                }
+                .frame(maxWidth: maxWidth)
+                .background(.quinary, with: material)
+                .clipShape(.rect(cornerRadii: cornerRadii))
+                .overlay {
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                        .strokeBorder(.quaternary)
+                }
+            } else {
+                content()
+                    .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
+            }
+        }
+        .padding(hasPadding ? innerPadding : 0)
     }
 
     @ViewBuilder private func wrappedHeader() -> some View {
@@ -102,6 +127,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
             .foregroundStyle(.secondary)
             .padding(.bottom, headerSpacing)
+            .padding(.horizontal, 2)
         }
     }
 
@@ -120,6 +146,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
             .foregroundStyle(.secondary)
             .padding(.top, footerSpacing)
+            .padding(.horizontal, 2)
         }
     }
 }

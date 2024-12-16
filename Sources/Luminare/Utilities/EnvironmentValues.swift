@@ -72,7 +72,7 @@ public extension EnvironmentValues {
     @Entry var luminareIsBordered: Bool = true
     @Entry var luminareHasDividers: Bool = true
 
-    // MARK: Luminare Button Styles
+    // MARK: Button Styles
 
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
@@ -82,34 +82,35 @@ public extension EnvironmentValues {
     @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
     @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
-    // MARK: Luminare Section
+    // MARK: Section
 
+    @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
     @Entry var luminareSectionMaterial: Material? = nil
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
     @Entry var luminareSectionIsMasked: Bool = false
 
-    // MARK: Luminare Compose
+    // MARK: Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .regular
     @Entry var luminareComposeStyle: LuminareComposeStyle = .regular
 
-    // MARK: Luminare Popover
+    // MARK: Popover
 
     @Entry var luminarePopoverTrigger: LuminarePopoverTrigger = .hover
     @Entry var luminarePopoverShade: LuminarePopoverShade = .styled
 
-    // MARK: Luminare Stepper
+    // MARK: Stepper
 
     @available(macOS 15.0, *)
     @Entry var luminareStepperAlignment: LuminareStepperAlignment = .trailing
     @available(macOS 15.0, *)
     @Entry var luminareStepperDirection: LuminareStepperDirection = .horizontal
 
-    // MARK: Luminare Compact Picker
+    // MARK: Compact Picker
 
     @Entry var luminareCompactPickerStyle: LuminareCompactPickerStyle = .menu
 
-    // MARK: Luminare List
+    // MARK: List
 
     @Entry var luminareListContentMarginsTop: CGFloat = 0
     @Entry var luminareListContentMarginsBottom: CGFloat = 0
@@ -120,7 +121,7 @@ public extension EnvironmentValues {
     @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never
     @Entry var luminareListRoundedBottomCornerBehavior: LuminareListRoundedCornerBehavior = .never
 
-    // MARK: Luminare Picker
+    // MARK: Picker
 
     @Entry var luminarePickerRoundedTopCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
     @Entry var luminarePickerRoundedBottomCornerBehavior: LuminarePickerRoundedCornerBehavior = .never

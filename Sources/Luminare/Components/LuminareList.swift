@@ -395,9 +395,9 @@ public struct LuminareListItem<Content, V>: View
 
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return
-        if let firstIndex = items.firstIndex(of: item),
-           firstIndex > 0 {
+        return if
+            let firstIndex = items.firstIndex(of: item),
+            firstIndex > 0 {
             !selection.contains(items[firstIndex - 1])
         } else {
             item == firstItem
@@ -406,9 +406,9 @@ public struct LuminareListItem<Content, V>: View
 
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return
-        if let firstIndex = items.firstIndex(of: item),
-           firstIndex < items.count - 1 {
+        return if
+            let firstIndex = items.firstIndex(of: item),
+            firstIndex < items.count - 1 {
             !selection.contains(items[firstIndex + 1])
         } else {
             item == lastItem

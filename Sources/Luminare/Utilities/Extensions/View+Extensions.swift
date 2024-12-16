@@ -122,34 +122,6 @@ public extension View {
 }
 
 public extension View {
-    // MARK: General
-
-    @ViewBuilder func luminareCornerRadii(_ radii: RectangleCornerRadii = .init(12)) -> some View {
-        environment(\.luminareCornerRadii, radii)
-    }
-
-    @ViewBuilder func luminareCornerRadius(_ radius: CGFloat = 12) -> some View {
-        luminareCornerRadii(.init(radius))
-    }
-
-    @ViewBuilder func luminareMinHeight(_ height: CGFloat = 34) -> some View {
-        environment(\.luminareMinHeight, height)
-    }
-
-    @ViewBuilder func luminareHorizontalPadding(_ padding: CGFloat = 8) -> some View {
-        environment(\.luminareHorizontalPadding, padding)
-    }
-
-    @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
-        environment(\.luminareIsBordered, bordered)
-    }
-
-    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
-        environment(\.luminareHasDividers, hasDividers)
-    }
-}
-
-public extension View {
     // MARK: Modal
 
     @ViewBuilder func luminareModalStyle(_ style: LuminareModalStyle) -> some View {
@@ -194,14 +166,42 @@ public extension View {
         environment(\.luminarePopupCornerRadii, radii)
     }
 
-    // MARK: Luminare Color Picker
+    // MARK: Color Picker
 
     @ViewBuilder func luminareColorPickerControls(hasCancel: Bool = false, hasDone: Bool = false) -> some View {
         environment(\.luminareColorPickerHasCancel, hasCancel)
             .environment(\.luminareColorPickerHasDone, hasDone)
     }
+}
 
-    // MARK: Luminare Button Styles
+public extension View {
+    // MARK: General
+
+    @ViewBuilder func luminareCornerRadii(_ radii: RectangleCornerRadii = .init(12)) -> some View {
+        environment(\.luminareCornerRadii, radii)
+    }
+
+    @ViewBuilder func luminareCornerRadius(_ radius: CGFloat = 12) -> some View {
+        luminareCornerRadii(.init(radius))
+    }
+
+    @ViewBuilder func luminareMinHeight(_ height: CGFloat = 34) -> some View {
+        environment(\.luminareMinHeight, height)
+    }
+
+    @ViewBuilder func luminareHorizontalPadding(_ padding: CGFloat = 8) -> some View {
+        environment(\.luminareHorizontalPadding, padding)
+    }
+
+    @ViewBuilder func luminareBordered(_ bordered: Bool = true) -> some View {
+        environment(\.luminareIsBordered, bordered)
+    }
+
+    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
+        environment(\.luminareHasDividers, hasDividers)
+    }
+
+    // MARK: Button Styles
 
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareButtonMaterial, material)
@@ -239,7 +239,11 @@ public extension View {
         environment(\.luminareCompactButtonHasFixedHeight, hasFixedHeight)
     }
 
-    // MARK: Luminare Section
+    // MARK: Section
+
+    @ViewBuilder func luminareSectionLayout(_ layout: LuminareSectionLayout = .stacked) -> some View {
+        environment(\.luminareSectionLayout, layout)
+    }
 
     @ViewBuilder func luminareSectionMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareSectionMaterial, material)
@@ -253,7 +257,7 @@ public extension View {
         environment(\.luminareSectionIsMasked, masked)
     }
 
-    // MARK: Luminare Compose
+    // MARK: Compose
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
@@ -263,7 +267,7 @@ public extension View {
         environment(\.luminareComposeStyle, style)
     }
 
-    // MARK: Luminare Popover
+    // MARK: Popover
 
     @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger = .hover) -> some View {
         environment(\.luminarePopoverTrigger, trigger)
@@ -273,7 +277,7 @@ public extension View {
         environment(\.luminarePopoverShade, shade)
     }
 
-    // MARK: Luminare Stepper
+    // MARK: Stepper
 
     @available(macOS 15.0, *)
     @ViewBuilder func luminareStepperAlignment(_ alignment: LuminareStepperAlignment = .trailing) -> some View {
@@ -285,13 +289,13 @@ public extension View {
         environment(\.luminareStepperDirection, direction)
     }
 
-    // MARK: Luminare Compact Picker
+    // MARK: Compact Picker
 
     @ViewBuilder func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle = .menu) -> some View {
         environment(\.luminareCompactPickerStyle, style)
     }
 
-    // MARK: Luminare List
+    // MARK: List
 
     @ViewBuilder func luminareListContentMargins(_ margins: CGFloat) -> some View {
         luminareListContentMargins(top: margins, bottom: margins)
@@ -331,7 +335,7 @@ public extension View {
         luminareListRoundedCorner(top: all, bottom: all)
     }
 
-    // MARK: Luminare Picker
+    // MARK: Picker
 
     @ViewBuilder func luminarePickerRoundedCorner(top: LuminarePickerRoundedCornerBehavior = .never, bottom: LuminarePickerRoundedCornerBehavior = .never) -> some View {
         environment(\.luminarePickerRoundedTopCornerBehavior, top)
