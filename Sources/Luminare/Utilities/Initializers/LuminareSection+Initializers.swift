@@ -22,7 +22,7 @@ public extension LuminareSection {
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
+        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == Text {
@@ -50,7 +50,7 @@ public extension LuminareSection {
     ///   - header: the header.
     init(
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
+        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
@@ -80,7 +80,7 @@ public extension LuminareSection {
     init(
         _ headerKey: LocalizedStringKey,
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
+        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == EmptyView {
@@ -106,7 +106,7 @@ public extension LuminareSection {
     ///   - footer: the footer.
     init(
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
+        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder footer: @escaping () -> Footer
@@ -136,7 +136,7 @@ public extension LuminareSection {
     init(
         footerKey: LocalizedStringKey,
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
+        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == Text {
@@ -161,7 +161,7 @@ public extension LuminareSection {
     ///   - content: the content.
     init(
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 8, footerSpacing: CGFloat = 8,
+        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
         innerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == EmptyView {
