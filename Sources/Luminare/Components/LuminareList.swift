@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable, Identifiable, CaseIterable, Codable {
+public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
+    Identifiable, CaseIterable, Codable
+{
     case never
     case always
     case fixedHeight
@@ -46,7 +48,7 @@ public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable, Iden
 
 /// A stylized list.
 public struct LuminareList<ContentA, ContentB, V, ID>: View
-    where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
+where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
@@ -57,16 +59,17 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListFixedHeightUntil) private var fixedHeight
     @Environment(\.luminareListRoundedTopCornerBehavior) private var topCorner
-    @Environment(\.luminareListRoundedBottomCornerBehavior) private var bottomCorner
+    @Environment(\.luminareListRoundedBottomCornerBehavior) private
+        var bottomCorner
 
     // MARK: Fields
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
-    private let id: KeyPath<V, ID>
+    private let keyPath: KeyPath<V, ID>
 
     @ViewBuilder private var content: (Binding<V>) -> ContentA,
-                             emptyView: () -> ContentB
+        emptyView: () -> ContentB
 
     @State private var firstItem: V?
     @State private var lastItem: V?
@@ -85,13 +88,13 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     ///   - emptyView: the view to display when nothing is inside the list.
     public init(
         items: Binding<[V]>,
-        selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        selection: Binding<Set<V>>, id keyPath: KeyPath<V, ID>,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
         @ViewBuilder emptyView: @escaping () -> ContentB
     ) {
         self._items = items
         self._selection = selection
-        self.id = id
+        self.keyPath = keyPath
         self.content = content
         self.emptyView = emptyView
     }
@@ -105,12 +108,12 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     ///   - content: the content generator that accepts a value binding.
     public init(
         items: Binding<[V]>,
-        selection: Binding<Set<V>>, id: KeyPath<V, ID>,
+        selection: Binding<Set<V>>, id keyPath: KeyPath<V, ID>,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA
     ) where ContentB == EmptyView {
         self.init(
             items: items,
-            selection: selection, id: id,
+            selection: selection, id: keyPath,
             content: content
         ) {
             EmptyView()
@@ -130,12 +133,14 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                             .frame(height: marginsTop)
                     }
 
-                    ForEach($items, id: id) { item in
+                    ForEach($items, id: keyPath) { item in
                         let isDisabled = isDisabled(item.wrappedValue)
                         let tint = tint(of: item.wrappedValue)
 
-                        let roundedTop = topCorner.isRounded(hasFixedHeight: hasFixedHeight)
-                        let roundedBottom = bottomCorner.isRounded(hasFixedHeight: hasFixedHeight)
+                        let roundedTop = topCorner.isRounded(
+                            hasFixedHeight: hasFixedHeight)
+                        let roundedBottom = bottomCorner.isRounded(
+                            hasFixedHeight: hasFixedHeight)
 
                         Group {
                             if #available(macOS 14.0, *) {
@@ -207,7 +212,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             }
 
             selection = selection.intersection(items)
-            processSelection() // update first and last item
+            processSelection()  // update first and last item
         }
         .onChange(of: selection) { _ in
             processSelection()
@@ -282,7 +287,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 // MARK: - List Item
 
 public struct LuminareListItem<Content, V>: View
-    where Content: View, V: Hashable {
+where Content: View, V: Hashable {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -294,7 +299,7 @@ public struct LuminareListItem<Content, V>: View
     @Environment(\.luminareListItemCornerRadii) private var itemCornerRadii
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListItemHighlightOnHover) private
-    var highlightOnHover
+        var highlightOnHover
 
     // MARK: Fields
 
@@ -341,7 +346,7 @@ public struct LuminareListItem<Content, V>: View
                     }
                 }
                 .padding(.horizontal, 1)
-                .padding(.leading, 1) // it's nuanced
+                .padding(.leading, 1)  // it's nuanced
             }
             .overlay {
                 if hasDividers, !isLast {
@@ -391,8 +396,10 @@ public struct LuminareListItem<Content, V>: View
 
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return if let firstIndex = items.firstIndex(of: item),
-                  firstIndex > 0 {
+        return
+            if let firstIndex = items.firstIndex(of: item),
+            firstIndex > 0
+        {
             !selection.contains(items[firstIndex - 1])
         } else {
             item == firstItem
@@ -401,8 +408,10 @@ public struct LuminareListItem<Content, V>: View
 
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return if let firstIndex = items.firstIndex(of: item),
-                  firstIndex < items.count - 1 {
+        return
+            if let firstIndex = items.firstIndex(of: item),
+            firstIndex < items.count - 1
+        {
             !selection.contains(items[firstIndex + 1])
         } else {
             item == lastItem
@@ -528,9 +537,11 @@ public struct LuminareListItem<Content, V>: View
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
                     bottomLeadingRadius: isLast && roundedBottom
-                        ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
+                        ? cornerRadii.bottomLeading
+                        : itemCornerRadii.bottomLeading,
                     bottomTrailingRadius: isLast && roundedBottom
-                        ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
+                        ? cornerRadii.bottomTrailing
+                        : itemCornerRadii.bottomTrailing,
                     topTrailingRadius: 0
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
@@ -600,7 +611,7 @@ public struct LuminareListItem<Content, V>: View
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> ()
+    let add: (inout [V]) -> Void
 
     var body: some View {
         LuminareSection {
@@ -661,7 +672,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     VStack {
         ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
             guard items.count < 100 else { return }
-            let random = { Int.random(in: 0 ..< 100) }
+            let random = { Int.random(in: 0..<100) }
             var new = random()
             while items.contains([new]) {
                 new = random()
