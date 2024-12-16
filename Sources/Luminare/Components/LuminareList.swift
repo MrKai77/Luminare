@@ -8,8 +8,7 @@
 import SwiftUI
 
 public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
-    Identifiable, CaseIterable, Codable
-{
+    Identifiable, CaseIterable, Codable {
     case never
     case always
     case fixedHeight
@@ -48,7 +47,7 @@ public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
 
 /// A stylized list.
 public struct LuminareList<ContentA, ContentB, V, ID>: View
-where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
+    where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     // MARK: Environments
 
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
@@ -60,7 +59,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     @Environment(\.luminareListFixedHeightUntil) private var fixedHeight
     @Environment(\.luminareListRoundedTopCornerBehavior) private var topCorner
     @Environment(\.luminareListRoundedBottomCornerBehavior) private
-        var bottomCorner
+    var bottomCorner
 
     // MARK: Fields
 
@@ -69,7 +68,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     private let keyPath: KeyPath<V, ID>
 
     @ViewBuilder private var content: (Binding<V>) -> ContentA,
-        emptyView: () -> ContentB
+                             emptyView: () -> ContentB
 
     @State private var firstItem: V?
     @State private var lastItem: V?
@@ -212,7 +211,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
             }
 
             selection = selection.intersection(items)
-            processSelection()  // update first and last item
+            processSelection() // update first and last item
         }
         .onChange(of: selection) { _ in
             processSelection()
@@ -287,7 +286,7 @@ where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
 // MARK: - List Item
 
 public struct LuminareListItem<Content, V>: View
-where Content: View, V: Hashable {
+    where Content: View, V: Hashable {
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
@@ -299,7 +298,7 @@ where Content: View, V: Hashable {
     @Environment(\.luminareListItemCornerRadii) private var itemCornerRadii
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListItemHighlightOnHover) private
-        var highlightOnHover
+    var highlightOnHover
 
     // MARK: Fields
 
@@ -346,7 +345,7 @@ where Content: View, V: Hashable {
                     }
                 }
                 .padding(.horizontal, 1)
-                .padding(.leading, 1)  // it's nuanced
+                .padding(.leading, 1) // it's nuanced
             }
             .overlay {
                 if hasDividers, !isLast {
@@ -397,9 +396,8 @@ where Content: View, V: Hashable {
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
         return
-            if let firstIndex = items.firstIndex(of: item),
-            firstIndex > 0
-        {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex > 0 {
             !selection.contains(items[firstIndex - 1])
         } else {
             item == firstItem
@@ -409,9 +407,8 @@ where Content: View, V: Hashable {
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
         return
-            if let firstIndex = items.firstIndex(of: item),
-            firstIndex < items.count - 1
-        {
+        if let firstIndex = items.firstIndex(of: item),
+           firstIndex < items.count - 1 {
             !selection.contains(items[firstIndex + 1])
         } else {
             item == lastItem
@@ -611,7 +608,7 @@ where Content: View, V: Hashable {
 private struct ListPreview<V>: View where V: Hashable & Comparable {
     @State var items: [V]
     @State var selection: Set<V>
-    let add: (inout [V]) -> Void
+    let add: (inout [V]) -> ()
 
     var body: some View {
         LuminareSection {
@@ -672,7 +669,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
     VStack {
         ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
             guard items.count < 100 else { return }
-            let random = { Int.random(in: 0..<100) }
+            let random = { Int.random(in: 0 ..< 100) }
             var new = random()
             while items.contains([new]) {
                 new = random()
