@@ -81,41 +81,45 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
             .padding(hasPadding ? innerPadding : 0)
         } header: {
-            if Header.self != EmptyView.self {
-                Group {
-                    if Header.self == Text.self {
-                        HStack {
-                            header()
-
-                            Spacer()
-                        }
-                    } else {
-                        header()
-                    }
-                }
-                .foregroundStyle(.secondary)
-
-                Spacer()
-                    .frame(height: headerSpacing)
-            }
+            wrappedHeader()
         } footer: {
-            if Footer.self != EmptyView.self {
-                Spacer()
-                    .frame(height: footerSpacing)
+            wrappedFooter()
+        }
+    }
 
-                Group {
-                    if Footer.self == Text.self {
-                        HStack {
-                            footer()
+    @ViewBuilder private func wrappedHeader() -> some View {
+        if Header.self != EmptyView.self {
+            Group {
+                if Header.self == Text.self {
+                    HStack {
+                        header()
 
-                            Spacer()
-                        }
-                    } else {
-                        footer()
+                        Spacer()
                     }
+                } else {
+                    header()
                 }
-                .foregroundStyle(.secondary)
             }
+            .foregroundStyle(.secondary)
+            .padding(.bottom, headerSpacing)
+        }
+    }
+
+    @ViewBuilder private func wrappedFooter() -> some View {
+        if Footer.self != EmptyView.self {
+            Group {
+                if Footer.self == Text.self {
+                    HStack {
+                        footer()
+
+                        Spacer()
+                    }
+                } else {
+                    footer()
+                }
+            }
+            .foregroundStyle(.secondary)
+            .padding(.top, footerSpacing)
         }
     }
 }
