@@ -108,6 +108,7 @@ public struct LuminareCompose<Label, Content>: View
                     .opacity(isEnabled ? 1 : 0.5)
             }
             .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
 
             Spacer()
 
@@ -189,5 +190,17 @@ public struct LuminareCompose<Label, Content>: View
             Color.red
                 .frame(height: 30)
         }
+
+        LuminareCompose("Culpa nisi sint reprehenderit sit.") {
+            Color.red
+                .frame(height: 30)
+        }
+
+        LuminareCompose("Culpa nisi sint reprehenderit sit.") {
+            Text("A very wide content")
+                .frame(width: 250, height: 30)
+                .background(.red)
+        }
     }
+    .frame(width: 400)
 }
