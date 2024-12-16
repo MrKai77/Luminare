@@ -15,13 +15,15 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
-        .package(url: "https://github.com/lorenzofiamingo/swiftui-variadic-views", from: "1.0.0")
+        .package(url: "https://github.com/lorenzofiamingo/swiftui-variadic-views", from: "1.0.0"),
+        .package(url: "https://github.com/siteline/swiftui-introspect", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "Luminare",
             dependencies: [
-                .product(name: "VariadicViews", package: "swiftui-variadic-views")
+                .product(name: "VariadicViews", package: "swiftui-variadic-views"),
+                .product(name: "SwiftUIIntrospect", package: "swiftui-introspect"),
             ]
         ),
         .testTarget(

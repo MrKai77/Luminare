@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIIntrospect
 
 public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
     Identifiable, CaseIterable, Codable {
@@ -193,6 +194,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(hasFixedHeight)
+                .introspect(.list, on: .macOS(.v13, .v14, .v15)) { tableView in
+                    tableView.selectionHighlightStyle = .none
+                }
             }
         }
         .frame(height: hasFixedHeight ? totalHeight : nil)
