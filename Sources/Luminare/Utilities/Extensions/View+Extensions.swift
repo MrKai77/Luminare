@@ -201,6 +201,16 @@ public extension View {
         environment(\.luminareHasDividers, hasDividers)
     }
 
+    // MARK: Pane
+
+    @ViewBuilder func luminarePaneTitlebarHeight(_ height: CGFloat = 50) -> some View {
+        environment(\.luminarePaneTitlebarHeight, height)
+    }
+
+    @ViewBuilder func luminarePaneSpacing(_ spacing: CGFloat = 15) -> some View {
+        environment(\.luminarePaneSpacing, spacing)
+    }
+
     // MARK: Button Styles
 
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {

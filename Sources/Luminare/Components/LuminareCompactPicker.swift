@@ -249,12 +249,10 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             }
             .buttonStyle(.luminareCompact)
         }
-        .luminareComposeStyle(.inline)
 
         LuminareCompose("Pick from a menu") {
             PickerPreview(elements: Array(0 ..< 200), selection: 42)
         }
-        .luminareComposeStyle(.inline)
 
         VStack {
             LuminareCompose("Pick from segments") {
@@ -262,7 +260,6 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
                     .luminareCompactPickerStyle(.segmented)
                     .luminareBordered(false)
             }
-            .luminareComposeStyle(.inline)
 
             PickerPreview(
                 elements: ["macOS", "Linux", "Windows"],

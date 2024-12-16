@@ -82,6 +82,11 @@ public extension EnvironmentValues {
     @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
     @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
+    // MARK: Pane
+
+    @Entry var luminarePaneTitlebarHeight: CGFloat = 50
+    @Entry var luminarePaneSpacing: CGFloat = 15
+
     // MARK: Section
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked

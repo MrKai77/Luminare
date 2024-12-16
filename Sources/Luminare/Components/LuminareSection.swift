@@ -175,7 +175,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .padding(.horizontal, 8)
             }
         }
-        .luminareComposeStyle(.inline)
 
         Text("""
         Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. \

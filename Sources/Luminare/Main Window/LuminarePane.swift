@@ -11,9 +11,10 @@ import SwiftUI
 
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
-    // MARK: Fields
+    @Environment(\.luminarePaneTitlebarHeight) private var titlebarHeight
+    @Environment(\.luminarePaneSpacing) private var spacing
 
-    private let titlebarHeight: CGFloat = 50
+    // MARK: Fields
 
     @ViewBuilder private var content: () -> Content, header: () -> Header
 
@@ -53,7 +54,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     public var body: some View {
         ZStack {
             ScrollView {
-                LazyVStack(spacing: 16) {
+                LazyVStack(spacing: spacing) {
                     content()
                 }
                 .padding(12)
