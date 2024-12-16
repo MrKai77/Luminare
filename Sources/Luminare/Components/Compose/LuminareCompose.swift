@@ -27,6 +27,7 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
 }
 
 public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+    case automatic
     case regular
     case inline
 
@@ -47,10 +48,12 @@ public struct LuminareCompose<Label, Content>: View
 
     // MARK: Fields
 
-    let contentMaxWidth: CGFloat?
-    let spacing: CGFloat?
+    private let contentMaxWidth: CGFloat?
+    private let spacing: CGFloat?
 
     @ViewBuilder private var content: () -> Content, label: () -> Label
+
+    @State private var size: CGSize = .zero
 
     // MARK: Initializers
 
@@ -120,13 +123,33 @@ public struct LuminareCompose<Label, Content>: View
             }
         }
         .frame(maxWidth: .infinity, minHeight: minHeight)
+        .onGeometryChange(for: CGSize.self) { proxy in
+            proxy.size
+        } action: { newValue in
+            size = newValue
+        }
         .padding(insets)
     }
 
-    private var insets: EdgeInsets {
+    private var computedStyle: LuminareComposeStyle {
         switch style {
+        case .automatic:
+            // Automatically use `.inline` if content is small enough, like a single `Button` or `Toggle`
+            if size.height <= minHeight {
+                .inline
+            } else {
+                .regular
+            }
+        default:
+            style
+        }
+    }
+
+    private var insets: EdgeInsets {
+        switch computedStyle {
         case .regular: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
         case .inline: .init(top: 2, leading: horizontalPadding, bottom: 2, trailing: 2)
+        default: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
         }
     }
 }
@@ -145,7 +168,6 @@ public struct LuminareCompose<Label, Content>: View
             }
             .buttonStyle(.luminareCompact)
         }
-        .luminareComposeStyle(.inline)
 
         LuminareCompose("Label") {
             Button {} label: {
@@ -153,7 +175,6 @@ public struct LuminareCompose<Label, Content>: View
             }
             .buttonStyle(.luminareCompact)
         }
-        .luminareComposeStyle(.inline)
         .disabled(true)
     }
 }

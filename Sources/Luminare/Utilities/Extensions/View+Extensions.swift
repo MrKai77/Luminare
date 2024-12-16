@@ -263,7 +263,7 @@ public extension View {
         environment(\.luminareComposeControlSize, controlSize)
     }
 
-    @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .regular) -> some View {
+    @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .automatic) -> some View {
         environment(\.luminareComposeStyle, style)
     }
 
