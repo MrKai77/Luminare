@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-public enum LuminarePickerRoundedCornerBehavior: String, Hashable, Equatable, Identifiable, CaseIterable, Codable {
+public enum LuminarePickerRoundedCornerBehavior: String, Hashable, Equatable, Identifiable, CaseIterable, Codable, Sendable {
     case never
     case always
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 
     public var negate: Self {
         switch self {

@@ -9,7 +9,7 @@ import SwiftUI
 
 /// The indicator alignment of a ``LuminareStepper``.
 @available(macOS 15.0, *)
-public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
     /// The indicators are of the equal lengths and expand to both edges.
     case none
     /// The indicators are of the equal lengths and have equal paddings from both edges.
@@ -29,7 +29,7 @@ public enum LuminareStepperAlignment: String, Equatable, Hashable, Identifiable,
     /// ``LuminareStepperDirection/vertical``.
     case trailing
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 
     func hardPaddingEdges(of direction: LuminareStepperDirection) -> Edge.Set {
         switch self {

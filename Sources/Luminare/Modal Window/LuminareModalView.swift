@@ -20,22 +20,22 @@ public enum LuminareModalStyle {
 }
 
 public enum LuminareSheetPresentationTarget: String, Equatable, Hashable,
-    Identifiable, CaseIterable, Codable {
+    Identifiable, CaseIterable, Codable, Sendable {
     case screen
     case window
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 }
 
 public enum LuminareSheetPresentationAlignment: String, Equatable, Hashable,
-    Identifiable, CaseIterable, Codable {
+    Identifiable, CaseIterable, Codable, Sendable {
     case centered
     case origin
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 }
 
-public struct LuminareSheetPresentation: Equatable, Hashable, Codable {
+public struct LuminareSheetPresentation: Equatable, Hashable, Codable, Sendable {
     var target: LuminareSheetPresentationTarget
     var alignment: LuminareSheetPresentationAlignment
     var offset: CGPoint

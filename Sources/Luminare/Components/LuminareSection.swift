@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public enum LuminareSectionLayout: Hashable, Equatable, Codable {
+public enum LuminareSectionLayout: Hashable, Equatable, Codable, Sendable {
     case section
     case stacked(spacing: CGFloat = 0)
 

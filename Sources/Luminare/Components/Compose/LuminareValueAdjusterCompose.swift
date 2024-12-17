@@ -12,8 +12,6 @@ import SwiftUI
 public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
     F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
-    public typealias ControlSize = LuminareComposeControlSize
-
     private enum FocusedField {
         case textbox
     }
@@ -24,7 +22,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareComposeControlSize) private var controlSize
+    @Environment(\.luminareComposeLayout) private var layout
 
     // MARK: Fields
 
@@ -88,7 +86,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
 
     public var body: some View {
         VStack {
-            switch controlSize {
+            switch layout {
             case .regular:
                 LuminareCompose {
                     text()
@@ -113,7 +111,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                 .luminareComposeStyle(.inline)
             }
         }
-        .frame(height: controlSize.height)
+        .frame(height: layout.height)
         .animation(animation, value: value)
         .animation(animation, value: isShowingTextBox)
     }
@@ -326,6 +324,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                     .foregroundStyle(.secondary)
             }
         }
-        .luminareComposeControlSize(.compact)
+        .luminareComposeLayout(.compact)
     }
 }

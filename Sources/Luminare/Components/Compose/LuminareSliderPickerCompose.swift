@@ -15,7 +15,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareComposeControlSize) private var controlSize
+    @Environment(\.luminareComposeLayout) private var layout
 
     // MARK: Fields
 
@@ -114,7 +114,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     public var body: some View {
         VStack {
-            switch controlSize {
+            switch layout {
             case .regular:
                 LuminareCompose {
                     text()
@@ -139,7 +139,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                 .luminareComposeStyle(.inline)
             }
         }
-        .frame(height: controlSize.height)
+        .frame(height: layout.height)
         .animation(animation, value: selection)
     }
 
@@ -217,6 +217,6 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                     .foregroundStyle(.secondary)
             }
         }
-        .luminareComposeControlSize(.compact)
+        .luminareComposeLayout(.compact)
     }
 }

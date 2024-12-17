@@ -9,7 +9,7 @@ import AppKit
 import SwiftUI
 
 // A shorthand for storing colors in hue-saturation-brightness format
-struct HSBColor: Equatable, Hashable, Codable {
+struct HSBColor: Equatable, Hashable, Codable, Sendable {
     var hue: Double
     var saturation: Double
     var brightness: Double

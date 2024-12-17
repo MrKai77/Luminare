@@ -9,13 +9,13 @@ import SwiftUI
 import SwiftUIIntrospect
 
 public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
-    Identifiable, CaseIterable, Codable {
+    Identifiable, CaseIterable, Codable, Sendable {
     case never
     case always
     case fixedHeight
     case variableHeight
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 
     public var negate: Self {
         switch self {

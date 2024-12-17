@@ -269,8 +269,12 @@ public extension View {
 
     // MARK: Compose
 
-    @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .regular) -> some View {
+    @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize = .automatic) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
+    }
+
+    @ViewBuilder func luminareComposeLayout(_ layout: LuminareComposeLayout = .regular) -> some View {
+        environment(\.luminareComposeLayout, layout)
     }
 
     @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle = .automatic) -> some View {

@@ -9,7 +9,7 @@ import SwiftUI
 import VariadicViews
 
 /// The style for a ``LuminareCompactPicker``.
-public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable {
+public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable, Sendable {
     /// A menu that presents a popup list to toggle selection.
     ///
     /// Works great in most cases, especially with an enormous amount of choises.

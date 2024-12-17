@@ -7,18 +7,59 @@
 
 import SwiftUI
 
-/// The control size for views based on ``LuminareCompose``.
+public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
+    case automatic
+    @available(macOS 14.0, *)
+    case extraLarge
+    case large
+    case regular
+    case small
+    case mini
+
+    public static var allCases: [LuminareComposeControlSize] {
+        if #available(macOS 14.0, *) {
+            [.automatic, .extraLarge, .large, .regular, .small, .mini]
+        } else {
+            [.automatic, .large, .regular, .small, .mini]
+        }
+    }
+
+    public var id: Self { self }
+
+    public var proposal: ControlSize? {
+        if #available(macOS 14.0, *) {
+            switch self {
+            case .extraLarge: .extraLarge
+            case .large: .large
+            case .regular: .regular
+            case .small: .small
+            case .mini: .mini
+            default: nil
+            }
+        } else {
+            switch self {
+            case .large: .large
+            case .regular: .regular
+            case .small: .small
+            case .mini: .mini
+            default: nil
+            }
+        }
+    }
+}
+
+/// The layout for views based on ``LuminareCompose``.
 ///
 /// Typically, this is eligible for views that have additional controls beside static contents.
-public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
-    /// The regular size where the content is separated into two lines.
+public enum LuminareComposeLayout: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
+    /// The regular layout where the content is separated into two lines.
     case regular
-    /// The compact size where the content is in one single line.
+    /// The compact layout where the content is in one single line.
     case compact
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 
-    var height: CGFloat {
+    public var height: CGFloat {
         switch self {
         case .regular: 70
         case .compact: 34
@@ -26,12 +67,12 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
     }
 }
 
-public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
     case automatic
     case regular
     case inline
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 }
 
 // MARK: - Compose
@@ -44,6 +85,7 @@ public struct LuminareCompose<Label, Content>: View
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareComposeControlSize) private var controlSize
     @Environment(\.luminareComposeStyle) private var style
 
     // MARK: Fields
@@ -91,10 +133,9 @@ public struct LuminareCompose<Label, Content>: View
     ) where Label == Text {
         self.init(
             contentMaxWidth: contentMaxWidth,
-            spacing: spacing
+            spacing: spacing,
+            content: content
         ) {
-            content()
-        } label: {
             Text(key)
         }
     }
@@ -116,11 +157,11 @@ public struct LuminareCompose<Label, Content>: View
                 HStack(spacing: 0) {
                     Spacer()
 
-                    content()
+                    wrappedContent()
                 }
                 .frame(maxWidth: contentMaxWidth)
             } else {
-                content()
+                wrappedContent()
             }
         }
         .frame(maxWidth: .infinity, minHeight: minHeight)
@@ -151,6 +192,15 @@ public struct LuminareCompose<Label, Content>: View
         case .regular: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
         case .inline: .init(top: 2, leading: horizontalPadding, bottom: 2, trailing: 2)
         default: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
+        }
+    }
+
+    @ViewBuilder private func wrappedContent() -> some View {
+        if let controlSize = controlSize.proposal {
+            content()
+                .controlSize(controlSize)
+        } else {
+            content()
         }
     }
 }

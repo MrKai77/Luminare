@@ -9,13 +9,13 @@ import SwiftUI
 import VariadicViews
 
 /// The orientation of a ``LuminareDividedStack``.
-public enum LuminareDividedStackOrientation: String, Equatable, Hashable, Identifiable, CaseIterable, Codable {
+public enum LuminareDividedStackOrientation: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
     /// Stacks elements vertically.
     case vertical
     /// Stacks elements horizontally.
     case horizontal
 
-    public var id: String { rawValue }
+    public var id: Self { self }
 }
 
 // MARK: - Divided Stack
