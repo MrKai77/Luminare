@@ -119,6 +119,24 @@ public extension View {
     @ViewBuilder func luminareAnimationFast(_ animation: Animation) -> some View {
         environment(\.luminareAnimationFast, animation)
     }
+
+    @ViewBuilder func luminareWindowFrame(
+        minFrame: CGSize = .init(width: 100, height: 100),
+        maxFrame: CGSize = .init(width: CGFloat.infinity, height: CGFloat.infinity)
+    ) -> some View {
+        environment(\.luminareWindowMinFrame, minFrame)
+            .environment(\.luminareWindowMaxFrame, maxFrame)
+    }
+
+    @ViewBuilder func luminareWindowFrame(
+        minWidth: CGFloat = 100, maxWidth: CGFloat = .infinity,
+        minHeight: CGFloat = 100, maxHeight: CGFloat = .infinity
+    ) -> some View {
+        luminareWindowFrame(
+            minFrame: .init(width: minWidth, height: minHeight),
+            maxFrame: .init(width: maxWidth, height: maxHeight)
+        )
+    }
 }
 
 public extension View {

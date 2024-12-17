@@ -17,6 +17,8 @@ public struct LuminareView<Content>: View where Content: View {
 
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareWindow) private var window
+    @Environment(\.luminareWindowMinFrame) private var minFrame
+    @Environment(\.luminareWindowMaxFrame) private var maxFrame
 
     // MARK: Fields
 
@@ -31,11 +33,19 @@ public struct LuminareView<Content>: View where Content: View {
             .background {
                 GeometryReader { proxy in
                     Color.clear
-                        .onAppear(perform: { setSize(size: proxy.size, animate: false) })
-                        .onChange(of: proxy.size, perform: { setSize(size: $0, animate: true) })
+                        .onAppear {
+                            setSize(size: proxy.size, animate: false)
+                        }
+                        .onChange(of: proxy.size) {
+                            setSize(size: $0, animate: true)
+                        }
                 }
             }
-            .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
+            .frame(
+                minWidth: minFrame.width, maxWidth: maxFrame.width,
+                minHeight: minFrame.height, maxHeight: maxFrame.height,
+                alignment: .leading
+            )
             .focusable(false)
             .buttonStyle(.luminare)
             .overrideTint(tint)

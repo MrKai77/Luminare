@@ -27,6 +27,8 @@ public extension EnvironmentValues {
     // MARK: Window
 
     @Entry var luminareWindow: NSWindow?
+    @Entry var luminareWindowMinFrame: CGSize = .init(width: 100, height: 100)
+    @Entry var luminareWindowMaxFrame: CGSize = .init(width: CGFloat.infinity, height: CGFloat.infinity)
     @Entry var luminareClickedOutside: Bool = false
 }
 
