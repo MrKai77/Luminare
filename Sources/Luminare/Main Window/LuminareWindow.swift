@@ -18,6 +18,8 @@ public class LuminareWindow: NSWindow {
     ///   - content: the content view of the window, wrapped in a ``LuminareView``.
     public init(
         blurRadius: CGFloat? = nil,
+        minFrame _: CGSize = .init(width: 100, height: 100),
+        maxFrame _: CGSize = .init(width: CGFloat.infinity, height: CGFloat.infinity),
         content: @escaping () -> some View
     ) {
         self.initializationTime = .now
@@ -47,6 +49,20 @@ public class LuminareWindow: NSWindow {
         }
 
         alphaValue = 0
+    }
+
+    public convenience init(
+        blurRadius: CGFloat? = nil,
+        minWidth: CGFloat = 100, minHeight: CGFloat = 100,
+        maxWidth: CGFloat = .infinity, maxHeight: CGFloat = .infinity,
+        content: @escaping () -> some View
+    ) {
+        self.init(
+            blurRadius: blurRadius,
+            minFrame: .init(width: minWidth, height: minHeight),
+            maxFrame: .init(width: maxWidth, height: maxHeight),
+            content: content
+        )
     }
 
     /// Shows this window.
