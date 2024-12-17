@@ -72,6 +72,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                             content()
                         }
                         .formStyle(.luminare)
+                        .clipped()
                     }
                 case let .stacked(spacing):
                     AutoScrollView {
