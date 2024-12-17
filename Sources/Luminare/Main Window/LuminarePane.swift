@@ -7,12 +7,21 @@
 
 import SwiftUI
 
+public enum LuminarePaneLayout: Equatable, Hashable, Codable, Sendable {
+    case none
+    @available(macOS 15.0, *)
+    case form
+    case stacked(spacing: CGFloat = 15)
+
+    public static var stacked: Self { .stacked() }
+}
+
 // MARK: - Pane
 
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
+    @Environment(\.luminarePaneLayout) private var layout
     @Environment(\.luminarePaneTitlebarHeight) private var titlebarHeight
-    @Environment(\.luminarePaneSpacing) private var spacing
 
     // MARK: Fields
 
@@ -53,21 +62,35 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     public var body: some View {
         ZStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: spacing) {
+            Group {
+                switch layout {
+                case .none:
                     content()
-                }
-                .padding(12)
-                .environment(\.luminareClickedOutside, luminareClickedOutside)
-                .background {
-                    Color.white.opacity(0.0001)
-                        .onTapGesture {
-                            luminareClickedOutside.toggle()
+                case .form:
+                    if #available(macOS 15.0, *) {
+                        Form {
+                            content()
                         }
-                        .ignoresSafeArea()
+                        .formStyle(.luminare)
+                    }
+                case let .stacked(spacing):
+                    AutoScrollView {
+                        LazyVStack(alignment: .leading, spacing: spacing) {
+                            content()
+                        }
+                        .padding(12)
+                    }
+                    .clipped()
                 }
             }
-            .clipped()
+            .environment(\.luminareClickedOutside, luminareClickedOutside)
+            .background {
+                Color.white.opacity(0.0001)
+                    .onTapGesture {
+                        luminareClickedOutside.toggle()
+                    }
+                    .ignoresSafeArea()
+            }
 
             VStack(alignment: .leading, spacing: 0) {
                 header()

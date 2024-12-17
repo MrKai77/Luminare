@@ -82,10 +82,15 @@ public extension EnvironmentValues {
     @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
     @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
+    // MARK: Form Style
+
+    @available(macOS 15.0, *)
+    @Entry var luminareFormSpacing: CGFloat = 15
+
     // MARK: Pane
 
+    @Entry var luminarePaneLayout: LuminarePaneLayout = .stacked
     @Entry var luminarePaneTitlebarHeight: CGFloat = 50
-    @Entry var luminarePaneSpacing: CGFloat = 15
 
     // MARK: Section
 

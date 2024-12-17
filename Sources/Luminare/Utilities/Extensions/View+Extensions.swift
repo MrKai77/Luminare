@@ -201,14 +201,21 @@ public extension View {
         environment(\.luminareHasDividers, hasDividers)
     }
 
+    // MARK: Form
+
+    @available(macOS 15.0, *)
+    @ViewBuilder func luminareFormSpacing(_ spacing: CGFloat = 15) -> some View {
+        environment(\.luminareFormSpacing, spacing)
+    }
+
     // MARK: Pane
+
+    @ViewBuilder func luminarePaneLayout(_ layout: LuminarePaneLayout = .stacked) -> some View {
+        environment(\.luminarePaneLayout, layout)
+    }
 
     @ViewBuilder func luminarePaneTitlebarHeight(_ height: CGFloat = 50) -> some View {
         environment(\.luminarePaneTitlebarHeight, height)
-    }
-
-    @ViewBuilder func luminarePaneSpacing(_ spacing: CGFloat = 15) -> some View {
-        environment(\.luminarePaneSpacing, spacing)
     }
 
     // MARK: Button Styles

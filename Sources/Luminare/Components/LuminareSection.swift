@@ -81,7 +81,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 wrappedFooter()
             }
         case let .stacked(spacing):
-            VStack(spacing: spacing) {
+            VStack(alignment: .leading, spacing: spacing) {
                 wrappedHeader()
 
                 wrappedContent()
@@ -114,41 +114,19 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
     @ViewBuilder private func wrappedHeader() -> some View {
         if Header.self != EmptyView.self {
-            Group {
-                switch layout {
-                case .section:
-                    header()
-                case .stacked:
-                    HStack(spacing: 0) {
-                        header()
-
-                        Spacer(minLength: 0)
-                    }
-                }
-            }
-            .foregroundStyle(.secondary)
-            .padding(.bottom, headerSpacing)
-            .padding(.horizontal, hasPadding ? innerPadding : 0)
+            header()
+                .foregroundStyle(.secondary)
+                .padding(.bottom, headerSpacing)
+                .padding(.horizontal, hasPadding ? innerPadding : 0)
         }
     }
 
     @ViewBuilder private func wrappedFooter() -> some View {
         if Footer.self != EmptyView.self {
-            Group {
-                switch layout {
-                case .section:
-                    footer()
-                case .stacked:
-                    HStack(spacing: 0) {
-                        footer()
-
-                        Spacer(minLength: 0)
-                    }
-                }
-            }
-            .foregroundStyle(.secondary)
-            .padding(.top, footerSpacing)
-            .padding(.horizontal, hasPadding ? innerPadding : 0)
+            footer()
+                .foregroundStyle(.secondary)
+                .padding(.top, footerSpacing)
+                .padding(.horizontal, hasPadding ? innerPadding : 0)
         }
     }
 }

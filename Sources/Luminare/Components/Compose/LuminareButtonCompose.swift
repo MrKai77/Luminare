@@ -88,7 +88,7 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
             Button(role: role) {
                 action()
             } label: {
-                label()
+                content()
             }
             .buttonStyle(.luminareCompact)
         } label: {

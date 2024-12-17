@@ -144,14 +144,18 @@ public struct LuminareCompose<Label, Content>: View
 
     public var body: some View {
         HStack(spacing: spacing) {
-            HStack(spacing: 0) {
-                label()
-                    .opacity(isEnabled ? 1 : 0.5)
-            }
-            .fixedSize(horizontal: false, vertical: true)
-            .layoutPriority(1)
+            if Label.self != EmptyView.self {
+                HStack(spacing: 0) {
+                    label()
+                        .opacity(isEnabled ? 1 : 0.5)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
 
-            Spacer()
+                Spacer()
+            } else {
+                Spacer(minLength: 0)
+            }
 
             if let contentMaxWidth {
                 HStack(spacing: 0) {

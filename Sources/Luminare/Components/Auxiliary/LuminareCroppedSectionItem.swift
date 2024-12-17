@@ -69,7 +69,7 @@ public struct LuminareCroppedSectionItem: ViewModifier {
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         } else {
-            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+            Rectangle()
         }
     }
 }
