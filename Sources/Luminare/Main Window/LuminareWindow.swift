@@ -18,8 +18,8 @@ public class LuminareWindow: NSWindow {
     ///   - content: the content view of the window, wrapped in a ``LuminareView``.
     public init(
         blurRadius: CGFloat? = nil,
-        minFrame _: CGSize = .init(width: 100, height: 100),
-        maxFrame _: CGSize = .init(width: CGFloat.infinity, height: CGFloat.infinity),
+        minFrame: CGSize = .init(width: 100, height: 100),
+        maxFrame: CGSize = .init(width: CGFloat.infinity, height: CGFloat.infinity),
         content: @escaping () -> some View
     ) {
         self.initializationTime = .now
@@ -34,6 +34,8 @@ public class LuminareWindow: NSWindow {
         let view = NSHostingView(
             rootView: LuminareView(content: content)
                 .environment(\.luminareWindow, self)
+                .environment(\.luminareWindowMinFrame, minFrame)
+                .environment(\.luminareWindowMaxFrame, maxFrame)
         )
 
         contentView = view
