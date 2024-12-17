@@ -115,14 +115,15 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @ViewBuilder private func wrappedHeader() -> some View {
         if Header.self != EmptyView.self {
             Group {
-                if Header.self == Text.self {
-                    HStack {
+                switch layout {
+                case .section:
+                    header()
+                case .stacked:
+                    HStack(spacing: 0) {
                         header()
 
-                        Spacer()
+                        Spacer(minLength: 0)
                     }
-                } else {
-                    header()
                 }
             }
             .foregroundStyle(.secondary)
@@ -134,14 +135,15 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @ViewBuilder private func wrappedFooter() -> some View {
         if Footer.self != EmptyView.self {
             Group {
-                if Footer.self == Text.self {
-                    HStack {
+                switch layout {
+                case .section:
+                    footer()
+                case .stacked:
+                    HStack(spacing: 0) {
                         footer()
 
-                        Spacer()
+                        Spacer(minLength: 0)
                     }
-                } else {
-                    footer()
                 }
             }
             .foregroundStyle(.secondary)

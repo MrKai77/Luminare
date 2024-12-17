@@ -93,12 +93,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         .modifier(LuminareHoverable())
     }
 
-    @ViewBuilder private func variadic(
-        layout: some _VariadicView.ViewRoot, content: () -> some View
-    ) -> some View {
-        _VariadicView.Tree(layout, content: content)
-    }
-
     // MARK: - Layout
 
     struct SegmentedVariadic: View {

@@ -54,7 +54,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     public var body: some View {
         ZStack {
             ScrollView {
-                LazyVStack(spacing: spacing) {
+                LazyVStack(alignment: .leading, spacing: spacing) {
                     content()
                 }
                 .padding(12)
@@ -69,7 +69,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             }
             .clipped()
 
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 header()
                     .buttonStyle(TabHeaderButtonStyle())
                     .padding(.horizontal, 10)
