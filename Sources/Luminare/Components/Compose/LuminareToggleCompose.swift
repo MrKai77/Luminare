@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Toggle Compose
 
-struct LuminareToggleCompose<Label>: View where Label: View {
+public struct LuminareToggleCompose<Label>: View where Label: View {
     // MARK: Environments
 
     @Environment(\.luminareComposeControlSize) private var controlSize
@@ -40,7 +40,7 @@ struct LuminareToggleCompose<Label>: View where Label: View {
 
     // MARK: Body
 
-    var body: some View {
+    public var body: some View {
         LuminareCompose(contentMaxWidth: nil) {
             Toggle("", isOn: $value)
                 .labelsHidden()

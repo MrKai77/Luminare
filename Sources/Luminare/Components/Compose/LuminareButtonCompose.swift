@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Button Compose
 
-struct LuminareButtonCompose<Label, Content>: View where Label: View, Content: View {
+public struct LuminareButtonCompose<Label, Content>: View where Label: View, Content: View {
     // MARK: Fields
 
     private let role: ButtonRole?
@@ -83,7 +83,7 @@ struct LuminareButtonCompose<Label, Content>: View where Label: View, Content: V
 
     // MARK: Body
 
-    var body: some View {
+    public var body: some View {
         LuminareCompose(contentMaxWidth: nil) {
             Button(role: role) {
                 action()
