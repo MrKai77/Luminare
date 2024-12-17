@@ -28,6 +28,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 VStack(spacing: 24) {
                     content()
                 }
+                .padding(.bottom, 12)
             }
             .scrollIndicators(.never)
             .scrollContentBackground(.hidden)

@@ -61,7 +61,17 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     // MARK: Body
 
     public var body: some View {
-        ZStack {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                header()
+                    .buttonStyle(TabHeaderButtonStyle())
+                    .padding(.horizontal, 10)
+                    .padding(.trailing, 5)
+                    .frame(height: titlebarHeight, alignment: .leading)
+
+                Divider()
+            }
+
             Group {
                 switch layout {
                 case .none:
@@ -92,19 +102,8 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                     }
                     .ignoresSafeArea()
             }
-
-            VStack(alignment: .leading, spacing: 0) {
-                header()
-                    .buttonStyle(TabHeaderButtonStyle())
-                    .padding(.horizontal, 10)
-                    .padding(.trailing, 5)
-                    .frame(height: titlebarHeight, alignment: .leading)
-
-                Divider()
-            }
-            .frame(maxHeight: .infinity, alignment: .top)
-            .edgesIgnoringSafeArea(.top)
         }
+        .edgesIgnoringSafeArea(.top)
         .luminareBackground()
     }
 }
@@ -125,4 +124,65 @@ struct TabHeaderButtonStyle: ButtonStyle {
                 }
             }
     }
+}
+
+// MARK: - Preview
+
+@available(macOS 15.0, *)
+#Preview(
+    "LuminarePane",
+    traits: .sizeThatFitsLayout
+) {
+    LuminarePane("Luminare") {
+        Section("General") {
+            LuminareToggleCompose(
+                "Launch at login",
+                isOn: .constant(true)
+            )
+
+            LuminareToggleCompose(
+                "Hide menu bar icon",
+                isOn: .constant(true)
+            )
+
+            LuminareSliderPickerCompose(
+                "Animation speed",
+                ["Instant", "Fast", "Smooth"],
+                selection: .constant("Fast")
+            ) { speed in
+                Text(speed)
+                    .monospaced()
+            }
+        }
+
+        Section("Window") {
+            LuminareButtonCompose(
+                "Debug",
+                "Reset Window Frame"
+            ) {}
+
+            LuminareToggleCompose(
+                "Restore window frame on drag",
+                isOn: .constant(true)
+            )
+
+            LuminareToggleCompose(
+                "Include padding",
+                isOn: .constant(true)
+            )
+        }
+
+        Section("Cursor") {
+            LuminareToggleCompose(
+                "Use screen with cursor",
+                isOn: .constant(true)
+            )
+
+            LuminareToggleCompose(
+                "Move cursor with window",
+                isOn: .constant(true)
+            )
+        }
+    }
+    .luminarePaneLayout(.form)
 }
