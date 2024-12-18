@@ -293,6 +293,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
 
 public struct LuminareFilled: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareHasBackground) private var hasBackground
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
@@ -344,27 +345,31 @@ public struct LuminareFilled: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        content
-            .background(with: material) {
-                Group {
-                    if isEnabled {
-                        if isPressed {
-                            Rectangle()
-                                .foregroundStyle(pressed)
-                        } else if highlightOnHover, isHovering {
-                            Rectangle()
-                                .foregroundStyle(hovering)
+        if hasBackground {
+            content
+                .background(with: material) {
+                    Group {
+                        if isEnabled {
+                            if isPressed {
+                                Rectangle()
+                                    .foregroundStyle(pressed)
+                            } else if highlightOnHover, isHovering {
+                                Rectangle()
+                                    .foregroundStyle(hovering)
+                            } else {
+                                Rectangle()
+                                    .foregroundStyle(fill)
+                            }
                         } else {
                             Rectangle()
                                 .foregroundStyle(fill)
                         }
-                    } else {
-                        Rectangle()
-                            .foregroundStyle(fill)
                     }
+                    .opacity(isEnabled ? 1 : 0.5)
                 }
-                .opacity(isEnabled ? 1 : 0.5)
-            }
+        } else {
+            content
+        }
     }
 }
 

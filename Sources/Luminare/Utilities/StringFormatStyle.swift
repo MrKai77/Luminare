@@ -77,7 +77,7 @@ public struct StringFormatStyle: Equatable, Hashable, Codable, Sendable, Parseab
         ///
         /// - `.custom(.uppercased, "@@")`
         ///     - Parses `#42ab0e` to `@@42AB0E`.
-        case custom(TextCase, String)
+        case custom(Text.Case, String)
 
         /// Parse a hex value using a specified strategy.
         /// - Parameter value: The hex value to parse.
@@ -100,6 +100,9 @@ public struct StringFormatStyle: Equatable, Hashable, Codable, Sendable, Parseab
                     Self.uppercased
                 case .lowercase:
                     Self.lowercased
+                @unknown default:
+                    // Unknown!
+                    Self.lowercased
                 }
 
                 return try prefix + branch.parse(value)
@@ -116,15 +119,5 @@ public struct StringFormatStyle: Equatable, Hashable, Codable, Sendable, Parseab
     public func format(_ value: String) -> String {
         // don't need conversions
         value
-    }
-
-    /// Represents a text case.
-    public enum TextCase: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
-        /// The uppercase.
-        case uppercase
-        /// The lowercase.
-        case lowercase
-
-        public var id: Self { self }
     }
 }

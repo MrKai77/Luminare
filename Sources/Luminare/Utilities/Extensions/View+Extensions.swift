@@ -221,6 +221,10 @@ public extension View {
         environment(\.luminareIsBordered, bordered)
     }
 
+    @ViewBuilder func luminareHasBackground(_ hasBackground: Bool = true) -> some View {
+        environment(\.luminareHasBackground, hasBackground)
+    }
+
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool = true) -> some View {
         environment(\.luminareHasDividers, hasDividers)
     }

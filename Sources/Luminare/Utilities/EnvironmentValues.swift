@@ -72,6 +72,7 @@ public extension EnvironmentValues {
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
+    @Entry var luminareHasBackground: Bool = true
     @Entry var luminareHasDividers: Bool = true
 
     // MARK: Button Styles

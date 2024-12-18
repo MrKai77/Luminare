@@ -105,21 +105,13 @@ public struct LuminareTextEditor: View {
     "LuminareTextEditor",
     traits: .sizeThatFitsLayout
 ) {
-    @Previewable @State var text = """
-    Cupidatat ipsum consequat est cupidatat veniam sint et voluptate commodo. 
-    Incididunt elit commodo culpa officia sint quis ullamco qui deserunt consequat. 
-    Cillum et ullamco cupidatat. Dolore id ea culpa labore Lorem commodo esse. 
-    Adipisicing dolore officia exercitation dolor occaecat do esse non occaecat reprehenderit duis magna. 
-    Labore eu culpa tempor adipisicing qui incididunt tempor in nostrud dolore velit magna veniam ex.
-    Veniam et incididunt amet Lorem sit irure.
-    Anim duis enim enim velit exercitation.
-    """
+    @Previewable @State var text = ""
     @Previewable @State var selection: TextSelection? = .none
 
     LuminareTextEditor(text: $text)
 
-    LuminareTextEditor(text: $text, selection: $selection)
-
-    LuminareTextEditor(text: $text, selection: $selection)
-        .disabled(true)
+//    LuminareTextEditor(text: $text, selection: $selection)
+//
+//    LuminareTextEditor(text: $text, selection: $selection)
+//        .disabled(true)
 }
