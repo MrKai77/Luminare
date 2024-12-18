@@ -126,7 +126,7 @@ public struct LuminareColorPicker<F>: View
                 }
                 .buttonStyle(.luminareCompact)
                 .luminareHorizontalPadding(0)
-                .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
+                .luminareAspectRatio(1 / 1, contentMode: .fit)
                 .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(
@@ -167,11 +167,11 @@ public struct LuminareColorPicker<F>: View
         .luminareModalStyle(.popover)
         .luminareModalContentWrapper { view in
             view
-                .luminareCompactButtonAspectRatio(contentMode: .fit)
+                .luminareAspectRatio(contentMode: .fit)
                 .monospaced(false)
         }
     }
-    .luminareCompactButtonAspectRatio(contentMode: .fill)
+    .luminareAspectRatio(contentMode: .fill)
     .monospaced()
     .frame(width: 300)
 }

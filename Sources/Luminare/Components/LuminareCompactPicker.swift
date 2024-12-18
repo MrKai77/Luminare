@@ -268,8 +268,8 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             PickerPreview(elements: [40, 41, 42, 43, 44], selection: 42)
                 .luminareCompactPickerStyle(.segmented)
                 .padding(2)
-                .luminareCompactButtonAspectRatio(contentMode: .fit)
+                .luminareAspectRatio(contentMode: .fit)
         }
-        .luminareCompactButtonAspectRatio(contentMode: .fill)
+        .luminareAspectRatio(contentMode: .fill)
     }
 }

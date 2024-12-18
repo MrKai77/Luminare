@@ -76,13 +76,17 @@ public extension EnvironmentValues {
 
     // MARK: Button Styles
 
+    @Entry var luminareAspectRatio: (
+        aspectRatio: CGFloat?,
+        contentMode: ContentMode,
+        hasFixedHeight: Bool
+    )? = (nil, .fit, true)
+
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
     @Entry var luminareButtonHighlightOnHover: Bool = true
 
     @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
-    @Entry var luminareCompactButtonAspectRatio: (aspectRatio: CGFloat?, contentMode: ContentMode) = (nil, .fit)
-    @Entry var luminareCompactButtonHasFixedHeight: Bool = true
 
     // MARK: Form Style
 

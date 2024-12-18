@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+extension View {
+    @ViewBuilder func applying(@ViewBuilder _ transform: @escaping (Self) -> some View) -> some View {
+        transform(self)
+    }
+}
+
 public extension View {
     /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
     /// value.
@@ -238,6 +244,28 @@ public extension View {
 
     // MARK: Button Styles
 
+    @ViewBuilder func luminareAspectRatio(unapplying: Bool) -> some View {
+        if unapplying {
+            environment(\.luminareAspectRatio, nil)
+        } else {
+            luminareAspectRatio()
+        }
+    }
+
+    @ViewBuilder func luminareAspectRatio(
+        _ aspectRatio: CGFloat? = nil, contentMode: ContentMode = .fit, hasFixedHeight: Bool = true
+    ) -> some View {
+        environment(\.luminareAspectRatio, (aspectRatio, contentMode, hasFixedHeight))
+    }
+
+    @ViewBuilder func luminareAspectRatio(
+        _ aspectRatio: CGSize, contentMode: ContentMode = .fit, hasFixedHeight: Bool = true
+    ) -> some View {
+        luminareAspectRatio(
+            aspectRatio.width / aspectRatio.height, contentMode: contentMode, hasFixedHeight: hasFixedHeight
+        )
+    }
+
     @ViewBuilder func luminareButtonMaterial(_ material: Material? = nil) -> some View {
         environment(\.luminareButtonMaterial, material)
     }
@@ -260,18 +288,6 @@ public extension View {
 
     @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat = 8) -> some View {
         luminareCompactButtonCornerRadii(.init(radius))
-    }
-
-    @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View {
-        environment(\.luminareCompactButtonAspectRatio, (aspectRatio, contentMode))
-    }
-
-    @ViewBuilder func luminareCompactButtonAspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View {
-        environment(\.luminareCompactButtonAspectRatio, (aspectRatio.width / aspectRatio.height, contentMode))
-    }
-
-    @ViewBuilder func luminareCompactButtonHasFixedHeight(_ hasFixedHeight: Bool = true) -> some View {
-        environment(\.luminareCompactButtonHasFixedHeight, hasFixedHeight)
     }
 
     // MARK: Section

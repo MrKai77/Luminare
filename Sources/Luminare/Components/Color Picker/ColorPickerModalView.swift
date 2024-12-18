@@ -155,7 +155,7 @@ struct ColorPickerModalView: View {
                 colorPicker()
             }
         }
-        .luminareCompactButtonAspectRatio(contentMode: .fill)
+        .luminareAspectRatio(contentMode: .fill)
     }
 
     @ViewBuilder private func controls() -> some View {
@@ -185,7 +185,7 @@ struct ColorPickerModalView: View {
                     }
                 }
                 .buttonStyle(.luminareCompact)
-                .luminareCompactButtonAspectRatio(contentMode: .fill)
+                .luminareAspectRatio(contentMode: .fill)
             }
         }
     }
@@ -200,7 +200,7 @@ struct ColorPickerModalView: View {
         } label: {
             Image(systemName: "eyedropper.halffull")
         }
-        .luminareCompactButtonAspectRatio(1 / 1, contentMode: .fit)
+        .luminareAspectRatio(1 / 1, contentMode: .fit)
         .buttonStyle(.luminareCompact)
     }
 

@@ -9,43 +9,52 @@ import SwiftUI
 
 struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareCompactButtonAspectRatio) private var aspectRatio
-    @Environment(\.luminareCompactButtonHasFixedHeight) private
-    var hasFixedHeight
+    @Environment(\.luminareAspectRatio) private var aspectRatio
 
     @ViewBuilder func body(content: Content) -> some View {
-        Group {
-            if isConstrained {
-                content
-                    .frame(
-                        minWidth: minWidth, maxWidth: .infinity,
-                        minHeight: minHeight,
-                        maxHeight: hasFixedHeight ? nil : .infinity
-                    )
-                    .aspectRatio(
-                        aspectRatio.aspectRatio,
-                        contentMode: aspectRatio.contentMode
-                    )
-            } else {
-                content
-                    .frame(
-                        maxWidth: .infinity, minHeight: minHeight,
-                        maxHeight: .infinity
-                    )
+        if let aspectRatio {
+            Group {
+                if isConstrained {
+                    content
+                        .frame(
+                            minWidth: minWidth, maxWidth: .infinity,
+                            minHeight: minHeight,
+                            maxHeight: hasFixedHeight ? nil : .infinity
+                        )
+                        .aspectRatio(
+                            aspectRatio.aspectRatio,
+                            contentMode: aspectRatio.contentMode
+                        )
+                } else {
+                    content
+                        .frame(
+                            maxWidth: .infinity, minHeight: minHeight,
+                            maxHeight: .infinity
+                        )
+                }
             }
+            .fixedSize(
+                horizontal: aspectRatio.contentMode == .fit,
+                vertical: hasFixedHeight
+            )
+        } else {
+            content
         }
-        .fixedSize(
-            horizontal: aspectRatio.contentMode == .fit,
-            vertical: hasFixedHeight
-        )
+    }
+
+    private var hasFixedHeight: Bool {
+        guard let aspectRatio else { return false }
+        return aspectRatio.hasFixedHeight
     }
 
     private var isConstrained: Bool {
-        aspectRatio.contentMode == .fit || hasFixedHeight
+        guard let aspectRatio else { return false }
+        return aspectRatio.contentMode == .fit || hasFixedHeight
     }
 
     private var minWidth: CGFloat? {
-        if hasFixedHeight, let aspectRatio = aspectRatio.aspectRatio {
+        if hasFixedHeight,
+           let aspectRatio = aspectRatio?.aspectRatio {
             minHeight * aspectRatio
         } else {
             nil
@@ -172,7 +181,7 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
 ///
 /// ![LuminareCosmeticButtonStyle](LuminareCosmeticButtonStyle)
 public struct LuminareCosmeticButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
@@ -241,7 +250,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
 ///
 /// ![LuminareCompactButtonStyle](LuminareCompactButtonStyle)
 public struct LuminareCompactButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
@@ -448,7 +457,7 @@ public struct LuminareBordered: ViewModifier {
 ///     }
 /// }
 public struct LuminareHoverable: ViewModifier {
-    @Environment(\.isEnabled) private var isEnabled: Bool
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
