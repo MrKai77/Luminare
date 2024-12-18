@@ -15,6 +15,7 @@ public struct LuminareTextEditor: View {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.font) private var font
     @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     // MARK: Fields
@@ -23,6 +24,7 @@ public struct LuminareTextEditor: View {
     @Binding private var selection: Any? // Handle os versions below macOS 15.0
 
     @State private var isHovering: Bool = false
+    @State private var containerSize: CGSize = .zero
 
     // MARK: Initializers
 
@@ -65,15 +67,21 @@ public struct LuminareTextEditor: View {
                     TextEditor(text: $text)
                 }
             }
-            .fixedSize(horizontal: false, vertical: true)
+            .scrollDisabled(true)
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, 14)
+            .frame(minHeight: max(minHeight, containerSize.height))
         }
         .scrollContentBackground(.hidden)
         .font(font ?? .body)
         .modifier(LuminareHoverable())
         .luminareAspectRatio(unapplying: true)
         .luminareHorizontalPadding(0)
+        .onGeometryChange(for: CGSize.self) { proxy in
+            proxy.size
+        } action: { newValue in
+            containerSize = newValue
+        }
     }
 
     @available(macOS 15.0, *)
