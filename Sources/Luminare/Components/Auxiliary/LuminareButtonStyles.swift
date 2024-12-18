@@ -389,6 +389,7 @@ public struct LuminareFilled: ViewModifier {
 public struct LuminareBordered: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareHasBackground) private var hasBackground
     @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     private let isHovering: Bool
@@ -437,7 +438,7 @@ public struct LuminareBordered: ViewModifier {
         content
             .clipShape(.rect(cornerRadii: cornerRadii))
             .background {
-                if isHovering {
+                if isHovering, hasBackground {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .strokeBorder(fill)
                 } else if isBordered {
