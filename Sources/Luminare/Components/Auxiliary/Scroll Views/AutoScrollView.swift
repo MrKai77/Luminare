@@ -9,6 +9,11 @@ import SwiftUI
 
 /// A simple scroll view that enables scrolling only if the content is large enough to scroll.
 public struct AutoScrollView<Content>: View where Content: View {
+    @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
+    @Environment(\.luminareContentMarginsLeading) private var contentMarginsLeading
+    @Environment(\.luminareContentMarginsBottom) private var contentMarginsBottom
+    @Environment(\.luminareContentMarginsTrailing) private var contentMarginsTrailing
+
     private let axes: Axis.Set
     private let showsIndicators: Bool
     @ViewBuilder private var content: () -> Content
@@ -33,29 +38,68 @@ public struct AutoScrollView<Content>: View where Content: View {
     }
 
     public var body: some View {
-        ScrollView(axes, showsIndicators: showsIndicators) {
-            content()
-                .onGeometryChange(for: CGSize.self) { proxy in
-                    proxy.size
-                } action: { size in
-                    contentSize = size
+        ScrollView(allowedAxes, showsIndicators: showsIndicators) {
+            VStack(spacing: 0) {
+                if contentMarginsTop > 0 {
+                    Spacer()
+                        .frame(height: contentMarginsTop)
                 }
+
+                content()
+                    .padding(.leading, contentMarginsLeading)
+                    .padding(.trailing, contentMarginsTrailing)
+
+                if contentMarginsBottom > 0 {
+                    Spacer()
+                        .frame(height: contentMarginsBottom)
+                }
+            }
+            .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+            } action: { size in
+                contentSize = size
+            }
         }
         .onGeometryChange(for: CGSize.self) { proxy in
             proxy.size
         } action: { size in
             containerSize = size
         }
-        .scrollDisabled(isHorizontalScrollDisabled && isVerticalScrollDisabled)
+        .scrollDisabled(isHorizontalScrollingDisabled && isVerticalScrollingDisabled)
     }
 
-    private var isHorizontalScrollDisabled: Bool {
+    private var allowedAxes: Axis.Set {
+        if isHorizontalScrollingDisabled && isVerticalScrollingDisabled {
+            axes
+        } else if isHorizontalScrollingDisabled {
+            axes.intersection(.vertical)
+        } else if isVerticalScrollingDisabled {
+            axes.intersection(.horizontal)
+        } else {
+            axes
+        }
+    }
+
+    private var isHorizontalScrollingDisabled: Bool {
         guard axes.contains(.horizontal) else { return true }
         return contentSize.width <= containerSize.width
     }
 
-    private var isVerticalScrollDisabled: Bool {
+    private var isVerticalScrollingDisabled: Bool {
         guard axes.contains(.vertical) else { return true }
         return contentSize.height <= containerSize.height
     }
+}
+
+@available(macOS 15.0, *)
+#Preview(
+    "AutoScrollView",
+    traits: .sizeThatFitsLayout
+) {
+    AutoScrollView {
+        Color.red
+            .frame(height: 300)
+    }
+    .luminareContentMargins(.vertical, 50)
+    .frame(width: 100, height: 300)
 }

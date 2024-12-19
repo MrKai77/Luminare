@@ -17,8 +17,10 @@ public struct LuminareView<Content>: View where Content: View {
 
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareWindow) private var window
-    @Environment(\.luminareWindowMinFrame) private var minFrame
-    @Environment(\.luminareWindowMaxFrame) private var maxFrame
+    @Environment(\.luminareWindowMinWidth) private var minWidth
+    @Environment(\.luminareWindowMaxWidth) private var maxWidth
+    @Environment(\.luminareWindowMinHeight) private var minHeight
+    @Environment(\.luminareWindowMaxHeight) private var maxHeight
 
     // MARK: Fields
 
@@ -42,8 +44,8 @@ public struct LuminareView<Content>: View where Content: View {
                 }
             }
             .frame(
-                minWidth: minFrame.width, maxWidth: maxFrame.width,
-                minHeight: minFrame.height, maxHeight: maxFrame.height,
+                minWidth: minWidth, maxWidth: maxWidth,
+                minHeight: minHeight, maxHeight: maxHeight,
                 alignment: .leading
             )
             .focusable(false)

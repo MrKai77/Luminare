@@ -34,8 +34,7 @@ public class LuminareWindow: NSWindow {
         let view = NSHostingView(
             rootView: LuminareView(content: content)
                 .environment(\.luminareWindow, self)
-                .environment(\.luminareWindowMinFrame, minFrame)
-                .environment(\.luminareWindowMaxFrame, maxFrame)
+                .luminareWindowFrame(min: minFrame, max: maxFrame)
         )
 
         contentView = view

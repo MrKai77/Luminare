@@ -10,11 +10,13 @@ import SwiftUI
 struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareAspectRatio) private var aspectRatio
+    @Environment(\.luminareAspectRatioContentMode) private var contentMode
+    @Environment(\.luminareAspectRatioHasFixedHeight) private var hasFixedHeight
 
     @ViewBuilder func body(content: Content) -> some View {
         if let aspectRatio {
             Group {
-                if isConstrained {
+                if isConstrained, let contentMode {
                     content
                         .frame(
                             minWidth: minWidth, maxWidth: .infinity,
@@ -22,8 +24,8 @@ struct AspectRatioModifier: ViewModifier {
                             maxHeight: hasFixedHeight ? nil : .infinity
                         )
                         .aspectRatio(
-                            aspectRatio.aspectRatio,
-                            contentMode: aspectRatio.contentMode
+                            aspectRatio,
+                            contentMode: contentMode
                         )
                 } else {
                     content
@@ -34,7 +36,7 @@ struct AspectRatioModifier: ViewModifier {
                 }
             }
             .fixedSize(
-                horizontal: aspectRatio.contentMode == .fit,
+                horizontal: contentMode == .fit,
                 vertical: hasFixedHeight
             )
         } else {
@@ -42,19 +44,13 @@ struct AspectRatioModifier: ViewModifier {
         }
     }
 
-    private var hasFixedHeight: Bool {
-        guard let aspectRatio else { return false }
-        return aspectRatio.hasFixedHeight
-    }
-
     private var isConstrained: Bool {
-        guard let aspectRatio else { return false }
-        return aspectRatio.contentMode == .fit || hasFixedHeight
+        guard let contentMode else { return false }
+        return contentMode == .fit || hasFixedHeight
     }
 
     private var minWidth: CGFloat? {
-        if hasFixedHeight,
-           let aspectRatio = aspectRatio?.aspectRatio {
+        if hasFixedHeight, let aspectRatio {
             minHeight * aspectRatio
         } else {
             nil

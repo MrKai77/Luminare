@@ -54,13 +54,14 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
-    @Environment(\.luminareListContentMarginsTop) private var marginsTop
-    @Environment(\.luminareListContentMarginsBottom) private var marginsBottom
+    @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
+    @Environment(\.luminareContentMarginsLeading) private var contentMarginsLeading
+    @Environment(\.luminareContentMarginsBottom) private var contentMarginsBottom
+    @Environment(\.luminareContentMarginsTrailing) private var contentMarginsTrailing
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListFixedHeightUntil) private var fixedHeight
     @Environment(\.luminareListRoundedTopCornerBehavior) private var topCorner
-    @Environment(\.luminareListRoundedBottomCornerBehavior) private
-    var bottomCorner
+    @Environment(\.luminareListRoundedBottomCornerBehavior) private var bottomCorner
 
     // MARK: Fields
 
@@ -128,9 +129,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 emptyView()
             } else {
                 List(selection: $selection) {
-                    if marginsTop > 0 {
+                    if contentMarginsTop > 0 {
                         Spacer()
-                            .frame(height: marginsTop)
+                            .frame(height: contentMarginsTop)
                     }
 
                     ForEach($items, id: keyPath) { item in
@@ -184,11 +185,13 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                     .listRowSeparator(.hidden)
                     .listRowInsets(.init())
                     .padding(.horizontal, -10)
+                    .padding(.leading, contentMarginsLeading)
+                    .padding(.trailing, contentMarginsTrailing)
                     .transition(.slide)
 
-                    if marginsBottom > 0 {
+                    if contentMarginsBottom > 0 {
                         Spacer()
-                            .frame(height: marginsBottom)
+                            .frame(height: contentMarginsBottom)
                     }
                 }
                 .listStyle(.plain)
@@ -237,7 +240,8 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     }
 
     private var totalHeight: CGFloat {
-        CGFloat(max(1, items.count)) * itemHeight + marginsTop + marginsBottom
+        let margins = contentMarginsTop + contentMarginsBottom
+        return CGFloat(max(1, items.count)) * itemHeight + margins
     }
 
     private var hasFixedHeight: Bool {

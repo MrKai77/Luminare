@@ -9,6 +9,10 @@ import SwiftUI
 
 /// A stylized sidebar for ``LuminareWindow``.
 public struct LuminareSidebar<Content>: View where Content: View {
+    @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
+    @Environment(\.luminareContentMarginsBottom) private var contentMarginsBottom
+    @Environment(\.luminareSidebarOverflow) private var overflow
+    
     @ViewBuilder private var content: () -> Content
 
     /// Initializes a ``LuminareSidebar``.
@@ -21,48 +25,40 @@ public struct LuminareSidebar<Content>: View where Content: View {
     }
 
     public var body: some View {
-        if #available(macOS 14.0, *) {
-            let overflow: CGFloat = 50
-
-            AutoScrollView(.vertical) {
-                VStack(spacing: 24) {
-                    content()
-                }
-                .padding(.bottom, 12)
+        AutoScrollView(.vertical) {
+            VStack(spacing: 24) {
+                content()
             }
-            .scrollIndicators(.never)
-            .scrollContentBackground(.hidden)
-            .padding(.horizontal, 12)
-            .frame(maxHeight: .infinity, alignment: .top)
-            .padding(.top, -overflow)
-            .contentMargins(.top, overflow)
-            .mask {
-                VStack(spacing: 0) {
-                    LinearGradient(
-                        colors: [.clear, .white],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: overflow)
-
-                    Color.white
-                }
-                .padding(.top, -overflow)
-            }
-
-            .luminareBackground()
-        } else {
-            AutoScrollView(.vertical) {
-                VStack(spacing: 24) {
-                    content()
-                }
-            }
-            .scrollIndicators(.never)
-            .scrollContentBackground(.hidden)
-            .padding(.horizontal, 12)
-            .frame(maxHeight: .infinity, alignment: .top)
-            .luminareBackground()
+            .padding(.bottom, 12)
         }
+        .luminareContentMargins(.top, overflow + contentMarginsTop)
+        .luminareContentMargins(.bottom, overflow + contentMarginsBottom)
+        .scrollIndicators(.never)
+        .scrollContentBackground(.hidden)
+        .padding(.horizontal, 12)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .padding(.top, -overflow)
+        .mask {
+            VStack(spacing: 0) {
+                LinearGradient(
+                    colors: [.clear, .white],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: overflow)
+                
+                Color.white
+                
+                LinearGradient(
+                    colors: [.clear, .white],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: overflow)
+            }
+            .padding(.vertical, -overflow)
+        }
+        .luminareBackground()
     }
 }
 
