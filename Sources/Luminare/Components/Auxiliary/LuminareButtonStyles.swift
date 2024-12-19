@@ -14,9 +14,9 @@ struct AspectRatioModifier: ViewModifier {
     @Environment(\.luminareAspectRatioHasFixedHeight) private var hasFixedHeight
 
     @ViewBuilder func body(content: Content) -> some View {
-        if let aspectRatio {
+        if let contentMode {
             Group {
-                if isConstrained, let contentMode {
+                if isConstrained {
                     content
                         .frame(
                             minWidth: minWidth, maxWidth: .infinity,
