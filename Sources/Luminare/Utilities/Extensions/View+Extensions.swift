@@ -11,6 +11,14 @@ extension View {
     @ViewBuilder func applying(@ViewBuilder _ transform: @escaping (Self) -> some View) -> some View {
         transform(self)
     }
+
+    @ViewBuilder func assigning<V>(_ keyPath: WritableKeyPath<EnvironmentValues, V>, _ value: V?) -> some View {
+        if let value {
+            environment(keyPath, value)
+        } else {
+            self
+        }
+    }
 }
 
 public extension View {
@@ -130,22 +138,20 @@ public extension View {
         min: CGSize? = nil,
         max: CGSize? = nil
     ) -> some View {
-        let view = self
-        if let min { view.luminareWindowFrame(minWidth: min.width, minHeight: min.height) }
-        if let max { view.luminareWindowFrame(maxWidth: max.width, maxHeight: max.height) }
-        view
+        assigning(\.luminareWindowMinWidth, min?.width)
+            .assigning(\.luminareWindowMaxWidth, max?.width)
+            .assigning(\.luminareWindowMinHeight, min?.height)
+            .assigning(\.luminareWindowMaxHeight, max?.height)
     }
 
     @ViewBuilder func luminareWindowFrame(
         minWidth: CGFloat? = nil, maxWidth: CGFloat? = nil,
         minHeight: CGFloat? = nil, maxHeight: CGFloat? = nil
     ) -> some View {
-        let view = self
-        if let minWidth { view.environment(\.luminareWindowMinWidth, minWidth) }
-        if let maxWidth { view.environment(\.luminareWindowMaxWidth, maxWidth) }
-        if let minHeight { view.environment(\.luminareWindowMinHeight, minHeight) }
-        if let maxHeight { view.environment(\.luminareWindowMaxHeight, maxHeight) }
-        view
+        assigning(\.luminareWindowMinWidth, minWidth)
+            .assigning(\.luminareWindowMaxWidth, maxWidth)
+            .assigning(\.luminareWindowMinHeight, minHeight)
+            .assigning(\.luminareWindowMaxHeight, maxHeight)
     }
 
     @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
@@ -201,10 +207,8 @@ public extension View {
     // MARK: Color Picker
 
     @ViewBuilder func luminareColorPickerControls(hasCancel: Bool? = nil, hasDone: Bool? = nil) -> some View {
-        let view = self
-        if let hasCancel { view.environment(\.luminareColorPickerHasCancel, hasCancel) }
-        if let hasDone { view.environment(\.luminareColorPickerHasDone, hasDone) }
-        view
+        assigning(\.luminareColorPickerHasCancel, hasCancel)
+            .assigning(\.luminareColorPickerHasDone, hasDone)
     }
 }
 
@@ -250,11 +254,9 @@ public extension View {
     @ViewBuilder func luminareAspectRatio(
         _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
     ) -> some View {
-        let view = self
-        view.environment(\.luminareAspectRatio, aspectRatio)
-        view.environment(\.luminareAspectRatioContentMode, contentMode)
-        if let hasFixedHeight { view.environment(\.luminareAspectRatioHasFixedHeight, hasFixedHeight) }
-        view
+        environment(\.luminareAspectRatio, aspectRatio)
+        environment(\.luminareAspectRatioContentMode, contentMode)
+            .assigning(\.luminareAspectRatioHasFixedHeight, hasFixedHeight)
     }
 
     @ViewBuilder func luminareAspectRatio(
@@ -274,13 +276,11 @@ public extension View {
             .environment(\.luminareContentMarginsTrailing, insets.trailing)
     }
 
-    @ViewBuilder func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
-        let view = self
-        if edges.contains(.top) { view.environment(\.luminareContentMarginsTop, length) }
-        if edges.contains(.leading) { view.environment(\.luminareContentMarginsLeading, length) }
-        if edges.contains(.bottom) { view.environment(\.luminareContentMarginsBottom, length) }
-        if edges.contains(.trailing) { view.environment(\.luminareContentMarginsTrailing, length) }
-        view
+    @ViewBuilder func luminareContentMargins(_: Edge.Set, _ length: CGFloat) -> some View {
+        assigning(\.luminareContentMarginsTop, length)
+            .assigning(\.luminareContentMarginsLeading, length)
+            .assigning(\.luminareContentMarginsBottom, length)
+            .assigning(\.luminareContentMarginsTrailing, length)
     }
 
     @ViewBuilder func luminareContentMargins(_ length: CGFloat) -> some View {
@@ -416,10 +416,8 @@ public extension View {
         top: LuminareListRoundedCornerBehavior? = nil,
         bottom: LuminareListRoundedCornerBehavior? = nil
     ) -> some View {
-        let view = self
-        if let top { view.environment(\.luminareListRoundedTopCornerBehavior, top) }
-        if let bottom { view.environment(\.luminareListRoundedBottomCornerBehavior, bottom) }
-        view
+        assigning(\.luminareListRoundedTopCornerBehavior, top)
+            .assigning(\.luminareListRoundedBottomCornerBehavior, bottom)
     }
 
     @ViewBuilder func luminareListRoundedCorner(_ all: LuminareListRoundedCornerBehavior) -> some View {
@@ -432,10 +430,8 @@ public extension View {
         top: LuminarePickerRoundedCornerBehavior? = nil,
         bottom: LuminarePickerRoundedCornerBehavior? = nil
     ) -> some View {
-        let view = self
-        if let top { view.environment(\.luminarePickerRoundedTopCornerBehavior, top) }
-        if let bottom { view.environment(\.luminarePickerRoundedBottomCornerBehavior, bottom) }
-        view
+        assigning(\.luminarePickerRoundedTopCornerBehavior, top)
+            .assigning(\.luminarePickerRoundedBottomCornerBehavior, bottom)
     }
 
     @ViewBuilder func luminarePickerRoundedCorner(_ all: LuminarePickerRoundedCornerBehavior) -> some View {
