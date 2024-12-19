@@ -255,7 +255,7 @@ public extension View {
         _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
     ) -> some View {
         environment(\.luminareAspectRatio, aspectRatio)
-        environment(\.luminareAspectRatioContentMode, contentMode)
+            .environment(\.luminareAspectRatioContentMode, contentMode)
             .assigning(\.luminareAspectRatioHasFixedHeight, hasFixedHeight)
     }
 
