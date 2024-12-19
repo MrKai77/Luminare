@@ -252,16 +252,9 @@ public extension View {
     }
 
     @ViewBuilder func luminareAspectRatio(
-        _ aspectRatio: CGFloat?, contentMode: ContentMode, hasFixedHeight: Bool? = nil
+        _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
     ) -> some View {
         environment(\.luminareAspectRatio, aspectRatio)
-        environment(\.luminareAspectRatioContentMode, contentMode)
-            .assigning(\.luminareAspectRatioHasFixedHeight, hasFixedHeight)
-    }
-    
-    @ViewBuilder func luminareAspectRatio(
-        contentMode: ContentMode, hasFixedHeight: Bool? = nil
-    ) -> some View {
         environment(\.luminareAspectRatioContentMode, contentMode)
             .assigning(\.luminareAspectRatioHasFixedHeight, hasFixedHeight)
     }
