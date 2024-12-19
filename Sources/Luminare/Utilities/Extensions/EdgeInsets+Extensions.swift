@@ -5,7 +5,6 @@
 //  Created by KrLite on 2024/12/19.
 //
 
-
 import SwiftUI
 
 public extension EdgeInsets {
@@ -19,7 +18,7 @@ public extension EdgeInsets {
             trailing: length
         )
     }
-    
+
     init(_ edges: Edge.Set, _ length: CGFloat) {
         self.init(
             top: edges.contains(.top) ? length : 0,

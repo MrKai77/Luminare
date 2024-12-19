@@ -12,7 +12,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
     @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
     @Environment(\.luminareContentMarginsBottom) private var contentMarginsBottom
     @Environment(\.luminareSidebarOverflow) private var overflow
-    
+
     @ViewBuilder private var content: () -> Content
 
     /// Initializes a ``LuminareSidebar``.
@@ -46,9 +46,9 @@ public struct LuminareSidebar<Content>: View where Content: View {
                     endPoint: .bottom
                 )
                 .frame(height: overflow)
-                
+
                 Color.white
-                
+
                 LinearGradient(
                     colors: [.clear, .white],
                     startPoint: .top,

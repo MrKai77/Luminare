@@ -69,7 +69,7 @@ public struct AutoScrollView<Content>: View where Content: View {
     }
 
     private var allowedAxes: Axis.Set {
-        if isHorizontalScrollingDisabled && isVerticalScrollingDisabled {
+        if isHorizontalScrollingDisabled, isVerticalScrollingDisabled {
             axes
         } else if isHorizontalScrollingDisabled {
             axes.intersection(.vertical)

@@ -29,7 +29,7 @@ public extension EnvironmentValues {
     @Entry var luminareWindow: NSWindow?
     @Entry var luminareSidebarOverflow: CGFloat = 50
     @Entry var luminareClickedOutside: Bool = false
-    
+
     @Entry var luminareWindowMinWidth: CGFloat = 100
     @Entry var luminareWindowMaxWidth: CGFloat = .infinity
     @Entry var luminareWindowMinHeight: CGFloat = 100
@@ -47,7 +47,7 @@ public extension EnvironmentValues {
     // MARK: Sheet
 
     @Entry var luminareSheetCornerRadii: RectangleCornerRadii = .init(12)
-    
+
     @Entry var luminareSheetPresentation: LuminareSheetPresentation = .windowCenter
     @Entry var luminareSheetIsMovableByWindowBackground: Bool = false
     @Entry var luminareSheetClosesOnDefocus: Bool = false
@@ -55,7 +55,7 @@ public extension EnvironmentValues {
     // MARK: Popup
 
     @Entry var luminarePopupCornerRadii: RectangleCornerRadii = .init(12)
-    
+
     @Entry var luminarePopupPadding: CGFloat = 12
 
     // MARK: Color Picker
@@ -70,17 +70,17 @@ public extension EnvironmentValues {
     // MARK: General
 
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
-    
+
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
     @Entry var luminareIsBordered: Bool = true
     @Entry var luminareHasBackground: Bool = true
     @Entry var luminareHasDividers: Bool = true
-    
+
     @Entry var luminareAspectRatio: CGFloat?
     @Entry var luminareAspectRatioContentMode: ContentMode? = .fit
     @Entry var luminareAspectRatioHasFixedHeight: Bool = true
-    
+
     @Entry var luminareContentMarginsTop: CGFloat = 0
     @Entry var luminareContentMarginsLeading: CGFloat = 0
     @Entry var luminareContentMarginsBottom: CGFloat = 0
@@ -90,7 +90,7 @@ public extension EnvironmentValues {
 
     @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
     @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
-    
+
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonHighlightOnHover: Bool = true
 
@@ -136,11 +136,11 @@ public extension EnvironmentValues {
     // MARK: List
 
     @Entry var luminareListItemCornerRadii: RectangleCornerRadii = .init(2)
-    
+
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListItemHighlightOnHover: Bool = true
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil
-    
+
     @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never
     @Entry var luminareListRoundedBottomCornerBehavior: LuminareListRoundedCornerBehavior = .never
 

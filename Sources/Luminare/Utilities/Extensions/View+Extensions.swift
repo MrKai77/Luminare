@@ -147,7 +147,7 @@ public extension View {
         if let maxHeight { view.environment(\.luminareWindowMaxHeight, maxHeight) }
         view
     }
-    
+
     @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
         environment(\.luminareSidebarOverflow, overflow)
     }
@@ -238,7 +238,7 @@ public extension View {
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool) -> some View {
         environment(\.luminareHasDividers, hasDividers)
     }
-    
+
     @ViewBuilder func luminareAspectRatio(unapplying: Bool) -> some View {
         if unapplying {
             environment(\.luminareAspectRatioContentMode, nil)
@@ -246,7 +246,7 @@ public extension View {
             self
         }
     }
-    
+
     @ViewBuilder func luminareAspectRatio(
         _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
     ) -> some View {
@@ -256,7 +256,7 @@ public extension View {
         if let hasFixedHeight { view.environment(\.luminareAspectRatioHasFixedHeight, hasFixedHeight) }
         view
     }
-    
+
     @ViewBuilder func luminareAspectRatio(
         _ aspectRatio: CGSize, contentMode: ContentMode, hasFixedHeight: Bool? = nil
     ) -> some View {
@@ -266,14 +266,14 @@ public extension View {
             hasFixedHeight: hasFixedHeight
         )
     }
-    
+
     @ViewBuilder func luminareContentMargins(_ insets: EdgeInsets) -> some View {
         environment(\.luminareContentMarginsTop, insets.top)
             .environment(\.luminareContentMarginsLeading, insets.leading)
             .environment(\.luminareContentMarginsBottom, insets.bottom)
             .environment(\.luminareContentMarginsTrailing, insets.trailing)
     }
-    
+
     @ViewBuilder func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
         let view = self
         if edges.contains(.top) { view.environment(\.luminareContentMarginsTop, length) }
@@ -282,7 +282,7 @@ public extension View {
         if edges.contains(.trailing) { view.environment(\.luminareContentMarginsTrailing, length) }
         view
     }
-    
+
     @ViewBuilder func luminareContentMargins(_ length: CGFloat) -> some View {
         luminareContentMargins(.all, length)
     }
