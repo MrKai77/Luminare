@@ -276,11 +276,11 @@ public extension View {
             .environment(\.luminareContentMarginsTrailing, insets.trailing)
     }
 
-    @ViewBuilder func luminareContentMargins(_: Edge.Set, _ length: CGFloat) -> some View {
-        assigning(\.luminareContentMarginsTop, length)
-            .assigning(\.luminareContentMarginsLeading, length)
-            .assigning(\.luminareContentMarginsBottom, length)
-            .assigning(\.luminareContentMarginsTrailing, length)
+    @ViewBuilder func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
+        assigning(\.luminareContentMarginsTop, edges.contains(.top) ? length : nil)
+            .assigning(\.luminareContentMarginsLeading, edges.contains(.leading) ? length : nil)
+            .assigning(\.luminareContentMarginsBottom, edges.contains(.bottom) ? length : nil)
+            .assigning(\.luminareContentMarginsTrailing, edges.contains(.trailing) ? length : nil)
     }
 
     @ViewBuilder func luminareContentMargins(_ length: CGFloat) -> some View {

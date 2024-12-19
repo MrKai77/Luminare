@@ -37,7 +37,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
         .scrollContentBackground(.hidden)
         .padding(.horizontal, 12)
         .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.top, -overflow)
+        .padding(.vertical, -overflow)
         .mask {
             VStack(spacing: 0) {
                 LinearGradient(
