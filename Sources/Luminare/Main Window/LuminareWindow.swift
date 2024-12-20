@@ -82,7 +82,7 @@ public class LuminareWindow: NSWindow {
     }
 }
 
-// MARK: - Private APIs
+// MARK: - Internal
 
 typealias CGSConnectionID = UInt32
 

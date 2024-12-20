@@ -7,11 +7,15 @@
 
 import SwiftUI
 
+// MARK: - Internal
+
 extension View {
+    // Applies a transform to the view
     @ViewBuilder func applying(@ViewBuilder _ transform: @escaping (Self) -> some View) -> some View {
         transform(self)
     }
 
+    // Assigns the specified environment value, if not nil
     @ViewBuilder func assigning<V>(
         _ keyPath: WritableKeyPath<EnvironmentValues, V>,
         _ value: V?
@@ -22,21 +26,14 @@ extension View {
             self
         }
     }
-}
 
-public extension View {
-    /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
-    /// value.
-    @ViewBuilder func overrideTint(_ tint: Color) -> some View {
-        luminareTint(tint)
-            .tint(tint)
-    }
-
+    // Applies a materialized background over a style
     @ViewBuilder func background(_ style: some ShapeStyle, with material: Material?) -> some View {
         background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
-            .background(style.opacity(material == nil ? 1 : 0.5))
+            .background(style)
     }
 
+    // Applies a materialized background over a view
     @ViewBuilder func background(with material: Material?, @ViewBuilder _ content: () -> some View) -> some View {
         background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
             .background {
@@ -45,9 +42,11 @@ public extension View {
     }
 }
 
-// MARK: - Popover
+// MARK: - Convenient Wrapper
 
 public extension View {
+    // MARK: Popover
+
     @ViewBuilder func luminarePopover(
         arrowEdge: Edge = .bottom,
         padding: CGFloat = 4,
@@ -61,11 +60,9 @@ public extension View {
             self
         }
     }
-}
 
-// MARK: - Popup
+    // MARK: Popup
 
-public extension View {
     @ViewBuilder func luminarePopup(
         isPresented: Binding<Bool>,
         edge: Edge = .bottom,
@@ -81,11 +78,9 @@ public extension View {
             )
         }
     }
-}
 
-// MARK: - Modal
+    // MARK: Modal
 
-public extension View {
     @ViewBuilder func luminareModal(
         isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> some View
@@ -114,17 +109,20 @@ public extension View {
     }
 }
 
-// MARK: - Background
+// MARK: - Common
 
 public extension View {
+    /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
+    /// value.
+    @ViewBuilder func overrideTint(_ tint: Color) -> some View {
+        luminareTint(tint)
+            .tint(tint)
+    }
+
     @ViewBuilder func luminareBackground() -> some View {
         modifier(LuminareBackgroundEffect())
     }
-}
 
-// MARK: - Environment Values
-
-public extension View {
     @ViewBuilder func luminareTint(_ tint: Color) -> some View {
         environment(\.luminareTint, tint)
     }
@@ -136,15 +134,11 @@ public extension View {
     @ViewBuilder func luminareAnimationFast(_ animation: Animation) -> some View {
         environment(\.luminareAnimationFast, animation)
     }
-
-    @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
-        environment(\.luminareSidebarOverflow, overflow)
-    }
 }
 
-public extension View {
-    // MARK: Modal
+// MARK: - Modal
 
+public extension View {
     @ViewBuilder func luminareModalStyle(_ style: LuminareModalStyle) -> some View {
         environment(\.luminareModalStyle, style)
     }
@@ -195,9 +189,9 @@ public extension View {
     }
 }
 
-public extension View {
-    // MARK: General
+// MARK: - View
 
+public extension View {
     @ViewBuilder func luminareCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminareCornerRadii, radii)
     }
@@ -270,24 +264,7 @@ public extension View {
         luminareContentMargins(.all, length)
     }
 
-    // MARK: Form
-
-    @available(macOS 15.0, *)
-    @ViewBuilder func luminareFormSpacing(_ spacing: CGFloat) -> some View {
-        environment(\.luminareFormSpacing, spacing)
-    }
-
-    // MARK: Pane
-
-    @ViewBuilder func luminarePaneLayout(_ layout: LuminarePaneLayout) -> some View {
-        environment(\.luminarePaneLayout, layout)
-    }
-
-    @ViewBuilder func luminarePaneTitlebarHeight(_ height: CGFloat) -> some View {
-        environment(\.luminarePaneTitlebarHeight, height)
-    }
-
-    // MARK: Button Styles
+    // MARK: Button
 
     @ViewBuilder func luminareButtonMaterial(_ material: Material?) -> some View {
         environment(\.luminareButtonMaterial, material)
@@ -311,6 +288,23 @@ public extension View {
 
     @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat) -> some View {
         luminareCompactButtonCornerRadii(.init(radius))
+    }
+
+    // MARK: Form
+
+    @available(macOS 15.0, *)
+    @ViewBuilder func luminareFormSpacing(_ spacing: CGFloat) -> some View {
+        environment(\.luminareFormSpacing, spacing)
+    }
+
+    // MARK: Pane
+
+    @ViewBuilder func luminarePaneLayout(_ layout: LuminarePaneLayout) -> some View {
+        environment(\.luminarePaneLayout, layout)
+    }
+
+    @ViewBuilder func luminarePaneTitlebarHeight(_ height: CGFloat) -> some View {
+        environment(\.luminarePaneTitlebarHeight, height)
     }
 
     // MARK: Section
@@ -419,5 +413,11 @@ public extension View {
 
     @ViewBuilder func luminarePickerRoundedCorner(_ all: LuminarePickerRoundedCornerBehavior) -> some View {
         luminarePickerRoundedCorner(top: all, bottom: all)
+    }
+
+    // MARK: Sidebar
+
+    @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
+        environment(\.luminareSidebarOverflow, overflow)
     }
 }

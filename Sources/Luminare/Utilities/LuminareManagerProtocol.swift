@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// Should always be a struct instead of a class
 public protocol LuminareManagerProtocol: View {
     var luminare: LuminareWindow? { get set }
     var isVisible: Bool { get }
@@ -35,7 +36,7 @@ public extension LuminareManagerProtocol {
 public extension LuminareManagerProtocol {
     mutating func show() {
         if luminare == nil {
-            let body = self
+            let body = body
             luminare = LuminareWindow(
                 blurRadius: blurRadius,
                 content: { body }

@@ -7,11 +7,18 @@
 
 import SwiftUI
 
-// MARK: - Commons
+// MARK: - Internal
+
+extension EnvironmentValues {
+    @Entry var luminareWindow: LuminareWindow?
+
+    @Entry var hoveringOverLuminareItem: Bool = false
+    @Entry var luminareClickedOutside: Bool = false
+}
+
+// MARK: - Common
 
 public extension EnvironmentValues {
-    // MARK: General
-
     // Currently, it is impossible to read the `.tint()` modifier on a view
     // this is a custom environement value as an alternative implementation of it
     // in practice, it should always be synchronized with `.tint()`
@@ -19,23 +26,11 @@ public extension EnvironmentValues {
 
     @Entry var luminareAnimation: Animation = .smooth(duration: 0.2)
     @Entry var luminareAnimationFast: Animation = .easeInOut(duration: 0.1)
-
-    // MARK: Auxiliary
-
-    @Entry var hoveringOverLuminareItem: Bool = false
-
-    // MARK: Window
-
-    @Entry var luminareWindow: NSWindow?
-    @Entry var luminareSidebarOverflow: CGFloat = 50
-    @Entry var luminareClickedOutside: Bool = false
 }
 
-// MARK: - Modals
+// MARK: - Modal
 
 public extension EnvironmentValues {
-    // MARK: Modal
-
     @Entry var luminareModalStyle: LuminareModalStyle = .sheet
     @Entry var luminareModalContentWrapper: (AnyView) -> AnyView = { view in view }
 
@@ -59,15 +54,13 @@ public extension EnvironmentValues {
     @Entry var luminareColorPickerHasDone: Bool = false
 }
 
-// MARK: - Views
+// MARK: - View
 
 public extension EnvironmentValues {
-    // MARK: General
-
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
-
     @Entry var luminareMinHeight: CGFloat = 34
     @Entry var luminareHorizontalPadding: CGFloat = 8
+
     @Entry var luminareIsBordered: Bool = true
     @Entry var luminareHasBackground: Bool = true
     @Entry var luminareHasDividers: Bool = true
@@ -81,15 +74,15 @@ public extension EnvironmentValues {
     @Entry var luminareContentMarginsBottom: CGFloat = 0
     @Entry var luminareContentMarginsTrailing: CGFloat = 0
 
-    // MARK: Button Styles
+    // MARK: Button
 
     @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
-    @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
-
     @Entry var luminareButtonMaterial: Material? = nil
     @Entry var luminareButtonHighlightOnHover: Bool = true
 
-    // MARK: Form Style
+    @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
+
+    // MARK: Form
 
     @available(macOS 15.0, *)
     @Entry var luminareFormSpacing: CGFloat = 15
@@ -143,4 +136,8 @@ public extension EnvironmentValues {
 
     @Entry var luminarePickerRoundedTopCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
     @Entry var luminarePickerRoundedBottomCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
+
+    // MARK: Sidebar
+
+    @Entry var luminareSidebarOverflow: CGFloat = 50
 }
