@@ -12,8 +12,6 @@ public protocol LuminareManagerProtocol: View {
     var isVisible: Bool { get }
 
     var blurRadius: CGFloat? { get }
-    var minFrame: CGSize { get }
-    var maxFrame: CGSize { get }
 
     mutating func show()
     mutating func close()
@@ -32,25 +30,16 @@ public extension LuminareManagerProtocol {
     var blurRadius: CGFloat? {
         nil
     }
-
-    var minFrame: CGSize {
-        .init(width: 100, height: 100)
-    }
-
-    var maxFrame: CGSize {
-        .init(width: CGFloat.infinity, height: CGFloat.infinity)
-    }
 }
 
 public extension LuminareManagerProtocol {
     mutating func show() {
         if luminare == nil {
-            let body = body
+            let body = self
             luminare = LuminareWindow(
                 blurRadius: blurRadius,
-                minFrame: minFrame,
-                maxFrame: maxFrame
-            ) { body }
+                content: { body }
+            )
             luminare?.center()
         }
 

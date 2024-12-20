@@ -29,11 +29,6 @@ public extension EnvironmentValues {
     @Entry var luminareWindow: NSWindow?
     @Entry var luminareSidebarOverflow: CGFloat = 50
     @Entry var luminareClickedOutside: Bool = false
-
-    @Entry var luminareWindowMinWidth: CGFloat = 100
-    @Entry var luminareWindowMaxWidth: CGFloat = .infinity
-    @Entry var luminareWindowMinHeight: CGFloat = 100
-    @Entry var luminareWindowMaxHeight: CGFloat = .infinity
 }
 
 // MARK: - Modals

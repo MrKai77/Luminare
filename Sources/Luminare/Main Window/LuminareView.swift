@@ -17,52 +17,38 @@ public struct LuminareView<Content>: View where Content: View {
 
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareWindow) private var window
-    @Environment(\.luminareWindowMinWidth) private var minWidth
-    @Environment(\.luminareWindowMaxWidth) private var maxWidth
-    @Environment(\.luminareWindowMinHeight) private var minHeight
-    @Environment(\.luminareWindowMaxHeight) private var maxHeight
 
     // MARK: Fields
 
     @ViewBuilder public let content: () -> Content
 
     @State private var currentAnimation: LuminareWindowAnimation?
+    @State private var contentSize: CGSize = .zero
 
     // MARK: Body
 
     public var body: some View {
         content()
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .onAppear {
-                            setSize(size: proxy.size, animate: false)
-                        }
-                        .onChange(of: proxy.size) {
-                            setSize(size: $0, animate: true)
-                        }
-                }
-            }
-            .frame(
-                minWidth: minWidth, maxWidth: maxWidth,
-                minHeight: minHeight, maxHeight: maxHeight,
-                alignment: .leading
-            )
             .focusable(false)
             .buttonStyle(.luminare)
             .overrideTint(tint)
+            // Handle content size change
+            .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+            } action: { newValue in
+                contentSize = newValue
+            }
+            .onAppear { setSize(size: contentSize, animate: false) }
+            .onChange(of: contentSize) { setSize(size: $0, animate: true) }
     }
 
     // MARK: Functions
 
     func setSize(size: CGSize, animate: Bool) {
-        guard let window else {
-            return
-        }
+        guard let window else { return }
+        guard size.width > 0, size.height > 0 else { return }
 
-        if let animation = currentAnimation {
-            animation.stop()
-        }
+        currentAnimation?.stop()
 
         var frame = NSRect(
             origin: window.frame.origin,

@@ -12,7 +12,10 @@ extension View {
         transform(self)
     }
 
-    @ViewBuilder func assigning<V>(_ keyPath: WritableKeyPath<EnvironmentValues, V>, _ value: V?) -> some View {
+    @ViewBuilder func assigning<V>(
+        _ keyPath: WritableKeyPath<EnvironmentValues, V>,
+        _ value: V?
+    ) -> some View {
         if let value {
             environment(keyPath, value)
         } else {
@@ -132,26 +135,6 @@ public extension View {
 
     @ViewBuilder func luminareAnimationFast(_ animation: Animation) -> some View {
         environment(\.luminareAnimationFast, animation)
-    }
-
-    @ViewBuilder func luminareWindowFrame(
-        min: CGSize? = nil,
-        max: CGSize? = nil
-    ) -> some View {
-        assigning(\.luminareWindowMinWidth, min?.width)
-            .assigning(\.luminareWindowMaxWidth, max?.width)
-            .assigning(\.luminareWindowMinHeight, min?.height)
-            .assigning(\.luminareWindowMaxHeight, max?.height)
-    }
-
-    @ViewBuilder func luminareWindowFrame(
-        minWidth: CGFloat? = nil, maxWidth: CGFloat? = nil,
-        minHeight: CGFloat? = nil, maxHeight: CGFloat? = nil
-    ) -> some View {
-        assigning(\.luminareWindowMinWidth, minWidth)
-            .assigning(\.luminareWindowMaxWidth, maxWidth)
-            .assigning(\.luminareWindowMinHeight, minHeight)
-            .assigning(\.luminareWindowMaxHeight, maxHeight)
     }
 
     @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {

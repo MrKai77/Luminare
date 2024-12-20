@@ -18,8 +18,6 @@ public class LuminareWindow: NSWindow {
     ///   - content: the content view of the window, wrapped in a ``LuminareView``.
     public init(
         blurRadius: CGFloat? = nil,
-        minFrame: CGSize = .init(width: 100, height: 100),
-        maxFrame: CGSize = .init(width: CGFloat.infinity, height: CGFloat.infinity),
         content: @escaping () -> some View
     ) {
         self.initializationTime = .now
@@ -28,13 +26,12 @@ public class LuminareWindow: NSWindow {
             contentRect: .zero,
             styleMask: [.titled, .fullSizeContentView, .closable, .resizable],
             backing: .buffered,
-            defer: false // if true, background blur will break
+            defer: false // If true, background blur will break
         )
 
         let view = NSHostingView(
             rootView: LuminareView(content: content)
                 .environment(\.luminareWindow, self)
-                .luminareWindowFrame(min: minFrame, max: maxFrame)
         )
 
         contentView = view
@@ -50,20 +47,6 @@ public class LuminareWindow: NSWindow {
         }
 
         alphaValue = 0
-    }
-
-    public convenience init(
-        blurRadius: CGFloat? = nil,
-        minWidth: CGFloat = 100, minHeight: CGFloat = 100,
-        maxWidth: CGFloat = .infinity, maxHeight: CGFloat = .infinity,
-        content: @escaping () -> some View
-    ) {
-        self.init(
-            blurRadius: blurRadius,
-            minFrame: .init(width: minWidth, height: minHeight),
-            maxFrame: .init(width: maxWidth, height: maxHeight),
-            content: content
-        )
     }
 
     /// Shows this window.
