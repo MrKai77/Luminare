@@ -462,18 +462,17 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     private func magnifyFactor(at index: Int) -> CGFloat {
         let standardDeviation = 0.5
         let value = bellCurve(shift(at: index), standardDeviation: standardDeviation)
-        let maxValue = bellCurve(0, standardDeviation: standardDeviation)
-        return value / maxValue
+        return value
     }
 
     private func blurFactor(at index: Int) -> CGFloat {
         let standardDeviation = CGFloat(indicatorCount - 2)
         let value = bellCurve(shift(at: index), standardDeviation: standardDeviation)
-        let maxValue = bellCurve(0, standardDeviation: standardDeviation)
-        return 1 - value / maxValue
+        return 1 - value
     }
 
     /// Generates a bell curve value for a given x, mean, standard deviation, and amplitude.
+    /// It's worth noting that the integral of this bell curve is not 1, instead, the max value of this bell curve is always 1.
     /// - Parameters:
     ///   - x: The x-value at which to evaluate the bell curve.
     ///   - mean: The mean (center) of the bell curve.
