@@ -70,7 +70,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     private let prominentIndicators: ProminentIndicators
     private let feedback: (V) -> SensoryFeedback?
 
-    private let onRoundedValueChange: (V, V) -> ()
+    private let onRoundedValueChange: ((V, V) -> ())?
 
     @State private var containerSize: CGSize = .zero
     @State private var page: Int = .zero
@@ -115,7 +115,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentIndicators: ProminentIndicators = .init(),
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
 
-        onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
+        onRoundedValueChange: ((V, V) -> ())? = nil
     ) {
         self._value = value
         self.source = source
@@ -179,7 +179,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         prominentColor: @escaping (V) -> Color? = { _ in nil },
         feedback: @escaping (V) -> SensoryFeedback? = { _ in .alignment },
 
-        onRoundedValueChange: @escaping (V, V) -> () = { _, _ in }
+        onRoundedValueChange: ((V, V) -> ())? = nil
     ) {
         self.init(
             value: value,
@@ -350,7 +350,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                             offset = CGFloat(rounded.offset)
                         }
                         .onChange(of: roundedValue, initial: true) { oldValue, newValue in
-                            onRoundedValueChange(oldValue, newValue)
+                            onRoundedValueChange?(oldValue, newValue)
                         }
                 }
         }

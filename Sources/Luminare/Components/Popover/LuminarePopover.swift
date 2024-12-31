@@ -11,7 +11,7 @@ public enum LuminarePopoverTrigger {
     case hover(delay: CGFloat = 0.5)
     case forceTouch(
         threshold: CGFloat = 0.5,
-        onGesture: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> () = { _, _ in }
+        onGesture: ((_ gesture: ForceTouchGesture, _ recognized: Bool) -> ())? = nil
     )
 
     public static var hover: Self {
@@ -162,7 +162,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                         }
                     }
 
-                    onGesture(gesture, forceTouchRecognized)
+                    onGesture?(gesture, forceTouchRecognized)
                 }
             }
         }
