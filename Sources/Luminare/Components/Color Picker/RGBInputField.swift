@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - RGB Inout Field
+// MARK: - RGB Input Field
 
 struct RGBInputField<Label>: View where Label: View {
     // MARK: Fields
