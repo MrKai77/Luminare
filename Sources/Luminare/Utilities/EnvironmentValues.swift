@@ -90,7 +90,8 @@ public extension EnvironmentValues {
     // MARK: Pane
 
     @Entry var luminarePaneLayout: LuminarePaneLayout = .stacked
-    @Entry var luminarePaneTitlebarHeight: CGFloat = 50
+    // A naming convention: `titleBar` for SwiftUI, `titlebar` for AppKit, and `title bar` for natural language
+    @Entry var luminarePaneTitleBarHeight: CGFloat = 50
 
     // MARK: Section
 

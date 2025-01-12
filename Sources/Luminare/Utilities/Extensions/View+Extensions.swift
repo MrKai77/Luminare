@@ -303,8 +303,8 @@ public extension View {
         environment(\.luminarePaneLayout, layout)
     }
 
-    @ViewBuilder func luminarePaneTitlebarHeight(_ height: CGFloat) -> some View {
-        environment(\.luminarePaneTitlebarHeight, height)
+    @ViewBuilder func luminarePaneTitleBarHeight(_ height: CGFloat) -> some View {
+        environment(\.luminarePaneTitleBarHeight, height)
     }
 
     // MARK: Section

@@ -54,7 +54,7 @@ public struct LuminareView<Content>: View where Content: View {
             origin: window.frame.origin,
             size: CGSize(
                 width: size.width,
-                height: size.height + 52 // 52 is the titlebar height
+                height: size.height + 52 // 52 is the title bar height
             )
         )
 

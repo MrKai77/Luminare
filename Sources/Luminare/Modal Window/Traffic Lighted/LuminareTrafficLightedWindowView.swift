@@ -20,7 +20,7 @@ struct LuminareTrafficLightedWindowView<Content>: View where Content: View {
             VStack(spacing: sectionSpacing) {
                 content()
             }
-            .padding(.top, 40) // titlebar
+            .padding(.top, 40) // title bar
             .fixedSize()
             .background {
                 VisualEffectView(

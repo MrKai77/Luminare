@@ -21,7 +21,7 @@ public enum LuminarePaneLayout: Equatable, Hashable, Codable, Sendable {
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     @Environment(\.luminarePaneLayout) private var layout
-    @Environment(\.luminarePaneTitlebarHeight) private var titlebarHeight
+    @Environment(\.luminarePaneTitleBarHeight) private var titleBarHeight
 
     // MARK: Fields
 
@@ -35,7 +35,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     ///
     /// - Parameters:
     ///   - content: the content view.
-    ///   - header: the header that is located at the titlebar's position.
+    ///   - header: the header that is located at the titleBar's position.
     public init(
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
@@ -67,7 +67,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                     .buttonStyle(TabHeaderButtonStyle())
                     .padding(.horizontal, 10)
                     .padding(.trailing, 5)
-                    .frame(height: titlebarHeight, alignment: .leading)
+                    .frame(height: titleBarHeight, alignment: .leading)
 
                 Divider()
             }
