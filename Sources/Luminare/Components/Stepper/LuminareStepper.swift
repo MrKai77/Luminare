@@ -274,16 +274,16 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                 )
             )
 
-            let offsetCompensate = -indicatorSpacing / 2
+            let offsetCompensation = -indicatorSpacing / 2
 
             Color.white
                 .padding(
                     direction.paddingSpan.start,
-                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensate + 1
+                    indexSpanStart * indicatorSpacing - offsetStart + offsetCompensation + 1
                 )
                 .padding(
                     direction.paddingSpan.end,
-                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensate + 1
+                    indexSpanEnd * indicatorSpacing - offsetEnd + offsetCompensation + 1
                 )
         } else {
             Color.white
