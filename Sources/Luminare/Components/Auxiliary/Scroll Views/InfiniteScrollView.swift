@@ -102,45 +102,94 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    var debug: Bool = false
-    /// The ``InfiniteScrollViewDirection`` that defines the scrolling direction.
-    public var direction: Direction
-    /// Whether mouse dragging is allowed as an alternative of scrolling.
-    /// Overscrolling is not allowed when dragging.
-    public var allowsDragging: Bool = true
+    let debug: Bool
+    public let direction: Direction
+    public let allowsDragging: Bool
 
-    /// The explicit size of the scroll view.
-    public var size: CGSize
-    /// the spacing between pages.
-    public var spacing: CGFloat
-    /// Whether snapping is enabled.
-    ///
-    /// If snapping is enabled, the view will automatically snaps to the nearest available page anchor with animation.
-    /// Otherwise, scrolling can stop at arbitrary midpoints.
-    @Binding public var snapping: Bool
-    /// Whether wrapping is enabled.
-    ///
-    /// If wrapping is enabled, the view will always allow infinite scrolling by constantly resetting the scrolling
-    /// position.
-    /// Otherwise, the view won't lock the scrollable region and allows overscrolling to happen.
-    @Binding public var wrapping: Bool
-    /// The initial offset of the scroll view.
-    ///
-    /// Can be useful when arbitrary initialization points are required.
-    @Binding public var initialOffset: CGFloat
+    public let size: CGSize
+    public let spacing: CGFloat
+    public let snapping: Bool
+    public let wrapping: Bool
+    public let initialOffset: CGFloat
 
-    /// Whether the scroll view should be resetted.
-    ///
-    /// This will automatically be set to `false` after a valid reset happens.
     @Binding public var shouldReset: Bool
-    /// The offset from the nearest page.
-    ///
-    /// This binding is get-only.
     @Binding public var offset: CGFloat
-    /// The scrolled page count.
-    ///
-    /// This binding is get-only.
     @Binding public var page: Int
+
+    /// Initializes a ``InfiniteScrollView``.
+    ///
+    /// - Parameters:
+    ///   - direction: the ``InfiniteScrollViewDirection`` that defines the scrolling direction.
+    ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
+    ///   Overscrolling is not allowed when dragging.
+    ///   - size: the explicit size of the scroll view.
+    ///   - spacing: the spacing between pages.
+    ///   - snapping: whether snapping is enabled.
+    ///   If snapping is enabled, the view will automatically snaps to the nearest available page anchor with animation.
+    ///   Otherwise, scrolling can stop at arbitrary midpoints.
+    ///   - wrapping: whether wrapping is enabled.
+    ///   If wrapping is enabled, the view will always allow infinite scrolling by constantly resetting the scrolling position.
+    ///   Otherwise, the view won't lock the scrollable region and allows overscrolling to happen.
+    ///   - initialOffset: the initial offset of the scroll view.
+    ///   This can be useful when arbitrary initialization points are required.
+    ///   - shouldReset: whether the scroll view should be resetted.
+    ///   This binding will be automatically set to `false` after a valid reset happens.
+    ///   - offset: the offset from the nearest page.
+    ///   This binding is get-only.
+    ///   - page: the scrolled page count.
+    ///   This binding is get-only.
+    public init(
+        direction: Direction = .horizontal,
+        allowsDragging: Bool = true,
+        size: CGSize,
+        spacing: CGFloat,
+        snapping: Bool = true,
+        wrapping: Bool = true,
+        initialOffset: CGFloat = .zero,
+        shouldReset: Binding<Bool> = .constant(false),
+        offset: Binding<CGFloat>,
+        page: Binding<Int>
+    ) {
+        self.debug = false
+        self.direction = direction
+        self.allowsDragging = allowsDragging
+        self.size = size
+        self.spacing = spacing
+        self.snapping = snapping
+        self.wrapping = wrapping
+        self.initialOffset = initialOffset
+        self._shouldReset = shouldReset
+        self._offset = offset
+        self._page = page
+    }
+
+    #if DEBUG
+        init(
+            debug: Bool,
+            direction: Direction = .horizontal,
+            allowsDragging: Bool = true,
+            size: CGSize,
+            spacing: CGFloat,
+            snapping: Bool = true,
+            wrapping: Bool = true,
+            initialOffset: CGFloat = .zero,
+            shouldReset: Binding<Bool> = .constant(false),
+            offset: Binding<CGFloat>,
+            page: Binding<Int>
+        ) {
+            self.debug = debug
+            self.direction = direction
+            self.allowsDragging = allowsDragging
+            self.size = size
+            self.spacing = spacing
+            self.snapping = snapping
+            self.wrapping = wrapping
+            self.initialOffset = initialOffset
+            self._shouldReset = shouldReset
+            self._offset = offset
+            self._page = page
+        }
+    #endif
 
     var length: CGFloat {
         direction.length(of: size)
@@ -232,6 +281,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
         DispatchQueue.main.async {
+            context.coordinator.parent = self
             context.coordinator.initializeScroll(nsView)
         }
     }
@@ -531,9 +581,9 @@ private struct InfiniteScrollPreview: View {
 
             size: size,
             spacing: 50,
-            snapping: .constant(true),
-            wrapping: $wrapping,
-            initialOffset: .constant(0),
+            snapping: true,
+            wrapping: wrapping,
+            initialOffset: 0,
 
             shouldReset: $shouldReset,
             offset: $offset,
