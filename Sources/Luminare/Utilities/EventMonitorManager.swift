@@ -7,7 +7,7 @@
 
 import AppKit
 
-public final class EventMonitorManager {
+final class EventMonitorManager {
     static let shared = EventMonitorManager()
     private var monitors: [AnyHashable: NSObject] = [:]
 
