@@ -9,42 +9,52 @@ import SwiftUI
 
 // MARK: - Luminare View
 
-struct LuminareView<Content>: View where Content: View {
-    @Environment(\.tintColor) var tintColor
-    @Environment(\.luminareWindow) var window
-    let content: () -> Content
+/// The root view of a ``LuminareWindow``.
+///
+/// This view automatically overrides the content's tint by the one specified with `\.luminareTint` environment value.
+public struct LuminareView<Content>: View where Content: View {
+    // MARK: Environments
+
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareWindow) private var window
+
+    // MARK: Fields
+
+    @ViewBuilder public let content: () -> Content
 
     @State private var currentAnimation: LuminareWindowAnimation?
+    @State private var contentSize: CGSize = .zero
 
-    var body: some View {
+    // MARK: Body
+
+    public var body: some View {
         content()
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .onAppear(perform: { setSize(size: proxy.size, animate: false) })
-                        .onChange(of: proxy.size, perform: { setSize(size: $0, animate: true) })
-                }
-            }
-            .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
             .focusable(false)
-            .buttonStyle(LuminareButtonStyle())
-            .tint(tintColor())
+            .buttonStyle(.luminare)
+            .overrideTint(tint)
+            // Handle content size change
+            .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+            } action: { newValue in
+                contentSize = newValue
+            }
+            .onAppear { setSize(size: contentSize, animate: false) }
+            .onChange(of: contentSize) { setSize(size: $0, animate: true) }
     }
 
-    func setSize(size: CGSize, animate: Bool) {
-        guard let window else {
-            return
-        }
+    // MARK: Functions
 
-        if let animation = currentAnimation {
-            animation.stop()
-        }
+    func setSize(size: CGSize, animate: Bool) {
+        guard let window else { return }
+        guard size.width > 0, size.height > 0 else { return }
+
+        currentAnimation?.stop()
 
         var frame = NSRect(
             origin: window.frame.origin,
             size: CGSize(
                 width: size.width,
-                height: size.height + 52 // 52 is the titlebar height
+                height: size.height + 52 // 52 is the title bar height
             )
         )
 
@@ -77,8 +87,7 @@ struct LuminareView<Content>: View where Content: View {
 
 // MARK: - NSWindow Animation
 
-// Custom NSWindow resize animation so that it can be stopped midway
-
+// Vustom `NSWindow` resize animation so that it can be stopped midway
 class LuminareWindowAnimation: NSAnimation {
     let window: NSWindow
     let targetFrame: NSRect
@@ -87,7 +96,7 @@ class LuminareWindowAnimation: NSAnimation {
         self.window = window
         self.targetFrame = targetFrame
         super.init(duration: 0.5, animationCurve: .easeOut)
-        super.animationBlockingMode = .nonblocking // Allows the window to redraw contents while animating
+        super.animationBlockingMode = .nonblocking // allows the window to redraw contents while animating
     }
 
     @available(*, unavailable)
@@ -97,9 +106,9 @@ class LuminareWindowAnimation: NSAnimation {
 
     override var currentProgress: NSAnimation.Progress {
         didSet {
-            // The last frame of this NSAnimation looks a little stuttery,
+            // The last frame of this `NSAnimation` looks a little stuttery,
             // so we multiply the progress by 1.01, and then make sure the last
-            // frame doesn't draw.
+            // frame doesn't draw
             let progress = CGFloat(currentProgress * 1.01)
             guard progress < 1 else {
                 return

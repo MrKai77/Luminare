@@ -6,20 +6,51 @@
 //
 
 import SwiftUI
+import VariadicViews
 
-public struct LuminareDividedStack<Content: View>: View {
-    let orientation: StackOrientation
-    let content: () -> Content
+/// The orientation of a ``LuminareDividedStack``.
+public enum LuminareDividedStackOrientation: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
+    /// Stacks elements vertically.
+    case vertical
+    /// Stacks elements horizontally.
+    case horizontal
 
-    public enum StackOrientation {
-        case vertical
-        case horizontal
-    }
+    public var id: Self { self }
+}
 
-    public init(orientation: StackOrientation = .horizontal, @ViewBuilder content: @escaping () -> Content) {
+// MARK: - Divided Stack
+
+/// A stylized stack that divides its content into groups, separated by division lines.
+///
+/// This is the root view of a ``LuminareWindow`` in common practice.
+/// Typically, you are likely to wrap a ``LuminareSidebar`` inside along with a ``LuminarePane`` to create a tabbed
+/// content.
+public struct LuminareDividedStack<Content>: View where Content: View {
+    /// A local typealias identical to ``LuminareDividedStackOrientation``.
+    public typealias Orientation = LuminareDividedStackOrientation
+
+    // MARK: Fields
+
+    private let orientation: Orientation
+
+    @ViewBuilder private var content: () -> Content
+
+    // MARK: Initializers
+
+    /// Initializes a ``LuminareDividedStack``.
+    ///
+    /// - Parameters:
+    ///   - orientation: the ``Orientation`` that configures the direction to stack elements.
+    ///   - content: the content view of the stack.
+    public init(
+        _ orientation: Orientation = .horizontal,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.orientation = orientation
         self.content = content
     }
+
+    // MARK: Body
 
     public var body: some View {
         switch orientation {
@@ -32,30 +63,32 @@ public struct LuminareDividedStack<Content: View>: View {
 
     @ViewBuilder
     private func makeHorizontalStack() -> some View {
-        _VariadicView.Tree(LuminareDividedHStackLayout()) {
-            content()
+        UnaryVariadicView(content()) { children in
+            LuminareDividedHStackVariadic(children: children)
         }
     }
 
     @ViewBuilder
     private func makeVerticalStack() -> some View {
-        _VariadicView.Tree(LuminareDividedVStackLayout()) {
-            content()
+        UnaryVariadicView(content()) { children in
+            LuminareDividedVStackVariadic(children: children)
         }
     }
 }
 
-struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
-    @ViewBuilder
-    func body(children: _VariadicView.Children) -> some View {
-        let first = children.first?.id
-        let last = children.last?.id
+// MARK: - Layouts
 
+// MARK: Horizontal
+
+struct LuminareDividedHStackVariadic: View {
+    var children: VariadicViewChildren
+
+    var body: some View {
         HStack(spacing: 0) {
             ForEach(children) { child in
                 child
 
-                if child.id != last {
+                if child.id != children.last?.id {
                     Divider()
                         .edgesIgnoringSafeArea(.top)
                         .luminareBackground()
@@ -66,17 +99,17 @@ struct LuminareDividedHStackLayout: _VariadicView_UnaryViewRoot {
     }
 }
 
-struct LuminareDividedVStackLayout: _VariadicView_UnaryViewRoot {
-    @ViewBuilder
-    func body(children: _VariadicView.Children) -> some View {
-        let first = children.first?.id
-        let last = children.last?.id
+// MARK: Vertical
 
+struct LuminareDividedVStackVariadic: View {
+    var children: VariadicViewChildren
+
+    var body: some View {
         VStack(spacing: 0) {
             ForEach(children) { child in
                 child
 
-                if child.id != last {
+                if child.id != children.last?.id {
                     Divider()
                         .luminareBackground()
                 }

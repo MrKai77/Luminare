@@ -1,176 +1,224 @@
 //
 //  LuminareList.swift
-//
+//  Luminare
 //
 //  Created by Kai Azim on 2024-04-13.
 //
 
 import SwiftUI
+import SwiftUIIntrospect
 
-public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
-    @Environment(\.tintColor) var tintColor
-    @Environment(\.clickedOutsideFlag) var clickedOutsideFlag
+public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
+    Identifiable, CaseIterable, Codable, Sendable {
+    case never
+    case always
+    case fixedHeight
+    case variableHeight
 
-    let header: LocalizedStringKey?
-    @Binding var items: [V]
-    @Binding var selection: Set<V>
-    let addAction: () -> ()
-    let content: (Binding<V>) -> ContentA
-    let emptyView: () -> ContentB
+    public var id: Self { self }
+
+    public var negate: Self {
+        switch self {
+        case .never:
+            .always
+        case .always:
+            .never
+        case .fixedHeight:
+            .variableHeight
+        case .variableHeight:
+            .fixedHeight
+        }
+    }
+
+    func isRounded(hasFixedHeight: Bool) -> Bool {
+        switch self {
+        case .never:
+            false
+        case .always:
+            true
+        case .fixedHeight:
+            hasFixedHeight
+        case .variableHeight:
+            !hasFixedHeight
+        }
+    }
+}
+
+// MARK: - List
+
+/// A stylized list.
+public struct LuminareList<ContentA, ContentB, V, ID>: View
+    where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
+    // MARK: Environments
+
+    @Environment(\.luminareClickedOutside) private var luminareClickedOutside
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
+    @Environment(\.luminareContentMarginsLeading) private var contentMarginsLeading
+    @Environment(\.luminareContentMarginsBottom) private var contentMarginsBottom
+    @Environment(\.luminareContentMarginsTrailing) private var contentMarginsTrailing
+    @Environment(\.luminareListItemHeight) private var itemHeight
+    @Environment(\.luminareListFixedHeightUntil) private var fixedHeight
+    @Environment(\.luminareListRoundedTopCornerBehavior) private var topCorner
+    @Environment(\.luminareListRoundedBottomCornerBehavior) private var bottomCorner
+
+    // MARK: Fields
+
+    @Binding private var items: [V]
+    @Binding private var selection: Set<V>
+    private let keyPath: KeyPath<V, ID>
+
+    @ViewBuilder private var content: (Binding<V>) -> ContentA,
+                             emptyView: () -> ContentB
 
     @State private var firstItem: V?
     @State private var lastItem: V?
-    let id: KeyPath<V, ID>
 
-    let addText: LocalizedStringKey
-    let removeText: LocalizedStringKey
+    private let id = UUID()
 
-    @State var canRefreshSelection = true
-    let cornerRadius: CGFloat = 2
-    let lineWidth: CGFloat = 1.5
-    @State var eventMonitor: AnyObject?
+    // MARK: Initializers
 
+    /// Initializes a ``LuminareList``.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - content: the content generator that accepts a value binding.
+    ///   - emptyView: the view to display when nothing is inside the list.
     public init(
-        _ header: LocalizedStringKey? = nil,
         items: Binding<[V]>,
-        selection: Binding<Set<V>>,
-        addAction: @escaping () -> (),
+        selection: Binding<Set<V>>, id keyPath: KeyPath<V, ID>,
         @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
-        @ViewBuilder emptyView: @escaping () -> ContentB,
-        id: KeyPath<V, ID>,
-        addText: LocalizedStringKey,
-        removeText: LocalizedStringKey
+        @ViewBuilder emptyView: @escaping () -> ContentB
     ) {
-        self.header = header
         self._items = items
         self._selection = selection
-        self.addAction = addAction
+        self.keyPath = keyPath
         self.content = content
         self.emptyView = emptyView
-        self.id = id
-        self.addText = addText
-        self.removeText = removeText
     }
 
+    /// Initializes a ``LuminareList`` that displays literally nothing when nothing is inside the list.
+    ///
+    /// - Parameters:
+    ///   - items: the binding of the listed items.
+    ///   - selection: the binding of the set of selected items.
+    ///   - id: the key path for the identifiers of each element.
+    ///   - content: the content generator that accepts a value binding.
     public init(
-        _ header: LocalizedStringKey? = nil,
-        addText: LocalizedStringKey,
-        removeText: LocalizedStringKey,
         items: Binding<[V]>,
-        selection: Binding<Set<V>>,
-        id: KeyPath<V, ID>,
-        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
-        @ViewBuilder emptyView: @escaping () -> ContentB,
-        addAction: @escaping () -> ()
-    ) {
-        self.init(
-            header,
-            items: items,
-            selection: selection,
-            addAction: addAction,
-            content: content,
-            emptyView: emptyView,
-            id: id,
-            addText: addText,
-            removeText: removeText
-        )
-    }
-
-    public init(
-        _ header: LocalizedStringKey? = nil,
-        addText: LocalizedStringKey,
-        removeText: LocalizedStringKey,
-        items: Binding<[V]>,
-        selection: Binding<Set<V>>,
-        id: KeyPath<V, ID>,
-        @ViewBuilder content: @escaping (Binding<V>) -> ContentA,
-        addAction: @escaping () -> ()
+        selection: Binding<Set<V>>, id keyPath: KeyPath<V, ID>,
+        @ViewBuilder content: @escaping (Binding<V>) -> ContentA
     ) where ContentB == EmptyView {
         self.init(
-            header,
-            addText: addText,
-            removeText: removeText,
             items: items,
-            selection: selection,
-            id: id,
-            content: content,
-            emptyView: {
-                EmptyView()
-            },
-            addAction: addAction
-        )
+            selection: selection, id: keyPath,
+            content: content
+        ) {
+            EmptyView()
+        }
     }
 
+    // MARK: Body
+
     public var body: some View {
-        LuminareSection(header, disablePadding: true) {
-            HStack(spacing: 2) {
-                Button(addText) {
-                    addAction()
-                }
-
-                Button(removeText) {
-                    if !selection.isEmpty {
-                        canRefreshSelection = false
-                        items.removeAll(where: { selection.contains($0) })
-
-                        selection = []
-
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            canRefreshSelection = true
-                        }
-                    }
-                }
-                .buttonStyle(LuminareDestructiveButtonStyle())
-                .disabled(selection.isEmpty)
-            }
-            .modifier(
-                LuminareCroppedSectionItem(
-                    isFirstChild: true,
-                    isLastChild: false
-                )
-            )
-            .padding(.vertical, 4)
-            .padding(.bottom, 4)
-            .padding([.top, .horizontal], 1)
-
+        Group {
             if items.isEmpty {
                 emptyView()
-                    .frame(minHeight: 50)
             } else {
                 List(selection: $selection) {
-                    ForEach($items, id: id) { item in
-                        LuminareListItem(
-                            items: $items,
-                            selection: $selection,
-                            item: item,
-                            content: content,
-                            firstItem: $firstItem,
-                            lastItem: $lastItem,
-                            canRefreshSelection: $canRefreshSelection
-                        )
+                    if contentMarginsTop > 0 {
+                        Spacer()
+                            .frame(height: contentMarginsTop)
                     }
-                    // .onDelete(perform: deleteItems) // deleteItems crashes Loop, need to be investigated further
+
+                    ForEach($items, id: keyPath) { item in
+                        let isDisabled = isDisabled(item.wrappedValue)
+                        let tint = tint(of: item.wrappedValue)
+
+                        let roundedTop = topCorner.isRounded(
+                            hasFixedHeight: hasFixedHeight)
+                        let roundedBottom = bottomCorner.isRounded(
+                            hasFixedHeight: hasFixedHeight)
+
+                        Group {
+                            if #available(macOS 14.0, *) {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    roundedTop: roundedTop,
+                                    roundedBottom: roundedBottom,
+                                    content: content
+                                )
+                                .selectionDisabled(isDisabled)
+                            } else {
+                                LuminareListItem(
+                                    items: $items,
+                                    selection: $selection,
+                                    item: item,
+                                    firstItem: $firstItem,
+                                    lastItem: $lastItem,
+                                    roundedTop: roundedTop,
+                                    roundedBottom: roundedBottom,
+                                    content: content
+                                )
+                            }
+                        }
+                        .disabled(isDisabled)
+                        .animation(animation, value: isDisabled)
+                        .overrideTint(tint)
+                    }
                     .onMove { indices, newOffset in
-                        withAnimation(LuminareConstants.animation) {
-                            items.move(fromOffsets: indices, toOffset: newOffset)
+                        withAnimation(animation) {
+                            items.move(
+                                fromOffsets: indices,
+                                toOffset: newOffset
+                            )
                         }
                     }
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
+                    .listRowInsets(.init())
                     .padding(.horizontal, -10)
+                    .padding(.leading, contentMarginsLeading)
+                    .padding(.trailing, contentMarginsTrailing)
+                    .transition(.slide)
+
+                    if contentMarginsBottom > 0 {
+                        Spacer()
+                            .frame(height: contentMarginsBottom)
+                    }
                 }
-                .frame(height: CGFloat(items.count * 50))
-                .padding(.top, 4)
-                .scrollContentBackground(.hidden)
-                .scrollDisabled(true)
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .scrollDisabled(hasFixedHeight)
+                .introspect(.list, on: .macOS(.v13, .v14, .v15)) { tableView in
+                    tableView.selectionHighlightStyle = .none
+                }
             }
         }
-        .onChange(of: clickedOutsideFlag) { _ in
-            withAnimation(LuminareConstants.animation) {
+        .frame(height: hasFixedHeight ? totalHeight : nil)
+        .frame(maxHeight: hasFixedHeight ? nil : fixedHeight)
+        .animation(animation, value: items)
+        .animation(animation, value: selection)
+        .onChange(of: luminareClickedOutside) { _ in
+            withAnimation(animation) {
                 selection = []
             }
+        }
+        .onChange(of: items) { _ in
+            guard !items.isEmpty else {
+                selection = []
+                return
+            }
+
+            selection = selection.intersection(items)
+            processSelection() // update first and last item
         }
         .onChange(of: selection) { _ in
             processSelection()
@@ -191,15 +239,28 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         }
     }
 
-    // #warning("onDelete & deleteItems WILL crash on macOS 14.5, but it's fine on 14.4 and below.")
-    // private func deleteItems(at offsets: IndexSet) {
-    //  withAnimation {
-    //    items.remove(atOffsets: offsets)
-    //  }
-    // }
+    private var totalHeight: CGFloat {
+        let margins = contentMarginsTop + contentMarginsBottom
+        return CGFloat(max(1, items.count)) * itemHeight + margins
+    }
 
-    func processSelection() {
-        if selection.isEmpty {
+    private var hasFixedHeight: Bool {
+        guard let fixedHeight else { return false }
+        return totalHeight <= fixedHeight
+    }
+
+    // MARK: Functions
+
+    private func isDisabled(_ element: V) -> Bool {
+        (element as? LuminareSelectionData)?.isSelectable == false
+    }
+
+    private func tint(of element: V) -> Color {
+        (element as? LuminareSelectionData)?.tint ?? tint
+    }
+
+    private func processSelection() {
+        if items.isEmpty || selection.isEmpty {
             firstItem = nil
             lastItem = nil
         } else {
@@ -208,172 +269,225 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View where ContentA: View
         }
     }
 
-    func addEventMonitor() {
-        if eventMonitor != nil {
-            return
-        }
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+    private func addEventMonitor() {
+        EventMonitorManager.shared.addLocalMonitor(
+            for: id,
+            matching: .keyDown
+        ) { event in
             let kVK_Escape: CGKeyCode = 0x35
 
             if event.keyCode == kVK_Escape {
-                withAnimation(LuminareConstants.animation) {
+                withAnimation(animation) {
                     selection = []
                 }
                 return nil
             }
             return event
-        } as? NSObject
+        }
     }
 
-    func removeEventMonitor() {
-        if let eventMonitor {
-            NSEvent.removeMonitor(eventMonitor)
-        }
-        eventMonitor = nil
+    private func removeEventMonitor() {
+        EventMonitorManager.shared.removeMonitor(for: id)
     }
 }
 
-struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
-    @Environment(\.tintColor) var tintColor
+// MARK: - List Item
 
-    @Binding var item: V
-    let content: (Binding<V>) -> Content
+public struct LuminareListItem<Content, V>: View
+    where Content: View, V: Hashable {
+    // MARK: Environments
+
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
+    @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareHasDividers) private var hasDividers
+    @Environment(\.luminareListItemCornerRadii) private var itemCornerRadii
+    @Environment(\.luminareListItemHeight) private var itemHeight
+    @Environment(\.luminareListItemHighlightOnHover) private
+    var highlightOnHover
+
+    // MARK: Fields
 
     @Binding var items: [V]
     @Binding var selection: Set<V>
 
+    @Binding var item: V
     @Binding var firstItem: V?
     @Binding var lastItem: V?
-    @Binding var canRefreshSelection: Bool
 
-    @State var isHovering = false
+    var roundedTop: Bool
+    var roundedBottom: Bool
+    @ViewBuilder var content: (Binding<V>) -> Content
 
-    let cornerRadius: CGFloat = 2
-    let maxLineWidth: CGFloat = 1.5
-    @State var lineWidth: CGFloat = .zero
+    @State private var isHovering = false
 
-    let maxTintOpacity: CGFloat = 0.15
-    @State var tintOpacity: CGFloat = .zero
+    private let maxLineWidth: CGFloat = 1.5
+    @State private var lineWidth: CGFloat = .zero
 
-    init(
-        items: Binding<[V]>,
-        selection: Binding<Set<V>>,
-        item: Binding<V>,
-        @ViewBuilder content: @escaping (Binding<V>) -> Content,
-        firstItem: Binding<V?>,
-        lastItem: Binding<V?>,
-        canRefreshSelection: Binding<Bool>
-    ) {
-        self._items = items
-        self._selection = selection
-        self._item = item
-        self.content = content
-        self._firstItem = firstItem
-        self._lastItem = lastItem
-        self._canRefreshSelection = canRefreshSelection
-    }
+    private let maxTintOpacity: CGFloat = 0.15
+    @State private var tintOpacity: CGFloat = .zero
 
-    var body: some View {
+    // MARK: Body
+
+    public var body: some View {
         Color.clear
-            .frame(height: 50)
+            .frame(minHeight: itemHeight)
             .overlay {
                 content($item)
                     .environment(\.hoveringOverLuminareItem, isHovering)
+                    .foregroundStyle(isEnabled ? .primary : .secondary)
             }
             .tag(item)
             .onHover { hover in
-                withAnimation(LuminareConstants.fastAnimation) {
+                withAnimation(animationFast) {
                     isHovering = hover
                 }
             }
-
             .background {
                 ZStack {
-                    getItemBorder()
-                    getItemBackground()
+                    if isEnabled {
+                        itemBorder()
+                        itemBackground()
+                    }
                 }
                 .padding(.horizontal, 1)
-                .padding(.leading, 1)
+                .padding(.leading, 1) // it's nuanced
             }
-
             .overlay {
-                if item != items.last {
+                if hasDividers, !isLast {
                     VStack {
                         Spacer()
+
                         Divider()
+                            .frame(height: 0)
                     }
-                    .padding(.trailing, -0.5)
+                    .padding(.trailing, -1)
                 }
             }
+
             .onChange(of: selection) { _ in
-                guard canRefreshSelection else { return }
+                guard isEnabled else { return }
+                withAnimation(animation) {
+                    updateSelection()
+                }
+            }
+            .onAppear {
                 DispatchQueue.main.async {
-                    withAnimation(LuminareConstants.animation) {
-                        tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
-                        lineWidth = selection.contains(item) ? maxLineWidth : .zero
+                    withAnimation(animation) {
+                        // Initialize selection
+                        updateSelection()
+
+                        // Reset hovering state
+                        isHovering = false
                     }
                 }
             }
     }
 
-    @ViewBuilder func getItemBackground() -> some View {
-        Group {
-            tintColor()
-                .opacity(tintOpacity)
+    private var isFirst: Bool {
+        guard !items.isEmpty else { return false }
+        return item == items.first
+    }
 
-            if isHovering {
-                Rectangle()
-                    .foregroundStyle(.quaternary.opacity(0.7))
-                    .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
-            }
+    private var isLast: Bool {
+        guard !items.isEmpty else { return false }
+        return item == items.last
+    }
+
+    private var isInSelection: Bool {
+        guard !items.isEmpty else { return false }
+        return selection.contains(item)
+    }
+
+    private var isFirstInSelection: Bool {
+        guard !items.isEmpty else { return false }
+        return if
+            let firstIndex = items.firstIndex(of: item),
+            firstIndex > 0 {
+            !selection.contains(items[firstIndex - 1])
+        } else {
+            item == firstItem
         }
     }
 
-    @ViewBuilder func getItemBorder() -> some View {
-        if isFirstInSelection(), isLastInSelection() {
-            singleSelectionPart(isBottomOfList: item == items.last)
+    private var isLastInSelection: Bool {
+        guard !items.isEmpty else { return false }
+        return if
+            let firstIndex = items.firstIndex(of: item),
+            firstIndex < items.count - 1 {
+            !selection.contains(items[firstIndex + 1])
+        } else {
+            item == lastItem
+        }
+    }
 
-        } else if isFirstInSelection() {
+    private var itemBackgroundShape: UnevenRoundedRectangle {
+        let topCornerRadii =
+            if isInSelection {
+                isFirstInSelection ? itemCornerRadii : .zero
+            } else { itemCornerRadii }
+        let bottomCornerRadii =
+            if isInSelection {
+                isLastInSelection ? itemCornerRadii : .zero
+            } else { itemCornerRadii }
+
+        return .init(
+            topLeadingRadius: isFirst && roundedTop
+                ? cornerRadii.topLeading : topCornerRadii.topLeading,
+            bottomLeadingRadius: isLast && roundedBottom
+                ? cornerRadii.bottomLeading : bottomCornerRadii.bottomLeading,
+            bottomTrailingRadius: isLast && roundedBottom
+                ? cornerRadii.bottomTrailing : bottomCornerRadii.bottomTrailing,
+            topTrailingRadius: isFirst && roundedTop
+                ? cornerRadii.topTrailing : topCornerRadii.topTrailing
+        )
+    }
+
+    @ViewBuilder private func itemBackground() -> some View {
+        ZStack {
+            Rectangle()
+                .foregroundStyle(.tint)
+                .opacity(tintOpacity)
+
+            if highlightOnHover, isHovering {
+                Rectangle()
+                    .foregroundStyle(.quaternary.opacity(0.7))
+                    .opacity(
+                        (maxTintOpacity - tintOpacity) * (1 / maxTintOpacity)
+                    )
+            }
+        }
+        .clipShape(itemBackgroundShape)
+    }
+
+    @ViewBuilder private func itemBorder() -> some View {
+        if isFirstInSelection, isLastInSelection {
+            singleSelectionPart()
+        } else if isFirstInSelection {
             firstItemPart()
-
-        } else if isLastInSelection() {
-            lastItemPart(isBottomOfList: item == items.last)
-
-        } else if selection.contains(item) {
+        } else if isLastInSelection {
+            lastItemPart()
+        } else if isInSelection {
             doubleLinePart()
         }
     }
 
-    func isFirstInSelection() -> Bool {
-        if let firstIndex = items.firstIndex(of: item),
-           firstIndex > 0,
-           !selection.contains(items[firstIndex - 1]) {
-            return true
-        }
-
-        return item == firstItem
-    }
-
-    func isLastInSelection() -> Bool {
-        if let firstIndex = items.firstIndex(of: item),
-           firstIndex < items.count - 1,
-           !selection.contains(items[firstIndex + 1]) {
-            return true
-        }
-
-        return item == lastItem
-    }
-
-    func firstItemPart() -> some View {
+    @ViewBuilder private func firstItemPart() -> some View {
         VStack(spacing: 0) {
+            // - Top half
+
             ZStack {
                 UnevenRoundedRectangle(
-                    topLeadingRadius: cornerRadius,
+                    topLeadingRadius: isFirst && roundedTop
+                        ? cornerRadii.topLeading : itemCornerRadii.topLeading,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
-                    topTrailingRadius: cornerRadius
+                    topTrailingRadius: isFirst && roundedTop
+                        ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
                 )
-                .strokeBorder(tintColor(), lineWidth: lineWidth)
+                .strokeBorder(.tint, lineWidth: lineWidth)
 
                 VStack {
                     Color.clear
@@ -392,7 +506,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             }
             .compositingGroup()
 
-            // --- Bottom part ---
+            // - Bottom half
 
             HStack {
                 Rectangle()
@@ -403,12 +517,14 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                 Rectangle()
                     .frame(width: lineWidth)
             }
-            .foregroundStyle(tintColor())
+            .foregroundStyle(.tint)
         }
     }
 
-    func lastItemPart(isBottomOfList: Bool) -> some View {
+    @ViewBuilder private func lastItemPart() -> some View {
         VStack(spacing: 0) {
+            // - Top half
+
             HStack {
                 Rectangle()
                     .frame(width: lineWidth)
@@ -418,18 +534,22 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
                 Rectangle()
                     .frame(width: lineWidth)
             }
-            .foregroundStyle(tintColor())
+            .foregroundStyle(.tint)
 
-            // --- Bottom part ---
+            // - Bottom half
 
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
-                    bottomLeadingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
-                    bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
+                    bottomLeadingRadius: isLast && roundedBottom
+                        ? cornerRadii.bottomLeading
+                        : itemCornerRadii.bottomLeading,
+                    bottomTrailingRadius: isLast && roundedBottom
+                        ? cornerRadii.bottomTrailing
+                        : itemCornerRadii.bottomTrailing,
                     topTrailingRadius: 0
                 )
-                .strokeBorder(tintColor(), lineWidth: lineWidth)
+                .strokeBorder(.tint, lineWidth: lineWidth)
 
                 VStack {
                     HStack {
@@ -450,7 +570,7 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
         }
     }
 
-    func doubleLinePart() -> some View {
+    @ViewBuilder private func doubleLinePart() -> some View {
         HStack {
             Rectangle()
                 .frame(width: lineWidth)
@@ -460,23 +580,113 @@ struct LuminareListItem<Content, V>: View where Content: View, V: Hashable {
             Rectangle()
                 .frame(width: lineWidth)
         }
-        .foregroundStyle(tintColor())
+        .foregroundStyle(.tint)
     }
 
-    func singleSelectionPart(isBottomOfList: Bool) -> some View {
+    @ViewBuilder private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
-            topLeadingRadius: cornerRadius,
-            bottomLeadingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
-            bottomTrailingRadius: isBottomOfList ? (12 + lineWidth / 2.0) : cornerRadius,
-            topTrailingRadius: cornerRadius
+            topLeadingRadius: isFirst && roundedTop
+                ? cornerRadii.topLeading : itemCornerRadii.topLeading,
+            bottomLeadingRadius: isLast && roundedBottom
+                ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
+            bottomTrailingRadius: isLast && roundedBottom
+                ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
+            topTrailingRadius: isFirst && roundedTop
+                ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
         )
-        .strokeBorder(tintColor(), lineWidth: lineWidth)
+        .strokeBorder(.tint, lineWidth: lineWidth)
+    }
+
+    // MARK: Functions
+
+    private func updateSelection() {
+        guard !selection.isEmpty else {
+            tintOpacity = .zero
+            lineWidth = .zero
+            return
+        }
+
+        tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
+        lineWidth = selection.contains(item) ? maxLineWidth : .zero
     }
 }
 
-extension NSTableView {
-    override open func viewDidMoveToWindow() {
-        super.viewWillDraw()
-        selectionHighlightStyle = .none
+// MARK: - Preview
+
+private struct ListPreview<V>: View where V: Hashable & Comparable {
+    @State var items: [V]
+    @State var selection: Set<V>
+    let add: (inout [V]) -> ()
+
+    var body: some View {
+        LuminareSection {
+            HStack(spacing: 2) {
+                Button("Add") {
+                    withAnimation {
+                        add(&items)
+                    }
+                }
+
+                Button("Sort") {
+                    withAnimation {
+                        items.sort(by: <)
+                    }
+                }
+                .disabled(items.isEmpty)
+
+                Button("Remove", role: .destructive) {
+                    items.removeAll { selection.contains($0) }
+                }
+                .buttonStyle(.luminareProminent)
+                .disabled(selection.isEmpty)
+            }
+            .buttonStyle(.luminare)
+            .frame(height: 34)
+
+            LuminareList(
+                items: $items,
+                selection: $selection,
+                id: \.self
+            ) { value in
+                Text("\(value.wrappedValue)")
+                    .contextMenu {
+                        Button("Remove") {
+                            if selection.isEmpty {
+                                items.removeAll { $0 == value.wrappedValue }
+                            } else {
+                                items.removeAll { selection.contains($0) }
+                            }
+                        }
+                    }
+                    .swipeActions {
+                        Button("Swipe me!") {}
+                    }
+            } emptyView: {
+                Text("Empty")
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareList",
+    traits: .sizeThatFitsLayout
+) {
+    VStack {
+        ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
+            guard items.count < 100 else { return }
+            let random = { Int.random(in: 0 ..< 100) }
+            var new = random()
+            while items.contains([new]) {
+                new = random()
+            }
+            items.append(new)
+        }
+        //    .luminareHasDividers(false)
+        //    .luminareListContentMargins(50)
+        .luminareListFixedHeight(until: 315)
+        .luminareListRoundedCorner(bottom: .always)
     }
 }

@@ -1,49 +1,67 @@
 //
 //  LuminareTextField.swift
-//
+//  Luminare
 //
 //  Created by Kai Azim on 2024-04-16.
 //
 
 import SwiftUI
 
+// MARK: - Text Field
+
+/// A stylized text field.
 public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
-    let elementMinHeight: CGFloat = 34
-    let horizontalPadding: CGFloat = 8
+    // MARK: Fields
 
-    @Binding var value: F.FormatInput?
-    var format: F
-    let placeholder: LocalizedStringKey
-    let onSubmit: (() -> ())?
+    @Binding private var value: F.FormatInput?
+    private let format: F
+    private let placeholder: LocalizedStringKey
 
-    @State var monitor: Any?
+    private let id = UUID()
 
-    public init(_ placeholder: LocalizedStringKey, value: Binding<F.FormatInput?>, format: F, onSubmit: (() -> ())? = nil) {
+    // MARK: Initializers
+
+    /// Initializes a ``LuminareTextField``.
+    ///
+    /// - Parameters:
+    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
+    ///   - value: the value to be edited.
+    ///   - format: the format of the value.
+    public init(
+        _ placeholder: LocalizedStringKey,
+        value: Binding<F.FormatInput?>, format: F
+    ) {
         self._value = value
         self.format = format
         self.placeholder = placeholder
-        self.onSubmit = onSubmit
     }
 
-    public init(_ placeholder: LocalizedStringKey, text: Binding<String>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
-        self.init(placeholder, value: .init(text), format: StringFormatStyle(), onSubmit: onSubmit)
+    /// Initializes a ``LuminareTextField`` with a `String` value.
+    ///
+    /// - Parameters:
+    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
+    ///   - value: the `String` value to be edited.
+    public init(
+        _ placeholder: LocalizedStringKey,
+        text: Binding<String?>
+    ) where F == StringFormatStyle {
+        self.init(
+            placeholder,
+            value: text, format: StringFormatStyle()
+        )
     }
+
+    // MARK: Body
 
     public var body: some View {
         TextField(placeholder, value: $value, format: format)
-            .padding(.horizontal, horizontalPadding)
-            .frame(minHeight: elementMinHeight)
             .textFieldStyle(.plain)
-            .onSubmit {
-                if let onSubmit {
-                    onSubmit()
-                }
-            }
-
+            .modifier(LuminareHoverable())
             .onAppear {
-                guard monitor != nil else { return }
-
-                monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                EventMonitorManager.shared.addLocalMonitor(
+                    for: id,
+                    matching: .keyDown
+                ) { event in
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
 
@@ -57,10 +75,36 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                 }
             }
             .onDisappear {
-                if let monitor {
-                    NSEvent.removeMonitor(monitor)
-                }
-                monitor = nil
+                EventMonitorManager.shared.removeMonitor(for: id)
             }
     }
+}
+
+// MARK: - Preview
+
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareTextField",
+    traits: .sizeThatFitsLayout
+) {
+    @Previewable @FocusState var isFocused: Bool
+
+    LuminareSection {
+        VStack {
+            LuminareTextField("Text Field", text: .constant("Bordered"))
+                .focused($isFocused)
+
+            LuminareTextField("Text Field", text: .constant("Borderless"))
+                .luminareBordered(false)
+                .focused($isFocused)
+
+            LuminareTextField("Text Field", text: .constant("Disabled"))
+                .disabled(true)
+                .focused($isFocused)
+        }
+        .onAppear {
+            isFocused = false
+        }
+    }
+    .luminareAspectRatio(contentMode: .fill)
 }

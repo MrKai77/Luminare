@@ -1,35 +1,74 @@
 //
 //  RGBInputField.swift
-//
+//  Luminare
 //
 //  Created by Kai Azim on 2024-05-15.
 //
 
 import SwiftUI
 
-// Custom input field for RGB values
-struct RGBInputField: View {
-    var label: LocalizedStringKey
-    @Binding var value: Double
+// MARK: - RGB Input Field
+
+struct RGBInputField<Label>: View where Label: View {
+    // MARK: Fields
+
+    @Binding var value: Double // [0, 255]
+    @ViewBuilder var label: () -> Label
+    var color: (Double) -> Color? = { _ in nil }
+
+    // MARK: Body
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label)
+            label()
                 .foregroundStyle(.secondary)
 
-            Color.clear
-                .frame(height: 34)
-                .overlay {
-                    TextField("", value: $value, formatter: NumberFormatter())
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .padding(8)
+            if #available(macOS 15.0, *) {
+                LuminarePopover(arrowEdge: .top) {
+                    LuminareStepper(
+                        value: $value,
+                        source: .finiteContinuous(in: 0...255, step: 5),
+                        indicatorSpacing: 20,
+                        prominentIndicators: .init(color: color)
+                    )
+                    .frame(width: 135, height: 32)
+                    .padding(.vertical, 2)
+                    .overrideTint(.primary)
+                } badge: {
+                    LuminareTextField(
+                        "", value: .init($value),
+                        format: .number.precision(.integerAndFractionLength(
+                            integerLimits: 1...3,
+                            fractionLimits: 0...2
+                        ))
+                    )
                 }
-                .background(.quinary.opacity(0.5))
-                .clipShape(.rect(cornerRadius: 8))
-                .background {
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(.quaternary.opacity(0.5), lineWidth: 1)
-                }
+                .luminarePopoverTrigger(.forceTouch())
+            } else {
+                LuminareTextField(
+                    "", value: .init($value),
+                    format: .number.precision(.integerAndFractionLength(
+                        integerLimits: 1...3,
+                        fractionLimits: 0...2
+                    ))
+                )
+            }
         }
     }
+}
+
+// MARK: - Previews
+
+@available(macOS 15.0, *)
+#Preview("RGBInputField") {
+    @Previewable @State var value: Double = 42
+
+    LuminareSection {
+        RGBInputField(value: $value) {
+            Text("Red")
+        } color: { value in
+            .init(red: value / 255.0, green: 0, blue: 0)
+        }
+    }
+    .padding()
 }
