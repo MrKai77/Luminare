@@ -184,7 +184,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
-    @ViewBuilder private var icon: () -> Image
+    @ViewBuilder private var icon: Image
 
     @State private var isHovering: Bool
 
@@ -193,7 +193,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     /// - Parameters:
     ///   - icon: the trailing aligned `Image` to display while hovering.
     public init(
-        @ViewBuilder icon: @escaping () -> Image
+        icon: Image
     ) {
         self.icon = icon
         self.isHovering = false
@@ -202,7 +202,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     #if DEBUG
         init(
             isHovering: Bool = false,
-            @ViewBuilder icon: @escaping () -> Image
+            icon: Image
         ) {
             self.icon = icon
             self.isHovering = isHovering
@@ -228,7 +228,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 HStack {
                     Spacer()
 
-                    icon()
+                    icon
                         .opacity(isHovering ? 1 : 0)
                 }
                 .padding(24)

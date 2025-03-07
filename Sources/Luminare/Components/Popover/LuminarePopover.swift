@@ -135,6 +135,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             switch trigger {
             case let .hover(showDelay, hideDelay):
                 badge()
+                    .padding(padding)
                     .onHover { hover in
                         isHovering = hover
                         handleHoverTrigger(isHovering: hover, showDelay: showDelay, hideDelay: hideDelay)
@@ -143,13 +144,13 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                 ForceTouch(threshold: threshold, gesture: $forceTouchGesture) {
                     badge()
                 }
+                .padding(padding)
                 .onChange(of: forceTouchGesture) { gesture in
                     handleForceTouchTrigger(gesture: gesture)
                     onGesture?(gesture, forceTouchRecognized)
                 }
             }
         }
-        .padding(padding)
         .background {
             if let style = shade.style, isPopoverPresented {
                 Group {
@@ -327,17 +328,14 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
             HStack {
                 Text("Pops from a dot ↗")
 
-                VStack {
-                    LuminarePopover(arrowEdge: .top) {
-                        VStack(alignment: .leading) {
-                            Text("The round pegs in the square holes.")
-                            Text("The ones **who see things differently.**")
-                        }
-                        .padding()
+                LuminarePopover(arrowEdge: .top) {
+                    VStack(alignment: .leading) {
+                        Text("The round pegs in the square holes.")
+                        Text("The ones **who see things differently.**")
                     }
-
-                    Spacer()
+                    .padding()
                 }
+                .frame(maxHeight: .infinity, alignment: .top)
             }
         }
 
