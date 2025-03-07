@@ -38,9 +38,7 @@ import SwiftUI
                     .padding(8)
                 }
                 .buttonStyle(
-                    .luminareCosmetic {
-                        Image(systemName: "star.fill")
-                    }
+                    .luminareCosmetic(icon: Image(systemName: "star.fill"))
                 )
                 .frame(height: 72)
 
@@ -64,11 +62,7 @@ import SwiftUI
                     }
                     .padding(8)
                 }
-                .buttonStyle(
-                    LuminareCosmeticButtonStyle(isHovering: true) {
-                        Image(systemName: "star.fill")
-                    }
-                )
+                .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
                 .frame(height: 72)
             }
 
@@ -170,9 +164,7 @@ import SwiftUI
             .padding(8)
         }
         .buttonStyle(
-            .luminareCosmetic {
-                Image(systemName: "star.fill")
-            }
+            .luminareCosmetic(icon: Image(systemName: "star.fill"))
         )
         .frame(height: 72)
 
@@ -196,11 +188,7 @@ import SwiftUI
             }
             .padding(8)
         }
-        .buttonStyle(
-            LuminareCosmeticButtonStyle(isHovering: true) {
-                Image(systemName: "star.fill")
-            }
-        )
+        .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
         .frame(height: 72)
     }
 #endif

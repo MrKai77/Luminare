@@ -22,7 +22,7 @@ public extension ButtonStyle where Self == LuminareProminentButtonStyle {
 // MARK: - LuminareCosmeticButtonStyle
 
 public extension ButtonStyle where Self == LuminareCosmeticButtonStyle {
-    static func luminareCosmetic(_ icon: @escaping () -> Image) -> Self { .init(icon: icon) }
+    static func luminareCosmetic(icon: Image) -> Self { .init(icon: icon) }
 }
 
 // MARK: - LuminareCompactButtonStyle
