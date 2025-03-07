@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Toggle Compose
 
-public struct LuminareToggleCompose<Label>: View where Label: View {
+public struct LuminareToggle<Label>: View where Label: View {
     // MARK: Environments
 
     @Environment(\.luminareComposeControlSize) private var controlSize
@@ -47,7 +47,9 @@ public struct LuminareToggleCompose<Label>: View where Label: View {
                 .toggleStyle(.switch)
                 .controlSize(controlSize.proposal ?? .small)
         } label: {
-            label()
+            HStack(spacing: 4) {
+                label()
+            }
         }
     }
 }
@@ -56,12 +58,22 @@ public struct LuminareToggleCompose<Label>: View where Label: View {
 
 @available(macOS 15.0, *)
 #Preview(
-    "LuminareToggleCompose",
+    "LuminareToggle",
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @State var value = false
 
     LuminareSection {
-        LuminareToggleCompose("Toggle", isOn: $value)
+        LuminareToggle("Toggle", isOn: $value)
+
+        LuminareToggle(isOn: $value) {
+            Text("With an info")
+
+            LuminarePopover {
+                Text("Popover")
+                    .padding(4)
+            }
+            .frame(maxHeight: .infinity, alignment: .top)
+        }
     }
 }
