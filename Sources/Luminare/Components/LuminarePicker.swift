@@ -137,6 +137,11 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 selectedItem = internalSelection
             }
         }
+        .onChange(of: selectedItem) { _ in
+            withAnimation(animation) {
+                internalSelection = selectedItem
+            }
+        }
         .buttonStyle(.luminare)
     }
 
@@ -215,11 +220,9 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         if column == 0, row == 0, roundedTop {
             return UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadii.topLeading - innerPadding,
-                bottomLeadingRadius:
-                (isVerticallyCompact && roundedBottom) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
+                bottomLeadingRadius: (isVerticallyCompact && roundedBottom) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
                 bottomTrailingRadius: buttonCornerRadii.bottomTrailing,
-                topTrailingRadius:
-                isHorizontallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
+                topTrailingRadius: isHorizontallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
 
@@ -229,8 +232,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
-                bottomTrailingRadius:
-                isHorizontallyCompact ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
+                bottomTrailingRadius: isHorizontallyCompact ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         }
@@ -242,7 +244,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: buttonCornerRadii.bottomLeading,
                 bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
-                topTrailingRadius: buttonCornerRadii.topTrailing
+                topTrailingRadius: isVerticallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
 
@@ -277,11 +279,19 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     LuminareSection {
         LuminarePicker(
-            elements: Array(32 ..< 50),
+            elements: Array(32 ... 42),
             selection: $selection
         ) { num in
             Text("\(num)")
         }
-        .luminarePickerRoundedCorner(.always)
+        .luminarePickerRoundedCorner(top: .always)
+
+        LuminarePicker(
+            elements: Array(32 ..< 36),
+            selection: $selection
+        ) { num in
+            Text("\(num)")
+        }
+        .luminarePickerRoundedCorner(bottom: .always)
     }
 }
