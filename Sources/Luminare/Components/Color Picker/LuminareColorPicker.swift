@@ -136,6 +136,7 @@ public struct LuminareColorPicker<F>: View
                     }
                     .frame(width: 260)
                 }
+                .luminareSheetClosesOnDefocus()
             }
         }
         .onChange(of: color) { _ in
