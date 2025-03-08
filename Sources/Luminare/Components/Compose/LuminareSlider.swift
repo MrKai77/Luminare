@@ -43,7 +43,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
     public init(
         value: Binding<V>,
-        in range: ClosedRange<V>, step: V.Stride? = nil,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
@@ -64,7 +65,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
     public init(
         _ key: LocalizedStringKey,
         value: Binding<V>,
-        in range: ClosedRange<V>, step: V.Stride? = nil,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
@@ -86,12 +88,13 @@ public struct LuminareSlider<Label, Content, V, F>: View
     public init(
         _ key: LocalizedStringKey,
         value: Binding<V>,
-        in range: ClosedRange<V>, step: V.Stride? = nil,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
         prefix: String? = nil,
         suffix: String? = nil,
-        maxDecimalPlaces: Int
+        maxDecimalPlaces: Int = 0
     ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>>, F == FloatingPointFormatStyle<Double> {
         self.init(
             value: value,

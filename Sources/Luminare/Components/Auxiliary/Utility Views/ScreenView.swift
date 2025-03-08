@@ -11,7 +11,7 @@ public struct ScreenView<Content>: View where Content: View {
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimationFast) private var animationFast
 
-    @Binding var isBlurred: Bool
+    let isBlurred: Bool
     let content: () -> Content
 
     @State private var image: NSImage?
@@ -24,10 +24,10 @@ public struct ScreenView<Content>: View where Content: View {
     )
 
     public init(
-        isBlurred: Binding<Bool> = .constant(false),
+        isBlurred: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self._isBlurred = isBlurred
+        self.isBlurred = isBlurred
         self.content = content
     }
 
