@@ -1,5 +1,5 @@
 //
-//  LuminareValueAdjusterCompose.swift
+//  LuminareSlider.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-04-02.
@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Value Adjuster (Compose)
 
-public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
+public struct LuminareSlider<Label, Content, V, F>: View
     where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
     F: ParseableFormatStyle, F.FormatInput == V, F.FormatOutput == String {
     private enum FocusedField {
@@ -72,7 +72,8 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
     ) where Label == Text {
         self.init(
             value: value,
-            in: range, step: step,
+            in: range,
+            step: step,
             format: format,
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
@@ -80,6 +81,44 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
         ) {
             Text(key)
         }
+    }
+
+    public init(
+        _ key: LocalizedStringKey,
+        value: Binding<V>,
+        in range: ClosedRange<V>, step: V.Stride? = nil,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
+        prefix: String? = nil,
+        suffix: String? = nil,
+        maxDecimalPlaces: Int
+    ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>>, F == FloatingPointFormatStyle<Double> {
+        self.init(
+            value: value,
+            in: range,
+            step: step,
+            format: .number.precision(.fractionLength(0...maxDecimalPlaces)),
+            clampsUpper: clampsUpper,
+            clampsLower: clampsLower,
+            content: { value in
+                HStack(spacing: 0) {
+                    if let prefix = prefix {
+                        Text(prefix)
+                            .fontDesign(.monospaced)
+                    }
+
+                    value
+
+                    if let suffix = suffix {
+                        Text(suffix)
+                            .fontDesign(.monospaced)
+                    }
+                }
+            },
+            label: {
+                Text(key)
+            }
+        )
     }
 
     // MARK: Body
@@ -91,7 +130,9 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                 LuminareCompose {
                     text()
                 } label: {
-                    label()
+                    HStack(spacing: 4) {
+                        label()
+                    }
                 }
                 .luminareComposeStyle(.inline)
 
@@ -106,7 +147,9 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                         text()
                     }
                 } label: {
-                    label()
+                    HStack(spacing: 4) {
+                        label()
+                    }
                 }
                 .luminareComposeStyle(.inline)
             }
@@ -173,6 +216,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                     .labelsHidden()
                     .textFieldStyle(.plain)
                     .padding(.leading, -4)
+                    .fontDesign(.monospaced)
                 } else {
                     Button {
                         withAnimation(animationFast) {
@@ -183,6 +227,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                         Text(format.format(value))
                             .contentTransition(.numericText())
                             .multilineTextAlignment(.trailing)
+                            .fontDesign(.monospaced)
                     }
                     .buttonStyle(.plain)
                 }
@@ -279,13 +324,13 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
 
 @available(macOS 15.0, *)
 #Preview(
-    "LuminareValueAdjusterCompose",
+    "LuminareSlider",
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @State var value: Double = 42
 
     LuminareSection {
-        LuminareValueAdjusterCompose(
+        LuminareSlider(
             value: $value,
             in: 0...128,
             format: .number.precision(.fractionLength(0...3))
@@ -294,7 +339,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                 Text("#")
                 view
             }
-            .monospaced()
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
@@ -305,7 +349,7 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
             }
         }
 
-        LuminareValueAdjusterCompose(
+        LuminareSlider(
             value: $value,
             in: 0...128,
             format: .number.precision(.fractionLength(0...3))
@@ -314,7 +358,6 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                 Text("#")
                 button
             }
-            .monospaced()
         } label: {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
@@ -323,6 +366,34 @@ public struct LuminareValueAdjusterCompose<Label, Content, V, F>: View
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        }
+        .luminareComposeLayout(.compact)
+
+        LuminareSlider(
+            "2 decimal places",
+            value: $value,
+            in: 0...128,
+            prefix: "#",
+            maxDecimalPlaces: 2
+        )
+
+        LuminareSlider(
+            value: $value,
+            in: 0...128,
+            format: .number.precision(.fractionLength(0...3))
+        ) { button in
+            HStack(spacing: 0) {
+                Text("#")
+                button
+            }
+        } label: {
+            Text("With an info")
+
+            LuminarePopover {
+                Text("Popover")
+                    .padding(4)
+            }
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         .luminareComposeLayout(.compact)
     }
