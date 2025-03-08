@@ -47,17 +47,17 @@ public struct LuminareFormStyle: FormStyle {
 ) {
     Form {
         Section("General") {
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Launch at login",
                 isOn: .constant(true)
             )
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Hide menu bar icon",
                 isOn: .constant(true)
             )
 
-            LuminareSliderPickerCompose(
+            LuminareSliderPicker(
                 "Animation speed",
                 ["Instant", "Fast", "Smooth"],
                 selection: .constant("Fast")
@@ -73,24 +73,24 @@ public struct LuminareFormStyle: FormStyle {
                 "Reset Window Frame"
             ) {}
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Restore window frame on drag",
                 isOn: .constant(true)
             )
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Include padding",
                 isOn: .constant(true)
             )
         }
 
         Section("Cursor") {
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Use screen with cursor",
                 isOn: .constant(true)
             )
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Move cursor with window",
                 isOn: .constant(true)
             )

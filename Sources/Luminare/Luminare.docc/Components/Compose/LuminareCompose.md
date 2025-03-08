@@ -32,5 +32,5 @@ It's as simple as a `LabeledContent`.
 
 ### Composition Views
 
-- ``LuminareSliderPickerCompose``
-- ``LuminareValueAdjusterCompose``
+- ``LuminareSliderPicker``
+- ``LuminareValueAdjuster``

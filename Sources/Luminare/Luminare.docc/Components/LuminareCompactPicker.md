@@ -56,12 +56,12 @@
     - ``LuminarePicker`` is designed to display a grid of options.
     - ``LuminareCompactPicker`` is designed to display a menu or horizontally organized segments of options.
     - When used for switching between paged views, a compact 1-row ``LuminarePicker`` is appropriate, since it better conforms to ``Luminare``'s overall design language and thus provides a smoother appearance.
-    - When used for toggling between several controls (e.g., between light and dark appearances), it's recommended to use either segmented ``LuminareCompactPicker`` or ``LuminareSliderPickerCompose``.
+    - When used for toggling between several controls (e.g., between light and dark appearances), it's recommended to use either segmented ``LuminareCompactPicker`` or ``LuminareSliderPicker``.
     
-- **Segmented ``LuminareCompactPicker`` over ``LuminareSliderPickerCompose``:**
+- **Segmented ``LuminareCompactPicker`` over ``LuminareSliderPicker``:**
     - They both serve for discrete options, so they work equivalently well in most cases.
-    - ``LuminareSliderPickerCompose`` is designed to compose with a label.
-    - Segmented ``LuminareCompactPicker`` can display all options at the same time, while ``LuminareSliderPickerCompose`` can only display the selection.
+    - ``LuminareSliderPicker`` is designed to compose with a label.
+    - Segmented ``LuminareCompactPicker`` can display all options at the same time, while ``LuminareSliderPicker`` can only display the selection.
 
 ## Topics
 
