@@ -35,7 +35,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     private let hasPadding: Bool
 
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
-    private let innerPadding: CGFloat
+    private let outerPadding: CGFloat
 
     @ViewBuilder private var content: () -> Content, header: () -> Header, footer: () -> Footer
 
@@ -47,14 +47,15 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
-    ///   - innerPadding: the padding around the contents.
+    ///   - outerPadding: the padding around the contents.
     ///   - content: the content.
     ///   - header: the header.
     ///   - footer: the footer.
     public init(
         hasPadding: Bool = true,
-        headerSpacing: CGFloat = 2, footerSpacing: CGFloat = 2,
-        innerPadding: CGFloat = 4,
+        headerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 2,
+        outerPadding: CGFloat = 4,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
@@ -62,7 +63,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.hasPadding = hasPadding
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
-        self.innerPadding = innerPadding
+        self.outerPadding = outerPadding
         self.content = content
         self.header = header
         self.footer = footer
@@ -109,7 +110,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
             }
         }
-        .padding(hasPadding ? innerPadding : 0)
+        .padding(outerPadding)
     }
 
     @ViewBuilder private func wrappedHeader() -> some View {
@@ -117,7 +118,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             header()
                 .foregroundStyle(.secondary)
                 .padding(.bottom, headerSpacing)
-                .padding(.horizontal, hasPadding ? innerPadding : 0)
+                .padding(.horizontal, outerPadding)
         }
     }
 
@@ -126,7 +127,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             footer()
                 .foregroundStyle(.secondary)
                 .padding(.top, footerSpacing)
-                .padding(.horizontal, hasPadding ? innerPadding : 0)
+                .padding(.horizontal, outerPadding)
         }
     }
 }

@@ -30,8 +30,9 @@ public struct LuminareCroppedSectionItem: ViewModifier {
     ///   - isFirstChild: whether this item is the first of the section.
     ///   - isLastChild: whether this item is the last of the section.
     public init(
-        innerPadding: CGFloat = 4,
-        isFirstChild: Bool, isLastChild: Bool
+        innerPadding: CGFloat,
+        isFirstChild: Bool,
+        isLastChild: Bool
     ) {
         self.innerPadding = innerPadding
         self.isFirstChild = isFirstChild
@@ -47,25 +48,27 @@ public struct LuminareCroppedSectionItem: ViewModifier {
     }
 
     @ViewBuilder private func mask() -> some View {
+        /// Note all the `- 1` adjustments are to account for the 1px padding that is drawn by the `DividedVStackChildView`.
+        /// This is because of the border that encompasses the entire `LuminareSection`.
         if isFirstChild, isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: cornerRadii.topLeading - innerPadding,
-                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
-                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
+                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding - 1,
+                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding - 1,
                 topTrailingRadius: cornerRadii.topTrailing - innerPadding
             )
         } else if isFirstChild {
             UnevenRoundedRectangle(
-                topLeadingRadius: cornerRadii.topLeading - innerPadding,
+                topLeadingRadius: cornerRadii.topLeading - innerPadding - 1,
                 bottomLeadingRadius: buttonCornerRadii.bottomLeading,
                 bottomTrailingRadius: buttonCornerRadii.bottomTrailing,
-                topTrailingRadius: cornerRadii.topTrailing - innerPadding
+                topTrailingRadius: cornerRadii.topTrailing - innerPadding - 1
             )
         } else if isLastChild {
             UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
-                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
-                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
+                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding - 1,
+                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding - 1,
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         } else {

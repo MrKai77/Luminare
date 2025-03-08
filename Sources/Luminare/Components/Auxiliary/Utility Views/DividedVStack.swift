@@ -15,7 +15,6 @@ import VariadicViews
 public struct DividedVStack<Content>: View where Content: View {
     // MARK: Fields
 
-    private let spacing: CGFloat?
     private let isMasked: Bool
     private let hasDividers: Bool
 
@@ -26,17 +25,14 @@ public struct DividedVStack<Content>: View where Content: View {
     /// Initializes a ``DividedVStack``.
     ///
     /// - Parameters:
-    ///   - spacing: the spacing between elements.
     ///   - isMasked: whether the elements are masked to match their borders.
     ///   - hasDividers: whether to show the dividers between elements.
     ///   - content: the content.
     public init(
-        spacing: CGFloat? = nil,
         isMasked: Bool = true,
         hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.spacing = spacing
         self.isMasked = isMasked
         self.hasDividers = hasDividers
         self.content = content
@@ -48,7 +44,6 @@ public struct DividedVStack<Content>: View where Content: View {
         UnaryVariadicView(content()) { children in
             DividedVStackVariadic(
                 children: children,
-                spacing: isMasked ? spacing : 0,
                 isMasked: isMasked,
                 hasDividers: hasDividers
             )
@@ -60,20 +55,17 @@ public struct DividedVStack<Content>: View where Content: View {
 
 struct DividedVStackVariadic: View {
     let children: VariadicViewChildren
-    let spacing: CGFloat
     let innerPadding: CGFloat
     let isMasked: Bool
     let hasDividers: Bool
 
     init(
         children: VariadicViewChildren,
-        spacing: CGFloat?,
         innerPadding: CGFloat = 4,
         isMasked: Bool,
         hasDividers: Bool
     ) {
         self.children = children
-        self.spacing = spacing ?? innerPadding
         self.innerPadding = innerPadding
         self.isMasked = isMasked
         self.hasDividers = hasDividers
@@ -83,26 +75,15 @@ struct DividedVStackVariadic: View {
         let first = children.first?.id
         let last = children.last?.id
 
-        VStack(spacing: hasDividers ? spacing : spacing / 2) {
+        VStack(spacing: 0) {
             ForEach(children) { child in
-                Group {
-                    if isMasked {
-                        child
-                            .modifier(
-                                LuminareCroppedSectionItem(
-                                    isFirstChild: child.id == first,
-                                    isLastChild: child.id == last
-                                )
-                            )
-                            .padding(.top, child.id == first ? 1 : 0)
-                            .padding(.bottom, child.id == last ? 1 : 0)
-                            .padding(.horizontal, 1)
-                    } else {
-                        child
-                            .mask(Rectangle()) // fixes hover areas for some reason
-                            .padding(.vertical, -4)
-                    }
-                }
+                DividedVStackChildView(
+                    child: child,
+                    innerPadding: innerPadding,
+                    isFirstChild: child.id == first,
+                    isLastChild: child.id == last,
+                    isMasked: isMasked
+                )
 
                 if hasDividers, child.id != last {
                     Divider()
@@ -110,7 +91,54 @@ struct DividedVStackVariadic: View {
                 }
             }
         }
-        .padding(.vertical, innerPadding)
+    }
+}
+
+struct DividedVStackChildView: View {
+    let child: VariadicViewChildren.Element
+    let innerPadding: CGFloat
+    let isFirstChild: Bool
+    let isLastChild: Bool
+    let isMasked: Bool
+
+    @State private var overrideDisableInnerPadding: Bool? = nil
+
+    var body: some View {
+        Group {
+            if isMasked {
+                child
+                    .modifier(
+                        LuminareCroppedSectionItem(
+                            innerPadding: overrideDisableInnerPadding == true ? 0 : innerPadding,
+                            isFirstChild: isFirstChild,
+                            isLastChild: isLastChild
+                        )
+                    )
+                    .padding(.top, isFirstChild ? 1 : 0)
+                    .padding(.bottom, isLastChild ? 1 : 0)
+                    .padding(.horizontal, 1)
+                    .padding(.top, overrideDisableInnerPadding != true ? innerPadding : 0)
+                    .padding(.bottom, overrideDisableInnerPadding != true ? innerPadding : 0)
+            } else {
+                child
+                    .mask(Rectangle()) // fixes hover areas for some reason
+            }
+        }
+        .readPreference(
+            DisableDividedStackInnerPaddingKey.self,
+            to: $overrideDisableInnerPadding
+        )
+    }
+}
+
+// MARK: - Preference Key
+
+struct DisableDividedStackInnerPaddingKey: PreferenceKey {
+    typealias Value = Bool?
+    static var defaultValue: Value = nil
+
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value = value ?? nextValue()
     }
 }
 

@@ -200,6 +200,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 .introspect(.list, on: .macOS(.v13, .v14, .v15)) { tableView in
                     tableView.selectionHighlightStyle = .none
                 }
+                .preference(key: DisableDividedStackInnerPaddingKey.self, value: true)
             }
         }
         .frame(height: hasFixedHeight ? totalHeight : nil)
@@ -481,11 +482,13 @@ public struct LuminareListItem<Content, V>: View
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: isFirst && roundedTop
-                        ? cornerRadii.topLeading : itemCornerRadii.topLeading,
+                        ? cornerRadii.topLeading - 1
+                        : itemCornerRadii.topLeading,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
                     topTrailingRadius: isFirst && roundedTop
-                        ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
+                        ? cornerRadii.topTrailing - 1
+                        : itemCornerRadii.topTrailing
                 )
                 .strokeBorder(.tint, lineWidth: lineWidth)
 
@@ -542,10 +545,10 @@ public struct LuminareListItem<Content, V>: View
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
                     bottomLeadingRadius: isLast && roundedBottom
-                        ? cornerRadii.bottomLeading
+                        ? cornerRadii.bottomLeading - 1
                         : itemCornerRadii.bottomLeading,
                     bottomTrailingRadius: isLast && roundedBottom
-                        ? cornerRadii.bottomTrailing
+                        ? cornerRadii.bottomTrailing - 1
                         : itemCornerRadii.bottomTrailing,
                     topTrailingRadius: 0
                 )
@@ -586,13 +589,13 @@ public struct LuminareListItem<Content, V>: View
     @ViewBuilder private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: isFirst && roundedTop
-                ? cornerRadii.topLeading : itemCornerRadii.topLeading,
+                ? cornerRadii.topLeading - 1 : itemCornerRadii.topLeading,
             bottomLeadingRadius: isLast && roundedBottom
-                ? cornerRadii.bottomLeading : itemCornerRadii.bottomLeading,
+                ? cornerRadii.bottomLeading - 1 : itemCornerRadii.bottomLeading,
             bottomTrailingRadius: isLast && roundedBottom
-                ? cornerRadii.bottomTrailing : itemCornerRadii.bottomTrailing,
+                ? cornerRadii.bottomTrailing - 1 : itemCornerRadii.bottomTrailing,
             topTrailingRadius: isFirst && roundedTop
-                ? cornerRadii.topTrailing : itemCornerRadii.topTrailing
+                ? cornerRadii.topTrailing - 1 : itemCornerRadii.topTrailing
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
     }
@@ -641,7 +644,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                 .disabled(selection.isEmpty)
             }
             .buttonStyle(.luminare)
-            .frame(height: 34)
+            .frame(height: 40)
 
             LuminareList(
                 items: $items,

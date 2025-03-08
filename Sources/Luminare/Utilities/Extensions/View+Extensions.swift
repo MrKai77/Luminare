@@ -40,6 +40,15 @@ extension View {
                 content()
             }
     }
+
+    func readPreference<K>(
+        _ key: K.Type = K.self,
+        to binding: Binding<K.Value>
+    ) -> some View where K : PreferenceKey, K.Value : Equatable {
+        onPreferenceChange(key) { value in
+            binding.wrappedValue = value
+        }
+    }
 }
 
 // MARK: - Convenient Wrapper
