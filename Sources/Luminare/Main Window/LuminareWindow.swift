@@ -14,19 +14,15 @@ public class LuminareWindow: NSWindow {
     /// Initializes a ``LuminareWindow``.
     ///
     /// - Parameters:
-    ///   - blurRadius: the blur radius of the window background.
     ///   - content: the content view of the window, wrapped in a ``LuminareView``.
-    public init(
-        blurRadius: CGFloat? = nil,
-        content: @escaping () -> some View
-    ) {
+    public init(content: @escaping () -> some View) {
         self.initializationTime = .now
 
         super.init(
             contentRect: .zero,
             styleMask: [.titled, .fullSizeContentView, .closable, .resizable],
             backing: .buffered,
-            defer: false // If true, background blur will break
+            defer: false
         )
 
         let view = NSHostingView(
@@ -39,13 +35,6 @@ public class LuminareWindow: NSWindow {
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         toolbar = NSToolbar()
-
-        if let blurRadius {
-            try? setBackgroundBlur(radius: Int(blurRadius))
-            backgroundColor = .white.withAlphaComponent(0.001)
-            ignoresMouseEvents = false
-        }
-
         alphaValue = 0
     }
 
@@ -60,7 +49,18 @@ public class LuminareWindow: NSWindow {
             self.animator().alphaValue = 1
         }
     }
+}
 
+// MARK: - Add this to your project if a transparent background is needed
+/*
+
+// Set the radius like this:
+
+try? setBackgroundBlur(radius: Int(blurRadius))
+backgroundColor = .white.withAlphaComponent(0.001)
+ignoresMouseEvents = false
+
+extension LuminareWindow {
     func setBackgroundBlur(radius: Int) throws {
         guard let connection = CGSDefaultConnectionForThread() else {
             throw NSError(
@@ -82,8 +82,6 @@ public class LuminareWindow: NSWindow {
     }
 }
 
-// MARK: - Internal
-
 typealias CGSConnectionID = UInt32
 
 @_silgen_name("CGSDefaultConnectionForThread")
@@ -95,3 +93,4 @@ func CGSSetWindowBackgroundBlurRadius(
     _ windowNum: NSInteger,
     _ radius: Int
 ) -> OSStatus
+*/

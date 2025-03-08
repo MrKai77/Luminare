@@ -1,5 +1,5 @@
 //
-//  LuminareManagerProtocol.swift
+//  LuminareDelegate.swift
 //  Luminare
 //
 //  Created by KrLite on 2024/12/19.
@@ -8,18 +8,16 @@
 import SwiftUI
 
 // Should always be a struct instead of a class
-public protocol LuminareManagerProtocol: View {
+public protocol LuminareDelegate: View {
     var luminare: LuminareWindow? { get set }
     var isVisible: Bool { get }
-
-    var blurRadius: CGFloat? { get }
 
     mutating func show()
     mutating func close()
     mutating func toggle()
 }
 
-public extension LuminareManagerProtocol {
+public extension LuminareDelegate {
     var isVisible: Bool {
         if let luminare {
             luminare.isVisible
@@ -27,18 +25,13 @@ public extension LuminareManagerProtocol {
             false
         }
     }
-
-    var blurRadius: CGFloat? {
-        nil
-    }
 }
 
-public extension LuminareManagerProtocol {
+public extension LuminareDelegate {
     mutating func show() {
         if luminare == nil {
             let body = body
             luminare = LuminareWindow(
-                blurRadius: blurRadius,
                 content: { body }
             )
             luminare?.center()
