@@ -95,7 +95,11 @@ struct ColorPickerModalView: View {
     }
 
     private var internalHSBColor: HSBColor {
-        let hsb = Color(red: redComponent / 255.0, green: greenComponent / 255.0, blue: blueComponent / 255.0).hsb
+        let hsb = Color(
+            red: redComponent / 255.0,
+            green: greenComponent / 255.0,
+            blue: blueComponent / 255.0
+        ).hsb
 
         if hsb.saturation == 0 || hsb.brightness == 0 {
             // Preserve hue

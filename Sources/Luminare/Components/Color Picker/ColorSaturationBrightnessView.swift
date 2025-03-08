@@ -46,11 +46,15 @@ struct ColorSaturationBrightnessView: View {
                     endPoint: .bottom
                 )
 
-                ColorPickerCircle(selectedColor: $selectedColor, isDragging: $isDragging, circleSize: circleSize)
-                    .offset(
-                        x: circlePosition.x - geo.size.width / 2,
-                        y: circlePosition.y - geo.size.width / 2
-                    )
+                ColorPickerCircle(
+                    selectedColor: $selectedColor,
+                    isDragging: $isDragging,
+                    circleSize: circleSize
+                )
+                .offset(
+                    x: circlePosition.x - geo.size.width / 2,
+                    y: circlePosition.y - geo.size.width / 2
+                )
             }
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -65,11 +69,11 @@ struct ColorSaturationBrightnessView: View {
             )
             .frame(width: geo.size.width, height: geo.size.width)
             .onAppear {
-                updateCirclePosition(geo.size)
+                updateCirclePositionFromColor(geo.size)
             }
             .onChange(of: selectedColor) { _ in
                 if !isDragging {
-                    updateCirclePosition(geo.size)
+                    updateCirclePositionFromColor(geo.size)
                 }
             }
         }
@@ -92,12 +96,12 @@ struct ColorSaturationBrightnessView: View {
         }
 
         withAnimation(animation) {
-            updateCirclePosition(viewSize)
+            circlePosition = CGPoint(x: adjustedX, y: adjustedY)
         }
     }
 
     // Initialize the position of the circle based on the current color
-    private func updateCirclePosition(_ viewSize: CGSize) {
+    private func updateCirclePositionFromColor(_ viewSize: CGSize) {
         if selectedColor.saturation <= 0.0001 {
             circlePosition = CGPoint(
                 x: .zero,
