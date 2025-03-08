@@ -133,6 +133,25 @@ struct LuminareModalView<Content>: View where Content: View {
                     )
                 }
                 .clipShape(.rect(cornerRadii: cornerRadii))
+                .overlay {
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                        .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+                }
+                .overlay {
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                        .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+                        .mask(alignment: .top) {
+                            LinearGradient(
+                                colors: [
+                                    .white,
+                                    .clear
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 30)
+                        }
+                }
                 .background {
                     GeometryReader { proxy in
                         Color.clear
@@ -144,9 +163,7 @@ struct LuminareModalView<Content>: View where Content: View {
                 .buttonStyle(.luminare)
                 .ignoresSafeArea()
         }
-        .frame(
-            maxWidth: .infinity, maxHeight: .infinity, alignment: .top
-        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 

@@ -98,6 +98,15 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         super.keyDown(with: event)
     }
 
+    override func mouseDown(with event: NSEvent) {
+        let titlebarHeight: CGFloat = 24
+        if event.locationInWindow.y > frame.height - titlebarHeight {
+            super.performDrag(with: event)
+        } else {
+            super.mouseDragged(with: event)
+        }
+    }
+
     override var canBecomeKey: Bool {
         true
     }
