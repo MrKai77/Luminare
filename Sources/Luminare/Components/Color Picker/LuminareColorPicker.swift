@@ -114,6 +114,7 @@ public struct LuminareColorPicker<F>: View
                         text = color.toHex()
                     }
                 }
+                .monospaced()
             }
 
             if style.hasColorWell {

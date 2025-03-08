@@ -116,6 +116,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                     .ignoresSafeArea()
             }
         }
+        .luminareListFixedHeight(until: .infinity) // As the outside is already a scroll view, disable list scrolling by default.
         .edgesIgnoringSafeArea(.top)
         .luminareBackground()
     }

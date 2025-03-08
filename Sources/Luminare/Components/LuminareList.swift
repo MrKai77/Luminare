@@ -455,9 +455,7 @@ public struct LuminareListItem<Content, V>: View
             if highlightOnHover, isHovering {
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
-                    .opacity(
-                        (maxTintOpacity - tintOpacity) * (1 / maxTintOpacity)
-                    )
+                    .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
             }
         }
         .clipShape(itemBackgroundShape)
