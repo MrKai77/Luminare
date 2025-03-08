@@ -58,18 +58,31 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         }
     }
 
+    /// Initializes a ``LuminarePane`` where there is no header.
+    ///
+    /// - Parameters:
+    ///   - key: the `LocalizedStringKey` to look up the header text.
+    ///   - content: the content view.
+    public init(
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == EmptyView {
+        self.init(content: content, header: { EmptyView() })
+    }
+
     // MARK: Body
 
     public var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                header()
-                    .buttonStyle(TabHeaderButtonStyle())
-                    .padding(.horizontal, 10)
-                    .padding(.trailing, 5)
-                    .frame(height: titleBarHeight, alignment: .leading)
+            if !(header is EmptyView) {
+                VStack(alignment: .leading, spacing: 0) {
+                    header()
+                        .buttonStyle(TabHeaderButtonStyle())
+                        .padding(.horizontal, 10)
+                        .padding(.trailing, 5)
+                        .frame(height: titleBarHeight, alignment: .leading)
 
-                Divider()
+                    Divider()
+                }
             }
 
             Group {
@@ -135,17 +148,17 @@ struct TabHeaderButtonStyle: ButtonStyle {
 ) {
     LuminarePane("Luminare") {
         Section("General") {
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Launch at login",
                 isOn: .constant(true)
             )
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Hide menu bar icon",
                 isOn: .constant(true)
             )
 
-            LuminareSliderPickerCompose(
+            LuminareSliderPicker(
                 "Animation speed",
                 ["Instant", "Fast", "Smooth"],
                 selection: .constant("Fast")
@@ -161,24 +174,24 @@ struct TabHeaderButtonStyle: ButtonStyle {
                 "Reset Window Frame"
             ) {}
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Restore window frame on drag",
                 isOn: .constant(true)
             )
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Include padding",
                 isOn: .constant(true)
             )
         }
 
         Section("Cursor") {
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Use screen with cursor",
                 isOn: .constant(true)
             )
 
-            LuminareToggleCompose(
+            LuminareToggle(
                 "Move cursor with window",
                 isOn: .constant(true)
             )
