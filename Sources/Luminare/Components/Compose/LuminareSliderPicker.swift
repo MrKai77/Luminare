@@ -1,5 +1,5 @@
 //
-//  LuminareSliderPickerCompose.swift
+//  LuminareSliderPicker.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-04-14.
@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Slider Picker (Compose)
 
 /// A stylized, composed picker for discrete values with a slider.
-public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: View, Content: View, V: Equatable {
+public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, Content: View, V: Equatable {
     // MARK: Environments
 
     @Environment(\.luminareAnimation) private var animation
@@ -26,7 +26,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
     // MARK: Initializers
 
-    /// Initializes a ``LuminareSliderPickerCompose``.
+    /// Initializes a ``LuminareSliderPicker``.
     ///
     /// - Parameters:
     ///   - options: the available options.
@@ -45,7 +45,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         self._selection = selection
     }
 
-    /// Initializes a ``LuminareSliderPickerCompose`` where the label is a localized text.
+    /// Initializes a ``LuminareSliderPicker`` where the label is a localized text.
     ///
     /// - Parameters:
     ///   - key: the `LocalizedStringKey` to look up the label text.
@@ -67,7 +67,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         }
     }
 
-    /// Initializes a ``LuminareSliderPickerCompose`` where the content is a localized text.
+    /// Initializes a ``LuminareSliderPicker`` where the content is a localized text.
     ///
     /// - Parameters:
     ///   - options: the available options.
@@ -89,7 +89,7 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
         }
     }
 
-    /// Initializes a ``LuminareSliderPickerCompose`` where the content and the label are localized texts.
+    /// Initializes a ``LuminareSliderPicker`` where the content and the label are localized texts.
     ///
     /// - Parameters:
     ///   - key: the `LocalizedStringKey` to look up the label text.
@@ -119,7 +119,9 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                 LuminareCompose {
                     text()
                 } label: {
-                    label()
+                    HStack(spacing: 4) {
+                        label()
+                    }
                 }
                 .luminareComposeStyle(.inline)
 
@@ -134,7 +136,9 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                         text()
                     }
                 } label: {
-                    label()
+                    HStack(spacing: 4) {
+                        label()
+                    }
                 }
                 .luminareComposeStyle(.inline)
             }
@@ -182,14 +186,15 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
 
 @available(macOS 15.0, *)
 #Preview(
-    "LuminareSliderPickerCompose",
+    "LuminareSliderPicker",
     traits: .sizeThatFitsLayout
 ) {
     @Previewable @State var selection = 3
 
     LuminareSection {
-        LuminareSliderPickerCompose(
-            Array(0...4), selection: $selection
+        LuminareSliderPicker(
+            Array(0...4),
+            selection: $selection
         ) { value in
             Text("\(value) is Chosen")
                 .monospaced()
@@ -203,8 +208,9 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
             }
         }
 
-        LuminareSliderPickerCompose(
-            Array(0...4), selection: $selection
+        LuminareSliderPicker(
+            Array(0...4),
+            selection: $selection
         ) { value in
             Text("\(value) is Chosen")
                 .monospaced()
@@ -216,6 +222,23 @@ public struct LuminareSliderPickerCompose<Label, Content, V>: View where Label: 
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        }
+        .luminareComposeLayout(.compact)
+
+        LuminareSliderPicker(
+            Array(0...4),
+            selection: $selection
+        ) { value in
+            Text("\(value) is Chosen")
+                .monospaced()
+        } label: {
+            Text("With an info")
+
+            LuminarePopover {
+                Text("Popover")
+                    .padding(4)
+            }
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         .luminareComposeLayout(.compact)
     }

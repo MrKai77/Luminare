@@ -8,7 +8,10 @@
 import SwiftUI
 
 public enum LuminarePopoverTrigger {
-    case hover(showDelay: TimeInterval = 0.5, hideDelay: TimeInterval = 0.5)
+    case hover(
+        showDelay: TimeInterval = 0.25,
+        hideDelay: TimeInterval = 0.0
+    )
     case forceTouch(
         threshold: CGFloat = 0.5,
         onGesture: ((_ gesture: ForceTouchGesture, _ recognized: Bool) -> ())? = nil
