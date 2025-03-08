@@ -1,5 +1,5 @@
 //
-//  LuminareToggleCompose.swift
+//  LuminareToggle.swift
 //  Luminare
 //
 //  Created by KrLite on 2024/12/17.

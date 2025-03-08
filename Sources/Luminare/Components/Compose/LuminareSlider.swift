@@ -102,14 +102,14 @@ public struct LuminareSlider<Label, Content, V, F>: View
             clampsLower: clampsLower,
             content: { value in
                 HStack(spacing: 0) {
-                    if let prefix = prefix {
+                    if let prefix {
                         Text(prefix)
                             .fontDesign(.monospaced)
                     }
 
                     value
 
-                    if let suffix = suffix {
+                    if let suffix {
                         Text(suffix)
                             .fontDesign(.monospaced)
                     }

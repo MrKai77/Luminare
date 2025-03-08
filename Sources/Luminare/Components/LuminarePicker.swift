@@ -279,7 +279,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     LuminareSection {
         LuminarePicker(
-            elements: Array(32 ... 42),
+            elements: Array(32...42),
             selection: $selection
         ) { num in
             Text("\(num)")
