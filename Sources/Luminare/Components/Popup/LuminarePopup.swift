@@ -308,7 +308,7 @@ private struct PopupContent: View {
     Button("Toggle Popup") {
         isPresented.toggle()
     }
-    .luminarePopup(isPresented: $isPresented, edge: .leading) {
+    .luminarePopup(isPresented: $isPresented, alignment: .leading) {
         PopupContent()
     }
     .padding()

@@ -86,15 +86,16 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
             y: frame.origin.y - (size.height - frame.height)
         )
 
-        if Date.now.timeIntervalSince(initializedDate) > 1.0 {
-            updateShadow(for: 0.25)
+        if Date.now.timeIntervalSince(initializedDate) < 1.0 || (newSize.width >= frame.width && newSize.height >= frame.height) {
+            setFrame(.init(origin: newOrigin, size: newSize), display: false)
+            return
+        }
 
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.2
-                animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
-            }
-        } else {
-            setFrame(.init(origin: frame.origin, size: newSize), display: false)
+        updateShadow(for: 0.25)
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.2
+            animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
         }
     }
 

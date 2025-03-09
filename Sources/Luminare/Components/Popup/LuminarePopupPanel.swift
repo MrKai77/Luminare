@@ -45,13 +45,14 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
             y: frame.origin.y - (size.height - frame.height)
         )
 
-        if Date.now.timeIntervalSince(initializedDate) > 1.0 {
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.2
-                animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
-            }
-        } else {
-            setFrame(.init(origin: frame.origin, size: newSize), display: false)
+        if Date.now.timeIntervalSince(initializedDate) < 1.0 || (newSize.width >= frame.width && newSize.height >= frame.height) {
+            setFrame(.init(origin: newOrigin, size: newSize), display: false)
+            return
+        }
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.2
+            animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
         }
     }
 
