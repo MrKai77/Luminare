@@ -8,15 +8,21 @@
 import SwiftUI
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
-    @Published public var onDismiss: (() -> ())?
+    private let closesOnDefocus: Bool
+    private let initializedDate = Date.now
 
-    public init() {
+    public init(
+        closesOnDefocus: Bool = false
+    ) {
+        self.closesOnDefocus = closesOnDefocus
+
         super.init(
             contentRect: .zero,
             styleMask: [.fullSizeContentView],
             backing: .buffered,
             defer: false
         )
+
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
         backgroundColor = .clear
@@ -27,6 +33,26 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         animationBehavior = .utilityWindow
+    }
+
+    func setSize(_ size: CGSize) {
+        let newSize = CGSize(
+            width: size.width,
+            height: size.height
+        )
+        let newOrigin = NSPoint(
+            x: frame.origin.x,
+            y: frame.origin.y - (size.height - frame.height)
+        )
+
+        if Date.now.timeIntervalSince(initializedDate) > 1.0 {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.2
+                animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
+            }
+        } else {
+            setFrame(.init(origin: frame.origin, size: newSize), display: false)
+        }
     }
 
     override public var canBecomeKey: Bool {
@@ -41,8 +67,9 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
         true
     }
 
-    override public func close() {
-        onDismiss?()
-        super.close()
+    override public func resignKey() {
+        if closesOnDefocus {
+            close()
+        }
     }
 }

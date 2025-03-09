@@ -12,21 +12,22 @@ import SwiftUI
 public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     @Environment(\.luminarePopupCornerRadii) private var cornerRadii
     @Environment(\.luminarePopupPadding) private var padding
+    @Environment(\.luminareSheetClosesOnDefocus) private var sheetClosesOnDefocus
 
     @Binding private var isPresented: Bool
-    private let edge: Edge
+    private let alignment: Alignment
     private let material: NSVisualEffectView.Material
 
     @ViewBuilder private var content: () -> Content
 
     public init(
         isPresented: Binding<Bool>,
-        edge: Edge = .bottom,
+        alignment: Alignment = .bottom,
         material: NSVisualEffectView.Material = .popover,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._isPresented = isPresented
-        self.edge = edge
+        self.alignment = alignment
         self.material = material
         self.content = content
     }
@@ -89,7 +90,9 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             EventMonitorManager.shared.addLocalMonitor(
                 for: id,
                 matching: [
-                    .scrollWheel, .leftMouseDown, .rightMouseDown,
+                    .scrollWheel,
+                    .leftMouseDown,
+                    .rightMouseDown,
                     .otherMouseDown
                 ]
             ) { [weak self] event in
@@ -111,29 +114,31 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         }
 
         private func initializePopup() {
-            self.panel = .init()
+            self.panel = .init(
+                closesOnDefocus: parent.sheetClosesOnDefocus
+            )
             guard let panel else { return }
 
             panel.delegate = self
 
             let view = NSHostingView(
-                rootView: Group {
-                    content()
-                        .fixedSize()
-                        .background {
-                            VisualEffectView(
-                                material: self.parent.material,
-                                blendingMode: .behindWindow
-                            )
-                        }
-                        .clipShape(.rect(cornerRadii: parent.cornerRadii))
-                        .buttonStyle(.luminare)
-                        .ignoresSafeArea()
-                        .environmentObject(panel)
+                rootView: VStack {
+                    ZStack {
+                        backgroundWindow()
+                        content()
+                        windowBorder()
+                    }
+                    .buttonStyle(.luminare)
+                    .environmentObject(panel)
+                    .fixedSize()
+                    .onGeometryChange(for: CGSize.self, of: \.size, action: panel.setSize(_:))
+                    .frame(minWidth: 12, minHeight: 12, alignment: .top)
+
+                    Spacer(minLength: 0)
                 }
                 .frame(
                     maxWidth: .infinity, maxHeight: .infinity,
-                    alignment: parent.edge.negate.alignment
+                    alignment: parent.alignment.negate
                 )
             )
             panel.contentView = view
@@ -145,6 +150,36 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 name: NSView.frameDidChangeNotification,
                 object: view
             )
+        }
+
+        func backgroundWindow() -> some View {
+            VisualEffectView(
+                material: parent.material,
+                blendingMode: .behindWindow,
+                state: .active
+            )
+            .clipShape(.rect(cornerRadii: parent.cornerRadii))
+        }
+
+        func windowBorder() -> some View {
+            ZStack {
+                UnevenRoundedRectangle(cornerRadii: parent.cornerRadii)
+                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+
+                UnevenRoundedRectangle(cornerRadii: parent.cornerRadii)
+                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+                    .mask(alignment: .top) {
+                        LinearGradient(
+                            colors: [
+                                .white,
+                                .clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 30)
+                    }
+            }
         }
 
         private func updatePosition(for size: CGSize) {
@@ -165,7 +200,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             )
 
             let origin: CGPoint =
-                switch parent.edge {
+                switch parent.alignment {
                 case .top:
                     .init(
                         x: globalFrame.midX - size.width / 2,
@@ -185,6 +220,46 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                     .init(
                         x: globalFrame.maxX + parent.padding,
                         y: globalFrame.midY - size.height / 2
+                    )
+                case .topLeading:
+                    .init(
+                        x: globalFrame.minX - size.width - parent.padding,
+                        y: globalFrame.maxY + parent.padding
+                    )
+                case .topTrailing:
+                    .init(
+                        x: globalFrame.maxX + parent.padding,
+                        y: globalFrame.maxY + parent.padding
+                    )
+                case .leadingLastTextBaseline:
+                    .init(
+                        x: globalFrame.minX,
+                        y: globalFrame.minY - size.height - parent.padding
+                    )
+                case .bottomLeading:
+                    .init(
+                        x: globalFrame.minX - size.width - parent.padding,
+                        y: globalFrame.minY - size.height - parent.padding
+                    )
+                case .trailingLastTextBaseline:
+                    .init(
+                        x: globalFrame.maxX - size.width,
+                        y: globalFrame.minY - size.height - parent.padding
+                    )
+                case .bottomTrailing:
+                    .init(
+                        x: globalFrame.maxX + parent.padding,
+                        y: globalFrame.minY - size.height - parent.padding
+                    )
+                case .center:
+                    .init(
+                        x: globalFrame.midX - size.width / 2,
+                        y: globalFrame.midY - size.height / 2
+                    )
+                default: // Same as leadingLastTextBaseline
+                    .init(
+                        x: globalFrame.minX,
+                        y: globalFrame.minY - size.height - parent.padding
                     )
                 }
 
@@ -206,7 +281,7 @@ private struct PopupContent: View {
     var body: some View {
         VStack {
             Button("Toggle Expansion") {
-                withAnimation {
+                withAnimation(.smooth(duration: 0.2)) {
                     isExpanded.toggle()
                 }
             }
