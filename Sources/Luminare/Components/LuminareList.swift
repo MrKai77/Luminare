@@ -51,6 +51,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     where ContentA: View, ContentB: View, V: Hashable, ID: Hashable {
     // MARK: Environments
 
+    @Environment(\.appearsActive) private var appearsActive
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
@@ -136,7 +137,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 
                     ForEach($items, id: keyPath) { item in
                         let isDisabled = isDisabled(item.wrappedValue)
-                        let tint = tint(of: item.wrappedValue)
 
                         let roundedTop = topCorner.isRounded(
                             hasFixedHeight: hasFixedHeight)
@@ -171,7 +171,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                         }
                         .disabled(isDisabled)
                         .animation(animation, value: isDisabled)
-                        .overrideTint(tint)
                     }
                     .onMove { indices, newOffset in
                         withAnimation(animation) {
@@ -238,6 +237,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         .onDisappear {
             removeEventMonitor()
         }
+        .overrideTint(appearsActive ? tint : .disabledControlTextColor)
     }
 
     private var totalHeight: CGFloat {
@@ -254,10 +254,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 
     private func isDisabled(_ element: V) -> Bool {
         (element as? LuminareSelectionData)?.isSelectable == false
-    }
-
-    private func tint(of element: V) -> Color {
-        (element as? LuminareSelectionData)?.tint ?? tint
     }
 
     private func processSelection() {

@@ -175,20 +175,6 @@ public struct LuminareCompose<Label, Content>: View
         .padding(insets)
     }
 
-    private var computedStyle: LuminareComposeStyle {
-        switch style {
-        case .automatic:
-            // Automatically use `.inline` if content is small enough, like a single `Button` or `Toggle`
-            if size.height <= minHeight {
-                .inline
-            } else {
-                .regular
-            }
-        default:
-            style
-        }
-    }
-
     private var insets: EdgeInsets {
         .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
     }

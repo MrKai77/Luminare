@@ -38,6 +38,7 @@ public enum LuminarePickerRoundedCornerBehavior: String, Hashable, Equatable, Id
 public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable {
     // MARK: Environments
 
+    @Environment(\.appearsActive) private var appearsActive
     @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareCornerRadii) private var cornerRadii
@@ -141,13 +142,12 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             }
         }
         .buttonStyle(.luminare)
+        .overrideTint(appearsActive ? tint : .disabledControlTextColor)
     }
 
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
         if let element = getElement(row: row, column: column) {
             let isDisabled = isDisabled(element)
-            let tint = tint(of: element)
-
             Button {
                 guard !isDisabled else { return }
 
@@ -174,7 +174,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             }
             .opacity(isDisabled ? 0.5 : 1.0)
             .animation(animation, value: isDisabled)
-            .overrideTint(tint)
         } else {
             getShape(row: row, column: column)
                 .strokeBorder(.quaternary, lineWidth: 1)
@@ -201,10 +200,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
 
     private func isDisabled(_ element: V) -> Bool {
         (element as? LuminareSelectionData)?.isSelectable == false
-    }
-
-    private func tint(of element: V) -> Color {
-        (element as? LuminareSelectionData)?.tint ?? tint
     }
 
     private func getElement(row: Int, column: Int) -> V? {

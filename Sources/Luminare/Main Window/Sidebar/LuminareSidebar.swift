@@ -9,6 +9,7 @@ import SwiftUI
 
 /// A stylized sidebar for ``LuminareWindow``.
 public struct LuminareSidebar<Content>: View where Content: View {
+    @Environment(\.appearsActive) private var appearsActive
     @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
     @Environment(\.luminareContentMarginsBottom) private var contentMarginsBottom
     @Environment(\.luminareSidebarOverflow) private var overflow
@@ -30,6 +31,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 content()
             }
             .padding(.bottom, 12)
+            .opacity(appearsActive ? 1 : 0.5)
         }
         .luminareContentMargins(.top, overflow + contentMarginsTop)
         .luminareContentMargins(.bottom, overflow + contentMarginsBottom)
