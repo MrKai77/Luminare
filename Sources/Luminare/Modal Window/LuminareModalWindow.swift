@@ -15,6 +15,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     private let presentation: LuminareSheetPresentation
 
     private var view: NSView?
+    private let initializedDate = Date.now
 
     init(
         isPresented: Binding<Bool>,
@@ -72,6 +73,28 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * interval) {
                 self.invalidateShadow()
             }
+        }
+    }
+
+    func setSize(_ size: CGSize) {
+        let newSize = CGSize(
+            width: size.width,
+            height: size.height
+        )
+        let newOrigin = NSPoint(
+            x: frame.origin.x,
+            y: frame.origin.y - (size.height - frame.height)
+        )
+
+        if Date.now.timeIntervalSince(initializedDate) > 1.0 {
+            updateShadow(for: 0.25)
+
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.25
+                animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
+            }
+        } else {
+            setFrame(.init(origin: frame.origin, size: newSize), display: false)
         }
     }
 

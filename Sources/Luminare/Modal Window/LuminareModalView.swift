@@ -123,47 +123,50 @@ struct LuminareModalView<Content>: View where Content: View {
     }
 
     var body: some View {
-        Group {
-            content()
-                .fixedSize()
-                .background {
-                    VisualEffectView(
-                        material: .fullScreenUI,
-                        blendingMode: .behindWindow
-                    )
-                }
-                .clipShape(.rect(cornerRadii: cornerRadii))
-                .overlay {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
-                }
-                .overlay {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
-                        .mask(alignment: .top) {
-                            LinearGradient(
-                                colors: [
-                                    .white,
-                                    .clear
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                            .frame(height: 30)
-                        }
-                }
-                .background {
-                    GeometryReader { proxy in
-                        Color.clear
-                            .onChange(of: proxy.size) { _ in
-                                floatingPanel.updateShadow(for: 0.5)
-                            }
-                    }
-                }
-                .buttonStyle(.luminare)
-                .ignoresSafeArea()
+        VStack {
+            ZStack {
+                backgroundWindow()
+                content()
+                windowBorder()
+            }
+            .buttonStyle(.luminare)
+            .fixedSize()
+            .onGeometryChange(for: CGSize.self, of: \.size, action: floatingPanel.setSize(_:))
+            .frame(minWidth: 12, minHeight: 12, alignment: .top)
+
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    func backgroundWindow() -> some View {
+        ZStack {
+            VisualEffectView(
+                material: .fullScreenUI,
+                blendingMode: .behindWindow
+            )
+        }
+        .clipShape(.rect(cornerRadii: cornerRadii))
+    }
+
+    func windowBorder() -> some View {
+        ZStack {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+                .mask(alignment: .top) {
+                    LinearGradient(
+                        colors: [
+                            .white,
+                            .clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 30)
+                }
+        }
     }
 }
 
@@ -242,7 +245,7 @@ private struct ModalContent: View {
     var body: some View {
         VStack {
             Button("Toggle Expansion") {
-                withAnimation {
+                withAnimation(.snappy(duration: 0.25)) {
                     isExpanded.toggle()
                 }
             }
