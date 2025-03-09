@@ -149,6 +149,8 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             let tint = tint(of: element)
 
             Button {
+                guard !isDisabled else { return }
+
                 withAnimation(animation) {
                     internalSelection = element
                 }
@@ -170,7 +172,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .disabled(isDisabled)
+            .opacity(isDisabled ? 0.5 : 1.0)
             .animation(animation, value: isDisabled)
             .overrideTint(tint)
         } else {
