@@ -169,10 +169,8 @@ public struct LuminareCompose<Label, Content>: View
             }
         }
         .frame(maxWidth: .infinity, minHeight: minHeight)
-        .onGeometryChange(for: CGSize.self) { proxy in
-            proxy.size
-        } action: { newValue in
-            size = newValue
+        .onGeometryChange(for: CGSize.self, of: \.size) {
+            size = $0
         }
         .padding(insets)
     }
@@ -192,11 +190,7 @@ public struct LuminareCompose<Label, Content>: View
     }
 
     private var insets: EdgeInsets {
-        switch computedStyle {
-        case .regular: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
-        case .inline: .init(top: 2, leading: horizontalPadding, bottom: 2, trailing: 2)
-        default: .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
-        }
+        .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
     }
 
     @ViewBuilder private func wrappedContent() -> some View {

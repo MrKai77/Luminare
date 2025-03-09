@@ -337,7 +337,7 @@ public struct LuminareListItem<Content, V>: View
             .frame(minHeight: itemHeight)
             .overlay {
                 content($item)
-                    .environment(\.hoveringOverLuminareItem, isHovering)
+                    .environment(\.luminareItemBeingHovered, isHovering)
                     .foregroundStyle(isEnabled ? .primary : .secondary)
             }
             .tag(item)

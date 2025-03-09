@@ -12,7 +12,6 @@ import SwiftUI
 extension EnvironmentValues {
     @Entry var luminareWindow: LuminareWindow?
 
-    @Entry var hoveringOverLuminareItem: Bool = false
     @Entry var luminareClickedOutside: Bool = false
 }
 
@@ -58,7 +57,7 @@ public extension EnvironmentValues {
 
 public extension EnvironmentValues {
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
-    @Entry var luminareMinHeight: CGFloat = 34
+    @Entry var luminareMinHeight: CGFloat = 32
     @Entry var luminareHorizontalPadding: CGFloat = 8
 
     @Entry var luminareIsBordered: Bool = true
@@ -128,6 +127,7 @@ public extension EnvironmentValues {
 
     @Entry var luminareListItemHeight: CGFloat = 50
     @Entry var luminareListItemHighlightOnHover: Bool = true
+    @Entry var luminareItemBeingHovered: Bool = false
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil
 
     @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never

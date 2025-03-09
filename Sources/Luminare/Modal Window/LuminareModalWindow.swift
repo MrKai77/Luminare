@@ -90,7 +90,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
             updateShadow(for: 0.25)
 
             NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.25
+                context.duration = 0.2
                 animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
             }
         } else {

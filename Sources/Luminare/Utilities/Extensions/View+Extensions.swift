@@ -44,7 +44,7 @@ extension View {
     func readPreference<K>(
         _ key: K.Type = K.self,
         to binding: Binding<K.Value>
-    ) -> some View where K : PreferenceKey, K.Value : Equatable {
+    ) -> some View where K: PreferenceKey, K.Value: Equatable {
         onPreferenceChange(key) { value in
             binding.wrappedValue = value
         }
@@ -74,14 +74,14 @@ public extension View {
 
     @ViewBuilder func luminarePopup(
         isPresented: Binding<Bool>,
-        edge: Edge = .bottom,
+        alignment: Alignment = .bottom,
         material: NSVisualEffectView.Material = .popover,
         @ViewBuilder _ content: @escaping () -> some View
     ) -> some View {
         background {
             LuminarePopup(
                 isPresented: isPresented,
-                edge: edge,
+                alignment: alignment,
                 material: material,
                 content: content
             )
@@ -104,6 +104,7 @@ public extension View {
 
     @ViewBuilder func luminareModalWithPredefinedSheetStyle(
         isPresented: Binding<Bool>,
+        isCompact: Bool = true,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
@@ -111,10 +112,17 @@ public extension View {
                 isPresented: isPresented
             ) {
                 content()
-                    .padding(8)
+                    .padding(isCompact ? 8 : 16)
             }
         )
-        .luminareSheetCornerRadii(.init(topLeading: 18, bottomLeading: 14, bottomTrailing: 14, topTrailing: 18))
+        .luminareSheetCornerRadii(
+            .init(
+                topLeading: 12 + (isCompact ? 8 : 16),
+                bottomLeading: 8 + (isCompact ? 8 : 16),
+                bottomTrailing: 8 + (isCompact ? 8 : 16),
+                topTrailing: 12 + (isCompact ? 8 : 16)
+            )
+        )
     }
 }
 

@@ -52,45 +52,46 @@ public class LuminareWindow: NSWindow {
 }
 
 // MARK: - Add this to your project if a transparent background is needed
+
 /*
 
-// Set the radius like this:
+ // Set the radius like this:
 
-try? setBackgroundBlur(radius: Int(blurRadius))
-backgroundColor = .white.withAlphaComponent(0.001)
-ignoresMouseEvents = false
+ try? setBackgroundBlur(radius: Int(blurRadius))
+ backgroundColor = .white.withAlphaComponent(0.001)
+ ignoresMouseEvents = false
 
-extension LuminareWindow {
-    func setBackgroundBlur(radius: Int) throws {
-        guard let connection = CGSDefaultConnectionForThread() else {
-            throw NSError(
-                domain: "com.Luminare.NSWindow",
-                code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "Error getting default connection"]
-            )
-        }
+ extension LuminareWindow {
+     func setBackgroundBlur(radius: Int) throws {
+         guard let connection = CGSDefaultConnectionForThread() else {
+             throw NSError(
+                 domain: "com.Luminare.NSWindow",
+                 code: 0,
+                 userInfo: [NSLocalizedDescriptionKey: "Error getting default connection"]
+             )
+         }
 
-        let status = CGSSetWindowBackgroundBlurRadius(connection, windowNumber, radius)
+         let status = CGSSetWindowBackgroundBlurRadius(connection, windowNumber, radius)
 
-        if status != noErr {
-            throw NSError(
-                domain: "com.Luminare.NSWindow",
-                code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Error setting blur radius: \(status)"]
-            )
-        }
-    }
-}
+         if status != noErr {
+             throw NSError(
+                 domain: "com.Luminare.NSWindow",
+                 code: 1,
+                 userInfo: [NSLocalizedDescriptionKey: "Error setting blur radius: \(status)"]
+             )
+         }
+     }
+ }
 
-typealias CGSConnectionID = UInt32
+ typealias CGSConnectionID = UInt32
 
-@_silgen_name("CGSDefaultConnectionForThread")
-func CGSDefaultConnectionForThread() -> CGSConnectionID?
+ @_silgen_name("CGSDefaultConnectionForThread")
+ func CGSDefaultConnectionForThread() -> CGSConnectionID?
 
-@_silgen_name("CGSSetWindowBackgroundBlurRadius") @discardableResult
-func CGSSetWindowBackgroundBlurRadius(
-    _ connection: CGSConnectionID,
-    _ windowNum: NSInteger,
-    _ radius: Int
-) -> OSStatus
-*/
+ @_silgen_name("CGSSetWindowBackgroundBlurRadius") @discardableResult
+ func CGSSetWindowBackgroundBlurRadius(
+     _ connection: CGSConnectionID,
+     _ windowNum: NSInteger,
+     _ radius: Int
+ ) -> OSStatus
+ */
