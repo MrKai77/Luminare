@@ -12,9 +12,13 @@ public struct LuminareBackgroundEffect: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .background {
-                VisualEffectView(material: .menu, blendingMode: .behindWindow)
-                    .edgesIgnoringSafeArea(.top)
-                    .allowsHitTesting(false)
+                VisualEffectView(
+                    material: .menu,
+                    blendingMode: .behindWindow,
+                    state: .active
+                )
+                .edgesIgnoringSafeArea(.top)
+                .allowsHitTesting(false)
             }
     }
 }
