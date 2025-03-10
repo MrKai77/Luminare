@@ -73,7 +73,16 @@ public struct LuminareToggle<Label>: View where Label: View {
                 Text("Popover")
                     .padding(4)
             }
+            .tint(.orange)
             .frame(maxHeight: .infinity, alignment: .top)
+        }
+
+        LuminareToggle(isOn: $value) {
+            Text("With an info (simpler)")
+
+            LuminarePopover("Popover")
+                .tint(.blue)
+                .frame(maxHeight: .infinity, alignment: .top)
         }
     }
 }

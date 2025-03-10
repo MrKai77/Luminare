@@ -131,6 +131,32 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
         }
     }
 
+    public init(
+        _ contentKey: LocalizedStringKey,
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil,
+        padding: CGFloat = 4,
+        badgeSize: CGFloat = 4
+    ) where Content == AnyView, Badge == AnyView {
+        self.init(
+            attachmentAnchor: attachmentAnchor,
+            arrowEdge: arrowEdge,
+            padding: padding
+        ) {
+            AnyView(
+                Text(contentKey)
+                    .multilineTextAlignment(.center)
+                    .padding(8)
+            )
+        } badge: {
+            AnyView(
+                Circle()
+                    .frame(width: badgeSize, height: badgeSize)
+                    .foregroundStyle(.tint)
+            )
+        }
+    }
+
     // MARK: Body
 
     public var body: some View {

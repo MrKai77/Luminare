@@ -10,6 +10,8 @@ import SwiftUI
 // MARK: - Button Compose
 
 public struct LuminareButtonCompose<Label, Content>: View where Label: View, Content: View {
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+
     // MARK: Fields
 
     private let role: ButtonRole?
@@ -91,6 +93,7 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
                 content()
             }
             .buttonStyle(.luminareCompact)
+            .padding(.trailing, -horizontalPadding)
         } label: {
             label()
         }
@@ -105,8 +108,36 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
     traits: .sizeThatFitsLayout
 ) {
     LuminareSection {
-        LuminareButtonCompose("Button", "Click Me!") {
+        LuminareButtonCompose("Button 1", "Click Me!") {
             print(1)
         }
+
+        LuminareButtonCompose(
+            "Button 2",
+            content: {
+                Label("Content", systemImage: "sparkles")
+            },
+            action: {
+                print(2)
+            }
+        )
+
+        LuminareButtonCompose(
+            "Action 3",
+            label: {
+                Label("Label", systemImage: "star")
+            }, action: {
+                print(3)
+            }
+        )
+
+        LuminareButtonCompose {
+            Label("Label", systemImage: "wand.and.rays")
+        } content: {
+            Label("Content", systemImage: "party.popper")
+        } action: {
+            print(4)
+        }
+
     }
 }
