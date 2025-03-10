@@ -72,19 +72,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     // MARK: Body
 
     public var body: some View {
-        VStack(spacing: 0) {
-            if !(header is EmptyView) {
-                VStack(alignment: .leading, spacing: 0) {
-                    header()
-                        .buttonStyle(TabHeaderButtonStyle())
-                        .padding(.horizontal, 10)
-                        .padding(.trailing, 5)
-                        .frame(height: titleBarHeight, alignment: .leading)
-
-                    Divider()
-                }
-            }
-
+        ZStack {
             Group {
                 switch layout {
                 case .none:
@@ -115,9 +103,22 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                     }
                     .ignoresSafeArea()
             }
+
+            if !(header is EmptyView) {
+                VStack(spacing: 0) {
+                    header()
+                        .buttonStyle(TabHeaderButtonStyle())
+                        .padding(.horizontal, 10)
+                        .padding(.trailing, 5)
+                        .frame(height: titleBarHeight, alignment: .leading)
+
+                    Divider()
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
+                .edgesIgnoringSafeArea(.top)
+            }
         }
-        .luminareListFixedHeight(until: .infinity) // As the outside is already a scroll view, disable list scrolling by default.
-        .edgesIgnoringSafeArea(.top)
+        .luminareListFixedHeight(until: .infinity)
         .luminareBackground()
     }
 }
