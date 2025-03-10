@@ -138,6 +138,5 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
         } action: {
             print(4)
         }
-
     }
 }

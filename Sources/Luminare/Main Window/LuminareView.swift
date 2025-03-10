@@ -37,7 +37,10 @@ public struct LuminareView<Content>: View where Content: View {
             .onGeometryChange(for: CGSize.self, of: \.size) {
                 contentSize = $0
             }
-            .onAppear { window?.setSize(size: contentSize, animate: false) }
+            .onAppear {
+                window?.setSize(size: contentSize, animate: false)
+                window?.center()
+            }
             .onChange(of: contentSize) { window?.setSize(size: $0, animate: true) }
             .frame(minWidth: 10, maxWidth: .infinity, minHeight: 10, maxHeight: .infinity, alignment: .leading)
     }
