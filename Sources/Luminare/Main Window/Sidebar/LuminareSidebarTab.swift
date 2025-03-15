@@ -13,7 +13,7 @@ import SwiftUI
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Environments
 
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
 
@@ -54,7 +54,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                                 .foregroundStyle(.tint)
                                 .frame(width: 4, height: 4)
                                 .padding(.leading, 4)
-                                .shadow(color: tint, radius: 4)
+                                .shadow(color: tintColor, radius: 4)
 
                             Spacer()
                         }

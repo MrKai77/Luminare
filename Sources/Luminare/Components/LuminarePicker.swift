@@ -39,7 +39,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     // MARK: Environments
 
     @Environment(\.appearsActive) private var appearsActive
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonCornerRadii) private var buttonCornerRadii
@@ -142,7 +142,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             }
         }
         .buttonStyle(.luminare)
-        .overrideTint(appearsActive ? tint : .disabledControlTextColor)
+        .overrideTint(appearsActive ? tintColor : .disabledControlTextColor)
     }
 
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {

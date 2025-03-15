@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct ScreenView<Content>: View where Content: View {
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimationFast) private var animationFast
 
     let isBlurred: Bool
@@ -42,7 +42,7 @@ public struct ScreenView<Content>: View where Content: View {
                         .blur(radius: isBlurred ? 10 : 0)
                         .opacity(isBlurred ? 0.5 : 1)
                 } else {
-                    tint
+                    tintColor
                         .opacity(0.1)
                 }
             }

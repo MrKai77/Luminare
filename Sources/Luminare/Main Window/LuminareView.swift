@@ -11,11 +11,11 @@ import SwiftUI
 
 /// The root view of a ``LuminareWindow``.
 ///
-/// This view automatically overrides the content's tint by the one specified with `\.luminareTint` environment value.
+/// This view automatically overrides the content's tint by the one specified with the `luminareTintColor` environment value.
 public struct LuminareView<Content>: View where Content: View {
     // MARK: Environments
 
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareWindow) private var window
 
     // MARK: Fields
@@ -33,7 +33,7 @@ public struct LuminareView<Content>: View where Content: View {
         content()
             .focusable(false)
             .buttonStyle(.luminare)
-            .overrideTint(tint)
+            .overrideTint(tintColor)
             .onGeometryChange(for: CGSize.self, of: \.size) {
                 contentSize = $0
             }

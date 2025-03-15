@@ -1,5 +1,5 @@
 //
-//  EnvironmentValues.swift
+//  EnvironmentValues+Extensions.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-04-05.
@@ -21,7 +21,7 @@ public extension EnvironmentValues {
     // Currently, it is impossible to read the `.tint()` modifier on a view
     // this is a custom environement value as an alternative implementation of it
     // in practice, it should always be synchronized with `.tint()`
-    @Entry var luminareTint: Color = .accentColor
+    @Entry var luminareTintColor: Color = .accentColor
 
     @Entry var luminareAnimation: Animation = .smooth(duration: 0.2)
     @Entry var luminareAnimationFast: Animation = .easeInOut(duration: 0.1)

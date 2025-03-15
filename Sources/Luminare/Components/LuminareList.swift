@@ -53,7 +53,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 
     @Environment(\.appearsActive) private var appearsActive
     @Environment(\.luminareClickedOutside) private var luminareClickedOutside
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareContentMarginsTop) private var contentMarginsTop
     @Environment(\.luminareContentMarginsLeading) private var contentMarginsLeading
@@ -237,7 +237,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         .onDisappear {
             removeEventMonitor()
         }
-        .overrideTint(appearsActive ? tint : .disabledControlTextColor)
+        .overrideTint(appearsActive ? tintColor : .disabledControlTextColor)
     }
 
     private var totalHeight: CGFloat {
@@ -295,7 +295,6 @@ public struct LuminareListItem<Content, V>: View
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareTint) private var tint
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareCornerRadii) private var cornerRadii

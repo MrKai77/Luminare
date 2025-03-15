@@ -50,7 +50,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     // MARK: Environments
 
-    @Environment(\.luminareTint) private var tint
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareStepperAlignment) private var alignment
     @Environment(\.luminareStepperDirection) private var direction
@@ -243,7 +243,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
                 .overlay {
                     RoundedRectangle(cornerRadius: 1)
                         .frame(width: frame.width, height: frame.height)
-                        .tint(prominentTint ?? tint)
+                        .tint(prominentTint ?? tintColor)
                         .foregroundStyle(
                             .tint.opacity(hasHierarchy ? pow(0.5 + 0.5 * magnifyFactor(at: index), 2.0) : 1)
                         )

@@ -129,19 +129,15 @@ public extension View {
 // MARK: - Common
 
 public extension View {
-    /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `\.luminareTint` environment
+    /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `luminareTintColor` environment
     /// value.
-    @ViewBuilder func overrideTint(_ tint: Color) -> some View {
-        luminareTint(tint)
-            .tint(tint)
+    @ViewBuilder func luminareTint(overridingWith color: Color) -> some View {
+        tint(color)
+            .environment(\.luminareTintColor, color)
     }
 
     @ViewBuilder func luminareBackground() -> some View {
         modifier(LuminareBackgroundEffect())
-    }
-
-    @ViewBuilder func luminareTint(_ tint: Color) -> some View {
-        environment(\.luminareTint, tint)
     }
 
     @ViewBuilder func luminareAnimation(_ animation: Animation) -> some View {
