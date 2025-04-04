@@ -521,7 +521,7 @@ private struct StepperPreview<Label, V>: View
             } onRoundedValueChange: { _, newValue in
                 print(newValue)
             }
-            .overrideTint(.primary)
+            .luminareTint(overridingWith: .primary)
 //            .background(.quinary)
 
             HStack {
@@ -552,7 +552,7 @@ private struct StepperPopoverPreview: View {
                     indicatorSpacing: 10,
                     maxSize: 32
                 )
-                .overrideTint(.primary)
+                .luminareTint(overridingWith: .primary)
                 .frame(width: 100, height: 32)
             }
 

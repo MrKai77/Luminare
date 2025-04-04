@@ -104,7 +104,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                     .ignoresSafeArea()
             }
 
-            if !(header is EmptyView) {
+            if Header.self != EmptyView.self {
                 VStack(spacing: 0) {
                     header()
                         .buttonStyle(TabHeaderButtonStyle())

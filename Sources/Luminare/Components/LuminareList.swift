@@ -237,7 +237,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         .onDisappear {
             removeEventMonitor()
         }
-        .overrideTint(appearsActive ? tintColor : .disabledControlTextColor)
+        .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
     }
 
     private var totalHeight: CGFloat {

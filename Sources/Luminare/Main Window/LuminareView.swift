@@ -33,7 +33,7 @@ public struct LuminareView<Content>: View where Content: View {
         content()
             .focusable(false)
             .buttonStyle(.luminare)
-            .overrideTint(tintColor)
+            .luminareTint(overridingWith: tintColor)
             .onGeometryChange(for: CGSize.self, of: \.size) {
                 contentSize = $0
             }
