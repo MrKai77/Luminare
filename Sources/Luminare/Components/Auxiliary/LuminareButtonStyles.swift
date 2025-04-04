@@ -95,13 +95,11 @@ public struct LuminareButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(
-                LuminareFilled(
-                    isHovering: isHovering, isPressed: configuration.isPressed,
-                    fill: .quinary, hovering: .quaternary.opacity(0.7),
-                    pressed: .quaternary
-                )
-            )
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                fill: .quinary, hovering: .quaternary.opacity(0.7),
+                pressed: .quaternary
+            ))
             .clipShape(.rect(cornerRadii: cornerRadii))
     }
 }
@@ -145,12 +143,10 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(
-                LuminareFilled(
-                    isHovering: isHovering, isPressed: configuration.isPressed,
-                    cascading: tint(configuration: configuration)
-                )
-            )
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                cascading: tint(configuration: configuration)
+            ))
             .clipShape(.rect(cornerRadii: cornerRadii))
     }
 
@@ -219,11 +215,9 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(
-                LuminareFilled(
-                    isHovering: isHovering, isPressed: configuration.isPressed
-                )
-            )
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed
+            ))
             .overlay {
                 HStack {
                     Spacer()
@@ -269,13 +263,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .padding(.horizontal, horizontalPadding)
             .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(
-                LuminareFilled(
-                    isHovering: isHovering, isPressed: configuration.isPressed,
-                    fill: .quinary, hovering: .quaternary.opacity(0.7),
-                    pressed: .quaternary
-                )
-            )
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                fill: .quinary, hovering: .quaternary.opacity(0.7),
+                pressed: .quaternary
+            ))
             .modifier(LuminareBordered(isHovering: isHovering))
             .onHover { hover in
                 withAnimation(animationFast) {
@@ -464,8 +456,7 @@ public struct LuminareHoverable: ViewModifier {
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     private let isPressed: Bool
-    private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
-                pressed: AnyShapeStyle
+    private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
 
     @State private var isHovering: Bool
 
@@ -562,13 +553,14 @@ public struct LuminareHoverable: ViewModifier {
             .padding(.horizontal, horizontalPadding)
             .modifier(AspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(
-                LuminareFilled(
-                    isHovering: isHovering, isPressed: isPressed,
-                    fill: fill, hovering: hovering, pressed: pressed
-                )
-            )
-            .modifier(LuminareBordered(isHovering: isHovering))
+            .modifier(LuminareFilled(
+                isHovering: isHovering, isPressed: isPressed,
+                fill: fill, hovering: hovering, pressed: pressed
+            ))
+            .modifier(LuminareBordered(
+                isHovering: isHovering,
+                fill: fill, hovering: hovering
+            ))
             .onHover { hover in
                 withAnimation(animationFast) {
                     isHovering = hover
