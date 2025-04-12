@@ -56,7 +56,7 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
     public var body: some View {
         TextField(placeholder, value: $value, format: format)
             .textFieldStyle(.plain)
-            .modifier(LuminareHoverable())
+            .modifier(LuminareHoverableModifier())
             .onAppear {
                 EventMonitorManager.shared.addLocalMonitor(
                     for: id,

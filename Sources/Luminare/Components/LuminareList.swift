@@ -261,8 +261,8 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             firstItem = nil
             lastItem = nil
         } else {
-            firstItem = items.first(where: { selection.contains($0) })
-            lastItem = items.last(where: { selection.contains($0) })
+            firstItem = items.first { selection.contains($0) }
+            lastItem = items.last { selection.contains($0) }
         }
     }
 

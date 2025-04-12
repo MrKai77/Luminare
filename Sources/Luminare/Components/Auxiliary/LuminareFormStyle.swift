@@ -68,7 +68,7 @@ public struct LuminareFormStyle: FormStyle {
         }
 
         Section("Window") {
-            LuminareButtonCompose(
+            LuminareButton(
                 "Debug",
                 "Reset Window Frame"
             ) {}

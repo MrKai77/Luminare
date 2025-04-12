@@ -90,7 +90,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             }
         }
         .padding(.horizontal, -4)
-        .modifier(LuminareHoverable())
+        .modifier(LuminareHoverableModifier())
     }
 
     // MARK: - Layout

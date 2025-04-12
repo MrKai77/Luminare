@@ -171,7 +171,7 @@ struct TabHeaderButtonStyle: ButtonStyle {
         }
 
         Section("Window") {
-            LuminareButtonCompose(
+            LuminareButton(
                 "Debug",
                 "Reset Window Frame"
             ) {}

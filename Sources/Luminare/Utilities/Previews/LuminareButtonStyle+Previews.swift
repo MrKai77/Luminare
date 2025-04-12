@@ -219,7 +219,7 @@ import SwiftUI
         Text("Anything with a Border")
             .fixedSize()
             .padding(8)
-            .modifier(LuminareBordered())
+            .modifier(LuminareBorderedModifier())
             .frame(height: 40)
     }
 #endif
@@ -234,19 +234,19 @@ import SwiftUI
     ) {
         Text("Not Bordered")
             .fixedSize()
-            .modifier(LuminareHoverable())
+            .modifier(LuminareHoverableModifier())
             .luminareBordered(false)
 
         Text("Bordered")
             .fixedSize()
-            .modifier(LuminareHoverable())
+            .modifier(LuminareHoverableModifier())
 
         Text("Bordered, Hovering")
             .fixedSize()
-            .modifier(LuminareHoverable(isHovering: true))
+            .modifier(LuminareHoverableModifier(isHovering: true))
 
         Text("Bordered, Pressed")
             .fixedSize()
-            .modifier(LuminareHoverable(isPressed: true))
+            .modifier(LuminareHoverableModifier(isPressed: true))
     }
 #endif

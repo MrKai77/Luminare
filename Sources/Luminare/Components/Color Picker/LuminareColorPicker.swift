@@ -121,9 +121,11 @@ public struct LuminareColorPicker<F>: View
                 Button {
                     isColorPickerPresented.toggle()
                 } label: {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii.map { max(0, $0 - 4) })
-                        .foregroundStyle(color)
-                        .padding(4)
+                    UnevenRoundedRectangle(
+                        cornerRadii: cornerRadii.map { max(0, $0 - 4) }
+                    )
+                    .foregroundStyle(color)
+                    .padding(4)
                 }
                 .buttonStyle(.luminareCompact)
                 .luminareHorizontalPadding(0)

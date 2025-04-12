@@ -43,7 +43,9 @@ extension Color {
     init?(hex: String) {
         let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")
         let expandedHex: String = if hexSanitized.count == 3 {
-            hexSanitized.map { "\($0)\($0)" }.joined()
+            hexSanitized
+                .map { "\($0)\($0)" }
+                .joined()
         } else {
             hexSanitized
         }

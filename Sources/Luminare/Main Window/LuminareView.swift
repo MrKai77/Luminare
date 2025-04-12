@@ -41,7 +41,9 @@ public struct LuminareView<Content>: View where Content: View {
                 window?.setSize(size: contentSize, animate: false)
                 window?.center()
             }
-            .onChange(of: contentSize) { window?.setSize(size: $0, animate: true) }
+            .onChange(of: contentSize) {
+                window?.setSize(size: $0, animate: true)
+            }
             .frame(minWidth: 10, maxWidth: .infinity, minHeight: 10, maxHeight: .infinity, alignment: .leading)
     }
 }

@@ -28,9 +28,7 @@ struct ColorHueSliderView: View {
     // gradient for the color spectrum slider
     private let colorSpectrumGradient = Gradient(
         colors: stride(from: 0.0, through: 1.0, by: 0.01)
-            .map {
-                Color(hue: $0, saturation: 1, brightness: 1)
-            }
+            .map { Color(hue: $0, saturation: 1, brightness: 1) }
     )
 
     // MARK: Body

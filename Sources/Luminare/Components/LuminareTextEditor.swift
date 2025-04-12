@@ -74,7 +74,7 @@ public struct LuminareTextEditor: View {
         }
         .scrollContentBackground(.hidden)
         .font(font ?? .body)
-        .modifier(LuminareHoverable())
+        .modifier(LuminareHoverableModifier())
         .luminareAspectRatio(unapplying: true)
         .luminareHorizontalPadding(0)
         .onGeometryChange(for: CGSize.self) { proxy in

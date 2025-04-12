@@ -82,7 +82,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 ForEach(0 ..< 100) { num in
                     Text("\(num)")
                         .frame(width: 150, height: 40)
-                        .modifier(LuminareBordered())
+                        .modifier(LuminareBorderedModifier())
                 }
             }
         }
@@ -99,7 +99,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
                 ForEach(0 ..< 5) { num in
                     Text("\(num)")
                         .frame(width: 150, height: 40)
-                        .modifier(LuminareBordered())
+                        .modifier(LuminareBorderedModifier())
                 }
             }
         }

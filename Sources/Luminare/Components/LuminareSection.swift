@@ -149,13 +149,10 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
         .frame(height: 100)
 
-        LuminareCompose("Button") {
-            Button {} label: {
-                Text("Click Me!")
-                    .frame(height: 30)
-                    .padding(.horizontal, 8)
-            }
-        }
+        LuminareButton(
+            "Button",
+            "Click Me!"
+        ) {}
 
         Text("""
         Lorem eu cupidatat consectetur cupidatat est labore irure dolore dolore deserunt consequat. \

@@ -1,5 +1,5 @@
 //
-//  LuminareButtonCompose.swift
+//  LuminareButton.swift
 //  Luminare
 //
 //  Created by KrLite on 2024/12/17.
@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Button Compose
 
-public struct LuminareButtonCompose<Label, Content>: View where Label: View, Content: View {
+public struct LuminareButton<Label, Content>: View where Label: View, Content: View {
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     // MARK: Fields
@@ -104,15 +104,15 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
 
 @available(macOS 15.0, *)
 #Preview(
-    "LuminareButtonCompose",
+    "LuminareButton",
     traits: .sizeThatFitsLayout
 ) {
     LuminareSection {
-        LuminareButtonCompose("Button 1", "Click Me!") {
+        LuminareButton("Button 1", "Click Me!") {
             print(1)
         }
 
-        LuminareButtonCompose(
+        LuminareButton(
             "Button 2",
             content: {
                 Label("Content", systemImage: "sparkles")
@@ -122,7 +122,7 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
             }
         )
 
-        LuminareButtonCompose(
+        LuminareButton(
             "Action 3",
             label: {
                 Label("Label", systemImage: "star")
@@ -131,7 +131,7 @@ public struct LuminareButtonCompose<Label, Content>: View where Label: View, Con
             }
         )
 
-        LuminareButtonCompose {
+        LuminareButton {
             Label("Label", systemImage: "wand.and.rays")
         } content: {
             Label("Content", systemImage: "party.popper")
