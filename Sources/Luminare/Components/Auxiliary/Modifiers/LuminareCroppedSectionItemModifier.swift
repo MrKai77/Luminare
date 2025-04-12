@@ -1,5 +1,5 @@
 //
-//  LuminareCroppedSectionItem.swift
+//  LuminareCroppedSectionItemModifier.swift
 //  Luminare
 //
 //  Created by KrLite on 2024/11/15.
@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Cropped Section Item
 
 /// An item with a cropped appearance, typically used in sections.
-public struct LuminareCroppedSectionItem: ViewModifier {
+public struct LuminareCroppedSectionItemModifier: ViewModifier {
     // MARK: Environments
 
     @Environment(\.luminareCornerRadii) private var cornerRadii

@@ -137,7 +137,7 @@ public extension View {
     }
 
     @ViewBuilder func luminareBackground() -> some View {
-        modifier(LuminareBackgroundEffect())
+        modifier(LuminareBackgroundEffectModifier())
     }
 
     @ViewBuilder func luminareAnimation(_ animation: Animation) -> some View {

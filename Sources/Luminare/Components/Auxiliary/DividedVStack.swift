@@ -108,7 +108,7 @@ struct DividedVStackChildView: View {
             if isMasked {
                 child
                     .modifier(
-                        LuminareCroppedSectionItem(
+                        LuminareCroppedSectionItemModifier(
                             innerPadding: overrideDisableInnerPadding == true ? 0 : innerPadding,
                             isFirstChild: isFirstChild,
                             isLastChild: isLastChild
