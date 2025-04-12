@@ -107,6 +107,7 @@ struct DividedVStackChildView: View {
         Group {
             if isMasked {
                 child
+                    .compositingGroup() // IMPORTANT: This prevents cropping the subviews recursively
                     .modifier(
                         LuminareCroppedSectionItemModifier(
                             innerPadding: overrideDisableInnerPadding == true ? 0 : innerPadding,
@@ -121,7 +122,7 @@ struct DividedVStackChildView: View {
                     .padding(.bottom, overrideDisableInnerPadding != true ? innerPadding : 0)
             } else {
                 child
-                    .mask(Rectangle()) // fixes hover areas for some reason
+                    .mask(Rectangle()) // IMPORTANT: this fixes the hover areas for some reason
             }
         }
         .readPreference(
