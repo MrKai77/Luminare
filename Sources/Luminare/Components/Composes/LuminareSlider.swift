@@ -24,9 +24,12 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareComposeLayout) private var layout
 
+    @FocusState private var focusedField: FocusedField?
+
     // MARK: Fields
 
     @Binding private var value: V
+    @State private var lastValue: V
     private let range: ClosedRange<V>, step: V.Stride?
     private let format: F
     private let clampsUpper: Bool, clampsLower: Bool
@@ -34,8 +37,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
     @State private var isShowingTextBox = false
-
-    @FocusState private var focusedField: FocusedField?
 
     private let id = UUID()
 
@@ -52,6 +53,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         @ViewBuilder label: @escaping () -> Label
     ) {
         self._value = value
+        self.lastValue = value.wrappedValue
         self.range = range
         self.step = step
         self.format = format
@@ -132,6 +134,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             case .regular:
                 LuminareCompose {
                     text()
+                        .frame(maxHeight: .infinity, alignment: .top)
                 } label: {
                     HStack(spacing: 4) {
                         label()
@@ -228,7 +231,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                         }
                     } label: {
                         Text(format.format(value))
-                            .contentTransition(.numericText())
+                            .contentTransition(.numericText(countsDown: countsDown))
                             .multilineTextAlignment(.trailing)
                             .fontDesign(.monospaced)
                     }
@@ -267,6 +270,15 @@ public struct LuminareSlider<Label, Content, V, F>: View
             removeEventMonitor()
         }
         .opacity(isEnabled ? 1 : 0.5)
+        .onChange(of: value) { value in
+            DispatchQueue.main.async {
+                lastValue = value
+            }
+        }
+    }
+
+    private var countsDown: Bool {
+        value > lastValue
     }
 
     // MARK: Functions
