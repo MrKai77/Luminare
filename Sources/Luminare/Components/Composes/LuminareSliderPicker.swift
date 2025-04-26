@@ -23,6 +23,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
     private let options: [V]
     @Binding private var selection: V
+    @State private var lastSelection: V
 
     // MARK: Initializers
 
@@ -43,6 +44,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         self.label = label
         self.options = options
         self._selection = selection
+        self.lastSelection = selection.wrappedValue
     }
 
     /// Initializes a ``LuminareSliderPicker`` where the label is a localized text.
@@ -118,6 +120,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             case .regular:
                 LuminareCompose {
                     text()
+                        .frame(maxHeight: .infinity, alignment: .top)
                 } label: {
                     HStack(spacing: 4) {
                         label()
@@ -149,7 +152,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
     @ViewBuilder private func text() -> some View {
         content(selection)
-            .contentTransition(.numericText())
+            .contentTransition(.numericText(countsDown: countsDown))
             .multilineTextAlignment(.trailing)
             .padding(4)
             .padding(.horizontal, 4)
@@ -164,6 +167,11 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             }
             .fixedSize()
             .clipShape(.capsule)
+            .onChange(of: selection) { value in
+                DispatchQueue.main.async {
+                    lastSelection = value
+                }
+            }
     }
 
     @ViewBuilder private func slider() -> some View {
@@ -179,6 +187,10 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             in: 0...Double(options.count - 1),
             step: 1
         )
+    }
+
+    private var countsDown: Bool {
+        options.firstIndex(of: selection)! > options.firstIndex(of: lastSelection)!
     }
 }
 
