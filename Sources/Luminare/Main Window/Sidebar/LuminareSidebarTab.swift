@@ -13,6 +13,7 @@ import SwiftUI
 public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Environments
 
+    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -44,12 +45,14 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         } label: {
             HStack(spacing: 8) {
                 imageView(for: tab)
+                    .frame(maxHeight: minHeight)
 
                 titleView(for: tab)
                     .fixedSize()
 
                 Spacer(minLength: 0)
             }
+            .frame(minHeight: minHeight)
         }
         .buttonStyle(SidebarButtonStyle(isActive: $isActive))
         .overlay {
@@ -88,10 +91,8 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     @ViewBuilder private func imageView(for tab: Tab) -> some View {
         tab.image
             .resizable()
-            .scaledToFit()
-            .frame(width: 18, height: 18)
-            .padding(10)
-            .fixedSize()
+            .aspectRatio(contentMode: .fit)
+            .padding(6)
             .background(.quinary)
             .clipShape(.rect(cornerRadius: 8))
             .overlay {
