@@ -103,7 +103,7 @@ public extension EnvironmentValues {
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .automatic
     @Entry var luminareComposeLayout: LuminareComposeLayout = .regular
-    @Entry var luminareComposeStyle: LuminareComposeStyle = .automatic
+    @Entry var luminareComposeStyle: LuminareComposeStyle = .regular
 
     // MARK: Popover
 

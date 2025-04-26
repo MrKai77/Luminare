@@ -68,7 +68,6 @@ public enum LuminareComposeLayout: String, Equatable, Hashable, Identifiable, Ca
 }
 
 public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
-    case automatic
     case regular
     case inline
 
@@ -176,7 +175,12 @@ public struct LuminareCompose<Label, Content>: View
     }
 
     private var insets: EdgeInsets {
-        .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
+        switch style {
+        case .regular:
+            .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
+        case .inline:
+            .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: 0)
+        }
     }
 
     @ViewBuilder private func wrappedContent() -> some View {

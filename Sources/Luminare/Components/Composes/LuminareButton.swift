@@ -93,10 +93,10 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
                 content()
             }
             .buttonStyle(.luminareCompact)
-            .padding(.trailing, -horizontalPadding)
         } label: {
             label()
         }
+        .luminareComposeStyle(.inline)
     }
 }
 
