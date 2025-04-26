@@ -44,6 +44,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         } label: {
             HStack(spacing: 8) {
                 imageView(for: tab)
+                    .animation(nil, value: tab)
 
                 titleView(for: tab)
                     .fixedSize()
