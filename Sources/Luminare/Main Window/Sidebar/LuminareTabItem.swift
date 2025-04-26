@@ -16,9 +16,7 @@ import SwiftUI
 ///     case general
 ///     case about
 ///
-///     var id: Self {
-///         self
-///     }
+///     var id: Self { self }
 ///
 ///     var title: String {
 ///         switch self {
@@ -27,7 +25,7 @@ import SwiftUI
 ///         }
 ///     }
 ///
-///     var icon: Image {
+///     var image: Image {
 ///         switch self {
 ///         case .general: .init(systemName: "gear")
 ///         case .about: .init(systemName: "app.gift")
@@ -35,37 +33,25 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public protocol LuminareTabItem: Equatable, Hashable, Identifiable where ID: Identifiable {
-    /// The unique id of the tab.
-    var id: ID { get }
-
+public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
     /// The title of the tab.
     var title: String { get }
+
     /// The `Image` that will be displayed next to the leading edge of the ``title``.
-    var icon: Image { get }
+    var image: Image { get }
+
     /// Whether this tab displays an indicator at the trailing top edge of the title.
-    /// This is typically used to attract user's attention to some updates.
+    /// Typically used to attract users' attention.
     var hasIndicator: Bool { get }
 }
 
 public extension LuminareTabItem {
     var hasIndicator: Bool { false }
 
-    func hash(into hasher: inout Hasher) {
-        if Self.ID.self == Self.self {
-            // Avoid recursive hashing
-            hasher.combine(String(reflecting: self))
-        } else {
-            hasher.combine(id)
-        }
-        hasher.combine(title)
-    }
-
-    @ViewBuilder
-    func iconView() -> some View {
+    @ViewBuilder func imageView() -> some View {
         Color.clear
             .overlay {
-                icon
+                image
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)

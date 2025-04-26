@@ -43,7 +43,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             activeTab = tab
         } label: {
             HStack(spacing: 8) {
-                tab.iconView()
+                tab.imageView()
 
                 HStack(spacing: 0) {
                     Text(tab.title)
@@ -122,9 +122,7 @@ struct SidebarButtonStyle: ButtonStyle {
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case about
 
-    var id: Self {
-        self
-    }
+    var id: Self { self }
 
     var title: String {
         switch self {
@@ -132,7 +130,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         }
     }
 
-    var icon: Image {
+    var image: Image {
         switch self {
         case .about: .init(systemName: "app.gift")
         }

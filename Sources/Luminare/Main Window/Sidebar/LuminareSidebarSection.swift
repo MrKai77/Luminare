@@ -103,9 +103,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case expert
     case about
 
-    var id: Self {
-        self
-    }
+    var id: Self { self }
 
     var title: String {
         switch self {
@@ -118,7 +116,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
         }
     }
 
-    var icon: Image {
+    var image: Image {
         switch self {
         case .lorem: .init(systemName: "paragraphsign")
         case .ipsum: .init(systemName: "strikethrough")
