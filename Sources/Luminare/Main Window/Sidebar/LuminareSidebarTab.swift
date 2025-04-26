@@ -45,7 +45,6 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         } label: {
             HStack(spacing: 8) {
                 imageView(for: tab)
-                    .frame(maxHeight: minHeight)
 
                 titleView(for: tab)
                     .fixedSize()
@@ -93,6 +92,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .padding(6)
+            .frame(width: minHeight, height: minHeight)
             .background(.quinary)
             .clipShape(.rect(cornerRadius: 8))
             .overlay {
