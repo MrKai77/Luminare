@@ -47,23 +47,4 @@ public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
 
 public extension LuminareTabItem {
     var hasIndicator: Bool { false }
-
-    @ViewBuilder func imageView() -> some View {
-        Color.clear
-            .overlay {
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-            }
-            .aspectRatio(1, contentMode: .fit)
-            .padding(10)
-            .fixedSize()
-            .background(.quinary)
-            .clipShape(.rect(cornerRadius: 8))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
-    }
 }

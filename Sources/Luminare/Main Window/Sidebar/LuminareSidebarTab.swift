@@ -43,27 +43,12 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             activeTab = tab
         } label: {
             HStack(spacing: 8) {
-                tab.imageView()
+                imageView(for: tab)
 
-                HStack(spacing: 0) {
-                    Text(tab.title)
+                titleView(for: tab)
+                    .fixedSize()
 
-                    if tab.hasIndicator {
-                        VStack {
-                            Circle()
-                                .foregroundStyle(.tint)
-                                .frame(width: 4, height: 4)
-                                .padding(.leading, 4)
-                                .shadow(color: tintColor, radius: 4)
-
-                            Spacer()
-                        }
-                        .transition(.opacity.animation(animation))
-                    }
-                }
-                .fixedSize()
-
-                Spacer()
+                Spacer(minLength: 0)
             }
         }
         .buttonStyle(SidebarButtonStyle(isActive: $isActive))
@@ -79,6 +64,44 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         .onChange(of: activeTab) { _ in
             processActiveTab()
         }
+    }
+
+    @ViewBuilder private func titleView(for tab: Tab) -> some View {
+        HStack(spacing: 0) {
+            Text(tab.title)
+
+            if tab.hasIndicator {
+                VStack {
+                    Circle()
+                        .foregroundStyle(.tint)
+                        .frame(width: 4, height: 4)
+                        .padding(.leading, 4)
+                        .shadow(color: tintColor, radius: 4)
+
+                    Spacer()
+                }
+                .transition(.opacity.animation(animation))
+            }
+        }
+    }
+
+    @ViewBuilder private func imageView(for tab: Tab) -> some View {
+        Color.clear
+            .overlay {
+                tab.image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+            }
+            .aspectRatio(1, contentMode: .fit)
+            .padding(10)
+            .fixedSize()
+            .background(.quinary)
+            .clipShape(.rect(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(.quaternary, lineWidth: 1)
+            }
     }
 
     // MARK: Functions
