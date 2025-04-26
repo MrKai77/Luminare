@@ -87,7 +87,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             }
 
             ForEach(items) { item in
-                LuminareSidebarTab(item, $selection)
+                LuminareSidebarTab(item, .init($selection))
             }
         }
     }

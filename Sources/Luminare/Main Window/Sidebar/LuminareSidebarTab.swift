@@ -19,7 +19,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
 
     // MARK: Fields
 
-    @Binding private var activeTab: Tab
+    @Binding private var activeTab: Tab?
     private let tab: Tab
 
     @State private var isActive = false
@@ -31,7 +31,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     /// - Parameters:
     ///   - tab: the associated ``LuminareTabItem``.
     ///   - activeTab: the activated ``LuminareTabItem`` binding.
-    public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
+    public init(_ tab: Tab, _ activeTab: Binding<Tab?>) {
         self._activeTab = activeTab
         self.tab = tab
     }
