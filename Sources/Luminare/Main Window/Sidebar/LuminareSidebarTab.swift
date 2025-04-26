@@ -91,7 +91,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         tab.image
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .padding(6)
+            .padding(8)
             .frame(width: minHeight, height: minHeight)
             .background(.quinary)
             .clipShape(.rect(cornerRadius: 8))
