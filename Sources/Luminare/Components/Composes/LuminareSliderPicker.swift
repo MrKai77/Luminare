@@ -26,6 +26,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
     @State private var lastSelection: V
     @State private var isSliderHovering: Bool = false
+    @State private var isSliderDebouncedHovering: Bool = false
     @State private var isSliderEditing: Bool = false
 
     // MARK: Initializers
@@ -251,7 +252,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                                 isSliderHovering = isHovering
                             }
 
-                        if !isSliderHovering, !isSliderEditing {
+                        if !isSliderDebouncedHovering, !isSliderEditing {
                             text()
                                 .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
@@ -266,7 +267,11 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         }
         .animation(animation, value: selection)
         .animation(animation, value: isSliderHovering)
+        .animation(animation, value: isSliderDebouncedHovering)
         .animation(animation, value: isSliderEditing)
+        .booleanThrottleDebounced(isSliderHovering) { debouncedValue in
+            isSliderDebouncedHovering = debouncedValue
+        }
     }
 
     @ViewBuilder private func text() -> some View {

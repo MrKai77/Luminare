@@ -38,6 +38,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
     @State private var isTextBoxVisible: Bool = false
     @State private var isSliderHovering: Bool = false
+    @State private var isSliderDebouncedHovering: Bool = false
     @State private var isSliderEditing: Bool = false
 
     private let id = UUID()
@@ -228,7 +229,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                                 isSliderHovering = isHovering
                             }
 
-                        if !isSliderHovering, !isSliderEditing {
+                        if !isSliderDebouncedHovering, !isSliderEditing {
                             text()
                                 .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
@@ -244,7 +245,11 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .animation(animation, value: value)
         .animation(animation, value: isTextBoxVisible)
         .animation(animation, value: isSliderHovering)
+        .animation(animation, value: isSliderDebouncedHovering)
         .animation(animation, value: isSliderEditing)
+        .booleanThrottleDebounced(isSliderHovering) { debouncedValue in
+            isSliderDebouncedHovering = debouncedValue
+        }
     }
 
     private var totalRange: V {

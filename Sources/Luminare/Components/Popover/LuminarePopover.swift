@@ -11,7 +11,7 @@ public enum LuminarePopoverTrigger {
     case hover(
         showDelay: TimeInterval = 0.5,
         hideDelay: TimeInterval = 0.5,
-        throttleDelay: TimeInterval = 0.5,
+        throttleDelay: TimeInterval = 0.5
     )
     case forceTouch(
         threshold: CGFloat = 0.5,
