@@ -8,6 +8,39 @@
 import SwiftUI
 
 public extension LuminareSection {
+    /// Initializes a ``LuminareSection`` whose header and footer are texts.
+    ///
+    /// - Parameters:
+    ///   - headerKey: the header text.
+    ///   - footerKey: the footer text.
+    ///   - hasPadding: whether to have paddings between divided contents.
+    ///   - headerSpacing: the spacing between header and content.
+    ///   - footerSpacing: the spacing between footer and content.
+    ///   - outerPadding: the padding around the contents.
+    ///   - content: the content.
+    init(
+        _ header: some StringProtocol,
+        _ footer: some StringProtocol,
+        hasPadding: Bool = true,
+        headerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 2,
+        outerPadding: CGFloat = 4,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == Text, Footer == Text {
+        self.init(
+            hasPadding: hasPadding,
+            headerSpacing: headerSpacing,
+            footerSpacing: footerSpacing,
+            outerPadding: outerPadding
+        ) {
+            content()
+        } header: {
+            Text(header)
+        } footer: {
+            Text(footer)
+        }
+    }
+
     /// Initializes a ``LuminareSection`` whose header and footer are localized texts.
     ///
     /// - Parameters:
@@ -72,6 +105,35 @@ public extension LuminareSection {
         }
     }
 
+    /// Initializes a ``LuminareSection`` without a footer, whose header is a text.
+    ///
+    /// - Parameters:
+    ///   - header: the header text.
+    ///   - hasPadding: whether to have paddings between divided contents.
+    ///   - headerSpacing: the spacing between header and content.
+    ///   - footerSpacing: the spacing between footer and content.
+    ///   - outerPadding: the padding around the contents.
+    ///   - content: the content.
+    init(
+        _ header: some StringProtocol,
+        hasPadding: Bool = true,
+        headerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 2,
+        outerPadding: CGFloat = 4,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == Text, Footer == EmptyView {
+        self.init(
+            hasPadding: hasPadding,
+            headerSpacing: headerSpacing,
+            footerSpacing: footerSpacing,
+            outerPadding: outerPadding
+        ) {
+            content()
+        } header: {
+            Text(header)
+        }
+    }
+
     /// Initializes a ``LuminareSection`` without a footer, whose header is a localized text.
     ///
     /// - Parameters:
@@ -129,6 +191,35 @@ public extension LuminareSection {
             EmptyView()
         } footer: {
             footer()
+        }
+    }
+
+    /// Initializes a ``LuminareSection`` without a header, whose footer is a text.
+    ///
+    /// - Parameters:
+    ///   - footer: the footer text.
+    ///   - hasPadding: whether to have paddings between divided contents.
+    ///   - headerSpacing: the spacing between header and content.
+    ///   - footerSpacing: the spacing between footer and content.
+    ///   - outerPadding: the padding around the contents.
+    ///   - content: the content.
+    init(
+        footer: some StringProtocol,
+        hasPadding: Bool = true,
+        headerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 2,
+        outerPadding: CGFloat = 4,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == EmptyView, Footer == Text {
+        self.init(
+            hasPadding: hasPadding,
+            headerSpacing: headerSpacing,
+            footerSpacing: footerSpacing,
+            outerPadding: outerPadding
+        ) {
+            content()
+        } footer: {
+            Text(footer)
         }
     }
 

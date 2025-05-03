@@ -30,11 +30,20 @@ public struct LuminareToggle<Label>: View where Label: View {
     }
 
     public init(
-        _ key: LocalizedStringKey,
+        _ title: some StringProtocol,
         isOn value: Binding<Bool>
     ) where Label == Text {
         self.init(isOn: value) {
-            Text(key)
+            Text(title)
+        }
+    }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
+        isOn value: Binding<Bool>
+    ) where Label == Text {
+        self.init(isOn: value) {
+            Text(titleKey)
         }
     }
 

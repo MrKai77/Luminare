@@ -129,11 +129,13 @@ struct SidebarButtonStyle: ButtonStyle {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 }
             }
-            .onHover { hover in
-                isHovering = hover
-            }
-            .animation(animationFast, value: [isHovering, isActive, configuration.isPressed])
+            .animation(animationFast, value: isHovering)
+            .animation(animationFast, value: isActive)
+            .animation(animationFast, value: configuration.isPressed)
             .clipShape(.rect(cornerRadius: cornerRadius))
+            .onHover { isHovering in
+                self.isHovering = isHovering
+            }
     }
 }
 

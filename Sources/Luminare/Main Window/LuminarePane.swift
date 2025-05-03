@@ -47,21 +47,34 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     /// Initializes a ``LuminarePane`` where the header is a localized text.
     ///
     /// - Parameters:
-    ///   - key: the `LocalizedStringKey` to look up the header text.
+    ///   - header: the header text.
     ///   - content: the content view.
     public init(
-        _ key: LocalizedStringKey,
+        _ header: some StringProtocol,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text {
         self.init(content: content) {
-            Text(key)
+            Text(header)
+        }
+    }
+
+    /// Initializes a ``LuminarePane`` where the header is a localized text.
+    ///
+    /// - Parameters:
+    ///   - headerKey: the `LocalizedStringKey` to look up the header text.
+    ///   - content: the content view.
+    public init(
+        _ headerKey: LocalizedStringKey,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Header == Text {
+        self.init(content: content) {
+            Text(headerKey)
         }
     }
 
     /// Initializes a ``LuminarePane`` where there is no header.
     ///
     /// - Parameters:
-    ///   - key: the `LocalizedStringKey` to look up the header text.
     ///   - content: the content view.
     public init(
         @ViewBuilder content: @escaping () -> Content
@@ -133,9 +146,9 @@ struct TabHeaderButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundStyle(isHovering ? .primary : .secondary)
-            .onHover { hover in
+            .onHover { isHovering in
                 withAnimation(animationFast) {
-                    isHovering = hover
+                    self.isHovering = isHovering
                 }
             }
     }

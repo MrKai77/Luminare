@@ -34,17 +34,43 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
     }
 
     public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        @ViewBuilder content: @escaping () -> Content,
+        action: @escaping () -> ()
+    ) where Label == Text {
+        self.init(role: role) {
+            Text(title)
+        } content: {
+            content()
+        } action: {
+            action()
+        }
+    }
+
+    public init(
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         @ViewBuilder content: @escaping () -> Content,
         action: @escaping () -> ()
     ) where Label == Text {
-        self.init(
-            role: role
-        ) {
+        self.init(role: role) {
             Text(titleKey)
         } content: {
             content()
+        } action: {
+            action()
+        }
+    }
+
+    public init(
+        _ content: some StringProtocol,
+        role: ButtonRole? = nil,
+        @ViewBuilder label: @escaping () -> Label,
+        action: @escaping () -> ()
+    ) where Content == Text {
+        self.init(role: role, label: label) {
+            Text(content)
         } action: {
             action()
         }
@@ -56,11 +82,23 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
         @ViewBuilder label: @escaping () -> Label,
         action: @escaping () -> ()
     ) where Content == Text {
-        self.init(
-            role: role,
-            label: label
-        ) {
+        self.init(role: role, label: label) {
             Text(contentKey)
+        } action: {
+            action()
+        }
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        _ content: some StringProtocol,
+        role: ButtonRole? = nil,
+        action: @escaping () -> ()
+    ) where Label == Text, Content == Text {
+        self.init(role: role) {
+            Text(title)
+        } content: {
+            Text(content)
         } action: {
             action()
         }
@@ -72,9 +110,7 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
         role: ButtonRole? = nil,
         action: @escaping () -> ()
     ) where Label == Text, Content == Text {
-        self.init(
-            role: role
-        ) {
+        self.init(role: role) {
             Text(titleKey)
         } content: {
             Text(contentKey)

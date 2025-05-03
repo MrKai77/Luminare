@@ -10,51 +10,105 @@ import SwiftUI
 // MARK: - Text Field
 
 /// A stylized text field.
-public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
+public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableFormatStyle, F.FormatOutput == String {
     // MARK: Fields
 
     @Binding private var value: F.FormatInput?
     private let format: F
-    private let placeholder: LocalizedStringKey
+    private let prompt: Text?
+    @ViewBuilder private var label: () -> Label
 
     private let id = UUID()
 
     // MARK: Initializers
 
-    /// Initializes a ``LuminareTextField``.
-    ///
-    /// - Parameters:
-    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
-    ///   - value: the value to be edited.
-    ///   - format: the format of the value.
     public init(
-        _ placeholder: LocalizedStringKey,
-        value: Binding<F.FormatInput?>, format: F
+        value: Binding<F.FormatInput?>,
+        format: F,
+        prompt: Text? = nil,
+        @ViewBuilder label: @escaping () -> Label
     ) {
         self._value = value
         self.format = format
-        self.placeholder = placeholder
+        self.prompt = prompt
+        self.label = label
     }
 
-    /// Initializes a ``LuminareTextField`` with a `String` value.
-    ///
-    /// - Parameters:
-    ///   - placeholder: the `LocalizedStringKey` to look up the placeholder text.
-    ///   - value: the `String` value to be edited.
     public init(
-        _ placeholder: LocalizedStringKey,
-        text: Binding<String?>
+        _ title: some StringProtocol,
+        value: Binding<F.FormatInput?>,
+        format: F,
+        prompt: Text? = nil
+    ) where Label == Text {
+        self.init(
+            value: value,
+            format: format,
+            prompt: prompt
+        ) {
+            Text(title)
+        }
+    }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
+        value: Binding<F.FormatInput?>,
+        format: F,
+        prompt: Text? = nil
+    ) where Label == Text {
+        self.init(
+            value: value,
+            format: format,
+            prompt: prompt
+        ) {
+            Text(titleKey)
+        }
+    }
+
+    public init(
+        text: Binding<String?>,
+        prompt: Text? = nil,
+        @ViewBuilder label: @escaping () -> Label
     ) where F == StringFormatStyle {
         self.init(
-            placeholder,
-            value: text, format: StringFormatStyle()
+            value: text,
+            format: StringFormatStyle(),
+            prompt: prompt,
+            label: label
         )
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        text: Binding<String?>,
+        prompt: Text? = nil
+    ) where Label == Text, F == StringFormatStyle {
+        self.init(
+            value: text,
+            format: StringFormatStyle(),
+            prompt: prompt
+        ) {
+            Text(title)
+        }
+    }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
+        text: Binding<String?>,
+        prompt: Text? = nil
+    ) where Label == Text, F == StringFormatStyle {
+        self.init(
+            value: text,
+            format: StringFormatStyle(),
+            prompt: prompt
+        ) {
+            Text(titleKey)
+        }
     }
 
     // MARK: Body
 
     public var body: some View {
-        TextField(placeholder, value: $value, format: format)
+        TextField(value: $value, format: format, prompt: prompt, label: label)
             .textFieldStyle(.plain)
             .modifier(LuminareHoverableModifier())
             .onAppear {

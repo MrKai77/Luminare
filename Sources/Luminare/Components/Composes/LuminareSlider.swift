@@ -36,7 +36,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
     @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
-    @State private var isShowingTextBox = false
+    @State private var isTextBoxVisible: Bool = false
+    @State private var isSliderHovering: Bool = false
+    @State private var isSliderEditing: Bool = false
 
     private let id = UUID()
 
@@ -65,7 +67,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     }
 
     public init(
-        _ key: LocalizedStringKey,
+        _ title: some StringProtocol,
         value: Binding<V>,
         in range: ClosedRange<V>,
         step: V.Stride? = nil,
@@ -83,47 +85,118 @@ public struct LuminareSlider<Label, Content, V, F>: View
             clampsLower: clampsLower,
             content: content
         ) {
-            Text(key)
+            Text(title)
         }
     }
 
     public init(
-        _ key: LocalizedStringKey,
+        _ titleKey: LocalizedStringKey,
         value: Binding<V>,
         in range: ClosedRange<V>,
         step: V.Stride? = nil,
+        format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        prefix: String? = nil,
-        suffix: String? = nil,
-        maxDecimalPlaces: Int = 0
-    ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>>, F == FloatingPointFormatStyle<Double> {
+        @ViewBuilder content: @escaping (AnyView) -> Content
+    ) where Label == Text {
         self.init(
             value: value,
             in: range,
             step: step,
-            format: .number.precision(.fractionLength(0...maxDecimalPlaces)),
+            format: format,
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
-            content: { value in
-                HStack(spacing: 0) {
-                    if let prefix {
-                        Text(prefix)
-                            .fontDesign(.monospaced)
-                    }
+            content: content
+        ) {
+            Text(titleKey)
+        }
+    }
 
-                    value
-
-                    if let suffix {
-                        Text(suffix)
-                            .fontDesign(.monospaced)
-                    }
+    public init(
+        value: Binding<V>,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
+        prefix: Text? = nil,
+        suffix: Text? = nil,
+        @ViewBuilder label: @escaping () -> Label
+    ) where Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
+        self.init(
+            value: value,
+            in: range,
+            step: step,
+            format: format,
+            clampsUpper: clampsUpper,
+            clampsLower: clampsLower
+        ) { view in
+            HStack(spacing: 0) {
+                if let prefix {
+                    prefix
+                        .fontDesign(.monospaced)
                 }
-            },
-            label: {
-                Text(key)
+
+                view
+
+                if let suffix {
+                    suffix
+                        .fontDesign(.monospaced)
+                }
             }
-        )
+        } label: {
+            label()
+        }
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        value: Binding<V>,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
+        prefix: Text? = nil,
+        suffix: Text? = nil
+    ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
+        self.init(
+            value: value,
+            in: range,
+            step: step,
+            format: format,
+            clampsUpper: clampsUpper,
+            clampsLower: clampsLower,
+            prefix: prefix,
+            suffix: suffix
+        ) {
+            Text(title)
+        }
+    }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
+        value: Binding<V>,
+        in range: ClosedRange<V>,
+        step: V.Stride? = nil,
+        format: F,
+        clampsUpper: Bool = true,
+        clampsLower: Bool = true,
+        prefix: Text? = nil,
+        suffix: Text? = nil
+    ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
+        self.init(
+            value: value,
+            in: range,
+            step: step,
+            format: format,
+            clampsUpper: clampsUpper,
+            clampsLower: clampsLower,
+            prefix: prefix,
+            suffix: suffix
+        ) {
+            Text(titleKey)
+        }
     }
 
     // MARK: Body
@@ -134,7 +207,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
             case .regular:
                 LuminareCompose {
                     text()
-                        .frame(maxHeight: .infinity, alignment: .top)
                 } label: {
                     HStack(spacing: 4) {
                         label()
@@ -143,14 +215,23 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 .luminareComposeStyle(.inline)
 
                 slider()
+                    .onHover { isHovering in
+                        isSliderHovering = isHovering
+                    }
                     .padding(.horizontal, horizontalPadding)
                     .padding(.trailing, -2)
             case .compact:
                 LuminareCompose {
                     HStack(spacing: 12) {
                         slider()
+                            .onHover { isHovering in
+                                isSliderHovering = isHovering
+                            }
 
-                        text()
+                        if !isSliderHovering, !isSliderEditing {
+                            text()
+                                .transition(.move(edge: .trailing).combined(with: .opacity))
+                        }
                     }
                 } label: {
                     HStack(spacing: 4) {
@@ -160,9 +241,10 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 .luminareComposeStyle(.inline)
             }
         }
-        .frame(height: layout.height)
         .animation(animation, value: value)
-        .animation(animation, value: isShowingTextBox)
+        .animation(animation, value: isTextBoxVisible)
+        .animation(animation, value: isSliderHovering)
+        .animation(animation, value: isSliderEditing)
     }
 
     private var totalRange: V {
@@ -174,7 +256,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             value
         } set: { newValue in
             value = newValue
-            isShowingTextBox = false
+            isTextBoxVisible = false
         }
 
         if let step {
@@ -182,19 +264,23 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 value: binding,
                 in: range,
                 step: step
-            )
+            ) { isEditing in
+                isSliderEditing = isEditing
+            }
         } else {
             Slider(
                 value: binding,
                 in: range
-            )
+            ) { isEditing in
+                isSliderEditing = isEditing
+            }
         }
     }
 
     @ViewBuilder private func text() -> some View {
         HStack {
             let view = Group {
-                if isShowingTextBox {
+                if isTextBoxVisible {
                     TextField(
                         "",
                         value: .init(.init {
@@ -214,7 +300,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     )
                     .onSubmit {
                         withAnimation(animationFast) {
-                            isShowingTextBox.toggle()
+                            isTextBoxVisible.toggle()
                         }
                     }
                     .focused($focusedField, equals: .textbox)
@@ -226,7 +312,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 } else {
                     Button {
                         withAnimation(animationFast) {
-                            isShowingTextBox.toggle()
+                            isTextBoxVisible.toggle()
                             focusedField = .textbox
                         }
                     } label: {
@@ -249,7 +335,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 .strokeBorder(.quaternary, lineWidth: 1)
         }
         .background {
-            if isShowingTextBox {
+            if isTextBoxVisible {
                 Capsule()
                     .foregroundStyle(.quinary)
             } else {
@@ -259,8 +345,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         }
         .fixedSize()
         .clipShape(.capsule)
-        .onChange(of: isShowingTextBox) { _ in
-            if isShowingTextBox {
+        .onChange(of: isTextBoxVisible) { _ in
+            if isTextBoxVisible {
                 addEventMonitor()
             } else {
                 removeEventMonitor()
@@ -348,13 +434,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
         LuminareSlider(
             value: $value,
             in: 0...128,
-            format: .number.precision(.fractionLength(0...3))
-        ) { view in
-            HStack(spacing: 0) {
-                Text("#")
-                view
-            }
-        } label: {
+            format: .number.precision(.fractionLength(0...3)),
+            prefix: Text("#")
+        ) {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
 
@@ -367,13 +449,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
         LuminareSlider(
             value: $value,
             in: 0...128,
-            format: .number.precision(.fractionLength(0...3))
-        ) { button in
-            HStack(spacing: 0) {
-                Text("#")
-                button
-            }
-        } label: {
+            format: .number.precision(.fractionLength(0...3)),
+            prefix: Text("#")
+        ) {
             VStack(alignment: .leading) {
                 Text("Slide to stride")
 
@@ -385,23 +463,19 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .luminareComposeLayout(.compact)
 
         LuminareSlider(
-            "2 decimal places",
+            "2 Decimal Places",
             value: $value,
             in: 0...128,
-            prefix: "#",
-            maxDecimalPlaces: 2
+            format: .number.precision(.fractionLength(0...2)),
+            prefix: Text("#")
         )
 
         LuminareSlider(
             value: $value,
             in: 0...128,
-            format: .number.precision(.fractionLength(0...3))
-        ) { button in
-            HStack(spacing: 0) {
-                Text("#")
-                button
-            }
-        } label: {
+            format: .number.precision(.fractionLength(0...3)),
+            prefix: Text("#")
+        ) {
             Text("With an info")
 
             LuminarePopover {

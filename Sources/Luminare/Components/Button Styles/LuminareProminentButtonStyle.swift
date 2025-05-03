@@ -36,19 +36,18 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
+            .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(LuminareFilledModifier(
                 isHovering: isHovering, isPressed: configuration.isPressed,
                 cascading: tint(configuration: configuration)
             ))
             .clipShape(.rect(cornerRadii: cornerRadii))
+            .onHover { isHovering in
+                withAnimation(animationFast) {
+                    self.isHovering = isHovering
+                }
+            }
     }
 
     private func tint(configuration: Configuration) -> AnyShapeStyle {

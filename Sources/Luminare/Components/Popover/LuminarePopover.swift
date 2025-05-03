@@ -165,9 +165,9 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             case let .hover(showDelay, hideDelay):
                 badge()
                     .padding(padding)
-                    .onHover { hover in
-                        isHovering = hover
-                        handleHoverTrigger(isHovering: hover, showDelay: showDelay, hideDelay: hideDelay)
+                    .onHover { isHovering in
+                        self.isHovering = isHovering
+                        handleHoverTrigger(isHovering: isHovering, showDelay: showDelay, hideDelay: hideDelay)
                     }
             case let .forceTouch(threshold, onGesture):
                 ForceTouch(threshold: threshold, gesture: $forceTouchGesture) {
@@ -204,10 +204,10 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
                 switch trigger {
                 case let .hover(showDelay, hideDelay):
                     content()
-                        .onHover { hover in
+                        .onHover { isHovering in
                             // Hovering on the content can also update popover state
-                            isHovering = hover
-                            handleHoverTrigger(isHovering: hover, showDelay: showDelay, hideDelay: hideDelay)
+                            self.isHovering = isHovering
+                            handleHoverTrigger(isHovering: isHovering, showDelay: showDelay, hideDelay: hideDelay)
                         }
                 case .forceTouch:
                     content()

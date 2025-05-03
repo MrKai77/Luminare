@@ -49,9 +49,9 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onHover { hover in
+            .onHover { isHovering in
                 withAnimation(animationFast) {
-                    isHovering = hover
+                    self.isHovering = isHovering
                 }
             }
             .frame(minHeight: minHeight)

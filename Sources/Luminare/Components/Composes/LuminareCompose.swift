@@ -58,13 +58,6 @@ public enum LuminareComposeLayout: String, Equatable, Hashable, Identifiable, Ca
     case compact
 
     public var id: Self { self }
-
-    public var height: CGFloat {
-        switch self {
-        case .regular: 70
-        case .compact: 34
-        }
-    }
 }
 
 public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
@@ -120,12 +113,12 @@ public struct LuminareCompose<Label, Content>: View
     /// Initializes a ``LuminareCompose`` where the label is a localized text.
     ///
     /// - Parameters:
-    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - title: the label text.
     ///   - contentMaxWidth: the maximum width of the content area.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     public init(
-        _ key: LocalizedStringKey,
+        _ title: some StringProtocol,
         contentMaxWidth: CGFloat? = 270,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
@@ -135,7 +128,29 @@ public struct LuminareCompose<Label, Content>: View
             spacing: spacing,
             content: content
         ) {
-            Text(key)
+            Text(title)
+        }
+    }
+
+    /// Initializes a ``LuminareCompose`` where the label is a localized text.
+    ///
+    /// - Parameters:
+    ///   - titleKey: the `LocalizedStringKey` to look up the label text.
+    ///   - contentMaxWidth: the maximum width of the content area.
+    ///   - spacing: the spacing between the label and the content.
+    ///   - content: the content.
+    public init(
+        _ titleKey: LocalizedStringKey,
+        contentMaxWidth: CGFloat? = 270,
+        spacing: CGFloat? = nil,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Label == Text {
+        self.init(
+            contentMaxWidth: contentMaxWidth,
+            spacing: spacing,
+            content: content
+        ) {
+            Text(titleKey)
         }
     }
 

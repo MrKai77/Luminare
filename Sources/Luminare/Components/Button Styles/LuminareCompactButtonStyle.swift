@@ -42,9 +42,9 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
                 pressed: .quaternary
             ))
             .modifier(LuminareBorderedModifier(isHovering: isHovering))
-            .onHover { hover in
+            .onHover { isHovering in
                 withAnimation(animationFast) {
-                    isHovering = hover
+                    self.isHovering = isHovering
                 }
             }
     }

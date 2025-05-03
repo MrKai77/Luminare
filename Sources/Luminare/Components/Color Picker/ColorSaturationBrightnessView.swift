@@ -143,10 +143,11 @@ struct ColorPickerCircle: View {
             }
             .shadow(radius: 3)
             .scaleEffect((isHovering || isDragging) ? 1.25 : 1.0)
+            .animation(animation, value: isHovering)
+            .animation(animation, value: isDragging)
             .onHover { hovering in
                 isHovering = hovering
             }
-            .animation(animation, value: [isHovering, isDragging])
     }
 }
 

@@ -34,13 +34,7 @@ public struct LuminareButtonStyle: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onHover { hover in
-                withAnimation(animationFast) {
-                    isHovering = hover
-                }
-            }
-            .frame(minHeight: minHeight)
+            .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(LuminareFilledModifier(
                 isHovering: isHovering, isPressed: configuration.isPressed,
@@ -48,5 +42,10 @@ public struct LuminareButtonStyle: ButtonStyle {
                 pressed: .quaternary
             ))
             .clipShape(.rect(cornerRadii: cornerRadii))
+            .onHover { isHovering in
+                withAnimation(animationFast) {
+                    self.isHovering = isHovering
+                }
+            }
     }
 }

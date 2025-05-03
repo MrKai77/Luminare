@@ -336,9 +336,9 @@ public struct LuminareListItem<Content, V>: View
                     .foregroundStyle(isEnabled ? .primary : .secondary)
             }
             .tag(item)
-            .onHover { hover in
+            .onHover { isHovering in
                 withAnimation(animationFast) {
-                    isHovering = hover
+                    self.isHovering = isHovering
                 }
             }
             .background {
@@ -362,7 +362,6 @@ public struct LuminareListItem<Content, V>: View
                     .padding(.trailing, -1)
                 }
             }
-
             .onChange(of: selection) { _ in
                 guard isEnabled else { return }
                 withAnimation(animation) {

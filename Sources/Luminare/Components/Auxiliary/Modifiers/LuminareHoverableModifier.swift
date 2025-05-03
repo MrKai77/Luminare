@@ -116,9 +116,9 @@ public struct LuminareHoverableModifier: ViewModifier {
                 fill: fill, hovering: hovering, pressed: pressed
             ))
             .modifier(LuminareBorderedModifier(isHovering: isHovering))
-            .onHover { hover in
+            .onHover { isHovering in
                 withAnimation(animationFast) {
-                    isHovering = hover
+                    self.isHovering = isHovering
                 }
             }
     }

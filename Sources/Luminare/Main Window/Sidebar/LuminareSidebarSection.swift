@@ -39,11 +39,11 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     /// Initializes a ``LuminareSidebarSection`` whose label is a localized text.
     ///
     /// - Parameters:
-    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - title: the label text.
     ///   - selection: the selected ``LuminareTabItem`` binding.
     ///   - items: the list of available ``LuminareTabItem``.
     public init(
-        _ key: LocalizedStringKey,
+        _ title: some StringProtocol,
         selection: Binding<Tab>,
         items: [Tab]
     ) where Label == Text {
@@ -51,7 +51,26 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
             selection: selection,
             items: items
         ) {
-            Text(key)
+            Text(title)
+        }
+    }
+
+    /// Initializes a ``LuminareSidebarSection`` whose label is a localized text.
+    ///
+    /// - Parameters:
+    ///   - titleKey: the `LocalizedStringKey` to look up the label text.
+    ///   - selection: the selected ``LuminareTabItem`` binding.
+    ///   - items: the list of available ``LuminareTabItem``.
+    public init(
+        _ titleKey: LocalizedStringKey,
+        selection: Binding<Tab>,
+        items: [Tab]
+    ) where Label == Text {
+        self.init(
+            selection: selection,
+            items: items
+        ) {
+            Text(titleKey)
         }
     }
 

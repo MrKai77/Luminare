@@ -23,7 +23,10 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
     private let options: [V]
     @Binding private var selection: V
+
     @State private var lastSelection: V
+    @State private var isSliderHovering: Bool = false
+    @State private var isSliderEditing: Bool = false
 
     // MARK: Initializers
 
@@ -50,13 +53,13 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// Initializes a ``LuminareSliderPicker`` where the label is a localized text.
     ///
     /// - Parameters:
-    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     public init(
-        _ key: LocalizedStringKey,
+        _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
         @ViewBuilder content: @escaping (V) -> Content
     ) where Label == Text {
@@ -65,7 +68,51 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         ) { value in
             content(value)
         } label: {
-            Text(key)
+            Text(title)
+        }
+    }
+
+    /// Initializes a ``LuminareSliderPicker`` where the label is a localized text.
+    ///
+    /// - Parameters:
+    ///   - titleKey: the `LocalizedStringKey` to look up the label text.
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - content: the content generator that accepts a value.
+    public init(
+        _ titleKey: LocalizedStringKey,
+        _ options: [V], selection: Binding<V>,
+        @ViewBuilder content: @escaping (V) -> Content
+    ) where Label == Text {
+        self.init(
+            options, selection: selection
+        ) { value in
+            content(value)
+        } label: {
+            Text(titleKey)
+        }
+    }
+
+    /// Initializes a ``LuminareSliderPicker`` where the content is a localized text.
+    ///
+    /// - Parameters:
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - content: the content generator that accepts a value.
+    ///   - label: the label.
+    public init(
+        _ options: [V], selection: Binding<V>,
+        content: @escaping (V) -> some StringProtocol,
+        @ViewBuilder label: @escaping () -> Label
+    ) where Content == Text {
+        self.init(
+            options, selection: selection
+        ) { value in
+            Text(content(value))
+        } label: {
+            label()
         }
     }
 
@@ -94,13 +141,34 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// Initializes a ``LuminareSliderPicker`` where the content and the label are localized texts.
     ///
     /// - Parameters:
-    ///   - key: the `LocalizedStringKey` to look up the label text.
+    ///   - title: the label text.
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - content: the content generator that accepts a value.
+    public init(
+        _ title: some StringProtocol,
+        _ options: [V], selection: Binding<V>,
+        content: @escaping (V) -> some StringProtocol
+    ) where Label == Text, Content == Text {
+        self.init(
+            options, selection: selection,
+            content: content
+        ) {
+            Text(title)
+        }
+    }
+
+    /// Initializes a ``LuminareSliderPicker`` where the content and the label are localized texts.
+    ///
+    /// - Parameters:
+    ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     public init(
-        _ key: LocalizedStringKey,
+        _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
         contentKey: @escaping (V) -> LocalizedStringKey
     ) where Label == Text, Content == Text {
@@ -108,7 +176,49 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             options, selection: selection,
             contentKey: contentKey
         ) {
-            Text(key)
+            Text(title)
+        }
+    }
+
+    /// Initializes a ``LuminareSliderPicker`` where the content and the label are localized texts.
+    ///
+    /// - Parameters:
+    ///   - titleKey: the `LocalizedStringKey` to look up the label text.
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - content: the content generator that accepts a value.
+    public init(
+        _ titleKey: LocalizedStringKey,
+        _ options: [V], selection: Binding<V>,
+        content: @escaping (V) -> some StringProtocol
+    ) where Label == Text, Content == Text {
+        self.init(
+            options, selection: selection,
+            content: content
+        ) {
+            Text(titleKey)
+        }
+    }
+
+    /// Initializes a ``LuminareSliderPicker`` where the content and the label are localized texts.
+    ///
+    /// - Parameters:
+    ///   - titleKey: the `LocalizedStringKey` to look up the label text.
+    ///   - options: the available options.
+    ///   - selection: the binding of the selected value.
+    ///   - height: the height of the composed view.
+    ///   - contentKey: the content generator that accepts a value.
+    public init(
+        _ titleKey: LocalizedStringKey,
+        _ options: [V], selection: Binding<V>,
+        contentKey: @escaping (V) -> LocalizedStringKey
+    ) where Label == Text, Content == Text {
+        self.init(
+            options, selection: selection,
+            contentKey: contentKey
+        ) {
+            Text(titleKey)
         }
     }
 
@@ -120,7 +230,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             case .regular:
                 LuminareCompose {
                     text()
-                        .frame(maxHeight: .infinity, alignment: .top)
                 } label: {
                     HStack(spacing: 4) {
                         label()
@@ -129,14 +238,23 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 .luminareComposeStyle(.inline)
 
                 slider()
+                    .onHover { isHovering in
+                        isSliderHovering = isHovering
+                    }
                     .padding(.horizontal, horizontalPadding)
                     .padding(.trailing, -2)
             case .compact:
                 LuminareCompose(spacing: 12) {
                     HStack(spacing: 12) {
                         slider()
+                            .onHover { isHovering in
+                                isSliderHovering = isHovering
+                            }
 
-                        text()
+                        if !isSliderHovering, !isSliderEditing {
+                            text()
+                                .transition(.move(edge: .trailing).combined(with: .opacity))
+                        }
                     }
                 } label: {
                     HStack(spacing: 4) {
@@ -146,8 +264,9 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 .luminareComposeStyle(.inline)
             }
         }
-        .frame(height: layout.height)
         .animation(animation, value: selection)
+        .animation(animation, value: isSliderHovering)
+        .animation(animation, value: isSliderEditing)
     }
 
     @ViewBuilder private func text() -> some View {
@@ -186,7 +305,9 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             ),
             in: 0...Double(options.count - 1),
             step: 1
-        )
+        ) { isEditing in
+            isSliderEditing = isEditing
+        }
     }
 
     private var countsDown: Bool {
