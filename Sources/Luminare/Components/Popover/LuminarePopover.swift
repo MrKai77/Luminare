@@ -9,8 +9,9 @@ import SwiftUI
 
 public enum LuminarePopoverTrigger {
     case hover(
-        showDelay: TimeInterval = 0.25,
-        hideDelay: TimeInterval = 0.0
+        showDelay: TimeInterval = 0.5,
+        hideDelay: TimeInterval = 0.5,
+        throttleDelay: TimeInterval = 0.5,
     )
     case forceTouch(
         threshold: CGFloat = 0.5,
@@ -68,9 +69,7 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     @ViewBuilder private var content: () -> Content, badge: () -> Badge
 
     @State private var isPopoverPresented: Bool = false
-
     @State private var isHovering: Bool = false
-    @State private var hoverTimer: Timer?
 
     @State private var forceTouchGesture: ForceTouchGesture = .inactive
     @State private var forceTouchRecognized: Bool = false
@@ -162,12 +161,19 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
     public var body: some View {
         Group {
             switch trigger {
-            case let .hover(showDelay, hideDelay):
+            case let .hover(showDelay, hideDelay, throttleDelay):
                 badge()
                     .padding(padding)
                     .onHover { isHovering in
                         self.isHovering = isHovering
-                        handleHoverTrigger(isHovering: isHovering, showDelay: showDelay, hideDelay: hideDelay)
+                    }
+                    .booleanThrottleDebounced(
+                        isHovering,
+                        flipOnDelay: showDelay,
+                        flipOffDelay: hideDelay,
+                        throttleDelay: throttleDelay
+                    ) { debouncedValue in
+                        isPopoverPresented = debouncedValue
                     }
             case let .forceTouch(threshold, onGesture):
                 ForceTouch(threshold: threshold, gesture: $forceTouchGesture) {
@@ -202,12 +208,19 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
         ) {
             Group {
                 switch trigger {
-                case let .hover(showDelay, hideDelay):
+                case let .hover(showDelay, hideDelay, throttleDelay):
                     content()
                         .onHover { isHovering in
                             // Hovering on the content can also update popover state
                             self.isHovering = isHovering
-                            handleHoverTrigger(isHovering: isHovering, showDelay: showDelay, hideDelay: hideDelay)
+                        }
+                        .booleanThrottleDebounced(
+                            isHovering,
+                            flipOnDelay: showDelay,
+                            flipOffDelay: hideDelay,
+                            throttleDelay: throttleDelay
+                        ) { debouncedValue in
+                            isPopoverPresented = debouncedValue
                         }
                 case .forceTouch:
                     content()
@@ -229,50 +242,6 @@ public struct LuminarePopover<Content, Badge>: View where Content: View, Badge: 
             return max(0, progress)
         default:
             return 0
-        }
-    }
-
-    private func handleHoverTrigger(isHovering: Bool, showDelay: TimeInterval, hideDelay: TimeInterval) {
-        if isHovering {
-            if isPopoverPresented {
-                // Prevents the popover to hide when the delay is not met
-                hoverTimer?.invalidate()
-                hoverTimer = nil
-            } else {
-                // Schedules to show
-                hoverTimer = .scheduledTimer(withTimeInterval: showDelay, repeats: false) { _ in
-                    isPopoverPresented = true
-                    hoverTimer?.invalidate()
-
-                    // In case the cursor immediately moved away
-                    hoverTimer = .scheduledTimer(withTimeInterval: hideDelay, repeats: false) { _ in
-                        // The use of `self.isHovering` is crucial here!
-                        isPopoverPresented = self.isHovering
-                        hoverTimer?.invalidate()
-                        hoverTimer = nil
-                    }
-                }
-            }
-        } else {
-            if !isPopoverPresented {
-                // Prevents the popover to show when the delay is not met
-                hoverTimer?.invalidate()
-                hoverTimer = nil
-            } else {
-                // Schedules to hide
-                hoverTimer = .scheduledTimer(withTimeInterval: hideDelay, repeats: false) { _ in
-                    isPopoverPresented = false
-                    hoverTimer?.invalidate()
-
-                    // In case the cursor immediately moved back inside
-                    hoverTimer = .scheduledTimer(withTimeInterval: showDelay, repeats: false) { _ in
-                        // The use of `self.isHovering` is crucial here!
-                        isPopoverPresented = self.isHovering
-                        hoverTimer?.invalidate()
-                        hoverTimer = nil
-                    }
-                }
-            }
         }
     }
 

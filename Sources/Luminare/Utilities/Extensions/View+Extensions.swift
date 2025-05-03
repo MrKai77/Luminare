@@ -51,7 +51,27 @@ extension View {
     }
 }
 
-// MARK: - Convenient Wrapper
+// MARK: - Modifiers
+
+public extension View {
+    @ViewBuilder func booleanThrottleDebounced(
+        _ value: Bool,
+        flipOnDelay: TimeInterval = 0.5,
+        flipOffDelay: TimeInterval = .zero,
+        throttleDelay: TimeInterval = 0.25,
+        action: @escaping (Bool) -> ()
+    ) -> some View {
+        modifier(BooleanThrottleDebouncedModifier(
+            value,
+            flipOnDelay: flipOnDelay,
+            flipOffDelay: flipOffDelay,
+            throttleDelay: throttleDelay,
+            action: action
+        ))
+    }
+}
+
+// MARK: - Convenient Wrappers
 
 public extension View {
     // MARK: Popover
@@ -149,7 +169,7 @@ public extension View {
     }
 }
 
-// MARK: - Modal
+// MARK: - Modals
 
 public extension View {
     @ViewBuilder func luminareModalStyle(_ style: LuminareModalStyle) -> some View {
