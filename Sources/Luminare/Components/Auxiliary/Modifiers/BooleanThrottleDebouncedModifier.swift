@@ -12,6 +12,7 @@ public struct BooleanThrottleDebouncedModifier: ViewModifier {
     private let flipOnDelay: TimeInterval
     private let flipOffDelay: TimeInterval
     private let throttleDelay: TimeInterval
+    private let initial: Bool
     private let action: (Bool) -> ()
 
     @State private var updatedValue: Bool // IMPORTANT: refer to this instead of `value`
@@ -24,6 +25,7 @@ public struct BooleanThrottleDebouncedModifier: ViewModifier {
         flipOnDelay: TimeInterval = 0.5,
         flipOffDelay: TimeInterval = .zero,
         throttleDelay: TimeInterval = 0.25,
+        initial: Bool = false,
         action: @escaping (Bool) -> ()
     ) {
         self.value = value
@@ -32,11 +34,17 @@ public struct BooleanThrottleDebouncedModifier: ViewModifier {
         self.flipOnDelay = flipOnDelay
         self.flipOffDelay = flipOffDelay
         self.throttleDelay = throttleDelay
+        self.initial = initial
         self.action = action
     }
 
     public func body(content: Content) -> some View {
         content
+            .onAppear {
+                if initial {
+                    action(debouncedValue)
+                }
+            }
             .onChange(of: value) { newValue in
                 updatedValue = newValue
                 if newValue {

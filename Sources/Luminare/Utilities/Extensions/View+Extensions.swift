@@ -59,6 +59,7 @@ public extension View {
         flipOnDelay: TimeInterval = 0.5,
         flipOffDelay: TimeInterval = .zero,
         throttleDelay: TimeInterval = 0.25,
+        initial: Bool = false,
         action: @escaping (Bool) -> ()
     ) -> some View {
         modifier(BooleanThrottleDebouncedModifier(
@@ -66,6 +67,7 @@ public extension View {
             flipOnDelay: flipOnDelay,
             flipOffDelay: flipOffDelay,
             throttleDelay: throttleDelay,
+            initial: initial,
             action: action
         ))
     }
