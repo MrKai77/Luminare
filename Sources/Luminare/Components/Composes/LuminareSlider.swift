@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Value Adjuster (Compose)
+// MARK: - Slider (Compose)
 
 public struct LuminareSlider<Label, Content, V, F>: View
     where Label: View, Content: View, V: Strideable & BinaryFloatingPoint, V.Stride: BinaryFloatingPoint,
@@ -206,40 +206,46 @@ public struct LuminareSlider<Label, Content, V, F>: View
         VStack {
             switch layout {
             case .regular:
-                LuminareCompose {
-                    text()
+                LuminareCompose(alignment: .top) {
+                    textBoxView()
                 } label: {
-                    HStack(spacing: 4) {
+                    HStack {
                         label()
                     }
                 }
                 .luminareComposeStyle(.inline)
 
-                slider()
+                sliderView()
                     .onHover { isHovering in
                         isSliderHovering = isHovering
                     }
                     .padding(.horizontal, horizontalPadding)
-                    .padding(.trailing, -2)
             case .compact:
+                let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
+
                 LuminareCompose {
                     HStack(spacing: 12) {
-                        slider()
+                        sliderView()
                             .onHover { isHovering in
                                 isSliderHovering = isHovering
                             }
 
-                        if !isSliderDebouncedHovering, !isSliderEditing {
-                            text()
+                        if !isAlternativeTextBoxVisible {
+                            textBoxView()
                                 .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
                     }
                 } label: {
-                    HStack(spacing: 4) {
-                        label()
+                    HStack {
+                        if isAlternativeTextBoxVisible {
+                            textBoxView()
+                                .transition(.move(edge: .leading).combined(with: .opacity))
+                        } else {
+                            label()
+                        }
                     }
                 }
-                .luminareComposeStyle(.inline)
+                .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
             }
         }
         .animation(animation, value: value)
@@ -256,7 +262,11 @@ public struct LuminareSlider<Label, Content, V, F>: View
         range.upperBound - range.lowerBound
     }
 
-    @ViewBuilder private func slider() -> some View {
+    private var countsDown: Bool {
+        value > lastValue
+    }
+
+    @ViewBuilder private func sliderView() -> some View {
         let binding: Binding<V> = .init {
             value
         } set: { newValue in
@@ -282,27 +292,32 @@ public struct LuminareSlider<Label, Content, V, F>: View
         }
     }
 
-    @ViewBuilder private func text() -> some View {
+    @ViewBuilder private func textBoxView() -> some View {
         HStack {
             let view = Group {
                 if isTextBoxVisible {
+                    let binding: Binding<V> = Binding {
+                        value
+                    } set: { newValue in
+                        if clampsLower, clampsUpper {
+                            value = newValue.clamped(to: range)
+                        } else if clampsLower {
+                            value = max(range.lowerBound, newValue)
+                        } else if clampsUpper {
+                            value = min(range.upperBound, newValue)
+                        } else {
+                            value = newValue
+                        }
+                    }
+
                     TextField(
-                        "",
-                        value: .init(.init {
-                            value
-                        } set: { newValue in
-                            if clampsLower, clampsUpper {
-                                value = newValue.clamped(to: range)
-                            } else if clampsLower {
-                                value = max(range.lowerBound, newValue)
-                            } else if clampsUpper {
-                                value = min(range.upperBound, newValue)
-                            } else {
-                                value = newValue
-                            }
-                        }),
+                        value: binding,
                         format: format
-                    )
+                    ) {
+                        EmptyView()
+                    }
+                    .labelsHidden()
+                    .textFieldStyle(.plain)
                     .onSubmit {
                         withAnimation(animationFast) {
                             isTextBoxVisible.toggle()
@@ -310,8 +325,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     }
                     .focused($focusedField, equals: .textbox)
                     .multilineTextAlignment(.trailing)
-                    .labelsHidden()
-                    .textFieldStyle(.plain)
                     .padding(.leading, -4)
                     .fontDesign(.monospaced)
                 } else {
@@ -366,10 +379,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 lastValue = value
             }
         }
-    }
-
-    private var countsDown: Bool {
-        value > lastValue
     }
 
     // MARK: Functions
@@ -482,12 +491,10 @@ public struct LuminareSlider<Label, Content, V, F>: View
             prefix: Text("#")
         ) {
             Text("With an info")
-
-            LuminarePopover {
-                Text("Popover")
-                    .padding(4)
-            }
-            .frame(maxHeight: .infinity, alignment: .top)
+                .luminarePopover(attachedTo: .topTrailing) {
+                    Text("Incididunt Lorem pariatur eiusmod laboris laboris.")
+                        .padding()
+                }
         }
         .luminareComposeLayout(.compact)
     }

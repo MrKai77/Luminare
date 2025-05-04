@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Button Compose
+// MARK: - Button (Compose)
 
 public struct LuminareButton<Label, Content>: View where Label: View, Content: View {
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding

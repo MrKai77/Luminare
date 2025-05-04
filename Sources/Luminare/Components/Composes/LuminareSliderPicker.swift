@@ -229,40 +229,46 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         VStack {
             switch layout {
             case .regular:
-                LuminareCompose {
-                    text()
+                LuminareCompose(alignment: .top) {
+                    textBoxView()
                 } label: {
-                    HStack(spacing: 4) {
+                    HStack {
                         label()
                     }
                 }
                 .luminareComposeStyle(.inline)
 
-                slider()
+                sliderView()
                     .onHover { isHovering in
                         isSliderHovering = isHovering
                     }
                     .padding(.horizontal, horizontalPadding)
-                    .padding(.trailing, -2)
             case .compact:
+                let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
+
                 LuminareCompose(spacing: 12) {
                     HStack(spacing: 12) {
-                        slider()
+                        sliderView()
                             .onHover { isHovering in
                                 isSliderHovering = isHovering
                             }
 
-                        if !isSliderDebouncedHovering, !isSliderEditing {
-                            text()
+                        if !isAlternativeTextBoxVisible {
+                            textBoxView()
                                 .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
                     }
                 } label: {
-                    HStack(spacing: 4) {
-                        label()
+                    HStack {
+                        if isAlternativeTextBoxVisible {
+                            textBoxView()
+                                .transition(.move(edge: .leading).combined(with: .opacity))
+                        } else {
+                            label()
+                        }
                     }
                 }
-                .luminareComposeStyle(.inline)
+                .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
             }
         }
         .animation(animation, value: selection)
@@ -274,7 +280,28 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         }
     }
 
-    @ViewBuilder private func text() -> some View {
+    private var countsDown: Bool {
+        options.firstIndex(of: selection)! > options.firstIndex(of: lastSelection)!
+    }
+
+    @ViewBuilder private func sliderView() -> some View {
+        Slider(
+            value: Binding<Double>(
+                get: {
+                    Double(options.firstIndex(where: { $0 == selection }) ?? 0)
+                },
+                set: { newIndex in
+                    selection = options[Int(newIndex)]
+                }
+            ),
+            in: 0...Double(options.count - 1),
+            step: 1
+        ) { isEditing in
+            isSliderEditing = isEditing
+        }
+    }
+
+    @ViewBuilder private func textBoxView() -> some View {
         content(selection)
             .contentTransition(.numericText(countsDown: countsDown))
             .multilineTextAlignment(.trailing)
@@ -296,27 +323,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                     lastSelection = value
                 }
             }
-    }
-
-    @ViewBuilder private func slider() -> some View {
-        Slider(
-            value: Binding<Double>(
-                get: {
-                    Double(options.firstIndex(where: { $0 == selection }) ?? 0)
-                },
-                set: { newIndex in
-                    selection = options[Int(newIndex)]
-                }
-            ),
-            in: 0...Double(options.count - 1),
-            step: 1
-        ) { isEditing in
-            isSliderEditing = isEditing
-        }
-    }
-
-    private var countsDown: Bool {
-        options.firstIndex(of: selection)! > options.firstIndex(of: lastSelection)!
     }
 }
 
@@ -371,12 +377,10 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 .monospaced()
         } label: {
             Text("With an info")
-
-            LuminarePopover {
-                Text("Popover")
-                    .padding(4)
-            }
-            .frame(maxHeight: .infinity, alignment: .top)
+                .luminarePopover(attachedTo: .topTrailing) {
+                    Text("Sunt in nisi do labore velit et culpa laborum cupidatat tempor.")
+                        .padding()
+                }
         }
         .luminareComposeLayout(.compact)
     }

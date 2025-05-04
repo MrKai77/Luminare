@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Toggle Compose
+// MARK: - Toggle (Compose)
 
 public struct LuminareToggle<Label>: View where Label: View {
     // MARK: Environments
@@ -76,22 +76,12 @@ public struct LuminareToggle<Label>: View where Label: View {
         LuminareToggle("Toggle", isOn: $value)
 
         LuminareToggle(isOn: $value) {
-            Text("With an info")
-
-            LuminarePopover {
-                Text("Popover")
-                    .padding(4)
-            }
-            .tint(.orange)
-            .frame(maxHeight: .infinity, alignment: .top)
-        }
-
-        LuminareToggle(isOn: $value) {
-            Text("With an info (simpler)")
-
-            LuminarePopover("Popover")
-                .tint(.blue)
-                .frame(maxHeight: .infinity, alignment: .top)
+            Text("With an info in orange")
+                .luminarePopover(attachedTo: .topTrailing) {
+                    Text("Dolore pariatur quis cupidatat irure Lorem exercitation do nulla culpa sint.")
+                        .padding()
+                }
+                .tint(.orange)
         }
     }
 }

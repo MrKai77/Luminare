@@ -83,6 +83,7 @@ public struct LuminareCompose<Label, Content>: View
     // MARK: Fields
 
     private let contentMaxWidth: CGFloat?
+    private let alignment: VerticalAlignment
     private let spacing: CGFloat?
 
     @ViewBuilder private var content: () -> Content, label: () -> Label
@@ -95,16 +96,19 @@ public struct LuminareCompose<Label, Content>: View
     ///
     /// - Parameters:
     ///   - contentMaxWidth: the maximum width of the content area.
+    ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     ///   - label: the label.
     public init(
         contentMaxWidth: CGFloat? = 270,
+        alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.contentMaxWidth = contentMaxWidth
+        self.alignment = alignment
         self.spacing = spacing
         self.label = label
         self.content = content
@@ -115,16 +119,19 @@ public struct LuminareCompose<Label, Content>: View
     /// - Parameters:
     ///   - title: the label text.
     ///   - contentMaxWidth: the maximum width of the content area.
+    ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     public init(
         _ title: some StringProtocol,
         contentMaxWidth: CGFloat? = 270,
+        alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
             contentMaxWidth: contentMaxWidth,
+            alignment: alignment,
             spacing: spacing,
             content: content
         ) {
@@ -137,16 +144,19 @@ public struct LuminareCompose<Label, Content>: View
     /// - Parameters:
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - contentMaxWidth: the maximum width of the content area.
+    ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     public init(
         _ titleKey: LocalizedStringKey,
         contentMaxWidth: CGFloat? = 270,
+        alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
             contentMaxWidth: contentMaxWidth,
+            alignment: alignment,
             spacing: spacing,
             content: content
         ) {
@@ -157,13 +167,12 @@ public struct LuminareCompose<Label, Content>: View
     // MARK: Body
 
     public var body: some View {
-        HStack(spacing: spacing) {
+        HStack(alignment: alignment, spacing: spacing) {
             if Label.self != EmptyView.self {
-                HStack(spacing: 0) {
+                HStack(alignment: alignment, spacing: 0) {
                     label()
                         .opacity(isEnabled ? 1 : 0.5)
                 }
-                .fixedSize(horizontal: false, vertical: true)
                 .layoutPriority(1)
 
                 Spacer()
@@ -172,12 +181,12 @@ public struct LuminareCompose<Label, Content>: View
             }
 
             if let contentMaxWidth {
-                HStack(spacing: 0) {
+                HStack(alignment: alignment, spacing: 0) {
                     Spacer()
 
                     wrappedContent()
                 }
-                .frame(maxWidth: contentMaxWidth)
+                .frame(maxWidth: contentMaxWidth - insets.trailing)
             } else {
                 wrappedContent()
             }
@@ -199,12 +208,8 @@ public struct LuminareCompose<Label, Content>: View
     }
 
     @ViewBuilder private func wrappedContent() -> some View {
-        if let controlSize = controlSize.proposal {
-            content()
-                .controlSize(controlSize)
-        } else {
-            content()
-        }
+        content()
+            .controlSize(controlSize.proposal ?? .regular)
     }
 }
 
@@ -231,6 +236,7 @@ public struct LuminareCompose<Label, Content>: View
         }
         .disabled(true)
     }
+    .luminareComposeStyle(.inline)
 }
 
 @available(macOS 15.0, *)
@@ -249,9 +255,9 @@ public struct LuminareCompose<Label, Content>: View
                 .frame(height: 30)
         }
 
-        LuminareCompose("Culpa nisi sint reprehenderit sit.") {
+        LuminareCompose("Eu duis ipsum cupidatat tempor nisi aliquip et sint ea reprehenderit Lorem ad dolor sint.") {
             Text("A very wide content")
-                .frame(width: 250, height: 30)
+                .frame(width: 200, height: 30)
                 .background(.red)
         }
     }

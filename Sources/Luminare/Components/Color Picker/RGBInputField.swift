@@ -24,7 +24,14 @@ struct RGBInputField<Label>: View where Label: View {
                 .foregroundStyle(.secondary)
 
             if #available(macOS 15.0, *) {
-                LuminarePopover(arrowEdge: .top) {
+                LuminareTextField(
+                    "", value: .init($value),
+                    format: .number.precision(.integerAndFractionLength(
+                        integerLimits: 1...3,
+                        fractionLimits: 0...2
+                    ))
+                )
+                .luminarePopover(arrowEdge: .top) {
                     LuminareStepper(
                         value: $value,
                         source: .finiteContinuous(in: 0...255, step: 5),
@@ -34,14 +41,6 @@ struct RGBInputField<Label>: View where Label: View {
                     .frame(width: 135, height: 32)
                     .padding(.vertical, 2)
                     .luminareTint(overridingWith: .primary)
-                } badge: {
-                    LuminareTextField(
-                        "", value: .init($value),
-                        format: .number.precision(.integerAndFractionLength(
-                            integerLimits: 1...3,
-                            fractionLimits: 0...2
-                        ))
-                    )
                 }
                 .luminarePopoverTrigger(.forceTouch())
             } else {

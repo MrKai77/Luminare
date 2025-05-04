@@ -34,7 +34,7 @@ extension View {
     }
 
     // Applies a materialized background over a view
-    @ViewBuilder func background(with material: Material?, @ViewBuilder _ content: () -> some View) -> some View {
+    @ViewBuilder func background(with material: Material?, @ViewBuilder content: () -> some View) -> some View {
         background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
             .background {
                 content()
@@ -79,16 +79,42 @@ public extension View {
     // MARK: Popover
 
     @ViewBuilder func luminarePopover(
-        arrowEdge: Edge = .bottom,
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
-        @ViewBuilder _ content: @escaping () -> some View
+        @ViewBuilder popoverContent: @escaping () -> some View
     ) -> some View {
-        LuminarePopover(
+        modifier(LuminarePopoverModifier(
+            attachmentAnchor: attachmentAnchor,
             arrowEdge: arrowEdge,
             padding: padding,
-            content: content
-        ) {
-            self
+            popoverContent: popoverContent
+        ))
+    }
+
+    @ViewBuilder func luminarePopover(
+        attachedTo alignment: Alignment,
+        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
+        arrowEdge: Edge? = nil,
+        padding: CGFloat = 4,
+        dotSize: CGFloat = 4,
+        @ViewBuilder popoverContent: @escaping () -> some View
+    ) -> some View {
+        overlay(alignment: alignment) {
+            Color.clear
+                .frame(width: 0, height: 0)
+                .overlay {
+                    Circle()
+                        .foregroundStyle(.tint)
+                        .frame(width: dotSize, height: dotSize)
+                        .padding(2)
+                        .luminarePopover(
+                            attachmentAnchor: attachmentAnchor,
+                            arrowEdge: arrowEdge,
+                            padding: padding,
+                            popoverContent: popoverContent
+                        )
+                }
         }
     }
 
@@ -98,7 +124,7 @@ public extension View {
         isPresented: Binding<Bool>,
         alignment: Alignment = .bottom,
         material: NSVisualEffectView.Material = .popover,
-        @ViewBuilder _ content: @escaping () -> some View
+        @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         background {
             LuminarePopup(
@@ -178,7 +204,7 @@ public extension View {
         environment(\.luminareModalStyle, style)
     }
 
-    @ViewBuilder func luminareModalContentWrapper(@ViewBuilder _ content: @escaping (AnyView) -> some View) -> some View {
+    @ViewBuilder func luminareModalContentWrapper(@ViewBuilder content: @escaping (AnyView) -> some View) -> some View {
         environment(\.luminareModalContentWrapper) { view in
             AnyView(content(view))
         }

@@ -1,5 +1,5 @@
 //
-//  ForceTouch.swift
+//  ForceTouchModifier.swift
 //  Luminare
 //
 //  Created by KrLite on 2024/10/29.
@@ -79,7 +79,37 @@ public enum ForceTouchGesture: Equatable {
 /// While long pressing, the ``ForceTouchGesture/Event/pressure`` will be increased by `0.1` every `0.1`
 /// seconds, and the ``ForceTouchGesture/Event/stage`` will be increased by `1` every time the
 /// ``ForceTouchGesture/Event/pressure`` overflows.
-public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
+public struct ForceTouchModifier: ViewModifier {
+    private let configuration: NSPressureConfiguration
+    private let threshold: CGFloat
+    @Binding private var gesture: ForceTouchGesture
+
+    /// Initializes a ``ForceTouchModifier``.
+    ///
+    /// - Parameters:
+    ///   - configuration: the `NSPressureConfiguration` that configures the force touch behavior.
+    ///   - threshold: the minimum threshold before emitting the first gesture event.
+    ///   As force touch gestures have many stages, this only applies to the first stage.
+    ///   - gesture: the binding for the emitted ``ForceTouchGesture``.
+    ///   This binding is get-only.
+    public init(
+        configuration: NSPressureConfiguration = .init(pressureBehavior: .primaryDefault),
+        threshold: CGFloat = 0.5,
+        gesture: Binding<ForceTouchGesture>
+    ) {
+        self.configuration = configuration
+        self.threshold = threshold
+        self._gesture = gesture
+    }
+
+    public func body(content: Content) -> some View {
+        ForceTouch(configuration: configuration, threshold: threshold, gesture: $gesture) {
+            content
+        }
+    }
+}
+
+struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     private let configuration: NSPressureConfiguration
     private let threshold: CGFloat
     @Binding private var gesture: ForceTouchGesture
@@ -93,16 +123,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
 
     private let id = UUID()
 
-    /// Initializes a ``ForceTouch``.
-    ///
-    /// - Parameters:
-    ///   - configuration: the `NSPressureConfiguration` that configures the force touch behavior.
-    ///   - threshold: the minimum threshold before emitting the first gesture event.
-    ///   As force touch gestures have many stages, this only applies to the first stage.
-    ///   - gesture: the binding for the emitted ``ForceTouchGesture``.
-    ///   This binding is get-only.
-    ///   - content: the content to be force touched.
-    public init(
+    init(
         configuration: NSPressureConfiguration = .init(pressureBehavior: .primaryDefault),
         threshold: CGFloat = 0.5,
         gesture: Binding<ForceTouchGesture>,
@@ -114,7 +135,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         self.content = content
     }
 
-    public func makeNSView(context _: Context) -> NSView {
+    func makeNSView(context _: Context) -> NSView {
         let view = NSHostingView(
             rootView: content()
         )
@@ -178,7 +199,7 @@ public struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         return view
     }
 
-    public func updateNSView(_: NSView, context _: Context) {}
+    func updateNSView(_: NSView, context _: Context) {}
 
     private func prepareLongPressDelegate(_ event: NSEvent) {
         let modifierFlags = event.modifierFlags
@@ -251,7 +272,8 @@ private struct ForceTouchPreview<Content>: View where Content: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        ForceTouch(threshold: threshold, gesture: $gesture, content: content)
+        content()
+            .modifier(ForceTouchModifier(threshold: threshold, gesture: $gesture))
             .onChange(of: gesture) { gesture in
                 print(gesture)
             }
