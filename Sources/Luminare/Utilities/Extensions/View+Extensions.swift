@@ -124,16 +124,14 @@ public extension View {
         isPresented: Binding<Bool>,
         alignment: Alignment = .bottom,
         material: NSVisualEffectView.Material = .popover,
-        @ViewBuilder content: @escaping () -> some View
+        @ViewBuilder popupContent: @escaping () -> some View
     ) -> some View {
-        background {
-            LuminarePopup(
-                isPresented: isPresented,
-                alignment: alignment,
-                material: material,
-                content: content
-            )
-        }
+        modifier(LuminarePopupModifier(
+            isPresented: isPresented,
+            alignment: alignment,
+            material: material,
+            popupContent: popupContent
+        ))
     }
 
     // MARK: Modal
@@ -392,10 +390,6 @@ public extension View {
         environment(\.luminareComposeControlSize, controlSize)
     }
 
-    @ViewBuilder func luminareComposeLayout(_ layout: LuminareComposeLayout) -> some View {
-        environment(\.luminareComposeLayout, layout)
-    }
-
     @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle) -> some View {
         environment(\.luminareComposeStyle, style)
     }
@@ -480,5 +474,17 @@ public extension View {
 
     @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
         environment(\.luminareSidebarOverflow, overflow)
+    }
+
+    // MARK: Slider
+
+    @ViewBuilder func luminareSliderLayout(_ layout: LuminareSliderLayout) -> some View {
+        environment(\.luminareSliderLayout, layout)
+    }
+
+    // MARK: Slider Picker
+
+    @ViewBuilder func luminareSliderPickerLayout(_ layout: LuminareSliderPickerLayout) -> some View {
+        environment(\.luminareSliderPickerLayout, layout)
     }
 }

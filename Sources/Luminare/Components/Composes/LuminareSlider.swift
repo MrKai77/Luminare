@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+public enum LuminareSliderLayout: Equatable, Hashable, Identifiable, Codable, Sendable {
+    case regular
+    case compact(textBoxWidth: CGFloat? = nil)
+
+    public var id: Self { self }
+}
+
+public extension LuminareSliderLayout {
+    static var compact: Self { .compact() }
+}
+
 // MARK: - Slider (Compose)
 
 public struct LuminareSlider<Label, Content, V, F>: View
@@ -22,7 +33,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareComposeLayout) private var layout
+    @Environment(\.luminareSliderLayout) private var layout
 
     @FocusState private var focusedField: FocusedField?
 
@@ -208,44 +219,47 @@ public struct LuminareSlider<Label, Content, V, F>: View
             case .regular:
                 LuminareCompose(alignment: .top) {
                     textBoxView()
+                        .fixedSize()
                 } label: {
-                    HStack {
-                        label()
-                    }
+                    label()
                 }
                 .luminareComposeStyle(.inline)
 
                 sliderView()
-                    .onHover { isHovering in
-                        isSliderHovering = isHovering
-                    }
                     .padding(.horizontal, horizontalPadding)
-            case .compact:
-                let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
-
-                LuminareCompose {
-                    HStack(spacing: 12) {
+            case let .compact(textBoxWidth):
+                if let textBoxWidth {
+                    LuminareCompose {
                         sliderView()
-                            .onHover { isHovering in
-                                isSliderHovering = isHovering
-                            }
+
+                        textBoxView()
+                            .frame(width: textBoxWidth)
+                    } label: {
+                        label()
+                    }
+                    .luminareComposeStyle(.inline)
+                } else {
+                    let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
+
+                    LuminareCompose {
+                        sliderView()
 
                         if !isAlternativeTextBoxVisible {
                             textBoxView()
+                                .fixedSize()
                                 .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
-                    }
-                } label: {
-                    HStack {
+                    } label: {
                         if isAlternativeTextBoxVisible {
                             textBoxView()
+                                .fixedSize()
                                 .transition(.move(edge: .leading).combined(with: .opacity))
                         } else {
                             label()
                         }
                     }
+                    .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
                 }
-                .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
             }
         }
         .animation(animation, value: value)
@@ -274,21 +288,26 @@ public struct LuminareSlider<Label, Content, V, F>: View
             isTextBoxVisible = false
         }
 
-        if let step {
-            Slider(
-                value: binding,
-                in: range,
-                step: step
-            ) { isEditing in
-                isSliderEditing = isEditing
+        Group {
+            if let step {
+                Slider(
+                    value: binding,
+                    in: range,
+                    step: step
+                ) { isEditing in
+                    isSliderEditing = isEditing
+                }
+            } else {
+                Slider(
+                    value: binding,
+                    in: range
+                ) { isEditing in
+                    isSliderEditing = isEditing
+                }
             }
-        } else {
-            Slider(
-                value: binding,
-                in: range
-            ) { isEditing in
-                isSliderEditing = isEditing
-            }
+        }
+        .onHover { isHovering in
+            isSliderHovering = isHovering
         }
     }
 
@@ -345,7 +364,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
             content(.init(view))
         }
-        .frame(maxWidth: 150)
+        .frame(maxWidth: .infinity)
         .padding(4)
         .padding(.horizontal, 4)
         .background {
@@ -361,7 +380,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     .foregroundStyle(.quinary.opacity(0.5))
             }
         }
-        .fixedSize()
         .clipShape(.capsule)
         .onChange(of: isTextBoxVisible) { _ in
             if isTextBoxVisible {
@@ -459,6 +477,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     .foregroundStyle(.secondary)
             }
         }
+        .luminareSliderLayout(.regular)
 
         LuminareSlider(
             value: $value,
@@ -474,7 +493,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     .foregroundStyle(.secondary)
             }
         }
-        .luminareComposeLayout(.compact)
 
         LuminareSlider(
             "2 Decimal Places",
@@ -483,6 +501,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             format: .number.precision(.fractionLength(0...2)),
             prefix: Text("#")
         )
+        .luminareSliderLayout(.compact(textBoxWidth: 100))
 
         LuminareSlider(
             value: $value,
@@ -496,6 +515,5 @@ public struct LuminareSlider<Label, Content, V, F>: View
                         .padding()
                 }
         }
-        .luminareComposeLayout(.compact)
     }
 }

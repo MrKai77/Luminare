@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+public enum LuminareSliderPickerLayout: Equatable, Hashable, Identifiable, Codable, Sendable {
+    case regular
+    case compact(textBoxWidth: CGFloat? = nil)
+
+    public var id: Self { self }
+}
+
+public extension LuminareSliderPickerLayout {
+    static var compact: Self { .compact() }
+}
+
 // MARK: - Slider Picker (Compose)
 
 /// A stylized, composed picker for discrete values with a slider.
@@ -15,7 +26,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareComposeLayout) private var layout
+    @Environment(\.luminareSliderPickerLayout) private var layout
 
     // MARK: Fields
 
@@ -231,44 +242,48 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             case .regular:
                 LuminareCompose(alignment: .top) {
                     textBoxView()
+                        .fixedSize()
                 } label: {
-                    HStack {
-                        label()
-                    }
+                    label()
                 }
                 .luminareComposeStyle(.inline)
 
                 sliderView()
-                    .onHover { isHovering in
-                        isSliderHovering = isHovering
-                    }
                     .padding(.horizontal, horizontalPadding)
-            case .compact:
-                let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
-
-                LuminareCompose(spacing: 12) {
-                    HStack(spacing: 12) {
+            case let .compact(textBoxWidth):
+                if let textBoxWidth {
+                    LuminareCompose {
                         sliderView()
-                            .onHover { isHovering in
-                                isSliderHovering = isHovering
-                            }
 
-                        if !isAlternativeTextBoxVisible {
-                            textBoxView()
-                                .transition(.move(edge: .trailing).combined(with: .opacity))
-                        }
+                        textBoxView()
+                            .frame(width: textBoxWidth)
+                    } label: {
+                        label()
                     }
-                } label: {
-                    HStack {
+                } else {
+                    let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
+
+                    LuminareCompose {
+                        HStack {
+                            sliderView()
+
+                            if !isAlternativeTextBoxVisible {
+                                textBoxView()
+                                    .fixedSize()
+                                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                            }
+                        }
+                    } label: {
                         if isAlternativeTextBoxVisible {
                             textBoxView()
+                                .fixedSize()
                                 .transition(.move(edge: .leading).combined(with: .opacity))
                         } else {
                             label()
                         }
                     }
+                    .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
                 }
-                .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
             }
         }
         .animation(animation, value: selection)
@@ -299,12 +314,16 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         ) { isEditing in
             isSliderEditing = isEditing
         }
+        .onHover { isHovering in
+            isSliderHovering = isHovering
+        }
     }
 
     @ViewBuilder private func textBoxView() -> some View {
         content(selection)
             .contentTransition(.numericText(countsDown: countsDown))
             .multilineTextAlignment(.trailing)
+            .frame(maxWidth: .infinity)
             .padding(4)
             .padding(.horizontal, 4)
             .background {
@@ -316,7 +335,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                         .foregroundStyle(.quinary.opacity(0.5))
                 }
             }
-            .fixedSize()
             .clipShape(.capsule)
             .onChange(of: selection) { value in
                 DispatchQueue.main.async {
@@ -351,6 +369,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                     .foregroundStyle(.secondary)
             }
         }
+        .luminareSliderPickerLayout(.regular)
 
         LuminareSliderPicker(
             Array(0...4),
@@ -367,7 +386,23 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                     .foregroundStyle(.secondary)
             }
         }
-        .luminareComposeLayout(.compact)
+
+        LuminareSliderPicker(
+            Array(0...4),
+            selection: $selection
+        ) { value in
+            Text("\(value) is Chosen")
+                .monospaced()
+        } label: {
+            VStack(alignment: .leading) {
+                Text("Slide to pick a value")
+
+                Text("Composed, Compact")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .luminareSliderPickerLayout(.compact(textBoxWidth: 125))
 
         LuminareSliderPicker(
             Array(0...4),
@@ -382,6 +417,5 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                         .padding()
                 }
         }
-        .luminareComposeLayout(.compact)
     }
 }

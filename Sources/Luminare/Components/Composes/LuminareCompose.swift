@@ -48,18 +48,6 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
     }
 }
 
-/// The layout for views based on ``LuminareCompose``.
-///
-/// Typically, this is eligible for views that have additional controls beside static contents.
-public enum LuminareComposeLayout: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
-    /// The regular layout where the content is separated into two lines.
-    case regular
-    /// The compact layout where the content is in one single line.
-    case compact
-
-    public var id: Self { self }
-}
-
 public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
     case regular
     case inline
@@ -169,7 +157,7 @@ public struct LuminareCompose<Label, Content>: View
     public var body: some View {
         HStack(alignment: alignment, spacing: spacing) {
             if Label.self != EmptyView.self {
-                HStack(alignment: alignment, spacing: 0) {
+                HStack(alignment: alignment, spacing: spacing) {
                     label()
                         .opacity(isEnabled ? 1 : 0.5)
                 }
@@ -181,7 +169,7 @@ public struct LuminareCompose<Label, Content>: View
             }
 
             if let contentMaxWidth {
-                HStack(alignment: alignment, spacing: 0) {
+                HStack(alignment: alignment, spacing: spacing) {
                     Spacer()
 
                     wrappedContent()

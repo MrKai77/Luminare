@@ -1,5 +1,5 @@
 //
-//  LuminarePopup.swift
+//  LuminarePopupModifier.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-08-25.
@@ -7,9 +7,41 @@
 
 import SwiftUI
 
+// MARK: - Popup Modifier
+
+public struct LuminarePopupModifier<PopupContent>: ViewModifier where PopupContent: View {
+    @Binding private var isPresented: Bool
+    private let alignment: Alignment
+    private let material: NSVisualEffectView.Material
+
+    @ViewBuilder private var popupContent: () -> PopupContent
+
+    public init(
+        isPresented: Binding<Bool>,
+        alignment: Alignment = .bottom,
+        material: NSVisualEffectView.Material = .popover,
+        @ViewBuilder popupContent: @escaping () -> PopupContent
+    ) {
+        self._isPresented = isPresented
+        self.alignment = alignment
+        self.material = material
+        self.popupContent = popupContent
+    }
+
+    public func body(content: Content) -> some View {
+        content
+            .background(LuminarePopup(
+                isPresented: $isPresented,
+                alignment: alignment,
+                material: material,
+                content: popupContent
+            ))
+    }
+}
+
 // MARK: - Popup
 
-public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
+struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
     @Environment(\.luminarePopupCornerRadii) private var cornerRadii
     @Environment(\.luminarePopupPadding) private var padding
     @Environment(\.luminareSheetClosesOnDefocus) private var sheetClosesOnDefocus
@@ -20,7 +52,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
     @ViewBuilder private var content: () -> Content
 
-    public init(
+    init(
         isPresented: Binding<Bool>,
         alignment: Alignment = .bottom,
         material: NSVisualEffectView.Material = .popover,
@@ -32,19 +64,19 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         self.content = content
     }
 
-    public func makeNSView(context _: Context) -> NSView {
+    func makeNSView(context _: Context) -> NSView {
         .init()
     }
 
     // !!! Referencing `isPresented` in this function is necessary for triggering view update
-    public func updateNSView(_ nsView: NSView, context: Context) {
+    func updateNSView(_ nsView: NSView, context: Context) {
         _ = isPresented
         DispatchQueue.main.async {
             context.coordinator.setVisible(isPresented, relativeTo: nsView)
         }
     }
 
-    public func makeCoordinator() -> Coordinator<some View> {
+    func makeCoordinator() -> Coordinator<some View> {
         Coordinator(self) {
             content()
         }
@@ -52,8 +84,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
     // MARK: - Coordinator
 
-    @MainActor
-    public class Coordinator<InnerContent>: NSObject, NSWindowDelegate
+    @MainActor class Coordinator<InnerContent>: NSObject, NSWindowDelegate
         where InnerContent: View {
         private let parent: LuminarePopup
         private var content: () -> InnerContent
@@ -104,7 +135,7 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             }
         }
 
-        public func windowWillClose(_: Notification) {
+        func windowWillClose(_: Notification) {
             Task { @MainActor in
                 EventMonitorManager.shared.removeMonitor(for: id)
 
@@ -269,6 +300,76 @@ public struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         @objc func frameDidChange(_ notification: Notification) {
             guard let view = notification.object as? NSView else { return }
             updatePosition(for: view.frame.size)
+        }
+    }
+}
+
+// MARK: - Popup Panel
+
+public class LuminarePopupPanel: NSPanel, ObservableObject {
+    private let closesOnDefocus: Bool
+    private let initializedDate = Date.now
+
+    public init(
+        closesOnDefocus: Bool = false
+    ) {
+        self.closesOnDefocus = closesOnDefocus
+
+        super.init(
+            contentRect: .zero,
+            styleMask: [.fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+
+        collectionBehavior.insert(.fullScreenAuxiliary)
+        level = .floating
+        backgroundColor = .clear
+        contentView?.wantsLayer = true
+        ignoresMouseEvents = false
+        isOpaque = false
+        hasShadow = true
+        titlebarAppearsTransparent = true
+        titleVisibility = .hidden
+        animationBehavior = .utilityWindow
+    }
+
+    func setSize(_ size: CGSize) {
+        let newSize = CGSize(
+            width: size.width,
+            height: size.height
+        )
+        let newOrigin = NSPoint(
+            x: frame.origin.x,
+            y: frame.origin.y - (size.height - frame.height)
+        )
+
+        if Date.now.timeIntervalSince(initializedDate) < 1.0 || (newSize.width >= frame.width && newSize.height >= frame.height) {
+            setFrame(.init(origin: newOrigin, size: newSize), display: false)
+            return
+        }
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.2
+            animator().setFrame(.init(origin: newOrigin, size: newSize), display: false)
+        }
+    }
+
+    override public var canBecomeKey: Bool {
+        true
+    }
+
+    override public var canBecomeMain: Bool {
+        false
+    }
+
+    override public var acceptsFirstResponder: Bool {
+        true
+    }
+
+    override public func resignKey() {
+        if closesOnDefocus {
+            close()
         }
     }
 }

@@ -102,7 +102,6 @@ public extension EnvironmentValues {
     // MARK: Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .automatic
-    @Entry var luminareComposeLayout: LuminareComposeLayout = .regular
     @Entry var luminareComposeStyle: LuminareComposeStyle = .regular
 
     // MARK: Popover
@@ -141,4 +140,12 @@ public extension EnvironmentValues {
     // MARK: Sidebar
 
     @Entry var luminareSidebarOverflow: CGFloat = 50
+
+    // MARK: Slider
+
+    @Entry var luminareSliderLayout: LuminareSliderLayout = .compact
+
+    // MARK: Slider Picker
+
+    @Entry var luminareSliderPickerLayout: LuminareSliderPickerLayout = .compact
 }
