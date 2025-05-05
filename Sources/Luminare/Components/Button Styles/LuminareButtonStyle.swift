@@ -43,9 +43,8 @@ public struct LuminareButtonStyle: ButtonStyle {
             ))
             .clipShape(.rect(cornerRadii: cornerRadii))
             .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
-                }
+                self.isHovering = isHovering
             }
+            .animation(animationFast, value: isHovering)
     }
 }

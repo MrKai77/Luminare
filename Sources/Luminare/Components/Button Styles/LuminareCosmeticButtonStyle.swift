@@ -49,11 +49,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
-                }
-            }
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(LuminareFilledModifier(
@@ -70,5 +65,9 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 .allowsHitTesting(false)
             }
             .clipShape(.rect(cornerRadii: cornerRadii))
+            .onHover { isHovering in
+                self.isHovering = isHovering
+            }
+            .animation(animationFast, value: isHovering)
     }
 }

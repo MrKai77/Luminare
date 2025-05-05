@@ -44,10 +44,9 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
             ))
             .clipShape(.rect(cornerRadii: cornerRadii))
             .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
-                }
+                self.isHovering = isHovering
             }
+            .animation(animationFast, value: isHovering)
     }
 
     private func tint(configuration: Configuration) -> AnyShapeStyle {
