@@ -21,11 +21,11 @@ To add Luminare to your Xcode project, you can use Swift Package Manager (SPM). 
 
 Luminare offers a variety of components, organized for easy reference:
 
-*TODO: Add the table back.*
+_TODO: Add the table back._
 
 ## Example Usage
 
-Luminare can be used pretty much exactly like how you would use SwiftUI. For a practical example, please check [Loop's code](https://github.com/MrKai77/Loop/blob/1b6e4f8555be2dfaf4e0ae0225224d71d36a5078/Loop/Luminare/Settings/Behavior/BehaviorConfiguration.swift#L97).
+Luminare can be used pretty much exactly like how you would use SwiftUI. For a practical example, please check [Loop's code](https://github.com/MrKai77/Loop).
 
 ## License
 
