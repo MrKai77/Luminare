@@ -1,49 +1,121 @@
 //
 //  LuminareTextField.swift
-//
+//  Luminare
 //
 //  Created by Kai Azim on 2024-04-16.
 //
 
 import SwiftUI
 
-public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.FormatOutput == String {
-    let elementMinHeight: CGFloat = 34
-    let horizontalPadding: CGFloat = 8
+// MARK: - Text Field
 
-    @Binding var value: F.FormatInput?
-    var format: F
-    let placeholder: LocalizedStringKey
-    let onSubmit: (() -> ())?
+/// A stylized text field.
+public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableFormatStyle, F.FormatOutput == String {
+    // MARK: Fields
 
-    @State var monitor: Any?
+    @Binding private var value: F.FormatInput?
+    private let format: F
+    private let prompt: Text?
+    @ViewBuilder private var label: () -> Label
 
-    public init(_ placeholder: LocalizedStringKey, value: Binding<F.FormatInput?>, format: F, onSubmit: (() -> ())? = nil) {
+    private let id = UUID()
+
+    // MARK: Initializers
+
+    public init(
+        value: Binding<F.FormatInput?>,
+        format: F,
+        prompt: Text? = nil,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
         self._value = value
         self.format = format
-        self.placeholder = placeholder
-        self.onSubmit = onSubmit
+        self.prompt = prompt
+        self.label = label
     }
 
-    public init(_ placeholder: LocalizedStringKey, text: Binding<String>, onSubmit: (() -> ())? = nil) where F == StringFormatStyle {
-        self.init(placeholder, value: .init(text), format: StringFormatStyle(), onSubmit: onSubmit)
+    public init(
+        _ title: some StringProtocol,
+        value: Binding<F.FormatInput?>,
+        format: F,
+        prompt: Text? = nil
+    ) where Label == Text {
+        self.init(
+            value: value,
+            format: format,
+            prompt: prompt
+        ) {
+            Text(title)
+        }
     }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
+        value: Binding<F.FormatInput?>,
+        format: F,
+        prompt: Text? = nil
+    ) where Label == Text {
+        self.init(
+            value: value,
+            format: format,
+            prompt: prompt
+        ) {
+            Text(titleKey)
+        }
+    }
+
+    public init(
+        text: Binding<String?>,
+        prompt: Text? = nil,
+        @ViewBuilder label: @escaping () -> Label
+    ) where F == StringFormatStyle {
+        self.init(
+            value: text,
+            format: StringFormatStyle(),
+            prompt: prompt,
+            label: label
+        )
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        text: Binding<String?>,
+        prompt: Text? = nil
+    ) where Label == Text, F == StringFormatStyle {
+        self.init(
+            value: text,
+            format: StringFormatStyle(),
+            prompt: prompt
+        ) {
+            Text(title)
+        }
+    }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
+        text: Binding<String?>,
+        prompt: Text? = nil
+    ) where Label == Text, F == StringFormatStyle {
+        self.init(
+            value: text,
+            format: StringFormatStyle(),
+            prompt: prompt
+        ) {
+            Text(titleKey)
+        }
+    }
+
+    // MARK: Body
 
     public var body: some View {
-        TextField(placeholder, value: $value, format: format)
-            .padding(.horizontal, horizontalPadding)
-            .frame(minHeight: elementMinHeight)
+        TextField(value: $value, format: format, prompt: prompt, label: label)
             .textFieldStyle(.plain)
-            .onSubmit {
-                if let onSubmit {
-                    onSubmit()
-                }
-            }
-
+            .modifier(LuminareHoverableModifier())
             .onAppear {
-                guard monitor != nil else { return }
-
-                monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                EventMonitorManager.shared.addLocalMonitor(
+                    for: id,
+                    matching: .keyDown
+                ) { event in
                     if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
                         window.keyDown(with: event)
 
@@ -57,10 +129,36 @@ public struct LuminareTextField<F>: View where F: ParseableFormatStyle, F.Format
                 }
             }
             .onDisappear {
-                if let monitor {
-                    NSEvent.removeMonitor(monitor)
-                }
-                monitor = nil
+                EventMonitorManager.shared.removeMonitor(for: id)
             }
     }
+}
+
+// MARK: - Preview
+
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareTextField",
+    traits: .sizeThatFitsLayout
+) {
+    @Previewable @FocusState var isFocused: Bool
+
+    LuminareSection {
+        VStack {
+            LuminareTextField("Text Field", text: .constant("Bordered"))
+                .focused($isFocused)
+
+            LuminareTextField("Text Field", text: .constant("Borderless"))
+                .luminareBordered(false)
+                .focused($isFocused)
+
+            LuminareTextField("Text Field", text: .constant("Disabled"))
+                .disabled(true)
+                .focused($isFocused)
+        }
+        .onAppear {
+            isFocused = false
+        }
+    }
+    .luminareAspectRatio(contentMode: .fill)
 }

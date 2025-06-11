@@ -7,46 +7,51 @@
 
 import SwiftUI
 
-public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
-    @Environment(\.tintColor) var tintColor
+// MARK: - Sidebar Tab
 
-    @Binding var activeTab: Tab
-    let tab: Tab
+/// A stylized tab for ``LuminareSidebar`` that is designed to be selectable.
+public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
+    // MARK: Environments
+
+    @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareTintColor) private var tintColor
+    @Environment(\.luminareAnimation) private var animation
+    @Environment(\.luminareAnimationFast) private var animationFast
+
+    // MARK: Fields
+
+    @Binding private var activeTab: Tab?
+    private let tab: Tab
 
     @State private var isActive = false
 
-    public init(_ tab: Tab, _ activeTab: Binding<Tab>) {
+    // MARK: Initializers
+
+    /// Initializes a ``LuminareSidebarTab``.
+    ///
+    /// - Parameters:
+    ///   - tab: the associated ``LuminareTabItem``.
+    ///   - activeTab: the activated ``LuminareTabItem`` binding.
+    public init(_ tab: Tab, _ activeTab: Binding<Tab?>) {
         self._activeTab = activeTab
         self.tab = tab
     }
+
+    // MARK: Body
 
     public var body: some View {
         Button {
             activeTab = tab
         } label: {
             HStack(spacing: 8) {
-                tab.iconView()
+                imageView(for: tab)
 
-                HStack(spacing: 0) {
-                    Text(tab.title)
+                titleView(for: tab)
+                    .fixedSize()
 
-                    if tab.showIndicator {
-                        VStack {
-                            Circle()
-                                .foregroundStyle(tintColor())
-                                .frame(width: 4, height: 4)
-                                .padding(.leading, 4)
-                                .shadow(color: tintColor(), radius: 4)
-
-                            Spacer()
-                        }
-                        .transition(.opacity.animation(LuminareConstants.animation))
-                    }
-                }
-                .fixedSize()
-
-                Spacer()
+                Spacer(minLength: 0)
             }
+            .frame(minHeight: minHeight)
         }
         .buttonStyle(SidebarButtonStyle(isActive: $isActive))
         .overlay {
@@ -63,14 +68,53 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         }
     }
 
-    func processActiveTab() {
-        withAnimation(LuminareConstants.fastAnimation) {
+    @ViewBuilder private func titleView(for tab: Tab) -> some View {
+        HStack(spacing: 0) {
+            Text(tab.title)
+
+            if tab.hasIndicator {
+                VStack {
+                    Circle()
+                        .foregroundStyle(.tint)
+                        .frame(width: 4, height: 4)
+                        .padding(.leading, 4)
+                        .shadow(color: tintColor, radius: 4)
+
+                    Spacer()
+                }
+                .transition(.opacity.animation(animation))
+            }
+        }
+    }
+
+    @ViewBuilder private func imageView(for tab: Tab) -> some View {
+        tab.image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .padding(8)
+            .frame(width: minHeight, height: minHeight)
+            .background(.quinary)
+            .clipShape(.rect(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(.quaternary, lineWidth: 1)
+            }
+    }
+
+    // MARK: Functions
+
+    private func processActiveTab() {
+        withAnimation(animationFast) {
             isActive = activeTab == tab
         }
     }
 }
 
+// MARK: - Button Style (Sidebar)
+
 struct SidebarButtonStyle: ButtonStyle {
+    @Environment(\.luminareAnimationFast) private var animationFast
+
     let cornerRadius: CGFloat = 12
     @State var isHovering: Bool = false
     @Binding var isActive: Bool
@@ -85,10 +129,41 @@ struct SidebarButtonStyle: ButtonStyle {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 }
             }
-            .onHover { hover in
-                isHovering = hover
-            }
-            .animation(LuminareConstants.fastAnimation, value: [isHovering, isActive, configuration.isPressed])
+            .animation(animationFast, value: isHovering)
+            .animation(animationFast, value: isActive)
+            .animation(animationFast, value: configuration.isPressed)
             .clipShape(.rect(cornerRadius: cornerRadius))
+            .onHover { isHovering in
+                self.isHovering = isHovering
+            }
     }
+}
+
+// MARK: - Preview
+
+private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
+    case about
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .about: .init(localized: "About")
+        }
+    }
+
+    var image: Image {
+        switch self {
+        case .about: .init(systemName: "app.gift")
+        }
+    }
+}
+
+@available(macOS 15.0, *)
+#Preview(
+    "LuminareSidebarTab",
+    traits: .sizeThatFitsLayout
+) {
+    LuminareSidebarTab(Tab.about, .constant(Tab.about))
+        .frame(width: 225)
 }

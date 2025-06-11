@@ -9,110 +9,41 @@ import SwiftUI
 
 // MARK: - Luminare View
 
-struct LuminareView<Content>: View where Content: View {
-    @Environment(\.tintColor) var tintColor
-    @Environment(\.luminareWindow) var window
-    let content: () -> Content
+/// The root view of a ``LuminareWindow``.
+///
+/// This view automatically overrides the content's tint by the one specified with the `luminareTintColor` environment value.
+public struct LuminareView<Content>: View where Content: View {
+    // MARK: Environments
 
-    @State private var currentAnimation: LuminareWindowAnimation?
+    @Environment(\.luminareTintColor) private var tintColor
+    @Environment(\.luminareWindow) private var window
 
-    var body: some View {
+    // MARK: Fields
+
+    @ViewBuilder public let content: () -> Content
+    @State private var contentSize: CGSize = .zero
+
+    public init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
+    }
+
+    // MARK: Body
+
+    public var body: some View {
         content()
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .onAppear(perform: { setSize(size: proxy.size, animate: false) })
-                        .onChange(of: proxy.size, perform: { setSize(size: $0, animate: true) })
-                }
-            }
-            .frame(minWidth: 100, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity, alignment: .leading)
             .focusable(false)
-            .buttonStyle(LuminareButtonStyle())
-            .tint(tintColor())
-    }
-
-    func setSize(size: CGSize, animate: Bool) {
-        guard let window else {
-            return
-        }
-
-        if let animation = currentAnimation {
-            animation.stop()
-        }
-
-        var frame = NSRect(
-            origin: window.frame.origin,
-            size: CGSize(
-                width: size.width,
-                height: size.height + 52 // 52 is the titlebar height
-            )
-        )
-
-        if let screenFrame = window.screen?.visibleFrame {
-            if frame.minX < screenFrame.minX {
-                frame.origin.x = screenFrame.minX
+            .buttonStyle(.luminare)
+            .luminareTint(overridingWith: tintColor)
+            .onGeometryChange(for: CGSize.self, of: \.size) {
+                contentSize = $0
             }
-
-            if frame.minY < screenFrame.minY {
-                frame.origin.y = screenFrame.minY
+            .onAppear {
+                window?.setSize(size: contentSize, animate: false)
+                window?.center()
             }
-
-            if frame.maxX > screenFrame.maxX {
-                frame.origin.x = screenFrame.maxX - frame.width
+            .onChange(of: contentSize) {
+                window?.setSize(size: $0, animate: true)
             }
-
-            if frame.maxY > screenFrame.maxY {
-                frame.origin.y = screenFrame.maxY - frame.height
-            }
-        }
-
-        if animate {
-            currentAnimation = LuminareWindowAnimation(window, frame)
-            currentAnimation?.start()
-        } else {
-            window.setFrame(frame, display: true)
-        }
-    }
-}
-
-// MARK: - NSWindow Animation
-
-// Custom NSWindow resize animation so that it can be stopped midway
-
-class LuminareWindowAnimation: NSAnimation {
-    let window: NSWindow
-    let targetFrame: NSRect
-
-    init(_ window: NSWindow, _ targetFrame: NSRect) {
-        self.window = window
-        self.targetFrame = targetFrame
-        super.init(duration: 0.5, animationCurve: .easeOut)
-        super.animationBlockingMode = .nonblocking // Allows the window to redraw contents while animating
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var currentProgress: NSAnimation.Progress {
-        didSet {
-            // The last frame of this NSAnimation looks a little stuttery,
-            // so we multiply the progress by 1.01, and then make sure the last
-            // frame doesn't draw.
-            let progress = CGFloat(currentProgress * 1.01)
-            guard progress < 1 else {
-                return
-            }
-
-            let currentFrame = NSRect(
-                x: window.frame.origin.x + (targetFrame.origin.x - window.frame.origin.x) * progress,
-                y: window.frame.origin.y + (targetFrame.origin.y - window.frame.origin.y) * progress,
-                width: window.frame.width + (targetFrame.width - window.frame.width) * progress,
-                height: window.frame.height + (targetFrame.height - window.frame.height) * progress
-            )
-
-            window.setFrame(currentFrame, display: false)
-        }
+            .frame(minWidth: 10, maxWidth: .infinity, minHeight: 10, maxHeight: .infinity, alignment: .leading)
     }
 }
