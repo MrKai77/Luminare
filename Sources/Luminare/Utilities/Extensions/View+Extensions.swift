@@ -82,14 +82,17 @@ public extension View {
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
+        hidden: Bool = false,
         @ViewBuilder popoverContent: @escaping () -> some View
     ) -> some View {
-        modifier(LuminarePopoverModifier(
-            attachmentAnchor: attachmentAnchor,
-            arrowEdge: arrowEdge,
-            padding: padding,
-            popoverContent: popoverContent
-        ))
+        if !hidden {
+            modifier(LuminarePopoverModifier(
+                attachmentAnchor: attachmentAnchor,
+                arrowEdge: arrowEdge,
+                padding: padding,
+                popoverContent: popoverContent
+            ))
+        }
     }
 
     @ViewBuilder func luminarePopover(
@@ -98,6 +101,7 @@ public extension View {
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         dotSize: CGFloat = 4,
+        hidden: Bool = false,
         @ViewBuilder popoverContent: @escaping () -> some View
     ) -> some View {
         overlay(alignment: alignment) {
@@ -112,6 +116,7 @@ public extension View {
                             attachmentAnchor: attachmentAnchor,
                             arrowEdge: arrowEdge,
                             padding: padding,
+                            hidden: hidden,
                             popoverContent: popoverContent
                         )
                 }
