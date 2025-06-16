@@ -110,7 +110,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
             }
         }
-        .padding(outerPadding)
+        .padding(.vertical, outerPadding)
     }
 
     @ViewBuilder private func wrappedHeader() -> some View {

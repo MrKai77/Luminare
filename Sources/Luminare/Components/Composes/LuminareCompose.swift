@@ -73,7 +73,7 @@ public struct LuminareCompose<Label, Content>: View
     private let alignment: VerticalAlignment
     private let spacing: CGFloat?
 
-    @State private var ignoreSafeAreaEdgesKey: Edge.Set = []
+    @State private var ignoreSafeAreaEdgesKey: Edge.Set?
     @ViewBuilder private var content: () -> Content, label: () -> Label
 
     // MARK: Initializers
@@ -170,9 +170,9 @@ public struct LuminareCompose<Label, Content>: View
     private var insets: EdgeInsets {
         .init(
             top: 0,
-            leading: ignoreSafeAreaEdgesKey.contains(.leading) ? 0 : horizontalPadding,
+            leading: ignoreSafeAreaEdgesKey?.contains(.leading) == true ? 0 : horizontalPadding,
             bottom: 0,
-            trailing: ignoreSafeAreaEdgesKey.contains(.trailing) ? 0 : horizontalPadding
+            trailing: ignoreSafeAreaEdgesKey?.contains(.trailing) == true ? 0 : horizontalPadding
         )
     }
 
@@ -185,8 +185,8 @@ public struct LuminareCompose<Label, Content>: View
 // MARK: - Preference Key
 
 struct LuminareComposeIgnoreSafeAreaEdgesKey: PreferenceKey {
-    typealias Value = Edge.Set
-    static var defaultValue: Value = []
+    typealias Value = Edge.Set?
+    static var defaultValue: Value = nil
 
     static func reduce(value: inout Value, nextValue: () -> Value) {
         value = value ?? nextValue()

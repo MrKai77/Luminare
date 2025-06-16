@@ -54,15 +54,11 @@ public struct AutoScrollView<Content>: View where Content: View {
                         .frame(height: contentMarginsBottom)
                 }
             }
-            .onGeometryChange(for: CGSize.self) { proxy in
-                proxy.size
-            } action: { size in
+            .onGeometryChange(for: CGSize.self, of: \.size) { size in
                 contentSize = size
             }
         }
-        .onGeometryChange(for: CGSize.self) { proxy in
-            proxy.size
-        } action: { size in
+        .onGeometryChange(for: CGSize.self, of: \.size) { size in
             containerSize = size
         }
         .scrollDisabled(isHorizontalScrollingDisabled && isVerticalScrollingDisabled)

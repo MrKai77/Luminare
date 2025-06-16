@@ -342,15 +342,6 @@ public struct LuminareListItem<Content, V>: View
                 }
             }
             .background {
-                if isEnabled {
-                    ZStack {
-                        itemBorder()
-                        itemBackground()
-                    }
-                    .padding(.horizontal, 1)
-                    .padding(.leading, 1) // it's nuanced
-                }
-
                 if hasDividers, !isLast {
                     VStack {
                         Spacer()
@@ -358,6 +349,15 @@ public struct LuminareListItem<Content, V>: View
                         Divider()
                     }
                     .padding(.trailing, -1)
+                }
+
+                if isEnabled {
+                    ZStack {
+                        itemBorder()
+                        itemBackground()
+                    }
+                    .padding(.horizontal, 1)
+                    .padding(.leading, 1) // it's nuanced
                 }
             }
             .onChange(of: selection) { _ in
