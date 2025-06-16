@@ -357,7 +357,6 @@ public struct LuminareListItem<Content, V>: View
                         Spacer()
 
                         Divider()
-                            .frame(height: 0)
                     }
                     .padding(.trailing, -1)
                 }
