@@ -104,13 +104,8 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     }
 
     override func close() {
-        NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.15
-            self.animator().alphaValue = 0
-        }, completionHandler: {
-            super.close()
-            self.isPresented = false
-        })
+        super.close()
+        self.isPresented = false
     }
 
     override func keyDown(with event: NSEvent) {

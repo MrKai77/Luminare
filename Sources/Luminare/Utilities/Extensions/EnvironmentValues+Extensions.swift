@@ -143,9 +143,9 @@ public extension EnvironmentValues {
 
     // MARK: Slider
 
-    @Entry var luminareSliderLayout: LuminareSliderLayout = .compact
+    @Entry var luminareSliderLayout: LuminareSliderLayout = .regular
 
     // MARK: Slider Picker
 
-    @Entry var luminareSliderPickerLayout: LuminareSliderPickerLayout = .compact
+    @Entry var luminareSliderPickerLayout: LuminareSliderPickerLayout = .regular
 }

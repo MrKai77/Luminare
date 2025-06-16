@@ -110,7 +110,13 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
     public var body: some View {
         TextField(value: $value, format: format, prompt: prompt, label: label)
             .textFieldStyle(.plain)
-            .modifier(LuminareHoverableModifier())
+            .modifier(
+                LuminareHoverableModifier(
+                    fill: .quinary,
+                    hovering: .quaternary,
+                    pressed: .tertiary
+                )
+            )
             .onAppear {
                 EventMonitorManager.shared.addLocalMonitor(
                     for: id,
@@ -148,7 +154,12 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
             LuminareTextField("Text Field", text: .constant("Bordered"))
                 .focused($isFocused)
 
-            LuminareTextField("Text Field", text: .constant("Borderless"))
+            LuminareTextField("Text Field", text: .constant("No Border"))
+                .luminareBordered(false)
+                .focused($isFocused)
+            
+            LuminareTextField("Text Field", text: .constant("No Background or Border"))
+                .luminareHasBackground(false)
                 .luminareBordered(false)
                 .focused($isFocused)
 
