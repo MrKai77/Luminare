@@ -157,7 +157,7 @@ struct ColorPickerCircle: View {
 #Preview("ColorSaturationBrightnessView") {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
 
-    LuminareSection {
+    LuminareSection(outerPadding: 0) {
         ColorSaturationBrightnessView(selectedColor: $color)
     }
     .padding()

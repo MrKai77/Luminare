@@ -42,7 +42,7 @@ struct ColorPickerModalView: View {
 
     var body: some View {
         Group {
-            LuminareSection(hasPadding: false) {
+            LuminareSection(hasPadding: false, outerPadding: 0) {
                 VStack(spacing: 2) {
                     let color = Binding {
                         internalHSBColor
@@ -54,6 +54,7 @@ struct ColorPickerModalView: View {
 
                     ColorSaturationBrightnessView(selectedColor: color)
                         .scaledToFill()
+                        .compositingGroup() // Fixes a weird clipping issue
                         .clipShape(
                             UnevenRoundedRectangle(
                                 topLeadingRadius: 8,
@@ -65,6 +66,7 @@ struct ColorPickerModalView: View {
 
                     ColorHueSliderView(selectedColor: color, roundedBottom: true)
                         .scaledToFill()
+                        .compositingGroup() // Fixes a weird clipping issue
                         .clipShape(
                             UnevenRoundedRectangle(
                                 topLeadingRadius: 2,
