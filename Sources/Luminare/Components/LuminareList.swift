@@ -342,16 +342,15 @@ public struct LuminareListItem<Content, V>: View
                 }
             }
             .background {
-                ZStack {
-                    if isEnabled {
+                if isEnabled {
+                    ZStack {
                         itemBorder()
                         itemBackground()
                     }
+                    .padding(.horizontal, 1)
+                    .padding(.leading, 1) // it's nuanced
                 }
-                .padding(.horizontal, 1)
-                .padding(.leading, 1) // it's nuanced
-            }
-            .overlay {
+
                 if hasDividers, !isLast {
                     VStack {
                         Spacer()
