@@ -44,7 +44,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             activeTab = tab
         } label: {
             HStack(spacing: 8) {
-                imageView(for: tab)
+                tab.decoratedImageView
 
                 titleView(for: tab)
                     .fixedSize()
@@ -85,20 +85,6 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                 .transition(.opacity.animation(animation))
             }
         }
-    }
-
-    @ViewBuilder private func imageView(for tab: Tab) -> some View {
-        tab.image
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .padding(8)
-            .frame(width: minHeight, height: minHeight)
-            .background(.quinary)
-            .clipShape(.rect(cornerRadius: 8))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
     }
 
     // MARK: Functions

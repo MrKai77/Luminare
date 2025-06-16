@@ -36,23 +36,15 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
         self.isHovering = false
     }
 
-    #if DEBUG
-        init(
-            isHovering: Bool = false,
-            icon: Image
-        ) {
-            self.icon = icon
-            self.isHovering = isHovering
-        }
-    #endif
-
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(LuminareFilledModifier(
-                isHovering: isHovering, isPressed: configuration.isPressed
+                isHovering: isHovering, isPressed: configuration.isPressed,
+                fill: .clear, hovering: .quaternary.opacity(0.7),
+                pressed: .quaternary
             ))
             .overlay {
                 HStack {

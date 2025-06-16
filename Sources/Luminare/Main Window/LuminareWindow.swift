@@ -18,7 +18,7 @@ public class LuminareWindow: NSWindow {
     public init(content: @escaping () -> some View) {
         super.init(
             contentRect: .zero,
-            styleMask: [.titled, .fullSizeContentView, .closable, .resizable],
+            styleMask: [.titled, .fullSizeContentView, .closable],
             backing: .buffered,
             defer: false
         )

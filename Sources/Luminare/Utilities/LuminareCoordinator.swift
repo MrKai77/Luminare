@@ -30,6 +30,8 @@ public extension LuminareCoordinator {
             }
         }
 
+        luminare?.layoutIfNeeded()
+        luminare?.center()
         luminare?.orderFrontRegardless()
     }
 
