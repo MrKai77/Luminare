@@ -9,7 +9,7 @@ import SwiftUI
 
 public enum LuminareSliderLayout: Equatable, Hashable, Identifiable, Codable, Sendable {
     case regular
-    case compact(textBoxWidth: CGFloat? = nil)
+    case compact(textBoxWidth: CGFloat? = nil, moveTextBoxToLeadingOnDrag: Bool = false)
 
     public var id: Self { self }
 }
@@ -227,13 +227,14 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
                 sliderView()
                     .padding(.horizontal, horizontalPadding)
-            case let .compact(textBoxWidth):
-                if let textBoxWidth {
+            case let .compact(textBoxWidth, moveTextBoxToLeadingOnDrag):
+                if !moveTextBoxToLeadingOnDrag {
                     LuminareCompose {
                         sliderView()
 
                         textBoxView()
                             .frame(width: textBoxWidth)
+                            .fixedSize()
                     } label: {
                         label()
                     }
@@ -246,12 +247,14 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
                         if !isAlternativeTextBoxVisible {
                             textBoxView()
+                                .frame(width: textBoxWidth)
                                 .fixedSize()
                                 .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
                     } label: {
                         if isAlternativeTextBoxVisible {
                             textBoxView()
+                                .frame(width: textBoxWidth)
                                 .fixedSize()
                                 .transition(.move(edge: .leading).combined(with: .opacity))
                         } else {
@@ -515,5 +518,14 @@ public struct LuminareSlider<Label, Content, V, F>: View
                         .padding()
                 }
         }
+        
+        LuminareSlider(
+            "With a sliding textbox",
+            value: $value,
+            in: 0...128,
+            format: .number.precision(.fractionLength(0...2)),
+            prefix: Text("#")
+        )
+        .luminareSliderLayout(.compact(textBoxWidth: 100, moveTextBoxToLeadingOnDrag: true))
     }
 }
