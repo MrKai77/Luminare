@@ -50,7 +50,7 @@ public struct LuminareToggle<Label>: View where Label: View {
     // MARK: Body
 
     public var body: some View {
-        LuminareCompose(contentMaxWidth: nil) {
+        LuminareCompose {
             Toggle("", isOn: $value)
                 .labelsHidden()
                 .toggleStyle(.switch)

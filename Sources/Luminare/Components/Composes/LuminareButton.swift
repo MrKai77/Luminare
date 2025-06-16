@@ -122,13 +122,14 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
     // MARK: Body
 
     public var body: some View {
-        LuminareCompose(contentMaxWidth: nil) {
+        LuminareCompose {
             Button(role: role) {
                 action()
             } label: {
                 content()
             }
             .buttonStyle(.luminareCompact)
+            .preference(key: LuminareComposeIgnoreSafeAreaEdgesKey.self, value: .trailing)
         } label: {
             label()
         }

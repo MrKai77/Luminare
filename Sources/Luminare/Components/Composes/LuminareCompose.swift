@@ -70,32 +70,27 @@ public struct LuminareCompose<Label, Content>: View
 
     // MARK: Fields
 
-    private let contentMaxWidth: CGFloat?
     private let alignment: VerticalAlignment
     private let spacing: CGFloat?
 
+    @State private var ignoreSafeAreaEdgesKey: Edge.Set = []
     @ViewBuilder private var content: () -> Content, label: () -> Label
-
-    @State private var size: CGSize = .zero
 
     // MARK: Initializers
 
     /// Initializes a ``LuminareCompose``.
     ///
     /// - Parameters:
-    ///   - contentMaxWidth: the maximum width of the content area.
     ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     ///   - label: the label.
     public init(
-        contentMaxWidth: CGFloat? = 270,
         alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
-        self.contentMaxWidth = contentMaxWidth
         self.alignment = alignment
         self.spacing = spacing
         self.label = label
@@ -106,19 +101,16 @@ public struct LuminareCompose<Label, Content>: View
     ///
     /// - Parameters:
     ///   - title: the label text.
-    ///   - contentMaxWidth: the maximum width of the content area.
     ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     public init(
         _ title: some StringProtocol,
-        contentMaxWidth: CGFloat? = 270,
         alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
-            contentMaxWidth: contentMaxWidth,
             alignment: alignment,
             spacing: spacing,
             content: content
@@ -131,19 +123,16 @@ public struct LuminareCompose<Label, Content>: View
     ///
     /// - Parameters:
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
-    ///   - contentMaxWidth: the maximum width of the content area.
     ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
     public init(
         _ titleKey: LocalizedStringKey,
-        contentMaxWidth: CGFloat? = 270,
         alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) where Label == Text {
         self.init(
-            contentMaxWidth: contentMaxWidth,
             alignment: alignment,
             spacing: spacing,
             content: content
@@ -168,36 +157,39 @@ public struct LuminareCompose<Label, Content>: View
                 Spacer(minLength: 0)
             }
 
-            if let contentMaxWidth {
-                HStack(alignment: alignment, spacing: spacing) {
-                    Spacer()
-
-                    wrappedContent()
-                }
-                .frame(maxWidth: contentMaxWidth - insets.trailing)
-            } else {
-                wrappedContent()
-            }
+            wrappedContent()
         }
+        .readPreference(
+            LuminareComposeIgnoreSafeAreaEdgesKey.self,
+            to: $ignoreSafeAreaEdgesKey
+        )
         .frame(maxWidth: .infinity, minHeight: minHeight)
-        .onGeometryChange(for: CGSize.self, of: \.size) {
-            size = $0
-        }
         .padding(insets)
     }
 
     private var insets: EdgeInsets {
-        switch style {
-        case .regular:
-            .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: horizontalPadding)
-        case .inline:
-            .init(top: 0, leading: horizontalPadding, bottom: 0, trailing: 0)
-        }
+        .init(
+            top: 0,
+            leading: ignoreSafeAreaEdgesKey.contains(.leading) ? 0 : horizontalPadding,
+            bottom: 0,
+            trailing: ignoreSafeAreaEdgesKey.contains(.trailing) ? 0 : horizontalPadding
+        )
     }
 
     @ViewBuilder private func wrappedContent() -> some View {
         content()
             .controlSize(controlSize.proposal ?? .regular)
+    }
+}
+
+// MARK: - Preference Key
+
+struct LuminareComposeIgnoreSafeAreaEdgesKey: PreferenceKey {
+    typealias Value = Edge.Set
+    static var defaultValue: Value = []
+
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value = value ?? nextValue()
     }
 }
 
@@ -234,13 +226,19 @@ public struct LuminareCompose<Label, Content>: View
 ) {
     LuminareSection {
         LuminareCompose("Label") {
-            Color.red
+            Text("Normal Content")
+                .ignoresSafeArea()
+                .frame(maxWidth: .infinity)
                 .frame(height: 30)
+                .background(.red)
         }
 
         LuminareCompose("Culpa nisi sint reprehenderit sit.") {
-            Color.red
+            Text("Ignores safe area insets")
+                .ignoresSafeArea()
+                .frame(maxWidth: .infinity)
                 .frame(height: 30)
+                .background(.red)
         }
 
         LuminareCompose("Eu duis ipsum cupidatat tempor nisi aliquip et sint ea reprehenderit Lorem ad dolor sint.") {
