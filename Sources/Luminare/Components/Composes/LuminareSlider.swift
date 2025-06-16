@@ -227,7 +227,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         VStack {
             switch layout {
             case .regular:
-                LuminareCompose(alignment: .top) {
+                LuminareCompose {
                     textBoxView()
                         .fixedSize()
                 } label: {

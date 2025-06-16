@@ -250,7 +250,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         VStack {
             switch layout {
             case .regular:
-                LuminareCompose(alignment: .top) {
+                LuminareCompose {
                     textBoxView()
                         .fixedSize()
                 } label: {
