@@ -12,6 +12,15 @@ public enum LuminareSliderLayout: Equatable, Hashable, Identifiable, Codable, Se
     case compact(textBoxWidth: CGFloat? = nil, moveTextBoxToLeadingOnDrag: Bool = false)
 
     public var id: Self { self }
+
+    var controlSizeMinHeight: CGFloat? {
+        switch self {
+        case .regular:
+            70
+        case .compact:
+            nil
+        }
+    }
 }
 
 public extension LuminareSliderLayout {
@@ -51,6 +60,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @State private var isSliderHovering: Bool = false
     @State private var isSliderDebouncedHovering: Bool = false
     @State private var isSliderEditing: Bool = false
+    @State private var composeWidth: CGFloat = .zero
 
     private let id = UUID()
 
@@ -230,11 +240,14 @@ public struct LuminareSlider<Label, Content, V, F>: View
             case let .compact(textBoxWidth, moveTextBoxToLeadingOnDrag):
                 if !moveTextBoxToLeadingOnDrag {
                     LuminareCompose {
-                        sliderView()
+                        HStack {
+                            sliderView()
 
-                        textBoxView()
-                            .frame(width: textBoxWidth)
-                            .fixedSize()
+                            textBoxView()
+                                .frame(width: textBoxWidth)
+                                .fixedSize()
+                        }
+                        .frame(maxWidth: composeWidth * 0.7, alignment: .trailing)
                     } label: {
                         label()
                     }
@@ -243,14 +256,17 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
 
                     LuminareCompose {
-                        sliderView()
+                        HStack {
+                            sliderView()
 
-                        if !isAlternativeTextBoxVisible {
-                            textBoxView()
-                                .frame(width: textBoxWidth)
-                                .fixedSize()
-                                .transition(.move(edge: .trailing).combined(with: .opacity))
+                            if !isAlternativeTextBoxVisible {
+                                textBoxView()
+                                    .frame(width: textBoxWidth)
+                                    .fixedSize()
+                                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                            }
                         }
+                        .frame(maxWidth: isAlternativeTextBoxVisible ? nil : composeWidth * 0.7, alignment: .trailing)
                     } label: {
                         if isAlternativeTextBoxVisible {
                             textBoxView()
@@ -265,6 +281,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 }
             }
         }
+        .frame(minHeight: layout.controlSizeMinHeight)
         .animation(animation, value: value)
         .animation(animation, value: isTextBoxVisible)
         .animation(animation, value: isSliderHovering)
@@ -272,6 +289,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .animation(animation, value: isSliderEditing)
         .booleanThrottleDebounced(isSliderHovering) { debouncedValue in
             isSliderDebouncedHovering = debouncedValue
+        }
+        .onGeometryChange(for: CGFloat.self, of: \.size.width) { newValue in
+            composeWidth = newValue
         }
     }
 
@@ -518,7 +538,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                         .padding()
                 }
         }
-        
+
         LuminareSlider(
             "With a sliding textbox",
             value: $value,

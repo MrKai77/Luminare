@@ -9,9 +9,18 @@ import SwiftUI
 
 public enum LuminareSliderPickerLayout: Equatable, Hashable, Identifiable, Codable, Sendable {
     case regular
-    case compact(textBoxWidth: CGFloat? = nil)
+    case compact(textBoxWidth: CGFloat? = nil, moveTextBoxToLeadingOnDrag: Bool = false)
 
     public var id: Self { self }
+
+    var controlSizeMinHeight: CGFloat? {
+        switch self {
+        case .regular:
+            70
+        case .compact:
+            nil
+        }
+    }
 }
 
 public extension LuminareSliderPickerLayout {
@@ -39,6 +48,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     @State private var isSliderHovering: Bool = false
     @State private var isSliderDebouncedHovering: Bool = false
     @State private var isSliderEditing: Bool = false
+    @State private var composeWidth: CGFloat = .zero
 
     // MARK: Initializers
 
@@ -250,16 +260,21 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
                 sliderView()
                     .padding(.horizontal, horizontalPadding)
-            case let .compact(textBoxWidth):
-                if let textBoxWidth {
+            case let .compact(textBoxWidth, moveTextBoxToLeadingOnDrag):
+                if !moveTextBoxToLeadingOnDrag {
                     LuminareCompose {
-                        sliderView()
+                        HStack {
+                            sliderView()
 
-                        textBoxView()
-                            .frame(width: textBoxWidth)
+                            textBoxView()
+                                .frame(width: textBoxWidth)
+                                .fixedSize()
+                        }
+                        .frame(maxWidth: composeWidth * 0.7, alignment: .trailing)
                     } label: {
                         label()
                     }
+                    .luminareComposeStyle(.inline)
                 } else {
                     let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
 
@@ -273,9 +288,11 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                                     .transition(.move(edge: .trailing).combined(with: .opacity))
                             }
                         }
+                        .frame(maxWidth: isAlternativeTextBoxVisible ? nil : composeWidth * 0.7, alignment: .trailing)
                     } label: {
                         if isAlternativeTextBoxVisible {
                             textBoxView()
+                                .frame(width: textBoxWidth)
                                 .fixedSize()
                                 .transition(.move(edge: .leading).combined(with: .opacity))
                         } else {
@@ -286,12 +303,16 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 }
             }
         }
+        .frame(minHeight: layout.controlSizeMinHeight)
         .animation(animation, value: selection)
         .animation(animation, value: isSliderHovering)
         .animation(animation, value: isSliderDebouncedHovering)
         .animation(animation, value: isSliderEditing)
         .booleanThrottleDebounced(isSliderHovering) { debouncedValue in
             isSliderDebouncedHovering = debouncedValue
+        }
+        .onGeometryChange(for: CGFloat.self, of: \.size.width) { newValue in
+            composeWidth = newValue
         }
     }
 
@@ -417,5 +438,15 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                         .padding()
                 }
         }
+
+        LuminareSliderPicker(
+            "With a sliding textbox",
+            Array(0...4),
+            selection: $selection
+        ) { value in
+            Text("\(value) is Chosen")
+                .monospaced()
+        }
+        .luminareSliderPickerLayout(.compact(moveTextBoxToLeadingOnDrag: true))
     }
 }
