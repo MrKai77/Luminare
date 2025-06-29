@@ -29,6 +29,7 @@ public struct LuminareToggle<Label>: View where Label: View {
         self.label = label
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         isOn value: Binding<Bool>

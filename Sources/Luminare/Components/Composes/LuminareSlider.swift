@@ -88,6 +88,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         self.label = label
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         value: Binding<V>,
@@ -171,6 +172,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         }
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         value: Binding<V>,

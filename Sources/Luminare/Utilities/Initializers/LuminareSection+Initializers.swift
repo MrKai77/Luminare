@@ -18,6 +18,7 @@ public extension LuminareSection {
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
     ///   - content: the content.
+    @_disfavoredOverload
     init(
         _ header: some StringProtocol,
         _ footer: some StringProtocol,
@@ -114,6 +115,7 @@ public extension LuminareSection {
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
     ///   - content: the content.
+    @_disfavoredOverload
     init(
         _ header: some StringProtocol,
         hasPadding: Bool = true,
@@ -203,6 +205,7 @@ public extension LuminareSection {
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
     ///   - content: the content.
+    @_disfavoredOverload
     init(
         footer: some StringProtocol,
         hasPadding: Bool = true,

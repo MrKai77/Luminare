@@ -34,6 +34,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
         self.label = label
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         value: Binding<F.FormatInput?>,
@@ -77,6 +78,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
         )
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         text: Binding<String?>,

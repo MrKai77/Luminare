@@ -49,6 +49,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     /// - Parameters:
     ///   - header: the header text.
     ///   - content: the content view.
+    @_disfavoredOverload
     public init(
         _ header: some StringProtocol,
         @ViewBuilder content: @escaping () -> Content

@@ -42,6 +42,7 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     ///   - title: the label text.
     ///   - selection: the selected ``LuminareTabItem`` binding.
     ///   - items: the list of available ``LuminareTabItem``.
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         selection: Binding<Tab>,

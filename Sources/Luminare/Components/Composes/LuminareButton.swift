@@ -33,6 +33,7 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
         self.action = action
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         role: ButtonRole? = nil,
@@ -63,6 +64,7 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
         }
     }
 
+    @_disfavoredOverload
     public init(
         _ content: some StringProtocol,
         role: ButtonRole? = nil,
@@ -89,6 +91,7 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
         }
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         _ content: some StringProtocol,

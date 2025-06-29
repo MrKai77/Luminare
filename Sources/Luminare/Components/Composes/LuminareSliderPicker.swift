@@ -80,6 +80,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
@@ -124,6 +125,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     ///   - label: the label.
+    @_disfavoredOverload
     public init(
         _ options: [V], selection: Binding<V>,
         content: @escaping (V) -> some StringProtocol,
@@ -168,6 +170,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
@@ -189,6 +192,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
@@ -210,6 +214,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - selection: the binding of the selected value.
     ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
+    @_disfavoredOverload
     public init(
         _ titleKey: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,

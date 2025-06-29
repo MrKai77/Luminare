@@ -104,6 +104,7 @@ public struct LuminareCompose<Label, Content>: View
     ///   - alignment: the vertical alignment of the elements.
     ///   - spacing: the spacing between the label and the content.
     ///   - content: the content.
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         alignment: VerticalAlignment = .center,
