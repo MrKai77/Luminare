@@ -18,7 +18,7 @@ public struct BooleanThrottleDebouncedModifier: ViewModifier {
     @State private var updatedValue: Bool // IMPORTANT: refer to this instead of `value`
     @State private var debouncedValue: Bool
 
-    @State private var timer: Timer?
+    @State private var timerTask: Task<(), Never>? = nil
 
     public init(
         _ value: Bool,
@@ -47,75 +47,44 @@ public struct BooleanThrottleDebouncedModifier: ViewModifier {
             }
             .onChange(of: value) { newValue in
                 updatedValue = newValue
-                if newValue {
-                    flipOn()
-                } else {
-                    flipOff()
-                }
+                flip(to: newValue)
             }
             .onChange(of: debouncedValue) { newValue in
                 action(newValue)
             }
     }
 
-    private func flipOn() {
-        if debouncedValue {
+    private func flip(to newValue: Bool) {
+        if newValue ? debouncedValue : !debouncedValue {
             // Cancels the flip off action when the delay is not met
-            timer?.invalidate()
-            timer = nil
-        } else if timer == nil {
+            timerTask?.cancel()
+            timerTask = nil
+        } else if timerTask == nil {
             if flipOnDelay > .zero {
-                // Schedules to flip on
-                timer = .scheduledTimer(withTimeInterval: flipOnDelay, repeats: false) { _ in
-                    debouncedValue = true
-                    timer?.invalidate()
+                timerTask = Task {
+                    try? await Task.sleep(for: .seconds(newValue ? flipOnDelay : flipOffDelay))
+                    guard !Task.isCancelled else { return }
+
+                    debouncedValue = newValue
+                    timerTask?.cancel()
+                    timerTask = nil
 
                     if throttleDelay > .zero {
-                        // In case immediately receives a flip off signal
-                        timer = .scheduledTimer(withTimeInterval: throttleDelay, repeats: false) { _ in
+                        // In case immediately receives a flip signal
+                        timerTask = Task {
+                            try? await Task.sleep(for: .seconds(throttleDelay))
+                            guard !Task.isCancelled else { return }
+
                             debouncedValue = updatedValue
-                            timer?.invalidate()
-                            timer = nil
+                            timerTask?.cancel()
+                            timerTask = nil
                         }
-                    } else {
-                        timer = nil
                     }
                 }
             } else {
-                debouncedValue = true
-                timer?.invalidate()
-                timer = nil
-            }
-        }
-    }
-
-    private func flipOff() {
-        if !debouncedValue {
-            // Cancels the flip on when the delay is not met
-            timer?.invalidate()
-            timer = nil
-        } else if timer == nil {
-            if flipOffDelay > .zero {
-                // Schedules to flip off
-                timer = .scheduledTimer(withTimeInterval: flipOffDelay, repeats: false) { _ in
-                    debouncedValue = false
-                    timer?.invalidate()
-
-                    if throttleDelay > .zero {
-                        // In case immediately receives a flip on signal
-                        timer = .scheduledTimer(withTimeInterval: throttleDelay, repeats: false) { _ in
-                            debouncedValue = updatedValue
-                            timer?.invalidate()
-                            timer = nil
-                        }
-                    } else {
-                        timer = nil
-                    }
-                }
-            } else {
-                debouncedValue = false
-                timer?.invalidate()
-                timer = nil
+                debouncedValue = newValue
+                timerTask?.cancel()
+                timerTask = nil
             }
         }
     }
@@ -128,8 +97,16 @@ public struct BooleanThrottleDebouncedModifier: ViewModifier {
 
     Color.white
         .onHover { isHovering = $0 }
-        .booleanThrottleDebounced(isHovering, flipOnDelay: 0.5, flipOffDelay: 0.5, throttleDelay: 2) {
+        .booleanThrottleDebounced(
+            isHovering,
+            flipOnDelay: 0.5,
+            flipOffDelay: 0.5,
+            throttleDelay: 2.0
+        ) {
             debouncedIsHovering = $0
         }
         .colorMultiply(debouncedIsHovering ? Color.red : Color.blue)
+        .overlay {
+            Text(debouncedIsHovering ? "Hovering" : "Not Hovering")
+        }
 }

@@ -105,7 +105,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
 
     override func close() {
         super.close()
-        self.isPresented = false
+        isPresented = false
     }
 
     override func keyDown(with event: NSEvent) {

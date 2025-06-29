@@ -8,7 +8,7 @@
 import AppKit
 
 final class EventMonitorManager {
-    static let shared = EventMonitorManager()
+    @MainActor static let shared = EventMonitorManager()
     private var monitors: [AnyHashable: NSObject] = [:]
 
     func addLocalMonitor(

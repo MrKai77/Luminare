@@ -292,6 +292,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
     // MARK: - Coordinator
 
+    @MainActor
     public class Coordinator: NSObject {
         private enum DraggingStage: Equatable {
             case invalid
@@ -432,7 +433,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
                 // Arithmetic approach to achieve a undirectional paging effect
                 let isIncremental = offset - lastOffset > 0
-                let comparation: (Int, Int) -> Int = isIncremental ? max : min
+                let comparation: (Int, Int) -> Int = isIncremental ? { max($0, $1) } : { min($0, $1) }
                 let pageOffset = comparation(
                     lastPageOffset,
                     Int((relativeOffset / parent.spacing).rounded(isIncremental ? .down : .up))

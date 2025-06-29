@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 public protocol LuminareCoordinator: AnyObject {
     associatedtype Content: View
     var body: Content { get }

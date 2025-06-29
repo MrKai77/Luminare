@@ -66,6 +66,7 @@ public struct LuminareSheetPresentation: Equatable, Hashable, Codable, Sendable 
         offset(.init(x: x, y: y))
     }
 
+    @MainActor
     func origin(of frame: CGRect) -> CGPoint {
         switch target {
         case .screen:

@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A stylized window with a materialized appearance.
 public class LuminareWindow: NSWindow {
-    private var currentAnimation: LuminareWindowAnimation?
+    private var animator: LuminareWindowAnimator!
 
     /// Initializes a ``LuminareWindow``.
     ///
@@ -22,6 +22,8 @@ public class LuminareWindow: NSWindow {
             backing: .buffered,
             defer: false
         )
+
+        self.animator = LuminareWindowAnimator(window: self)
 
         let view = NSHostingView(
             rootView: LuminareView(content: content)
@@ -38,7 +40,7 @@ public class LuminareWindow: NSWindow {
     func setSize(size: CGSize, animate: Bool) {
         guard size.width > 0, size.height > 0 else { return }
 
-        currentAnimation?.stop()
+        animator.cancel()
 
         var frame = NSRect(
             origin: frame.origin,
@@ -66,52 +68,12 @@ public class LuminareWindow: NSWindow {
             }
         }
 
-        if animate {
-            currentAnimation = LuminareWindowAnimation(self, frame)
-            currentAnimation?.start()
+        if animate, isVisible {
+            animator.animate(to: frame, duration: 0.3) { t in
+                1 - pow(1 - t, 3)
+            }
         } else {
             setFrame(frame, display: true)
-        }
-    }
-}
-
-// MARK: - NSWindow Animation
-
-// Vustom `NSWindow` resize animation so that it can be stopped midway
-class LuminareWindowAnimation: NSAnimation {
-    let window: NSWindow
-    let targetFrame: NSRect
-
-    init(_ window: NSWindow, _ targetFrame: NSRect) {
-        self.window = window
-        self.targetFrame = targetFrame
-        super.init(duration: 0.5, animationCurve: .easeOut)
-        super.animationBlockingMode = .nonblocking // allows the window to redraw contents while animating
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var currentProgress: NSAnimation.Progress {
-        didSet {
-            // The last frame of this `NSAnimation` looks a little stuttery,
-            // so we multiply the progress by 1.01, and then make sure the last
-            // frame doesn't draw
-            let progress = CGFloat(currentProgress * 1.01)
-            guard progress < 1 else {
-                return
-            }
-
-            let currentFrame = NSRect(
-                x: window.frame.origin.x + (targetFrame.origin.x - window.frame.origin.x) * progress,
-                y: window.frame.origin.y + (targetFrame.origin.y - window.frame.origin.y) * progress,
-                width: window.frame.width + (targetFrame.width - window.frame.width) * progress,
-                height: window.frame.height + (targetFrame.height - window.frame.height) * progress
-            )
-
-            window.setFrame(currentFrame, display: false)
         }
     }
 }

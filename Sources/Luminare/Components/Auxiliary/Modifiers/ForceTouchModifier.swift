@@ -119,7 +119,7 @@ struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     @State private var timestamp: Date?
     @State private var state: NSPressGestureRecognizer.State = .ended
 
-    @State private var longPressTimer: Timer?
+    @State private var longPressTimerTask: Task<(), Never>? = nil
 
     private let id = UUID()
 
@@ -206,11 +206,17 @@ struct ForceTouch<Content>: NSViewRepresentable where Content: View {
         var event = ForceTouchGesture.Event()
         event.modifierFlags = modifierFlags
 
-        longPressTimer = .scheduledTimer(withTimeInterval: threshold + 0.1, repeats: false) { _ in
+        longPressTimerTask = Task {
+            try? await Task.sleep(for: .seconds(threshold + 0.1))
+            guard !Task.isCancelled else { return }
+
             timestamp = .now
             event.stage = 1
 
-            longPressTimer = .scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            longPressTimerTask = Task {
+                try? await Task.sleep(for: .seconds(0.1))
+                guard !Task.isCancelled else { return }
+
                 let pressure = event.pressure + 0.1
                 let isOverflowing = pressure > 1
 
@@ -225,8 +231,8 @@ struct ForceTouch<Content>: NSViewRepresentable where Content: View {
     }
 
     private func terminateLongPressDelegate() {
-        longPressTimer?.invalidate()
-        longPressTimer = nil
+        longPressTimerTask?.cancel()
+        longPressTimerTask = nil
     }
 }
 

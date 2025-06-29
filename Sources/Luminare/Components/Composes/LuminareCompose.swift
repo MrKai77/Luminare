@@ -186,7 +186,7 @@ public struct LuminareCompose<Label, Content>: View
 
 struct LuminareComposeIgnoreSafeAreaEdgesKey: PreferenceKey {
     typealias Value = Edge.Set?
-    static var defaultValue: Value = nil
+    static var defaultValue: Value { nil }
 
     static func reduce(value: inout Value, nextValue: () -> Value) {
         value = value ?? nextValue()

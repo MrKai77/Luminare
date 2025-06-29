@@ -157,7 +157,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
             LuminareTextField("Text Field", text: .constant("No Border"))
                 .luminareBordered(false)
                 .focused($isFocused)
-            
+
             LuminareTextField("Text Field", text: .constant("No Background or Border"))
                 .luminareHasBackground(false)
                 .luminareBordered(false)

@@ -47,7 +47,8 @@ public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
 
 public extension LuminareTabItem {
     var hasIndicator: Bool { false }
-    
+
+    @MainActor
     var decoratedImageView: some View {
         DecoratedImageView(tab: self)
     }
@@ -55,10 +56,10 @@ public extension LuminareTabItem {
 
 // MARK: Image View
 
-fileprivate struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
+private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
     @Environment(\.luminareMinHeight) private var minHeight
     let tab: Tab
-    
+
     var body: some View {
         tab.image
             .resizable()
