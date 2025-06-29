@@ -175,6 +175,7 @@ struct LuminareModalView<Content>: View where Content: View {
 
 struct LuminareModalModifier<ModalContent>: ViewModifier
     where ModalContent: View {
+    @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareModalStyle) private var style
     @Environment(\.luminareModalContentWrapper) private var contentWrapper
     @Environment(\.luminareSheetPresentation) private var sheetPresentation
@@ -209,7 +210,12 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
                     attachmentAnchor: attachmentAnchor,
                     arrowEdge: arrowEdge
                 ) {
-                    contentWrapper(AnyView(self.content()))
+                    contentWrapper(
+                        AnyView(
+                            self.content()
+                                .luminareTint(overridingWith: tintColor)
+                        )
+                    )
                 }
         }
     }
@@ -223,7 +229,12 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
             presentation: sheetPresentation,
             cornerRadii: sheetCornerRadii
         ) {
-            contentWrapper(AnyView(content()))
+            contentWrapper(
+                AnyView(
+                    content()
+                        .luminareTint(overridingWith: tintColor)
+                )
+            )
         }
 
         DispatchQueue.main.async {
