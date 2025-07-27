@@ -183,7 +183,7 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
     @Environment(\.luminareSheetIsMovableByWindowBackground) private var sheetIsMovableByWindowBackground
     @Environment(\.luminareSheetClosesOnDefocus) private var sheetClosesOnDefocus
 
-    @State private var panel: LuminareModalWindow<AnyView>?
+    @State private var panelController: NSWindowController?
 
     @Binding var isPresented: Bool
     @ViewBuilder var content: () -> ModalContent
@@ -221,8 +221,8 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
     }
 
     private func presentSheet() {
-        guard panel == nil else { return }
-        panel = LuminareModalWindow(
+        guard panelController?.window == nil else { return }
+        let panel = LuminareModalWindow(
             isPresented: $isPresented,
             isMovableByWindowBackground: sheetIsMovableByWindowBackground,
             closesOnDefocus: sheetClosesOnDefocus,
@@ -238,14 +238,16 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
         }
 
         DispatchQueue.main.async {
-            panel?.orderFrontRegardless()
-            panel?.makeKey()
+            panel.orderFrontRegardless()
+            panel.makeKey()
         }
+
+        panelController = .init(window: panel)
     }
 
     private func closeSheet() {
-        panel?.close()
-        panel = nil
+        panelController?.close()
+        panelController = nil
     }
 }
 

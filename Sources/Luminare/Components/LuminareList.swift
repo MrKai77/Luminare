@@ -301,8 +301,7 @@ public struct LuminareListItem<Content, V>: View
     @Environment(\.luminareHasDividers) private var hasDividers
     @Environment(\.luminareListItemCornerRadii) private var itemCornerRadii
     @Environment(\.luminareListItemHeight) private var itemHeight
-    @Environment(\.luminareListItemHighlightOnHover) private
-    var highlightOnHover
+    @Environment(\.luminareListItemHighlightOnHover) private var highlightOnHover
 
     // MARK: Fields
 

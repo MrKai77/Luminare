@@ -205,7 +205,7 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
 // MARK: - Preview
 
 private struct PopoverForceTouchPreview<Content, Badge>: View where Content: View, Badge: View {
-    var arrowEdge: Edge? = nil
+    var arrowEdge: Edge?
     var padding: CGFloat = 4
 
     @ViewBuilder var content: (_ gesture: ForceTouchGesture, _ recognized: Bool) -> Content
