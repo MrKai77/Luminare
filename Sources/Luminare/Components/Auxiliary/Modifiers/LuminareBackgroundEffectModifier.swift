@@ -14,8 +14,7 @@ public struct LuminareBackgroundEffectModifier: ViewModifier {
             .background {
                 VisualEffectView(
                     material: .menu,
-                    blendingMode: .behindWindow,
-                    state: .active
+                    blendingMode: .behindWindow
                 )
                 .edgesIgnoringSafeArea(.top)
                 .allowsHitTesting(false)

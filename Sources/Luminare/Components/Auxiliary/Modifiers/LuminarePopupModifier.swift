@@ -186,8 +186,7 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         func backgroundWindow() -> some View {
             VisualEffectView(
                 material: parent.material,
-                blendingMode: .behindWindow,
-                state: .active
+                blendingMode: .behindWindow
             )
             .clipShape(.rect(cornerRadii: parent.cornerRadii))
         }
