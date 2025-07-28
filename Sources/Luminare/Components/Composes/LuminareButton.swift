@@ -132,10 +132,7 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
                 content()
             }
             .buttonStyle(.luminareCompact)
-            .preference(
-                key: LuminareComposeIgnoreSafeAreaEdgesKey.self,
-                value: .trailing
-            )
+            .luminareComposeIgnoreSafeArea(edges: .trailing)
         } label: {
             label()
         }

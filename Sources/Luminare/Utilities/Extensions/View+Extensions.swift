@@ -399,6 +399,13 @@ public extension View {
         environment(\.luminareComposeStyle, style)
     }
 
+    @ViewBuilder func luminareComposeIgnoreSafeArea(edges: Edge.Set) -> some View {
+        preference(
+            key: LuminareComposeIgnoreSafeAreaEdgesKey.self,
+            value: edges
+        )
+    }
+
     // MARK: Popover
 
     @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger) -> some View {

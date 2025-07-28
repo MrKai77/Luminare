@@ -153,20 +153,13 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             panel.delegate = self
 
             let view = NSHostingView(
-                rootView: VStack {
-                    ZStack {
-                        backgroundWindow()
-                        content()
-                        windowBorder()
-                    }
-                    .buttonStyle(.luminare)
-                    .environmentObject(panel)
-                    .fixedSize()
-                    .onGeometryChange(for: CGSize.self, of: \.size, action: panel.setSize(_:))
-                    .frame(minWidth: 12, minHeight: 12, alignment: .top)
-
-                    Spacer(minLength: 0)
-                }
+                rootView: LuminarePopupWrappingView(
+                    cornerRadii: parent.cornerRadii,
+                    material: parent.material,
+                    setPanelSize: panel.setSize,
+                    content: content
+                )
+                .environmentObject(panel)
                 .frame(
                     maxWidth: .infinity, maxHeight: .infinity,
                     alignment: parent.alignment.negate
@@ -181,35 +174,6 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 name: NSView.frameDidChangeNotification,
                 object: view
             )
-        }
-
-        func backgroundWindow() -> some View {
-            VisualEffectView(
-                material: parent.material,
-                blendingMode: .behindWindow
-            )
-            .clipShape(.rect(cornerRadii: parent.cornerRadii))
-        }
-
-        func windowBorder() -> some View {
-            ZStack {
-                UnevenRoundedRectangle(cornerRadii: parent.cornerRadii)
-                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
-
-                UnevenRoundedRectangle(cornerRadii: parent.cornerRadii)
-                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
-                    .mask(alignment: .top) {
-                        LinearGradient(
-                            colors: [
-                                .white,
-                                .clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 30)
-                    }
-            }
         }
 
         private func updatePosition(for size: CGSize) {
@@ -368,7 +332,74 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
 
     override public func resignKey() {
         if closesOnDefocus {
+            alphaValue = 0 // Prevents a little flicker in NSVisualEffectView when closing
             close()
+        }
+    }
+}
+
+// MARK: - View
+
+struct LuminarePopupWrappingView<Content>: View where Content: View {
+    private let cornerRadii: RectangleCornerRadii
+    private let material: NSVisualEffectView.Material
+    private let setPanelSize: (CGSize) -> ()
+    private let content: () -> Content
+
+    init(
+        cornerRadii: RectangleCornerRadii,
+        material: NSVisualEffectView.Material,
+        setPanelSize: @escaping (CGSize) -> (),
+        content: @escaping () -> Content
+    ) {
+        self.cornerRadii = cornerRadii
+        self.material = material
+        self.setPanelSize = setPanelSize
+        self.content = content
+    }
+
+    var body: some View {
+        VStack {
+            ZStack {
+                backgroundWindow()
+                content()
+                windowBorder()
+            }
+            .clipShape(.rect(cornerRadii: cornerRadii))
+            .buttonStyle(.luminare)
+            .fixedSize()
+            .onGeometryChange(for: CGSize.self, of: \.size, action: setPanelSize)
+            .frame(minWidth: 12, minHeight: 12, alignment: .top)
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func backgroundWindow() -> some View {
+        VisualEffectView(
+            material: material,
+            blendingMode: .behindWindow
+        )
+    }
+
+    private func windowBorder() -> some View {
+        ZStack {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+                .mask(alignment: .top) {
+                    LinearGradient(
+                        colors: [
+                            .white,
+                            .clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 30)
+                }
         }
     }
 }
