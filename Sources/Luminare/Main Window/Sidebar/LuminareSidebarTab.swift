@@ -119,6 +119,7 @@ struct SidebarButtonStyle: ButtonStyle {
             .animation(animationFast, value: isActive)
             .animation(animationFast, value: configuration.isPressed)
             .clipShape(.rect(cornerRadius: cornerRadius))
+            .contentShape(.rect)
             .onHover { isHovering in
                 self.isHovering = isHovering
             }
@@ -129,18 +130,21 @@ struct SidebarButtonStyle: ButtonStyle {
 
 private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case about
+    case more
 
     var id: Self { self }
 
     var title: String {
         switch self {
         case .about: .init(localized: "About")
+        case .more: .init(localized: "More")
         }
     }
 
     var image: Image {
         switch self {
         case .about: .init(systemName: "app.gift")
+        case .more: .init(systemName: "arrow.2.circlepath.circle")
         }
     }
 }
@@ -150,6 +154,10 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     "LuminareSidebarTab",
     traits: .sizeThatFitsLayout
 ) {
-    LuminareSidebarTab(Tab.about, .constant(Tab.about))
-        .frame(width: 225)
+    VStack(spacing: 4) {
+        LuminareSidebarTab(Tab.about, .constant(Tab.about))
+        LuminareSidebarTab(Tab.more, .constant(Tab.about))
+    }
+    .frame(width: 225)
+    .padding(4)
 }
