@@ -116,7 +116,14 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             initializePopup()
             guard let panel else { return }
 
-            panel.makeKeyAndOrderFront(nil)
+            DispatchQueue.main.async {
+                panel.displayIfNeeded()
+                panel.makeKeyAndOrderFront(nil)
+
+                if let view = panel.contentView {
+                    self.updatePosition(for: view.frame.size)
+                }
+            }
 
             EventMonitorManager.shared.addLocalMonitor(
                 for: id,

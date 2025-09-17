@@ -38,6 +38,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject w
         customToolbar.showsBaselineSeparator = false
         toolbar = customToolbar
 
+        displayIfNeeded()
         center()
     }
 

@@ -35,6 +35,8 @@ public class LuminareWindow: NSWindow {
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         toolbar = NSToolbar()
+        
+        displayIfNeeded()
     }
 
     func setSize(size: CGSize, animate: Bool) {
