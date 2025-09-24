@@ -21,7 +21,7 @@ public enum LuminarePaneLayout: Equatable, Hashable, Codable, Sendable {
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
     @Environment(\.luminarePaneLayout) private var layout
-    @Environment(\.luminarePaneTitleBarHeight) private var titleBarHeight
+    @Environment(\.luminareTitleBarHeight) private var titleBarHeight
 
     // MARK: Fields
 
@@ -86,7 +86,15 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     // MARK: Body
 
     public var body: some View {
-        ZStack {
+        VStack(spacing: 0) {
+            header()
+                .buttonStyle(TabHeaderButtonStyle())
+                .padding(.horizontal, 10)
+                .padding(.trailing, 5)
+                .frame(height: titleBarHeight, alignment: .leading)
+            
+            Divider()
+
             Group {
                 switch layout {
                 case .none:
@@ -116,20 +124,6 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                         luminareClickedOutside.toggle()
                     }
                     .ignoresSafeArea()
-            }
-
-            if Header.self != EmptyView.self {
-                VStack(spacing: 0) {
-                    header()
-                        .buttonStyle(TabHeaderButtonStyle())
-                        .padding(.horizontal, 10)
-                        .padding(.trailing, 5)
-                        .frame(height: titleBarHeight, alignment: .leading)
-
-                    Divider()
-                }
-                .frame(maxHeight: .infinity, alignment: .top)
-                .edgesIgnoringSafeArea(.top)
             }
         }
         .luminareListFixedHeight(until: .infinity)
