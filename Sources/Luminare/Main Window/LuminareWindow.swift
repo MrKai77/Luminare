@@ -34,7 +34,13 @@ public class LuminareWindow: NSWindow {
         toolbarStyle = .unified
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
-        toolbar = NSToolbar()
+        
+        let toolbar = NSToolbar()
+        toolbar.showsBaselineSeparator = false
+        if #available(macOS 15.0, *) {
+            toolbar.allowsDisplayModeCustomization = false
+        }
+        self.toolbar = toolbar
         
         displayIfNeeded()
     }
