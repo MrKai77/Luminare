@@ -31,17 +31,7 @@ public class LuminareWindow: NSWindow {
         )
 
         contentView = view
-        toolbarStyle = .unified
         titlebarAppearsTransparent = true
-        titleVisibility = .hidden
-        
-        let toolbar = NSToolbar()
-        toolbar.showsBaselineSeparator = false
-        if #available(macOS 15.0, *) {
-            toolbar.allowsDisplayModeCustomization = false
-        }
-        self.toolbar = toolbar
-        
         displayIfNeeded()
     }
 
@@ -54,7 +44,7 @@ public class LuminareWindow: NSWindow {
             origin: frame.origin,
             size: CGSize(
                 width: size.width,
-                height: size.height + 52 // 52 is the title bar height
+                height: size.height
             )
         )
 
