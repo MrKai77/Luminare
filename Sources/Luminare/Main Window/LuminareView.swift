@@ -34,15 +34,19 @@ public struct LuminareView<Content>: View where Content: View {
             .focusable(false)
             .buttonStyle(.luminare)
             .luminareTint(overridingWith: tintColor)
-            .onGeometryChange(for: CGSize.self, of: \.size) {
-                contentSize = $0
-            }
-            .onAppear {
-                window?.setSize(size: contentSize, animate: false)
-                window?.center()
-            }
-            .onChange(of: contentSize) {
-                window?.setSize(size: $0, animate: true)
+            .background {
+                Color.clear
+                    .onGeometryChange(for: CGSize.self, of: \.size) {
+                        contentSize = $0
+                    }
+                    .onAppear {
+                        window?.setSize(size: contentSize, animate: false)
+                        window?.center()
+                    }
+                    .onChange(of: contentSize) {
+                        window?.setSize(size: $0, animate: true)
+                    }
+                    .ignoresSafeArea()
             }
             .frame(minWidth: 10, maxWidth: .infinity, minHeight: 10, maxHeight: .infinity, alignment: .leading)
     }
