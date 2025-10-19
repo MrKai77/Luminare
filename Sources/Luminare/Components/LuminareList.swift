@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftUIIntrospect
+@_spi(Advanced) import SwiftUIIntrospect
 
 public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
     Identifiable, CaseIterable, Codable, Sendable {
@@ -196,7 +196,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(hasFixedHeight)
-                .introspect(.list, on: .macOS(.v13, .v14, .v15)) { tableView in
+                .introspect(.list, on: .macOS(.v13...)) { tableView in
                     tableView.selectionHighlightStyle = .none
                 }
                 .preference(key: DisableDividedStackInnerPaddingKey.self, value: true)
