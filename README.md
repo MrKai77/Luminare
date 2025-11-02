@@ -21,7 +21,89 @@ To add Luminare to your Xcode project, you can use Swift Package Manager (SPM). 
 
 Luminare offers a variety of components, organized for easy reference:
 
-_TODO: Add the table back._
+| Component Type | Component | Modifier | Description |
+|---|---|---|---|
+| **Button Styles** | `LuminareButtonStyle` | `.luminareButtonMaterial()` | Button material styling |
+| | | `.luminareButtonCornerRadii()` | Button corner radii |
+| | | `.luminareButtonCornerRadius()` | Button corner radius |
+| | | `.luminareButtonHighlightOnHover()` | Enable hover highlighting |
+| | `LuminareCompactButtonStyle` | `.luminareCompactButtonCornerRadii()` | Compact button corner radii |
+| | | `.luminareCompactButtonCornerRadius()` | Compact button corner radius |
+| | `LuminareCosmeticButtonStyle` | - | Button style for cosmetic buttons |
+| | `LuminareProminentButtonStyle` | - | Prominent button style |
+| **Composes** | `LuminareButton` | `.luminareComposeControlSize()` | Control size configuration |
+| | | `.luminareComposeStyle()` | Compose style |
+| | | `.luminareComposeIgnoreSafeArea()` | Safe area behavior |
+| | `LuminareCompose` | - | Compose container for controls |
+| | `LuminareToggle` | - | Toggle control |
+| | `LuminareSlider` | `.luminareSliderLayout()` | Slider layout configuration |
+| | `LuminareSliderPicker` | `.luminareSliderPickerLayout()` | Slider picker layout |
+| **Pickers** | `LuminarePicker` | `.luminarePickerRoundedCorner()` | Rounded corner behavior |
+| | `LuminareCompactPicker` | `.luminareCompactPickerStyle()` | Compact picker style |
+| **Color Pickers** | `LuminareColorPicker` | `.luminareColorPickerControls()` | Configure cancel/done controls |
+| **Text Inputs** | `LuminareTextField` | - | Styled text field |
+| | `LuminareTextEditor` | - | Styled text editor |
+| **Steppers** | `LuminareStepper` | `.luminareStepperAlignment()` | Stepper alignment (macOS 15.0+) |
+| | | `.luminareStepperDirection()` | Stepper direction (macOS 15.0+) |
+| **Sections** | `LuminareSection` | `.luminareSectionLayout()` | Section layout configuration |
+| | | `.luminareSectionMaterial()` | Section background material |
+| | | `.luminareSectionMaxWidth()` | Maximum section width |
+| | | `.luminareSectionMasked()` | Enable/disable masking |
+| **Lists** | `LuminareList` | `.luminareListItemCornerRadii()` | List item corner radii |
+| | | `.luminareListItemCornerRadius()` | List item corner radius |
+| | | `.luminareListItemHeight()` | List item height |
+| | | `.luminareListItemHighlightOnHover()` | Hover highlighting |
+| | | `.luminareListFixedHeight()` | Fixed list height |
+| | | `.luminareListRoundedCorner()` | Rounded corner behavior |
+| | `LuminareListItem` | - | Individual list item |
+| **Main Window** | `LuminareWindow` | - | Main window container |
+| | `LuminareView` | - | Main view container |
+| | `LuminarePane` | `.luminarePaneLayout()` | Pane layout configuration |
+| | | `.luminareTitleBarHeight()` | Title bar height |
+| | `LuminareDividedStack` | - | Divided stack container |
+| | `LuminareSidebar` | `.luminareSizebarOverflow()` | Sidebar overflow |
+| | `LuminareSidebarSection` | - | Sidebar section |
+| | `LuminareSidebarTab` | - | Sidebar tab |
+| | `LuminareTabItem` | - | Tab item |
+| **Modal Windows** | `LuminareModalWindow` | `.luminareModal()` | Display modal windows |
+| | | `.luminareModalWithPredefinedSheetStyle()` | Modal with predefined styling |
+| | | `.luminareModalStyle()` | Configure modal appearance |
+| | | `.luminareModalContentWrapper()` | Wrap modal content |
+| | | `.luminareSheetCornerRadii()` | Sheet corner radii |
+| | | `.luminareSheetCornerRadius()` | Sheet corner radius |
+| | | `.luminareSheetPresentation()` | Sheet presentation config |
+| | | `.luminareSheetMovableByWindowBackground()` | Make sheets draggable |
+| | | `.luminareSheetClosesOnDefocus()` | Auto-close on defocus |
+| | `LuminareModalView` | - | Modal view |
+| | `LuminareTrafficLightedWindow` | - | Window with traffic lights |
+| | `LuminareTrafficLightedWindowView` | - | Traffic lighted window view |
+| **Popups** | - | `.luminarePopover()` | Display popovers |
+| | | `.luminarePopoverTrigger()` | Configure popover triggers |
+| | | `.luminarePopoverShade()` | Configure popover shading |
+| | | `.luminarePopup()` | Display popup panels |
+| | | `.luminarePopupPadding()` | Popup padding |
+| | | `.luminarePopupCornerRadii()` | Popup corner radii |
+| **Auxiliary Views** | `AutoScrollView` | - | Auto-scrolling view |
+| | `DividedVStack` | - | Vertical stack with dividers |
+| | `InfiniteScrollView` | - | Infinite scroll view |
+| **Form Styles** | `LuminareFormStyle` | `.luminareFormSpacing()` | Form spacing (macOS 15.0+) |
+| **Global Modifiers** | - | `.luminareTint()` | Custom tint color |
+| | | `.luminareBackground()` | Apply background effects |
+| | | `.luminareBordered()` | Add borders |
+| | | `.luminareCornerRadii()` | Corner radii |
+| | | `.luminareCornerRadius()` | Corner radius |
+| | | `.luminareHasBackground()` | Toggle background |
+| | | `.luminareHasDividers()` | Toggle dividers |
+| | | `.luminareAspectRatio()` | Aspect ratio control |
+| | | `.luminareContentMargins()` | Content margins |
+| | | `.luminareMinHeight()` | Minimum height |
+| | | `.luminareHorizontalPadding()` | Horizontal padding |
+| | | `.luminareAnimation()` | Custom animation |
+| | | `.luminareAnimationFast()` | Fast animation |
+| | | `.booleanThrottleDebounced()` | Throttled/debounced boolean changes |
+| **Utilities** | `LuminareSelectionData` | - | Protocol for selection behavior |
+| | `StringFormatStyle` | - | String formatting utilities |
+| | `EventMonitorManager` | - | Event monitoring manager |
 
 ## Example Usage
 
