@@ -9,8 +9,6 @@ import SwiftUI
 
 /// A stylized window with a materialized appearance.
 public class LuminareWindow: NSWindow {
-    private var animator: LuminareWindowAnimator!
-
     /// Initializes a ``LuminareWindow``.
     ///
     /// - Parameters:
@@ -23,8 +21,6 @@ public class LuminareWindow: NSWindow {
             defer: false
         )
 
-        self.animator = LuminareWindowAnimator(window: self)
-
         let view = NSHostingView(
             rootView: LuminareView(content: content)
                 .environment(\.luminareWindow, self)
@@ -33,45 +29,6 @@ public class LuminareWindow: NSWindow {
         contentView = view
         titlebarAppearsTransparent = true
         displayIfNeeded()
-    }
-
-    func setSize(size: CGSize, animate: Bool) {
-        guard size.width > 0, size.height > 0 else { return }
-
-        animator.cancel()
-
-        var frame = NSRect(
-            origin: frame.origin,
-            size: CGSize(
-                width: size.width,
-                height: size.height
-            )
-        )
-
-        if let screenFrame = screen?.visibleFrame {
-            if frame.minX < screenFrame.minX {
-                frame.origin.x = screenFrame.minX
-            }
-
-            if frame.minY < screenFrame.minY {
-                frame.origin.y = screenFrame.minY
-            }
-
-            if frame.maxX > screenFrame.maxX {
-                frame.origin.x = screenFrame.maxX - frame.width
-            }
-
-            if frame.maxY > screenFrame.maxY {
-                frame.origin.y = screenFrame.maxY - frame.height
-            }
-        }
-
-        if animate, isVisible {
-            animator.animate(to: frame, duration: 0.3) { t in
-                1 - pow(1 - t, 3)
-            }
-        } else {
-            setFrame(frame, display: true)
-        }
+        center()
     }
 }
