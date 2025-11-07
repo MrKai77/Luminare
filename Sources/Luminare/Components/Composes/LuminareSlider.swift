@@ -49,6 +49,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     // MARK: Fields
 
     @Binding private var value: V
+    @State private var internalValue: V
     @State private var lastValue: V
     private let range: ClosedRange<V>, step: V.Stride?
     private let format: F
@@ -77,6 +78,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         @ViewBuilder label: @escaping () -> Label
     ) {
         self._value = value
+        self.internalValue = value.wrappedValue
         self.lastValue = value.wrappedValue
         self.range = range
         self.step = step
@@ -295,6 +297,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .onGeometryChange(for: CGFloat.self, of: \.size.width) { newValue in
             composeWidth = newValue
         }
+        .onChange(of: value) { _ in // If value changes externally, reflect that internally
+            internalValue = value
+        }
     }
 
     private var totalRange: V {
@@ -335,42 +340,42 @@ public struct LuminareSlider<Label, Content, V, F>: View
             isSliderHovering = isHovering
         }
     }
+    
+    func commit() {
+        if clampsLower, clampsUpper {
+            value = internalValue.clamped(to: range)
+        } else if clampsLower {
+            value = max(range.lowerBound, internalValue)
+        } else if clampsUpper {
+            value = min(range.upperBound, internalValue)
+        } else {
+            value = internalValue
+        }
+        internalValue = value
+        
+        withAnimation(animationFast) {
+            isTextBoxVisible = false
+        }
+    }
 
     @ViewBuilder private func textBoxView() -> some View {
         HStack {
             let view = Group {
                 if isTextBoxVisible {
-                    let binding: Binding<V> = Binding {
-                        value
-                    } set: { newValue in
-                        if clampsLower, clampsUpper {
-                            value = newValue.clamped(to: range)
-                        } else if clampsLower {
-                            value = max(range.lowerBound, newValue)
-                        } else if clampsUpper {
-                            value = min(range.upperBound, newValue)
-                        } else {
-                            value = newValue
-                        }
-                    }
-
                     TextField(
-                        value: binding,
+                        value: $internalValue,
                         format: format
                     ) {
                         EmptyView()
                     }
                     .labelsHidden()
                     .textFieldStyle(.plain)
-                    .onSubmit {
-                        withAnimation(animationFast) {
-                            isTextBoxVisible.toggle()
-                        }
-                    }
                     .focused($focusedField, equals: .textbox)
                     .multilineTextAlignment(.trailing)
                     .padding(.leading, -4)
                     .fontDesign(.monospaced)
+                    .onSubmit(commit)
+                    .onChange(of: focusedField == .textbox) { if !$0 { commit() } }
                 } else {
                     Button {
                         withAnimation(animationFast) {
