@@ -340,23 +340,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
             isSliderHovering = isHovering
         }
     }
-    
-    func commit() {
-        if clampsLower, clampsUpper {
-            value = internalValue.clamped(to: range)
-        } else if clampsLower {
-            value = max(range.lowerBound, internalValue)
-        } else if clampsUpper {
-            value = min(range.upperBound, internalValue)
-        } else {
-            value = internalValue
-        }
-        internalValue = value
-        
-        withAnimation(animationFast) {
-            isTextBoxVisible = false
-        }
-    }
 
     @ViewBuilder private func textBoxView() -> some View {
         HStack {
@@ -430,6 +413,23 @@ public struct LuminareSlider<Label, Content, V, F>: View
     }
 
     // MARK: Functions
+    
+    private func commit() {
+        if clampsLower, clampsUpper {
+            value = internalValue.clamped(to: range)
+        } else if clampsLower {
+            value = max(range.lowerBound, internalValue)
+        } else if clampsUpper {
+            value = min(range.upperBound, internalValue)
+        } else {
+            value = internalValue
+        }
+        internalValue = value
+        
+        withAnimation(animationFast) {
+            isTextBoxVisible = false
+        }
+    }
 
     func addEventMonitor() {
         EventMonitorManager.shared.addLocalMonitor(
