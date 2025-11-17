@@ -43,9 +43,8 @@ public extension EnvironmentValues {
 
     // MARK: Popup
 
-    @Entry var luminarePopupCornerRadii: RectangleCornerRadii = .init(12)
-
-    @Entry var luminarePopupPadding: CGFloat = 12
+    @Entry var luminarePopupCornerRadii: RectangleCornerRadii = .init(16)
+    @Entry var luminarePopupPadding: CGFloat = 4
 
     // MARK: Color Picker
 

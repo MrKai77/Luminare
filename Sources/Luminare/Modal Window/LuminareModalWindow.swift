@@ -57,7 +57,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         animationBehavior = .documentWindow
 
         DispatchQueue.main.async {
-            self.displayIfNeeded()
+            self.layoutIfNeeded()
             self.updatePosition()
         }
     }

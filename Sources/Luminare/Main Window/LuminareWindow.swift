@@ -28,7 +28,7 @@ public class LuminareWindow: NSWindow {
 
         contentView = view
         titlebarAppearsTransparent = true
-        displayIfNeeded()
+        layoutIfNeeded()
         center()
     }
 }

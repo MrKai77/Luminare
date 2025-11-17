@@ -237,7 +237,7 @@ public extension View {
 
     // MARK: Popup
 
-    @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 12) -> some View {
+    @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 4) -> some View {
         environment(\.luminarePopupPadding, padding)
     }
 

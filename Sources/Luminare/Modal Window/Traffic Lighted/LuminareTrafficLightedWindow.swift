@@ -41,7 +41,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject w
         }
         self.toolbar = toolbar
 
-        displayIfNeeded()
+        layoutIfNeeded()
         center()
     }
 
