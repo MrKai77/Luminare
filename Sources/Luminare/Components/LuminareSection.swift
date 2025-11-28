@@ -95,19 +95,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .compositingGroup()
                 .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
                 .fixedSize(horizontal: maxWidth == 0, vertical: false)
-                .background(
-                    colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary),
-                    in: .rect(cornerRadii: cornerRadii)
-                )
-                .overlay {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(.quaternary, lineWidth: 1)
-                }
-                .shadow(
-                    color: .black.opacity(colorScheme == .light ? 0.1 : 0),
-                    radius: 2,
-                    y: 1
-                )
+                .modifier(LuminarePlateauModifier())
             } else {
                 content()
             }

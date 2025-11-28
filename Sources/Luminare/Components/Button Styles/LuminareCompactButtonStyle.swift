@@ -16,6 +16,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     @State private var isHovering: Bool
 
@@ -37,20 +38,15 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .modifier(LuminareAspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(
-                LuminareFilledModifier(
-                    isHovering: isHovering,
+                LuminareHoverableModifier(
                     isPressed: configuration.isPressed,
-                    style: .init(
-                        normal: .quinary,
-                        hovering: .quaternary.opacity(0.7),
-                        pressed: .quaternary
-                    )
+                    isHovering: isHovering
                 )
             )
-            .modifier(LuminareBorderedModifier(isHovering: isHovering))
             .onHover { isHovering in
                 self.isHovering = isHovering
             }
             .animation(animationFast, value: isHovering)
+            .luminareCornerRadii(cornerRadii)
     }
 }

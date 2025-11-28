@@ -25,7 +25,10 @@ public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
     public let normal: F
     public let hovering: H
     
-    public init(normal: F, hovering: H) {
+    public init(
+        normal: F,
+        hovering: H = Color.clear
+    ) {
         self.normal = normal
         self.hovering = hovering
     }
@@ -40,10 +43,6 @@ public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
 
 /// A stylized modifier that constructs a bordered appearance.
 public struct LuminareBorderedModifier<F, H>: ViewModifier where F: ShapeStyle, H: ShapeStyle {
-    @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareBorderedStates) private var luminareBorderedStates
-    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
-
     private let isHovering: Bool
     private let style: LuminareBorderedStyle<F,H>
 
@@ -57,15 +56,44 @@ public struct LuminareBorderedModifier<F, H>: ViewModifier where F: ShapeStyle, 
 
     public func body(content: Content) -> some View {
         content
-            .clipShape(.rect(cornerRadii: cornerRadii))
             .background {
-                if isHovering, luminareBorderedStates.contains(.hovering) {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(style.normal)
-                } else if luminareBorderedStates.contains(.normal) {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(style.hovering)
-                }
+                LuminareBorder(
+                    isHovering: isHovering,
+                    style: style
+                )
             }
+    }
+}
+
+public struct LuminareBorder<F, H>: View where F: ShapeStyle, H: ShapeStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareBorderedStates) private var luminareBorderedStates
+    @Environment(\.luminareCornerRadii) private var cornerRadii
+
+    private let isHovering: Bool
+    private let style: LuminareBorderedStyle<F,H>
+    
+    public init(
+        isHovering: Bool = false,
+        style: LuminareBorderedStyle<F,H> = .default
+    ) {
+        self.isHovering = isHovering
+        self.style = style
+    }
+    
+    public var body: some View {
+        if isEnabled {
+            if isHovering, luminareBorderedStates.contains(.hovering) {
+                UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                    .strokeBorder(style.hovering)
+            } else if luminareBorderedStates.contains(.normal) {
+                UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                    .strokeBorder(style.normal)
+            }
+        } else {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .strokeBorder(style.normal)
+                .opacity(isEnabled ? 1 : 0.5)
+        }
     }
 }

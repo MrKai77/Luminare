@@ -27,7 +27,11 @@ public struct LuminareFilledStyle<F: ShapeStyle, H: ShapeStyle, P: ShapeStyle>: 
     public let hovering: H
     public let pressed: P
 
-    public init(normal: F, hovering: H, pressed: P) {
+    public init(
+        normal: F,
+        hovering: H = Color.clear,
+        pressed: P = Color.clear
+    ) {
         self.normal = normal
         self.hovering = hovering
         self.pressed = pressed
@@ -43,16 +47,12 @@ public struct LuminareFilledStyle<F: ShapeStyle, H: ShapeStyle, P: ShapeStyle>: 
 }
 
 public struct LuminareFilledModifier<F, H, P>: ViewModifier where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
-    @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareFilledStates) private var luminareFilledStates
-    @Environment(\.luminareButtonMaterial) private var material
-
     private let isHovering: Bool, isPressed: Bool
     private let style: LuminareFilledStyle<F, H, P>
 
     public init(
-        isHovering: Bool,
-        isPressed: Bool,
+        isHovering: Bool = false,
+        isPressed: Bool = false,
         style: LuminareFilledStyle<F, H, P> = .default
     ) {
         self.isHovering = isHovering
@@ -62,27 +62,52 @@ public struct LuminareFilledModifier<F, H, P>: ViewModifier where F: ShapeStyle,
 
     public func body(content: Content) -> some View {
         content
-            .background(with: material) {
-                Group {
-                    if isEnabled {
-                        if luminareFilledStates.contains(.pressed), isPressed {
-                            Rectangle()
-                                .foregroundStyle(style.pressed)
-                        } else if luminareFilledStates.contains(.hovering), isHovering {
-                            Rectangle()
-                                .foregroundStyle(style.hovering)
-                        } else if luminareFilledStates.contains(.normal) {
-                            Rectangle()
-                                .foregroundStyle(style.normal)
-                        }
-                    } else {
-                        if luminareFilledStates.contains(.normal) {
-                            Rectangle()
-                                .foregroundStyle(style.normal)
-                        }
-                    }
-                }
-                .opacity(isEnabled ? 1 : 0.5)
+            .background {
+                LuminareFill(
+                    isHovering: isHovering,
+                    isPressed: isPressed,
+                    style: style
+                )
             }
+    }
+}
+
+public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.luminareFilledStates) private var luminareFilledStates
+    @Environment(\.luminareButtonMaterial) private var material
+    
+    private let isHovering: Bool, isPressed: Bool
+    private let style: LuminareFilledStyle<F, H, P>
+    
+    public init(
+        isHovering: Bool = false,
+        isPressed: Bool = false,
+        style: LuminareFilledStyle<F, H, P> = .default
+    ) {
+        self.isHovering = isHovering
+        self.isPressed = isPressed
+        self.style = style
+    }
+    
+    public var body: some View {
+        if isEnabled {
+            if luminareFilledStates.contains(.pressed), isPressed {
+                Rectangle()
+                    .foregroundStyle(style.pressed)
+            } else if luminareFilledStates.contains(.hovering), isHovering {
+                Rectangle()
+                    .foregroundStyle(style.hovering)
+            } else if luminareFilledStates.contains(.normal) {
+                Rectangle()
+                    .foregroundStyle(style.normal)
+            }
+        } else {
+            if luminareFilledStates.contains(.normal) {
+                Rectangle()
+                    .foregroundStyle(style.normal)
+                    .opacity(isEnabled ? 1 : 0.5)
+            }
+        }
     }
 }
