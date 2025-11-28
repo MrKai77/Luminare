@@ -38,7 +38,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .modifier(LuminareAspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(
-                LuminareHoverableModifier(
+                LuminarePlateauModifier(
                     isPressed: configuration.isPressed,
                     isHovering: isHovering
                 )
