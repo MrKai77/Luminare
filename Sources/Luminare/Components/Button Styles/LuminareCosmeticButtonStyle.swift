@@ -66,5 +66,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 self.isHovering = isHovering
             }
             .animation(animationFast, value: isHovering)
+            .luminareSectionEnableMask(true)
     }
 }

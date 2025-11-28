@@ -78,13 +78,8 @@ private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
                 .frame(width: imageSize, height: imageSize)
         }
         .frame(width: boxSize, height: boxSize)
-        .background(colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary))
-        .clipShape(.rect(cornerRadius: 6))
-        .overlay {
-            RoundedRectangle(cornerRadius: 6)
-                .strokeBorder(.quaternary, lineWidth: 1)
-        }
-        .shadow(color: .black.opacity(colorScheme == .light ? 0.1 : 0), radius: 2, y: 1)
+        .modifier(LuminarePlateauModifier())
         .frame(width: minHeight, height: minHeight)
+        .luminareCornerRadius(6)
     }
 }
