@@ -272,12 +272,22 @@ public extension View {
         environment(\.luminareHorizontalPadding, padding)
     }
 
+    @available(*, deprecated, renamed: "luminareBorderedStates")
     @ViewBuilder func luminareBordered(_ bordered: Bool) -> some View {
-        environment(\.luminareIsBordered, bordered)
+        environment(\.luminareBorderedStates, .all)
+    }
+    
+    @ViewBuilder func luminareBorderedStates(_ states: LuminareBorderedStates) -> some View {
+        environment(\.luminareBorderedStates, states)
     }
 
+    @available(*, deprecated, renamed: "luminareFilledStates")
     @ViewBuilder func luminareHasBackground(_ hasBackground: Bool) -> some View {
-        environment(\.luminareHasBackground, hasBackground)
+        environment(\.luminareFilledStates, [])
+    }
+    
+    @ViewBuilder func luminareFilledStates(_ states: LuminareFilledStates) -> some View {
+        environment(\.luminareFilledStates, states)
     }
 
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool) -> some View {
@@ -342,10 +352,6 @@ public extension View {
         luminareButtonCornerRadii(.init(radius))
     }
 
-    @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool) -> some View {
-        environment(\.luminareButtonHighlightOnHover, highlight)
-    }
-
     @ViewBuilder func luminareCompactButtonCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminareCompactButtonCornerRadii, radii)
     }
@@ -377,16 +383,16 @@ public extension View {
         environment(\.luminareSectionLayout, layout)
     }
 
-    @ViewBuilder func luminareSectionMaterial(_ material: Material?) -> some View {
-        environment(\.luminareSectionMaterial, material)
-    }
-
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat?) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
 
     @ViewBuilder func luminareSectionMasked(_ masked: Bool) -> some View {
         environment(\.luminareSectionIsMasked, masked)
+    }
+    
+    @ViewBuilder func luminareSectionDisableInnerPadding( _ disable: Bool) -> some View {
+        preference(key: DisableDividedStackInnerPaddingKey.self, value: true)
     }
 
     // MARK: Compose

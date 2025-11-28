@@ -16,7 +16,6 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool
 
@@ -36,11 +35,15 @@ public struct LuminareButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilledModifier(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                fill: .quinary, hovering: .quaternary.opacity(0.7),
-                pressed: .quaternary
-            ))
+            .modifier(
+                LuminareFilledModifier(
+                    isHovering: isHovering,
+                    isPressed: configuration.isPressed,
+                    fill: .quinary,
+                    hovering: .quaternary.opacity(0.7),
+                    pressed: .quaternary
+                )
+            )
             .clipShape(.rect(cornerRadii: cornerRadii))
             .onHover { isHovering in
                 self.isHovering = isHovering

@@ -18,7 +18,6 @@ public struct LuminareProminentButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @State private var isHovering: Bool
 

@@ -7,19 +7,34 @@
 
 import SwiftUI
 
+public struct LuminareFilledStates: OptionSet, Sendable {
+    public let rawValue: Int
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    
+    public static let normal = Self(rawValue: 1 << 0)
+    public static let hovering = Self(rawValue: 1 << 1)
+    public static let pressing = Self(rawValue: 1 << 2)
+    
+    public static let all: Self = [.normal, .hovering, .pressing]
+}
+
 public struct LuminareFilledModifier: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareHasBackground) private var hasBackground
+    @Environment(\.luminareFilledStates) private var luminareFilledStates
     @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     private let isHovering: Bool, isPressed: Bool
     private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
                 pressed: AnyShapeStyle
 
     public init(
-        isHovering: Bool = false, isPressed: Bool = false,
-        fill: some ShapeStyle, hovering: some ShapeStyle,
+        isHovering: Bool = false,
+        isPressed: Bool = false,
+        fill: some ShapeStyle,
+        hovering: some ShapeStyle,
         pressed: some ShapeStyle
     ) {
         self.isHovering = isHovering
@@ -30,7 +45,8 @@ public struct LuminareFilledModifier: ViewModifier {
     }
 
     public init(
-        isHovering: Bool = false, isPressed: Bool = false,
+        isHovering: Bool = false,
+        isPressed: Bool = false,
         cascading: some ShapeStyle
     ) {
         self.init(
@@ -61,30 +77,28 @@ public struct LuminareFilledModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        if hasBackground {
-            content
-                .background(with: material) {
-                    Group {
-                        if isEnabled {
-                            if isPressed {
-                                Rectangle()
-                                    .foregroundStyle(pressed)
-                            } else if highlightOnHover, isHovering {
-                                Rectangle()
-                                    .foregroundStyle(hovering)
-                            } else {
-                                Rectangle()
-                                    .foregroundStyle(fill)
-                            }
-                        } else {
+        content
+            .background(with: material) {
+                Group {
+                    if isEnabled {
+                        if luminareFilledStates.contains(.pressing), isPressed {
+                            Rectangle()
+                                .foregroundStyle(pressed)
+                        } else if luminareFilledStates.contains(.hovering), isHovering {
+                            Rectangle()
+                                .foregroundStyle(hovering)
+                        } else if luminareFilledStates.contains(.normal) {
+                            Rectangle()
+                                .foregroundStyle(fill)
+                        }
+                    } else {
+                        if luminareFilledStates.contains(.normal) {
                             Rectangle()
                                 .foregroundStyle(fill)
                         }
                     }
-                    .opacity(isEnabled ? 1 : 0.5)
                 }
-        } else {
-            content
-        }
+                .opacity(isEnabled ? 1 : 0.5)
+            }
     }
 }

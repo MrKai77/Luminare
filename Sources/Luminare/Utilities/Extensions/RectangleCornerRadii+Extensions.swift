@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public extension RectangleCornerRadii {
+extension RectangleCornerRadii {
     static var zero: Self { .init(0) }
 
     init(_ radius: CGFloat) {
@@ -18,9 +18,7 @@ public extension RectangleCornerRadii {
             topTrailing: radius
         )
     }
-}
 
-extension RectangleCornerRadii {
     func map(_ transform: @escaping (CGFloat) -> CGFloat) -> Self {
         .init(
             topLeading: transform(topLeading),

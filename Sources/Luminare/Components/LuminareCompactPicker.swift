@@ -38,7 +38,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareIsBordered) private var isBordered
     @Environment(\.luminareCompactPickerStyle) private var style
 
     // MARK: Fields
@@ -140,7 +139,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             @Environment(\.luminareMinHeight) private var minHeight
             @Environment(\.luminareHorizontalPadding) private var horizontalPadding
             @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
-            @Environment(\.luminareIsBordered) private var isBordered
+            @Environment(\.luminareBorderedStates) private var borderedStates
 
             var child: VariadicViewChildren.Element
             var namespace: Namespace.ID
@@ -185,7 +184,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             }
 
             private var constrainedCornerRadii: RectangleCornerRadii {
-                if isBordered || isParentHovering {
+                if borderedStates.contains(.normal) || isParentHovering {
                     cornerRadii.map { max(0, $0 - 2) }
                 } else {
                     cornerRadii

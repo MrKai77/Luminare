@@ -19,7 +19,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
-    @Environment(\.luminareButtonHighlightOnHover) private var highlightOnHover
 
     @ViewBuilder private var icon: Image
 

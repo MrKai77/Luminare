@@ -59,8 +59,8 @@ public extension EnvironmentValues {
     @Entry var luminareMinHeight: CGFloat = 30
     @Entry var luminareHorizontalPadding: CGFloat = 8
 
-    @Entry var luminareIsBordered: Bool = true
-    @Entry var luminareHasBackground: Bool = true
+    @Entry var luminareBorderedStates: LuminareBorderedStates = .all
+    @Entry var luminareFilledStates: LuminareFilledStates = .all
     @Entry var luminareHasDividers: Bool = true
 
     @Entry var luminareAspectRatio: CGFloat?
@@ -76,7 +76,6 @@ public extension EnvironmentValues {
 
     @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
     @Entry var luminareButtonMaterial: Material? = nil
-    @Entry var luminareButtonHighlightOnHover: Bool = true
 
     @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
 
@@ -94,7 +93,8 @@ public extension EnvironmentValues {
     // MARK: Section
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
-    @Entry var luminareSectionMaterial: Material? = nil
+
+    // If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
     @Entry var luminareSectionIsMasked: Bool = false
 

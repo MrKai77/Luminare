@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public extension EdgeInsets {
+extension EdgeInsets {
     static var zero: Self { .init(0) }
 
     init(_ length: CGFloat) {

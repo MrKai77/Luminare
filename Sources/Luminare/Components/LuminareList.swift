@@ -199,7 +199,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 .introspect(.list, on: .macOS(.v13...)) { tableView in
                     tableView.selectionHighlightStyle = .none
                 }
-                .preference(key: DisableDividedStackInnerPaddingKey.self, value: true)
+                .luminareSectionDisableInnerPadding(true)
             }
         }
         .frame(height: hasFixedHeight ? totalHeight : nil)

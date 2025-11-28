@@ -57,20 +57,34 @@ public extension LuminareTabItem {
 // MARK: Image View
 
 private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareMinHeight) private var minHeight
+    
+    private var imageSize: CGFloat {
+        boxSize - 10
+    }
+    
+    private var boxSize: CGFloat {
+        minHeight - 4
+    }
+
     let tab: Tab
 
     var body: some View {
-        tab.image
-            .resizable()
-            .scaledToFit()
-            .frame(width: 18, height: 18) // First, resize image to bounds (TODO: make this configurable)
-            .frame(width: minHeight, height: minHeight) // This is the size of the enclosing square
-            .background(.quinary)
-            .clipShape(.rect(cornerRadius: 8))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
+        Group {
+            tab.image
+                .resizable()
+                .scaledToFit()
+                .frame(width: imageSize, height: imageSize)
+        }
+        .frame(width: boxSize, height: boxSize)
+        .background(colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary))
+        .clipShape(.rect(cornerRadius: 6))
+        .overlay {
+            RoundedRectangle(cornerRadius: 6)
+                .strokeBorder(.quaternary, lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(colorScheme == .light ? 0.1 : 0), radius: 2, y: 1)
+        .frame(width: minHeight, height: minHeight)
     }
 }

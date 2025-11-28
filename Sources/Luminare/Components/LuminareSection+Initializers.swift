@@ -37,8 +37,10 @@ public extension LuminareSection {
             content()
         } header: {
             Text(header)
+                .fontWeight(.semibold)
         } footer: {
             Text(footer)
+                .fontWeight(.semibold)
         }
     }
 
@@ -70,8 +72,10 @@ public extension LuminareSection {
             content()
         } header: {
             Text(headerKey)
+                .fontWeight(.semibold)
         } footer: {
             Text(footerKey)
+                .fontWeight(.semibold)
         }
     }
 
@@ -133,6 +137,7 @@ public extension LuminareSection {
             content()
         } header: {
             Text(header)
+                .fontWeight(.semibold)
         }
     }
 
@@ -162,6 +167,7 @@ public extension LuminareSection {
             content()
         } header: {
             Text(headerKey)
+                .fontWeight(.semibold)
         }
     }
 
@@ -223,6 +229,7 @@ public extension LuminareSection {
             content()
         } footer: {
             Text(footer)
+                .fontWeight(.semibold)
         }
     }
 
@@ -252,6 +259,7 @@ public extension LuminareSection {
             content()
         } footer: {
             Text(footerKey)
+                .fontWeight(.semibold)
         }
     }
 

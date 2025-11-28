@@ -22,11 +22,11 @@ public enum LuminareSectionLayout: Hashable, Equatable, Codable, Sendable {
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Environments
 
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareCornerRadii) private var cornerRadii
-    @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareBorderedStates) private var borderedStates
     @Environment(\.luminareHasDividers) private var hasDividers
     @Environment(\.luminareSectionLayout) private var layout
-    @Environment(\.luminareSectionMaterial) private var material
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
     @Environment(\.luminareSectionIsMasked) private var isMasked
 
@@ -94,17 +94,21 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
     @ViewBuilder private func wrappedContent() -> some View {
         Group {
-            if isBordered {
+            if borderedStates.contains(.normal) {
                 DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
                     content()
                 }
-                .frame(maxWidth: maxWidth)
-                .background(.quinary, with: material)
+                .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
+                .fixedSize(horizontal: maxWidth == 0, vertical: false)
+                .background(
+                    colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary)
+                )
                 .clipShape(.rect(cornerRadii: cornerRadii))
                 .overlay {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(.quaternary)
+                        .strokeBorder(.quaternary, lineWidth: 1)
                 }
+                .shadow(color: .black.opacity(colorScheme == .light ? 0.1 : 0), radius: 2, y: 1)
             } else {
                 content()
                     .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
@@ -119,6 +123,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .foregroundStyle(.secondary)
                 .padding(.bottom, headerSpacing)
                 .padding(.horizontal, outerPadding)
+                .padding(.leading, cornerRadii.topLeading / 2)
+                .padding(.trailing, cornerRadii.topTrailing / 2)
         }
     }
 
@@ -128,6 +134,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .foregroundStyle(.secondary)
                 .padding(.top, footerSpacing)
                 .padding(.horizontal, outerPadding)
+                .padding(.leading, cornerRadii.bottomLeading / 2)
+                .padding(.trailing, cornerRadii.bottomTrailing / 2)
         }
     }
 }
@@ -163,6 +171,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         .padding(8)
         .foregroundStyle(.secondary)
         .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
     } header: {
         HStack(alignment: .bottom) {
             Text("Section Header")

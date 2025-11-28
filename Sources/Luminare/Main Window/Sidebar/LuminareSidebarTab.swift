@@ -53,13 +53,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
             }
             .frame(minHeight: minHeight)
         }
-        .buttonStyle(SidebarButtonStyle(isActive: $isActive))
-        .overlay {
-            if isActive {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
-        }
+        .buttonStyle(SidebarButtonStyle(isActive: isActive))
         .onAppear {
             processActiveTab()
         }
@@ -103,7 +97,7 @@ struct SidebarButtonStyle: ButtonStyle {
 
     let cornerRadius: CGFloat = 12
     @State var isHovering: Bool = false
-    @Binding var isActive: Bool
+    let isActive: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

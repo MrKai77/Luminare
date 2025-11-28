@@ -8,6 +8,8 @@
 import SwiftUI
 
 /// A stylized modifier that constructs a bordered appearance while hovering.
+///
+/// Combines both of `LuminareFilledModifier` and `LuminareBorderedModifier`.
 public struct LuminareHoverableModifier: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -20,7 +22,8 @@ public struct LuminareHoverableModifier: ViewModifier {
 
     public init(
         isPressed: Bool = false,
-        fill: some ShapeStyle, hovering: some ShapeStyle,
+        fill: some ShapeStyle,
+        hovering: some ShapeStyle,
         pressed: some ShapeStyle
     ) {
         self.isPressed = isPressed
@@ -111,11 +114,20 @@ public struct LuminareHoverableModifier: ViewModifier {
             .padding(.horizontal, horizontalPadding)
             .modifier(LuminareAspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilledModifier(
-                isHovering: isHovering, isPressed: isPressed,
-                fill: fill, hovering: hovering, pressed: pressed
-            ))
-            .modifier(LuminareBorderedModifier(isHovering: isHovering))
+            .modifier(
+                LuminareFilledModifier(
+                    isHovering: isHovering,
+                    isPressed: isPressed,
+                    fill: fill,
+                    hovering: hovering,
+                    pressed: pressed
+                )
+            )
+            .modifier(
+                LuminareBorderedModifier(
+                    isHovering: isHovering
+                )
+            )
             .onHover { isHovering in
                 withAnimation(animationFast) {
                     self.isHovering = isHovering

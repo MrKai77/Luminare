@@ -7,11 +7,24 @@
 
 import SwiftUI
 
+public struct LuminareBorderedStates: OptionSet, Sendable {
+    public let rawValue: Int
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    
+    public static let normal = Self(rawValue: 1 << 0)
+    public static let hovering = Self(rawValue: 1 << 1)
+    
+    public static let all: Self = [.normal, .hovering]
+}
+
+
 /// A stylized modifier that constructs a bordered appearance.
 public struct LuminareBorderedModifier: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareIsBordered) private var isBordered
-    @Environment(\.luminareHasBackground) private var hasBackground
+    @Environment(\.luminareBorderedStates) private var luminareBorderedStates
     @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     private let isHovering: Bool
@@ -19,7 +32,8 @@ public struct LuminareBorderedModifier: ViewModifier {
 
     public init(
         isHovering: Bool = false,
-        fill: some ShapeStyle, hovering: some ShapeStyle
+        fill: some ShapeStyle,
+        hovering: some ShapeStyle
     ) {
         self.isHovering = isHovering
         self.fill = .init(fill)
@@ -60,10 +74,10 @@ public struct LuminareBorderedModifier: ViewModifier {
         content
             .clipShape(.rect(cornerRadii: cornerRadii))
             .background {
-                if isHovering, hasBackground {
+                if isHovering, luminareBorderedStates.contains(.hovering) {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .strokeBorder(fill)
-                } else if isBordered {
+                } else if luminareBorderedStates.contains(.normal) {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .strokeBorder(hovering)
                 }
