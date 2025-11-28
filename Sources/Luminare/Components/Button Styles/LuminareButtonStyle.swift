@@ -32,7 +32,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 LuminareFilledModifier(
                     isHovering: isHovering,
                     isPressed: configuration.isPressed,
-                    cascading: buttonTint(configuration: configuration)
+                    style: .init(cascading: buttonTint(configuration: configuration))
                 )
             )
             .clipShape(.rect(cornerRadii: cornerRadii))

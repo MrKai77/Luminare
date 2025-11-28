@@ -36,11 +36,17 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
             .padding(.horizontal, horizontalPadding)
             .modifier(LuminareAspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilledModifier(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                fill: .quinary, hovering: .quaternary.opacity(0.7),
-                pressed: .quaternary
-            ))
+            .modifier(
+                LuminareFilledModifier(
+                    isHovering: isHovering,
+                    isPressed: configuration.isPressed,
+                    style: .init(
+                        normal: .quinary,
+                        hovering: .quaternary.opacity(0.7),
+                        pressed: .quaternary
+                    )
+                )
+            )
             .modifier(LuminareBorderedModifier(isHovering: isHovering))
             .onHover { isHovering in
                 self.isHovering = isHovering

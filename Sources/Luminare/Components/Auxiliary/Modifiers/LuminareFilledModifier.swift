@@ -16,65 +16,56 @@ public struct LuminareFilledStates: OptionSet, Sendable {
 
     public static let normal = Self(rawValue: 1 << 0)
     public static let hovering = Self(rawValue: 1 << 1)
-    public static let pressing = Self(rawValue: 1 << 2)
+    public static let pressed = Self(rawValue: 1 << 2)
 
-    public static let all: Self = [.normal, .hovering, .pressing]
+    public static let all: Self = [.normal, .hovering, .pressed]
     public static let none: Self = []
 }
 
-public struct LuminareFilledModifier: ViewModifier {
+public struct LuminareFilledStyle<F: ShapeStyle, H: ShapeStyle, P: ShapeStyle>: Sendable {
+    public let normal: F
+    public let hovering: H
+    public let pressed: P
+
+    public init(normal: F, hovering: H, pressed: P) {
+        self.normal = normal
+        self.hovering = hovering
+        self.pressed = pressed
+    }
+
+    public init(whenPressed: P) where F == Color, H == Color {
+        self.init(
+            normal: .clear,
+            hovering: .clear,
+            pressed: whenPressed
+        )
+    }
+
+    public init(cascading: some ShapeStyle) where F == AnyShapeStyle, H == AnyShapeStyle, P == AnyShapeStyle {
+        self.init(
+            normal: AnyShapeStyle(cascading.opacity(0.15)),
+            hovering: AnyShapeStyle(cascading.opacity(0.25)),
+            pressed: AnyShapeStyle(cascading.opacity(0.4))
+        )
+    }
+}
+
+public struct LuminareFilledModifier<F, H, P>: ViewModifier where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareFilledStates) private var luminareFilledStates
     @Environment(\.luminareButtonMaterial) private var material
 
     private let isHovering: Bool, isPressed: Bool
-    private let fill: AnyShapeStyle, hovering: AnyShapeStyle,
-                pressed: AnyShapeStyle
+    private let style: LuminareFilledStyle<F, H, P>
 
     public init(
-        isHovering: Bool = false,
-        isPressed: Bool = false,
-        fill: some ShapeStyle,
-        hovering: some ShapeStyle,
-        pressed: some ShapeStyle
+        isHovering: Bool,
+        isPressed: Bool,
+        style: LuminareFilledStyle<F, H, P>
     ) {
         self.isHovering = isHovering
         self.isPressed = isPressed
-        self.fill = .init(fill)
-        self.hovering = .init(hovering)
-        self.pressed = .init(pressed)
-    }
-
-    public init(
-        isHovering: Bool = false,
-        isPressed: Bool = false,
-        cascading: some ShapeStyle
-    ) {
-        self.init(
-            isHovering: isHovering, isPressed: isPressed,
-            fill: cascading.opacity(0.15),
-            hovering: cascading.opacity(0.25),
-            pressed: cascading.opacity(0.4)
-        )
-    }
-
-    public init(
-        isHovering: Bool = false, isPressed: Bool = false,
-        pressed: some ShapeStyle
-    ) {
-        self.init(
-            isHovering: isHovering, isPressed: isPressed,
-            fill: .clear, hovering: pressed, pressed: pressed
-        )
-    }
-
-    public init(
-        isHovering: Bool = false, isPressed: Bool = false
-    ) {
-        self.init(
-            isHovering: isHovering, isPressed: isPressed,
-            pressed: .quinary
-        )
+        self.style = style
     }
 
     public func body(content: Content) -> some View {
@@ -82,20 +73,20 @@ public struct LuminareFilledModifier: ViewModifier {
             .background(with: material) {
                 Group {
                     if isEnabled {
-                        if luminareFilledStates.contains(.pressing), isPressed {
+                        if luminareFilledStates.contains(.pressed), isPressed {
                             Rectangle()
-                                .foregroundStyle(pressed)
+                                .foregroundStyle(style.pressed)
                         } else if luminareFilledStates.contains(.hovering), isHovering {
                             Rectangle()
-                                .foregroundStyle(hovering)
+                                .foregroundStyle(style.hovering)
                         } else if luminareFilledStates.contains(.normal) {
                             Rectangle()
-                                .foregroundStyle(fill)
+                                .foregroundStyle(style.normal)
                         }
                     } else {
                         if luminareFilledStates.contains(.normal) {
                             Rectangle()
-                                .foregroundStyle(fill)
+                                .foregroundStyle(style.normal)
                         }
                     }
                 }

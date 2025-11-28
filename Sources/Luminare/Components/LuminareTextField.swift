@@ -114,9 +114,11 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
             .textFieldStyle(.plain)
             .modifier(
                 LuminareHoverableModifier(
-                    fill: .quinary,
-                    hovering: .quaternary,
-                    pressed: .tertiary
+                    filledStyle: .init(
+                        normal: .quinary,
+                        hovering: .quaternary,
+                        pressed: .tertiary
+                    )
                 )
             )
             .onAppear {

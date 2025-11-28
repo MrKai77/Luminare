@@ -34,13 +34,13 @@ struct ColorSaturationBrightnessView: View {
                     saturation: 1,
                     brightness: 1
                 )
-                
+
                 LinearGradient(
                     gradient: Gradient(colors: [.white.opacity(0), .white]),
                     startPoint: .trailing,
                     endPoint: .leading
                 )
-                
+
                 LinearGradient(
                     gradient: Gradient(colors: [.black.opacity(0), .black]),
                     startPoint: .top,
@@ -151,7 +151,7 @@ struct ColorPickerCircle: View {
             .animation(animation, value: isDragging)
             .onHover { hovering in
                 isHovering = hovering
-                
+
                 if !isDragging {
                     NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
                 }

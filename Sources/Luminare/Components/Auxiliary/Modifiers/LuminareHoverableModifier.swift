@@ -10,104 +10,41 @@ import SwiftUI
 /// A stylized modifier that constructs a bordered appearance while hovering.
 ///
 /// Combines both of `LuminareFilledModifier` and `LuminareBorderedModifier`.
-public struct LuminareHoverableModifier: ViewModifier {
+public struct LuminareHoverableModifier<F, H, P>: ViewModifier where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     private let isPressed: Bool
-    private let fill: AnyShapeStyle, hovering: AnyShapeStyle, pressed: AnyShapeStyle
-
-    @State private var isHovering: Bool
+    private let filledStyle: LuminareFilledStyle<F, H, P>
+    @State private var isHovering: Bool = false
 
     public init(
         isPressed: Bool = false,
-        fill: some ShapeStyle,
-        hovering: some ShapeStyle,
-        pressed: some ShapeStyle
+        filledStyle: LuminareFilledStyle<F, H, P>
     ) {
         self.isPressed = isPressed
-        self.fill = .init(fill)
-        self.hovering = .init(hovering)
-        self.pressed = .init(pressed)
-        self.isHovering = false
-    }
-
-    public init(
-        isPressed: Bool = false,
-        cascading: some ShapeStyle
-    ) {
-        self.init(
-            isPressed: isPressed,
-            fill: cascading.opacity(0.15),
-            hovering: cascading.opacity(0.25),
-            pressed: cascading.opacity(0.4)
-        )
-    }
-
-    public init(
-        isPressed: Bool = false,
-        pressed: some ShapeStyle
-    ) {
-        self.init(
-            isPressed: isPressed,
-            fill: .clear, hovering: pressed, pressed: pressed
-        )
+        self.filledStyle = filledStyle
     }
 
     public init(
         isPressed: Bool = false
-    ) {
+    ) where F == Color, H == Color, P == HierarchicalShapeStyle {
         self.init(
             isPressed: isPressed,
-            pressed: .quinary
+            isHovering: false
         )
     }
 
-    #if DEBUG
-        init(
-            isPressed: Bool = false, isHovering: Bool = false,
-            fill: some ShapeStyle, hovering: some ShapeStyle,
-            pressed: some ShapeStyle
-        ) {
-            self.isPressed = isPressed
-            self.fill = .init(fill)
-            self.hovering = .init(hovering)
-            self.pressed = .init(pressed)
-            self.isHovering = isHovering
-        }
-
-        init(
-            isPressed: Bool = false, isHovering: Bool = false,
-            cascading: some ShapeStyle
-        ) {
-            self.init(
-                isPressed: isPressed, isHovering: isHovering,
-                fill: cascading.opacity(0.15),
-                hovering: cascading.opacity(0.25),
-                pressed: cascading.opacity(0.4)
-            )
-        }
-
-        init(
-            isPressed: Bool = false, isHovering: Bool = false,
-            pressed: some ShapeStyle
-        ) {
-            self.init(
-                isPressed: isPressed, isHovering: isHovering,
-                fill: .clear, hovering: pressed, pressed: pressed
-            )
-        }
-
-        init(
-            isPressed: Bool = false, isHovering: Bool = false
-        ) {
-            self.init(
-                isPressed: isPressed, isHovering: isHovering,
-                pressed: .quinary
-            )
-        }
-    #endif
+    // Note: not public!
+    init(
+        isPressed: Bool = false,
+        isHovering: Bool = false
+    ) where F == Color, H == Color, P == HierarchicalShapeStyle {
+        self.isPressed = isPressed
+        self.isHovering = isHovering
+        self.filledStyle = .init(whenPressed: .quinary)
+    }
 
     public func body(content: Content) -> some View {
         content
@@ -118,9 +55,7 @@ public struct LuminareHoverableModifier: ViewModifier {
                 LuminareFilledModifier(
                     isHovering: isHovering,
                     isPressed: isPressed,
-                    fill: fill,
-                    hovering: hovering,
-                    pressed: pressed
+                    style: filledStyle
                 )
             )
             .modifier(

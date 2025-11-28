@@ -40,11 +40,17 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
-            .modifier(LuminareFilledModifier(
-                isHovering: isHovering, isPressed: configuration.isPressed,
-                fill: .clear, hovering: .quaternary.opacity(0.7),
-                pressed: .quaternary
-            ))
+            .modifier(
+                LuminareFilledModifier(
+                    isHovering: isHovering,
+                    isPressed: configuration.isPressed,
+                    style: .init(
+                        normal: .clear,
+                        hovering: .quaternary.opacity(0.7),
+                        pressed: .quaternary
+                    )
+                )
+            )
             .overlay {
                 HStack {
                     Spacer()

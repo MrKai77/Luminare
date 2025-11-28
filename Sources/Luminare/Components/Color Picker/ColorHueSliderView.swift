@@ -100,8 +100,8 @@ struct ColorHueSliderView: View {
 
         let edgeTarget = 5.5 / viewSize
         let isAtEdge = abs(percentage - edgeTarget) == 0 || abs(percentage - (1 - edgeTarget)) == 0
-        
-        if percentage != lastPercentage && isAtEdge {
+
+        if percentage != lastPercentage, isAtEdge {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
 
