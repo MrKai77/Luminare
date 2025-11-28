@@ -112,15 +112,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
     public var body: some View {
         TextField(value: $value, format: format, prompt: prompt, label: label)
             .textFieldStyle(.plain)
-            .modifier(
-                LuminareHoverableModifier(
-                    filledStyle: .init(
-                        normal: .quinary,
-                        hovering: .quaternary,
-                        pressed: .tertiary
-                    )
-                )
-            )
+            .modifier(LuminareHoverableModifier())
             .onAppear {
                 EventMonitorManager.shared.addLocalMonitor(
                     for: id,

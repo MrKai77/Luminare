@@ -10,26 +10,29 @@ import SwiftUI
 /// A stylized modifier that constructs a bordered appearance while hovering.
 ///
 /// Combines both of `LuminareFilledModifier` and `LuminareBorderedModifier`.
-public struct LuminareHoverableModifier<F, H, P>: ViewModifier where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
+public struct LuminareHoverableModifier<F, H, P, A, B>: ViewModifier where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle, A: ShapeStyle, B: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
 
     private let isPressed: Bool
-    private let filledStyle: LuminareFilledStyle<F, H, P>
+    private let fillStyle: LuminareFilledStyle<F, H, P>
+    private let borderStyle: LuminareBorderedStyle<A,B>
     @State private var isHovering: Bool = false
 
     public init(
         isPressed: Bool = false,
-        filledStyle: LuminareFilledStyle<F, H, P>
+        fillStyle: LuminareFilledStyle<F, H, P> = .default,
+        borderStyle: LuminareBorderedStyle<A,B> = .default
     ) {
         self.isPressed = isPressed
-        self.filledStyle = filledStyle
+        self.fillStyle = fillStyle
+        self.borderStyle = borderStyle
     }
 
     public init(
         isPressed: Bool = false
-    ) where F == Color, H == Color, P == HierarchicalShapeStyle {
+    ) where F == HierarchicalShapeStyle, H == HierarchicalShapeStyle, P == HierarchicalShapeStyle, A == HierarchicalShapeStyle, B == HierarchicalShapeStyle {
         self.init(
             isPressed: isPressed,
             isHovering: false
@@ -40,10 +43,11 @@ public struct LuminareHoverableModifier<F, H, P>: ViewModifier where F: ShapeSty
     init(
         isPressed: Bool = false,
         isHovering: Bool = false
-    ) where F == Color, H == Color, P == HierarchicalShapeStyle {
+    ) where F == HierarchicalShapeStyle, H == HierarchicalShapeStyle, P == HierarchicalShapeStyle, A == HierarchicalShapeStyle, B == HierarchicalShapeStyle {
         self.isPressed = isPressed
         self.isHovering = isHovering
-        self.filledStyle = .init(whenPressed: .quinary)
+        self.fillStyle = .default
+        self.borderStyle = .default
     }
 
     public func body(content: Content) -> some View {
@@ -55,12 +59,13 @@ public struct LuminareHoverableModifier<F, H, P>: ViewModifier where F: ShapeSty
                 LuminareFilledModifier(
                     isHovering: isHovering,
                     isPressed: isPressed,
-                    style: filledStyle
+                    style: fillStyle
                 )
             )
             .modifier(
                 LuminareBorderedModifier(
-                    isHovering: isHovering
+                    isHovering: isHovering,
+                    style: borderStyle
                 )
             )
             .onHover { isHovering in

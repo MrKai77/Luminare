@@ -33,19 +33,11 @@ public struct LuminareFilledStyle<F: ShapeStyle, H: ShapeStyle, P: ShapeStyle>: 
         self.pressed = pressed
     }
 
-    public init(whenPressed: P) where F == Color, H == Color {
-        self.init(
-            normal: .clear,
-            hovering: .clear,
-            pressed: whenPressed
-        )
-    }
-
-    public init(cascading: some ShapeStyle) where F == AnyShapeStyle, H == AnyShapeStyle, P == AnyShapeStyle {
-        self.init(
-            normal: AnyShapeStyle(cascading.opacity(0.15)),
-            hovering: AnyShapeStyle(cascading.opacity(0.25)),
-            pressed: AnyShapeStyle(cascading.opacity(0.4))
+    public static var `default`: LuminareFilledStyle<HierarchicalShapeStyle, HierarchicalShapeStyle, HierarchicalShapeStyle> {
+        .init(
+            normal: .quinary,
+            hovering: .quaternary,
+            pressed: .tertiary
         )
     }
 }
@@ -61,7 +53,7 @@ public struct LuminareFilledModifier<F, H, P>: ViewModifier where F: ShapeStyle,
     public init(
         isHovering: Bool,
         isPressed: Bool,
-        style: LuminareFilledStyle<F, H, P>
+        style: LuminareFilledStyle<F, H, P> = .default
     ) {
         self.isHovering = isHovering
         self.isPressed = isPressed

@@ -32,7 +32,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 LuminareFilledModifier(
                     isHovering: isHovering,
                     isPressed: configuration.isPressed,
-                    style: .init(cascading: buttonTint(configuration: configuration))
+                    style: fillStyle(configuration: configuration)
                 )
             )
             .clipShape(.rect(cornerRadii: cornerRadii))
@@ -41,6 +41,16 @@ public struct LuminareButtonStyle: ButtonStyle {
             }
             .animation(animationFast, value: isHovering)
             .luminareSectionEnableMask(true) // If this button is in a section, this ensures that it is correctly clipped at the corners.
+    }
+    
+    private func fillStyle(configuration: Configuration) -> LuminareFilledStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle> {
+        let tint = buttonTint(configuration: configuration)
+        
+        return .init(
+            normal: AnyShapeStyle(tint.opacity(0.15)),
+            hovering: AnyShapeStyle(tint.opacity(0.25)),
+            pressed: AnyShapeStyle(tint.opacity(0.4))
+        )
     }
 
     private func buttonTint(configuration: Configuration) -> AnyShapeStyle {

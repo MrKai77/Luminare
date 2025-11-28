@@ -30,17 +30,10 @@ public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
         self.hovering = hovering
     }
     
-    public init(cascading: some ShapeStyle) where F == AnyShapeStyle, H == AnyShapeStyle {
-        self.init(
-            normal: AnyShapeStyle(cascading.opacity(0.7)),
-            hovering: AnyShapeStyle(cascading)
-        )
-    }
-    
-    public init(whenHovering: H) where F == Color {
-        self.init(
-            normal: .clear,
-            hovering: whenHovering
+    public static var `default`: LuminareBorderedStyle<HierarchicalShapeStyle, HierarchicalShapeStyle> {
+        .init(
+            normal: .quinary,
+            hovering: .quaternary
         )
     }
 }
@@ -56,19 +49,10 @@ public struct LuminareBorderedModifier<F, H>: ViewModifier where F: ShapeStyle, 
 
     public init(
         isHovering: Bool = false,
-        style: LuminareBorderedStyle<F,H>
+        style: LuminareBorderedStyle<F,H> = .default
     ) {
         self.isHovering = isHovering
         self.style = style
-    }
-
-    public init(
-        isHovering: Bool = false
-    ) where F == AnyShapeStyle, H == AnyShapeStyle {
-        self.init(
-            isHovering: isHovering,
-            style: .init(cascading: .quaternary)
-        )
     }
 
     public func body(content: Content) -> some View {
