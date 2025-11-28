@@ -55,9 +55,9 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         animationBehavior = .documentWindow
+        layoutIfNeeded()
 
         DispatchQueue.main.async {
-            self.layoutIfNeeded()
             self.updatePosition()
         }
     }

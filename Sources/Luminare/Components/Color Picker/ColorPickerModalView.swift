@@ -52,17 +52,16 @@ struct ColorPickerModalView: View {
                         selectedColor = newValue.rgb
                     }
 
-                    ColorSaturationBrightnessView(selectedColor: color)
-                        .scaledToFill()
-                        .compositingGroup() // Fixes a weird clipping issue
-                        .clipShape(
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: 8,
-                                bottomLeadingRadius: 2,
-                                bottomTrailingRadius: 2,
-                                topTrailingRadius: 8
-                            )
+                    ColorSaturationBrightnessView(
+                        selectedColor: color,
+                        backgroundClipShape: UnevenRoundedRectangle(
+                            topLeadingRadius: 8,
+                            bottomLeadingRadius: 2,
+                            bottomTrailingRadius: 2,
+                            topTrailingRadius: 8
                         )
+                    )
+                    .scaledToFill()
 
                     ColorHueSliderView(selectedColor: color, roundedBottom: true)
                         .scaledToFill()

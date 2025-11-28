@@ -98,7 +98,10 @@ struct ColorHueSliderView: View {
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
 
-        if percentage != lastPercentage, percentage == 5.5 / viewSize || percentage == (viewSize - 5.5) / viewSize {
+        let edgeTarget = 5.5 / viewSize
+        let isAtEdge = abs(percentage - edgeTarget) == 0 || abs(percentage - (1 - edgeTarget)) == 0
+        
+        if percentage != lastPercentage && isAtEdge {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
 
