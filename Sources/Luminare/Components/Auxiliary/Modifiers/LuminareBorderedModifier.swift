@@ -21,52 +21,53 @@ public struct LuminareBorderedStates: OptionSet, Sendable {
     public static let none: Self = []
 }
 
+public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
+    public let normal: F
+    public let hovering: H
+    
+    public init(normal: F, hovering: H) {
+        self.normal = normal
+        self.hovering = hovering
+    }
+    
+    public init(cascading: some ShapeStyle) where F == AnyShapeStyle, H == AnyShapeStyle {
+        self.init(
+            normal: AnyShapeStyle(cascading.opacity(0.7)),
+            hovering: AnyShapeStyle(cascading)
+        )
+    }
+    
+    public init(whenHovering: H) where F == Color {
+        self.init(
+            normal: .clear,
+            hovering: whenHovering
+        )
+    }
+}
+
 /// A stylized modifier that constructs a bordered appearance.
-public struct LuminareBorderedModifier: ViewModifier {
+public struct LuminareBorderedModifier<F, H>: ViewModifier where F: ShapeStyle, H: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareBorderedStates) private var luminareBorderedStates
     @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     private let isHovering: Bool
-    private let fill: AnyShapeStyle, hovering: AnyShapeStyle
+    private let style: LuminareBorderedStyle<F,H>
 
     public init(
         isHovering: Bool = false,
-        fill: some ShapeStyle,
-        hovering: some ShapeStyle
+        style: LuminareBorderedStyle<F,H>
     ) {
         self.isHovering = isHovering
-        self.fill = .init(fill)
-        self.hovering = .init(hovering)
-    }
-
-    public init(
-        isHovering: Bool = false,
-        cascading: some ShapeStyle
-    ) {
-        self.init(
-            isHovering: isHovering,
-            fill: cascading.opacity(0.7),
-            hovering: cascading
-        )
-    }
-
-    public init(
-        isHovering: Bool = false,
-        hovering: some ShapeStyle
-    ) {
-        self.init(
-            isHovering: isHovering,
-            fill: .clear, hovering: hovering
-        )
+        self.style = style
     }
 
     public init(
         isHovering: Bool = false
-    ) {
+    ) where F == AnyShapeStyle, H == AnyShapeStyle {
         self.init(
             isHovering: isHovering,
-            cascading: .quaternary
+            style: .init(cascading: .quaternary)
         )
     }
 
@@ -76,10 +77,10 @@ public struct LuminareBorderedModifier: ViewModifier {
             .background {
                 if isHovering, luminareBorderedStates.contains(.hovering) {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(fill)
+                        .strokeBorder(style.normal)
                 } else if luminareBorderedStates.contains(.normal) {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(hovering)
+                        .strokeBorder(style.hovering)
                 }
             }
     }
