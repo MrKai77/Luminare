@@ -92,7 +92,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                 .padding(.horizontal, 10)
                 .padding(.trailing, 5)
                 .frame(height: titleBarHeight, alignment: .leading)
-            
+
             Divider()
 
             Group {

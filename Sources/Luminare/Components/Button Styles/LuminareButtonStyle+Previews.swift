@@ -67,26 +67,26 @@ import SwiftUI
             }
 
             LuminareSection {
-                HStack {
-                    Button("Prominent Tinted") {}
-                        .buttonStyle(.luminareProminent)
-                        .tint(.purple)
-
-                    Button("Prominent Tinted") {}
-                        .buttonStyle(.luminareProminent)
-                        .tint(.teal)
-
-                    Button("Prominent") {}
-                        .buttonStyle(.luminareProminent)
-                }
-                .frame(height: 40)
+//                HStack {
+//                    Button("Prominent Tinted") {}
+//                        .buttonStyle(.luminareProminent)
+//                        .tint(.purple)
+//
+//                    Button("Prominent Tinted") {}
+//                        .buttonStyle(.luminareProminent)
+//                        .tint(.teal)
+//
+//                    Button("Prominent") {}
+//                        .buttonStyle(.luminareProminent)
+//                }
+//                .frame(height: 40)
 
                 HStack {
                     Button("Normal") {}
                         .buttonStyle(.luminare)
 
-                    Button("Destructive", role: .destructive) {}
-                        .buttonStyle(.luminareProminent)
+//                    Button("Destructive", role: .destructive) {}
+//                        .buttonStyle(.luminareProminent)
                 }
                 .frame(height: 40)
             }
@@ -120,19 +120,19 @@ import SwiftUI
 // MARK: - LuminareProminentButtonStyle
 
 #if DEBUG
-    @available(macOS 15.0, *)
-    #Preview(
-        "LuminareProminentButtonStyle",
-        traits: .sizeThatFitsLayout
-    ) {
-        Button("Click Me!") {}
-            .buttonStyle(.luminareProminent)
-            .frame(height: 40)
-
-        Button("My Role is Destructive", role: .destructive) {}
-            .buttonStyle(.luminareProminent)
-            .frame(height: 40)
-    }
+//    @available(macOS 15.0, *)
+//    #Preview(
+//        "LuminareProminentButtonStyle",
+//        traits: .sizeThatFitsLayout
+//    ) {
+//        Button("Click Me!") {}
+//            .buttonStyle(.luminareProminent)
+//            .frame(height: 40)
+//
+//        Button("My Role is Destructive", role: .destructive) {}
+//            .buttonStyle(.luminareProminent)
+//            .frame(height: 40)
+//    }
 #endif
 
 // MARK: - LuminareCosmeticButtonStyle
@@ -235,7 +235,7 @@ import SwiftUI
         Text("Not Bordered")
             .fixedSize()
             .modifier(LuminareHoverableModifier())
-            .luminareBordered(false)
+            .luminareBorderedStates(.none)
 
         Text("Bordered")
             .fixedSize()

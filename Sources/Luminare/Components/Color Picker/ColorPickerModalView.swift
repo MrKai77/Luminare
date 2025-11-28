@@ -42,7 +42,7 @@ struct ColorPickerModalView: View {
 
     var body: some View {
         Group {
-            LuminareSection(hasPadding: false, outerPadding: 0) {
+            LuminareSection(outerPadding: 0) {
                 VStack(spacing: 2) {
                     let color = Binding {
                         internalHSBColor
@@ -77,6 +77,7 @@ struct ColorPickerModalView: View {
                         )
                 }
                 .padding(4)
+                .luminareSectionDisableInnerPadding(true)
             }
 
             rgbInputFields()

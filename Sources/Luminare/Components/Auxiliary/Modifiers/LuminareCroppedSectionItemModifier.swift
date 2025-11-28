@@ -19,35 +19,43 @@ public struct LuminareCroppedSectionItemModifier: ViewModifier {
     // MARK: Fields
 
     private let innerPadding: CGFloat
-    private let isFirstChild: Bool, isLastChild: Bool
+    private let isFirstChild: Bool
+    private let isLastChild: Bool
+    private let isEnabled: Bool
 
     // MARK: Initializers
 
     /// Initializes a ``LuminareCroppedItem``.
     ///
     /// - Parameters:
-    ///   - innerPadding: the padding around the contents.
+    ///   - innerPadding: the padding around the contents, used to calculate the corner radius.
     ///   - isFirstChild: whether this item is the first of the section.
     ///   - isLastChild: whether this item is the last of the section.
+    ///   - isEnabled: whether to enable this mask.
     public init(
         innerPadding: CGFloat,
         isFirstChild: Bool,
-        isLastChild: Bool
+        isLastChild: Bool,
+        isEnabled: Bool
     ) {
         self.innerPadding = innerPadding
         self.isFirstChild = isFirstChild
         self.isLastChild = isLastChild
+        self.isEnabled = isEnabled
     }
 
     // MARK: Body
 
     public func body(content: Content) -> some View {
-        content
-            .mask(mask())
-            .padding(.horizontal, innerPadding)
+        if isEnabled {
+            content
+                .clipShape(clipShape())
+        } else {
+            content
+        }
     }
 
-    @ViewBuilder private func mask() -> some View {
+    private func clipShape() -> UnevenRoundedRectangle {
         /// Note all the `- 1` adjustments are to account for the 1px padding that is drawn by the `DividedVStackChildView`.
         /// This is because of the border that encompasses the entire `LuminareSection`.
         if isFirstChild, isLastChild {
@@ -72,7 +80,7 @@ public struct LuminareCroppedSectionItemModifier: ViewModifier {
                 topTrailingRadius: buttonCornerRadii.topTrailing
             )
         } else {
-            Rectangle()
+            UnevenRoundedRectangle(cornerRadii: .init(0))
         }
     }
 }

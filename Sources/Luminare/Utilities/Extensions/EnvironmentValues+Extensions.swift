@@ -96,7 +96,6 @@ public extension EnvironmentValues {
 
     // If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
-    @Entry var luminareSectionIsMasked: Bool = false
 
     // MARK: Compose
 

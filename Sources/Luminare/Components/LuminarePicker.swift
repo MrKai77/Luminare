@@ -143,6 +143,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
         .buttonStyle(.luminare)
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
+        .luminareSectionEnableMask(true)
     }
 
     @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {

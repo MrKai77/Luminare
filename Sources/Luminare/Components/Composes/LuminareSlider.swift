@@ -413,7 +413,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     }
 
     // MARK: Functions
-    
+
     private func commit() {
         if clampsLower, clampsUpper {
             value = internalValue.clamped(to: range)
@@ -425,7 +425,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             value = internalValue
         }
         internalValue = value
-        
+
         withAnimation(animationFast) {
             isTextBoxVisible = false
         }

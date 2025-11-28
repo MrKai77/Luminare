@@ -130,7 +130,7 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             panel.makeKeyAndOrderFront(nil)
 
             if let view = panel.contentView {
-                self.updatePosition(for: view.frame.size)
+                updatePosition(for: view.frame.size)
             }
 
             EventMonitorManager.shared.addLocalMonitor(

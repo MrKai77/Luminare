@@ -9,17 +9,17 @@ import SwiftUI
 
 public struct LuminareBorderedStates: OptionSet, Sendable {
     public let rawValue: Int
-    
+
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
-    
+
     public static let normal = Self(rawValue: 1 << 0)
     public static let hovering = Self(rawValue: 1 << 1)
-    
-    public static let all: Self = [.normal, .hovering]
-}
 
+    public static let all: Self = [.normal, .hovering]
+    public static let none: Self = []
+}
 
 /// A stylized modifier that constructs a bordered appearance.
 public struct LuminareBorderedModifier: ViewModifier {

@@ -253,7 +253,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             LuminareCompose("Pick from segments") {
                 PickerPreview(elements: ["Inline", "Fixed"], selection: "Inline")
                     .luminareCompactPickerStyle(.segmented)
-                    .luminareBordered(false)
+                    .luminareBorderedStates(.none)
             }
             .luminareComposeStyle(.inline)
 
@@ -263,7 +263,7 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             )
             .luminareAnimation(.bouncy)
             .luminareCompactPickerStyle(.segmented)
-            .luminareBordered(false)
+            .luminareBorderedStates(.none)
             .luminareHasDividers(false)
             .padding(2)
 

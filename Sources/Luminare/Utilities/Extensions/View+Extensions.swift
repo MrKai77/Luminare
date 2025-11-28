@@ -272,20 +272,10 @@ public extension View {
         environment(\.luminareHorizontalPadding, padding)
     }
 
-    @available(*, deprecated, renamed: "luminareBorderedStates")
-    @ViewBuilder func luminareBordered(_ bordered: Bool) -> some View {
-        environment(\.luminareBorderedStates, .all)
-    }
-    
     @ViewBuilder func luminareBorderedStates(_ states: LuminareBorderedStates) -> some View {
         environment(\.luminareBorderedStates, states)
     }
 
-    @available(*, deprecated, renamed: "luminareFilledStates")
-    @ViewBuilder func luminareHasBackground(_ hasBackground: Bool) -> some View {
-        environment(\.luminareFilledStates, [])
-    }
-    
     @ViewBuilder func luminareFilledStates(_ states: LuminareFilledStates) -> some View {
         environment(\.luminareFilledStates, states)
     }
@@ -387,12 +377,12 @@ public extension View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
 
-    @ViewBuilder func luminareSectionMasked(_ masked: Bool) -> some View {
-        environment(\.luminareSectionIsMasked, masked)
+    @ViewBuilder func luminareSectionEnableMask(_ masked: Bool) -> some View {
+        preference(key: LuminareSectionStackEnableMaskKey.self, value: masked)
     }
-    
-    @ViewBuilder func luminareSectionDisableInnerPadding( _ disable: Bool) -> some View {
-        preference(key: DisableDividedStackInnerPaddingKey.self, value: true)
+
+    @ViewBuilder func luminareSectionDisableInnerPadding(_ disable: Bool) -> some View {
+        preference(key: LuminareSectionStackDisableInnerPaddingKey.self, value: disable)
     }
 
     // MARK: Compose

@@ -17,19 +17,12 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.luminareButtonMaterial) private var material
     @Environment(\.luminareButtonCornerRadii) private var cornerRadii
 
-    @State private var isHovering: Bool
+    @State private var isHovering: Bool = false
+    private let tinted: Bool
 
-    public init() {
-        self.isHovering = false
+    public init(tinted: Bool = false) {
+        self.tinted = tinted
     }
-
-    #if DEBUG
-        init(
-            isHovering: Bool = false
-        ) {
-            self.isHovering = isHovering
-        }
-    #endif
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -39,9 +32,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 LuminareFilledModifier(
                     isHovering: isHovering,
                     isPressed: configuration.isPressed,
-                    fill: .quinary,
-                    hovering: .quaternary.opacity(0.7),
-                    pressed: .quaternary
+                    cascading: buttonTint(configuration: configuration)
                 )
             )
             .clipShape(.rect(cornerRadii: cornerRadii))
@@ -49,5 +40,19 @@ public struct LuminareButtonStyle: ButtonStyle {
                 self.isHovering = isHovering
             }
             .animation(animationFast, value: isHovering)
+            .luminareSectionEnableMask(true) // If this button is in a section, this ensures that it is correctly clipped at the corners.
+    }
+
+    private func buttonTint(configuration: Configuration) -> AnyShapeStyle {
+        if tinted {
+            return AnyShapeStyle(.tint)
+        }
+
+        if let role = configuration.role,
+           role == .destructive || role == .cancel {
+            return AnyShapeStyle(.red)
+        }
+
+        return AnyShapeStyle(.tertiary)
     }
 }

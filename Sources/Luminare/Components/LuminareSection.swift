@@ -28,11 +28,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @Environment(\.luminareHasDividers) private var hasDividers
     @Environment(\.luminareSectionLayout) private var layout
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
-    @Environment(\.luminareSectionIsMasked) private var isMasked
 
     // MARK: Fields
-
-    private let hasPadding: Bool
 
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
     private let outerPadding: CGFloat
@@ -44,7 +41,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     /// Initializes a ``LuminareSection``.
     ///
     /// - Parameters:
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -52,7 +48,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - header: the header.
     ///   - footer: the footer.
     public init(
-        hasPadding: Bool = true,
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
@@ -60,7 +55,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
-        self.hasPadding = hasPadding
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
         self.outerPadding = outerPadding
@@ -95,23 +89,27 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @ViewBuilder private func wrappedContent() -> some View {
         Group {
             if borderedStates.contains(.normal) {
-                DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
+                LuminareSectionStack(hasDividers: hasDividers) {
                     content()
                 }
+                .compositingGroup()
                 .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
                 .fixedSize(horizontal: maxWidth == 0, vertical: false)
                 .background(
-                    colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary)
+                    colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary),
+                    in: .rect(cornerRadii: cornerRadii)
                 )
-                .clipShape(.rect(cornerRadii: cornerRadii))
                 .overlay {
                     UnevenRoundedRectangle(cornerRadii: cornerRadii)
                         .strokeBorder(.quaternary, lineWidth: 1)
                 }
-                .shadow(color: .black.opacity(colorScheme == .light ? 0.1 : 0), radius: 2, y: 1)
+                .shadow(
+                    color: .black.opacity(colorScheme == .light ? 0.1 : 0),
+                    radius: 2,
+                    y: 1
+                )
             } else {
                 content()
-                    .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
             }
         }
         .padding(.vertical, outerPadding)

@@ -15,9 +15,9 @@ public extension ButtonStyle where Self == LuminareButtonStyle {
 
 // MARK: - LuminareProminentButtonStyle
 
-public extension ButtonStyle where Self == LuminareProminentButtonStyle {
-    static var luminareProminent: Self { .init() }
-}
+// public extension ButtonStyle where Self == LuminareProminentButtonStyle {
+//    static var luminareProminent: Self { .init() }
+// }
 
 // MARK: - LuminareCosmeticButtonStyle
 
