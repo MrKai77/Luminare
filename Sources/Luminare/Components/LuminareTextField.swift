@@ -18,7 +18,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
     private let prompt: Text?
     @ViewBuilder private var label: () -> Label
 
-    private let id = UUID()
+    private let id: UUID = .init()
 
     // MARK: Initializers
 

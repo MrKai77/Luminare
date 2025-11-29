@@ -76,7 +76,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     @State private var firstItem: V?
     @State private var lastItem: V?
 
-    private let id = UUID()
+    private let id: UUID = .init()
 
     // MARK: Initializers
 

@@ -63,7 +63,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @State private var isSliderEditing: Bool = false
     @State private var composeWidth: CGFloat = .zero
 
-    private let id = UUID()
+    private let id: UUID = .init()
 
     // MARK: Initializers
 
@@ -311,7 +311,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     }
 
     @ViewBuilder private func sliderView() -> some View {
-        let binding: Binding<V> = .init {
+        let binding = Binding<V> {
             value
         } set: { newValue in
             value = newValue

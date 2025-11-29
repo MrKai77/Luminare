@@ -91,7 +91,7 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
         private weak var parentView: NSView?
 
-        private let id = UUID()
+        private let id: UUID = .init()
 
         init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
             self.parent = parent
@@ -283,7 +283,7 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
     private let closesOnDefocus: Bool
-    private let initializedDate = Date.now
+    private let initializedDate: Date = .now
 
     public init(
         closesOnDefocus: Bool = false

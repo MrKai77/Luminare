@@ -14,9 +14,9 @@ public struct LuminareFilledStates: OptionSet, Sendable {
         self.rawValue = rawValue
     }
 
-    public static let normal = Self(rawValue: 1 << 0)
-    public static let hovering = Self(rawValue: 1 << 1)
-    public static let pressed = Self(rawValue: 1 << 2)
+    public static let normal: Self = .init(rawValue: 1 << 0)
+    public static let hovering: Self = .init(rawValue: 1 << 1)
+    public static let pressed: Self = .init(rawValue: 1 << 2)
 
     public static let all: Self = [.normal, .hovering, .pressed]
     public static let none: Self = []
@@ -76,10 +76,10 @@ public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P:
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareFilledStates) private var luminareFilledStates
     @Environment(\.luminareButtonMaterial) private var material
-    
+
     private let isHovering: Bool, isPressed: Bool
     private let style: LuminareFilledStyle<F, H, P>
-    
+
     public init(
         isHovering: Bool = false,
         isPressed: Bool = false,
@@ -89,7 +89,7 @@ public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P:
         self.isPressed = isPressed
         self.style = style
     }
-    
+
     public var body: some View {
         if isEnabled {
             if luminareFilledStates.contains(.pressed), isPressed {

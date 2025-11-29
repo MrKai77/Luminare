@@ -39,6 +39,7 @@ public struct LuminareHoverableModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
+            .compositingGroup()
             .padding(.horizontal, horizontalPadding)
             .modifier(LuminareAspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
@@ -49,7 +50,7 @@ public struct LuminareHoverableModifier: ViewModifier {
                         isPressed: isPressed,
                         style: .default
                     )
-                    
+
                     LuminareBorder(
                         isHovering: isHovering,
                         style: .default

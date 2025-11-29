@@ -142,5 +142,5 @@ extension Color {
 }
 
 extension Color {
-    static let disabledControlTextColor = Color(NSColor.disabledControlTextColor)
+    static let disabledControlTextColor: Color = .init(NSColor.disabledControlTextColor)
 }

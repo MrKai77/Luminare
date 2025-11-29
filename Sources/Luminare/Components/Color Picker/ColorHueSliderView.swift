@@ -26,7 +26,7 @@ struct ColorHueSliderView: View {
     @State private var selectionWidth: CGFloat = 0
 
     // gradient for the color spectrum slider
-    private let colorSpectrumGradient = Gradient(
+    private let colorSpectrumGradient: Gradient = .init(
         colors: stride(from: 0.0, through: 1.0, by: 0.01)
             .map { Color(hue: $0, saturation: 1, brightness: 1) }
     )

@@ -36,7 +36,7 @@ struct ColorPickerModalView: View {
 
     @State private var hueFallback: Double = .zero
 
-    private let colorSampler = NSColorSampler()
+    private let colorSampler: NSColorSampler = .init()
 
     // MARK: Body
 

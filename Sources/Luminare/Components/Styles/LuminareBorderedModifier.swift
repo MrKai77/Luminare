@@ -14,8 +14,8 @@ public struct LuminareBorderedStates: OptionSet, Sendable {
         self.rawValue = rawValue
     }
 
-    public static let normal = Self(rawValue: 1 << 0)
-    public static let hovering = Self(rawValue: 1 << 1)
+    public static let normal: Self = .init(rawValue: 1 << 0)
+    public static let hovering: Self = .init(rawValue: 1 << 1)
 
     public static let all: Self = [.normal, .hovering]
     public static let none: Self = []
@@ -24,7 +24,7 @@ public struct LuminareBorderedStates: OptionSet, Sendable {
 public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
     public let normal: F
     public let hovering: H
-    
+
     public init(
         normal: F,
         hovering: H = Color.clear
@@ -32,10 +32,10 @@ public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
         self.normal = normal
         self.hovering = hovering
     }
-    
+
     public static var `default`: LuminareBorderedStyle<HierarchicalShapeStyle, HierarchicalShapeStyle> {
         .init(
-            normal: .quinary,
+            normal: .quaternary,
             hovering: .quaternary
         )
     }
@@ -44,11 +44,11 @@ public struct LuminareBorderedStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
 /// A stylized modifier that constructs a bordered appearance.
 public struct LuminareBorderedModifier<F, H>: ViewModifier where F: ShapeStyle, H: ShapeStyle {
     private let isHovering: Bool
-    private let style: LuminareBorderedStyle<F,H>
+    private let style: LuminareBorderedStyle<F, H>
 
     public init(
         isHovering: Bool = false,
-        style: LuminareBorderedStyle<F,H> = .default
+        style: LuminareBorderedStyle<F, H> = .default
     ) {
         self.isHovering = isHovering
         self.style = style
@@ -71,16 +71,16 @@ public struct LuminareBorder<F, H>: View where F: ShapeStyle, H: ShapeStyle {
     @Environment(\.luminareCornerRadii) private var cornerRadii
 
     private let isHovering: Bool
-    private let style: LuminareBorderedStyle<F,H>
-    
+    private let style: LuminareBorderedStyle<F, H>
+
     public init(
         isHovering: Bool = false,
-        style: LuminareBorderedStyle<F,H> = .default
+        style: LuminareBorderedStyle<F, H> = .default
     ) {
         self.isHovering = isHovering
         self.style = style
     }
-    
+
     public var body: some View {
         if isEnabled {
             if isHovering, luminareBorderedStates.contains(.hovering) {

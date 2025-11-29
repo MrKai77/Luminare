@@ -155,7 +155,7 @@ public struct LuminareColorPicker<F>: View
     "LuminareColorPicker",
     traits: .sizeThatFitsLayout
 ) {
-    @Previewable @State var color: Color = .accentColor
+    @Previewable @State var color = Color.accentColor
 
     VStack {
         LuminareColorPicker(

@@ -8,23 +8,25 @@
 import SwiftUI
 
 public struct LuminarePlateauModifier: ViewModifier {
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareCornerRadii) private var cornerRadii
 
     private let isPressed: Bool
     private let isHovering: Bool
 
-    init(
+    public init(
         isPressed: Bool = false,
         isHovering: Bool = false
     ) {
         self.isPressed = isPressed
         self.isHovering = isHovering
     }
-    
+
     public func body(content: Content) -> some View {
         content
             .compositingGroup()
+            .opacity(isEnabled ? 1 : 0.5)
             .background {
                 ZStack {
                     LuminareFill(
@@ -33,23 +35,20 @@ public struct LuminarePlateauModifier: ViewModifier {
                         style: .init(
                             normal: colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary),
                             hovering: colorScheme == .light ? .quinary : .quaternary,
-                            pressed: colorScheme == .light ? .quaternary : .tertiary
+                            pressed: colorScheme == .light ? AnyShapeStyle(.quaternary) : AnyShapeStyle(.tertiary.opacity(0.6))
                         )
                     )
-                    
+
                     LuminareBorder(
                         isHovering: isHovering,
-                        style: .init(
-                            normal: .quaternary,
-                            hovering: .quaternary
-                        )
+                        style: .default
                     )
                 }
                 .clipShape(.rect(cornerRadii: cornerRadii))
             }
             .shadow(
                 color: .black.opacity(colorScheme == .light ? 0.1 : 0),
-                radius: 2,
+                radius: 1,
                 y: 1
             )
     }

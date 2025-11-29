@@ -25,11 +25,11 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     }
 
     #if DEBUG
-        init(
-            isHovering: Bool = false
-        ) {
-            self.isHovering = isHovering
-        }
+    init(
+        isHovering: Bool = false
+    ) {
+        self.isHovering = isHovering
+    }
     #endif
 
     public func makeBody(configuration: Configuration) -> some View {

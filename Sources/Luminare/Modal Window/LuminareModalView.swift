@@ -281,8 +281,8 @@ private struct ModalContent: View {
     @Previewable @State var isPresented1 = false
     @Previewable @State var isPresented2 = false
 
-    @Previewable @State var offsetX: Double = .zero
-    @Previewable @State var offsetY: Double = .zero
+    @Previewable @State var offsetX = Double.zero
+    @Previewable @State var offsetY = Double.zero
 
     VStack {
         Spacer()

@@ -11,13 +11,8 @@ import SwiftUI
 
 public extension ButtonStyle where Self == LuminareButtonStyle {
     static var luminare: Self { .init() }
+    static func luminare(tinted: Bool = false) -> Self { .init(tinted: tinted) }
 }
-
-// MARK: - LuminareProminentButtonStyle
-
-// public extension ButtonStyle where Self == LuminareProminentButtonStyle {
-//    static var luminareProminent: Self { .init() }
-// }
 
 // MARK: - LuminareCosmeticButtonStyle
 

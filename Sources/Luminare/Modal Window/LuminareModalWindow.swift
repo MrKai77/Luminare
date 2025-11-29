@@ -15,7 +15,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     private let presentation: LuminareSheetPresentation
 
     private var view: NSView?
-    private let initializedDate = Date.now
+    private let initializedDate: Date = .now
 
     init(
         isPresented: Binding<Bool>,
