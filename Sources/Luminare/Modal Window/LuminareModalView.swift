@@ -36,9 +36,9 @@ public enum LuminareSheetPresentationAlignment: String, Equatable, Hashable,
 }
 
 public struct LuminareSheetPresentation: Equatable, Hashable, Codable, Sendable {
-    var target: LuminareSheetPresentationTarget
-    var alignment: LuminareSheetPresentationAlignment
-    var offset: CGPoint
+    let target: LuminareSheetPresentationTarget
+    let alignment: LuminareSheetPresentationAlignment
+    let offset: CGPoint
 
     init(
         _ alignment: LuminareSheetPresentationAlignment = .centered,
@@ -151,8 +151,10 @@ struct LuminareModalView<Content>: View where Content: View {
 
     func windowBorder() -> some View {
         ZStack {
-            UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+            if #unavailable(macOS 26.0) {
+                UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+            }
 
             UnevenRoundedRectangle(cornerRadii: cornerRadii)
                 .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)

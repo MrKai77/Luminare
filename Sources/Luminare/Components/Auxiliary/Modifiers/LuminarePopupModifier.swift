@@ -395,8 +395,10 @@ struct LuminarePopupWrappingView<Content>: View where Content: View {
 
     private func windowBorder() -> some View {
         ZStack {
-            UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+            if #unavailable(macOS 26.0) {
+                UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+            }
 
             UnevenRoundedRectangle(cornerRadii: cornerRadii)
                 .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)

@@ -131,7 +131,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     }
 
     override var canBecomeMain: Bool {
-        true
+        false
     }
 
     override func resignMain() {
