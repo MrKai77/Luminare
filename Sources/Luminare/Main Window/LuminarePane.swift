@@ -89,6 +89,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         VStack(spacing: 0) {
             header()
                 .buttonStyle(TabHeaderButtonStyle())
+                .luminareHorizontalPadding(5)
                 .padding(.horizontal, 10)
                 .padding(.trailing, 5)
                 .frame(height: titleBarHeight, alignment: .leading)
@@ -134,18 +135,24 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 // MARK: - Button Style (Tab Header)
 
 struct TabHeaderButtonStyle: ButtonStyle {
-    @Environment(\.luminareAnimationFast) private var animationFast
-
+    @Environment(\.luminareMinHeight) private var minHeight
+    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @State var isHovering: Bool = false
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundStyle(isHovering ? .primary : .secondary)
-            .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
-                }
-            }
+            .padding(.horizontal, horizontalPadding)
+            .modifier(LuminareAspectRatioModifier())
+            .modifier(
+                LuminarePlateauModifier(
+                    isPressed: configuration.isPressed,
+                    isHovering: isHovering
+                )
+            )
+            .onHover { isHovering = $0 }
+            .luminareCornerRadius(6)
+            .luminareAspectRatio(contentMode: .fit)
+            .luminareMinHeight(minHeight - 4)
     }
 }
 

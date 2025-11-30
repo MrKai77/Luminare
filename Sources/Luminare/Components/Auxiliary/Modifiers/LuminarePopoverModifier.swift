@@ -97,9 +97,7 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
             case let .hover(showDelay, hideDelay, throttleDelay):
                 content
                     .padding(padding)
-                    .onHover { isHovering in
-                        self.isHovering = isHovering
-                    }
+                    .onHover { isHovering = $0 }
                     .booleanThrottleDebounced(
                         isHovering,
                         flipOnDelay: showDelay,
@@ -142,10 +140,7 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
                 switch trigger {
                 case let .hover(showDelay, hideDelay, throttleDelay):
                     popoverContent()
-                        .onHover { isHovering in
-                            // Hovering on the content can also update popover state
-                            self.isHovering = isHovering
-                        }
+                        .onHover { isHovering = $0 }
                         .booleanThrottleDebounced(
                             isHovering,
                             flipOnDelay: showDelay,

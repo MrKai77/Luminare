@@ -333,30 +333,23 @@ public struct LuminareListItem<Content, V>: View
                         itemBorder()
                         itemBackground()
                     }
+                    .animation(animationFast, value: [lineWidth, tintOpacity])
                     .padding(.horizontal, 1)
                     .padding(.leading, 1) // it's nuanced
                 }
             }
-            .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
-                }
-            }
+            .onHover { isHovering = $0 }
             .onChange(of: selection) { _ in
                 guard isEnabled else { return }
-                withAnimation(animation) {
-                    updateSelection()
-                }
+                updateSelection()
             }
             .onAppear {
                 DispatchQueue.main.async {
-                    withAnimation(animation) {
-                        // Initialize selection
-                        updateSelection()
+                    // Initialize selection
+                    updateSelection()
 
-                        // Reset hovering state
-                        isHovering = false
-                    }
+                    // Reset hovering state
+                    isHovering = false
                 }
             }
     }

@@ -17,19 +17,9 @@ public struct LuminareHoverableModifier: ViewModifier {
     @Environment(\.luminareCornerRadii) private var cornerRadii
 
     private let isPressed: Bool
-    @State private var isHovering: Bool
+    private let isHovering: Bool
 
     public init(
-        isPressed: Bool = false
-    ) {
-        self.init(
-            isPressed: isPressed,
-            isHovering: false
-        )
-    }
-
-    // Note: not public!
-    init(
         isPressed: Bool = false,
         isHovering: Bool = false
     ) {
@@ -57,11 +47,6 @@ public struct LuminareHoverableModifier: ViewModifier {
                     )
                 }
                 .clipShape(.rect(cornerRadii: cornerRadii))
-            }
-            .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
-                }
             }
     }
 }

@@ -340,9 +340,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         ) { isEditing in
             isSliderEditing = isEditing
         }
-        .onHover { isHovering in
-            isSliderHovering = isHovering
-        }
+        .onHover { isSliderHovering = $0 }
     }
 
     @ViewBuilder private func textBoxView() -> some View {

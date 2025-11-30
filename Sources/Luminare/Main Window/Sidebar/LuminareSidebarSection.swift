@@ -95,15 +95,13 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
     // MARK: Body
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 4) {
             if Label.self != EmptyView.self {
-                HStack {
-                    label()
-                        .opacity(0.7)
-                        .fontWeight(.medium)
-                        .padding(.leading, 4)
-                    Spacer()
-                }
+                label()
+                    .foregroundStyle(.secondary)
+                    .fontWeight(.medium)
+                    .padding(.leading, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             ForEach(items) { item in

@@ -35,7 +35,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     // MARK: Environments
 
-    @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareCompactPickerStyle) private var style
@@ -85,17 +84,12 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         }
         .padding(.horizontal, -4)
         .modifier(LuminareHoverableModifier())
-        .onHover { isHovering in
-            withAnimation(animationFast) {
-                self.isHovering = isHovering
-            }
-        }
+        .onHover { isHovering = $0 }
     }
 
     // MARK: - Layout
 
     struct SegmentedVariadic: View {
-        @Environment(\.luminareAnimationFast) private var animationFast
         @Environment(\.luminareMinHeight) private var minHeight
         @Environment(\.luminareHorizontalPadding) private var horizontalPadding
         @Environment(\.luminareHasDividers) private var hasDividers
@@ -135,7 +129,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
         struct SegmentedKnob: View {
             @Environment(\.luminareAnimation) private var animation
-            @Environment(\.luminareAnimationFast) private var animationFast
             @Environment(\.luminareMinHeight) private var minHeight
             @Environment(\.luminareHorizontalPadding) private var horizontalPadding
             @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
@@ -161,11 +154,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                         .padding(.horizontal, horizontalPadding)
                 }
                 .buttonStyle(.borderless)
-                .onHover { hover in
-                    withAnimation(animationFast) {
-                        isHovering = hover
-                    }
-                }
+                .onHover { isHovering = $0 }
                 .background {
                     Group {
                         if selection == value {
@@ -174,7 +163,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                                     id: "knob", in: namespace
                                 )
                         } else if isHovering {
-                            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                            UnevenRoundedRectangle(cornerRadii: constrainedCornerRadii)
                                 .foregroundStyle(.quinary)
                         }
                     }
@@ -261,7 +250,6 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
                 elements: ["macOS", "Linux", "Windows"],
                 selection: "macOS"
             )
-            .luminareAnimation(.bouncy)
             .luminareCompactPickerStyle(.segmented)
             .luminareBorderedStates(.none)
             .luminareHasDividers(false)

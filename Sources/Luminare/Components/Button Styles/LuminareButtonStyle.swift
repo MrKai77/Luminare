@@ -36,10 +36,7 @@ public struct LuminareButtonStyle: ButtonStyle {
                 )
             )
             .clipShape(.rect(cornerRadii: cornerRadii))
-            .onHover { isHovering in
-                self.isHovering = isHovering
-            }
-            .animation(animationFast, value: isHovering)
+            .onHover { isHovering = $0 }
             .luminareSectionEnableMask(true) // If this button is in a section, this ensures that it is correctly clipped at the corners.
     }
 

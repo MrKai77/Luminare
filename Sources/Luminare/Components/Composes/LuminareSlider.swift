@@ -336,9 +336,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 }
             }
         }
-        .onHover { isHovering in
-            isSliderHovering = isHovering
-        }
+        .onHover { isSliderHovering = $0 }
     }
 
     @ViewBuilder private func textBoxView() -> some View {

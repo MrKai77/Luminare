@@ -43,10 +43,7 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
                     isHovering: isHovering
                 )
             )
-            .onHover { isHovering in
-                self.isHovering = isHovering
-            }
-            .animation(animationFast, value: isHovering)
+            .onHover { isHovering = $0 }
             .luminareCornerRadii(cornerRadii)
     }
 }

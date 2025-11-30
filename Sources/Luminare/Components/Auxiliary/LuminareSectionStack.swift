@@ -96,9 +96,8 @@ struct LuminareSectionStackChildView: View {
 
     var body: some View {
         Group {
-//            if isMasked {
             child
-                .compositingGroup() // IMPORTANT: This prevents cropping the subviews recursively
+                .compositingGroup()
                 .modifier(
                     LuminareCroppedSectionItemModifier(
                         innerPadding: disableInnerPadding == true ? 0 : innerPadding,
@@ -108,23 +107,9 @@ struct LuminareSectionStackChildView: View {
                     )
                 )
                 .padding(disableInnerPadding == true ? 0 : innerPadding)
-
-//                    .modifier(
-//                        LuminareCroppedSectionItemModifier(
-//                            innerPadding: overrideDisableInnerPadding == true ? 0 : innerPadding,
-//                            isFirstChild: isFirstChild,
-//                            isLastChild: isLastChild
-//                        )
-//                    )
-//                    .padding(.top, isFirstChild ? 1 : 0)
-//                    .padding(.bottom, isLastChild ? 1 : 0)
-//                    .padding(.horizontal, 1)
-//                    .padding(.top, overrideDisableInnerPadding != true ? innerPadding : 0)
-//                    .padding(.bottom, overrideDisableInnerPadding != true ? innerPadding : 0)
-//            } else {
-//                child
-//                    .mask(Rectangle()) // IMPORTANT: this fixes the hover areas for some reason
-//            }
+                .padding(.top, isFirstChild ? 1 : 0)
+                .padding(.bottom, isLastChild ? 1 : 0)
+                .padding(.horizontal, 1)
         }
         .readPreference(
             LuminareSectionStackDisableInnerPaddingKey.self,
