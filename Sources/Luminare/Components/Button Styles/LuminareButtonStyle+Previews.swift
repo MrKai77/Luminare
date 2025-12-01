@@ -18,7 +18,7 @@ import SwiftUI
     VStack {
         LuminareSection {
             Button {} label: {
-                HStack {
+                HStack(spacing: 4) {
                     Image(systemName: "app.gift.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -37,13 +37,12 @@ import SwiftUI
                 }
                 .padding(8)
             }
-            .buttonStyle(
-                .luminareCosmetic(icon: Image(systemName: "star.fill"))
-            )
+            .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
+            .luminareRoundingBehavior(top: true)
             .frame(height: 72)
 
             Button {} label: {
-                HStack {
+                HStack(spacing: 4) {
                     Image(systemName: "app.gift.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -63,27 +62,32 @@ import SwiftUI
                 .padding(8)
             }
             .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
+            .luminareRoundingBehavior(bottom: true)
             .frame(height: 72)
         }
 
         LuminareSection {
-            HStack {
+            HStack(spacing: 4) {
                 Button("Prominent") {}
                     .buttonStyle(.luminare(tinted: true))
                     .tint(.purple)
+                    .luminareRoundingBehavior(topLeading: true)
 
                 Button("Prominent") {}
                     .buttonStyle(.luminare(tinted: true))
                     .tint(.teal)
+                    .luminareRoundingBehavior(topTrailing: true)
             }
             .frame(height: 40)
 
-            HStack {
+            HStack(spacing: 4) {
                 Button("Normal") {}
                     .buttonStyle(.luminare)
+                    .luminareRoundingBehavior(bottomLeading: true)
 
                 Button("Destructive", role: .destructive) {}
                     .buttonStyle(.luminare)
+                    .luminareRoundingBehavior(bottomTrailing: true)
             }
             .frame(height: 40)
         }
@@ -93,6 +97,7 @@ import SwiftUI
                 Button("Compact") {}
                     .buttonStyle(.luminareCompact)
                     .luminareAspectRatio(contentMode: .fill, hasFixedHeight: false)
+                    .luminareRoundingBehavior(top: true, bottom: true)
             }
             .frame(height: 40)
         }
@@ -141,7 +146,7 @@ import SwiftUI
     traits: .sizeThatFitsLayout
 ) {
     Button {} label: {
-        HStack {
+        HStack(spacing: 4) {
             Image(systemName: "app.gift.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -166,7 +171,7 @@ import SwiftUI
     .frame(height: 72)
 
     Button {} label: {
-        HStack {
+        HStack(spacing: 4) {
             Image(systemName: "app.gift.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)

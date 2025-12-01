@@ -17,12 +17,18 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Environment(\.luminareTintColor) private var tintColor
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareCornerRadii) private var cornerRadii
-    @Environment(\.luminareButtonCornerRadii) private var buttonCornerRadii
     @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
     @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
     @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
     @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
+    let buttonCornerRadii: RectangleCornerRadii = .init(
+        topLeading: 4,
+        bottomLeading: 4,
+        bottomTrailing: 4,
+        topTrailing: 4
+    )
+    
     // MARK: Fields
 
     private let innerPadding: CGFloat

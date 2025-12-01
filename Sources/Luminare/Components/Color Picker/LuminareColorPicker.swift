@@ -66,9 +66,7 @@ public struct LuminareColorPicker<F>: View
     where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     public typealias Style = LuminareColorPickerStyle<F>
 
-    // MARK: Environments
-
-    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
+    @Environment(\.luminareCornerRadii) private var cornerRadii
 
     // MARK: Fields
 

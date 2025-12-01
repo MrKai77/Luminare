@@ -17,8 +17,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadii) private var cornerRadii
+    @Environment(\.luminareCornerRadii) private var cornerRadii
 
     @ViewBuilder private var icon: Image
 
@@ -61,7 +60,6 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
                 .padding(24)
                 .allowsHitTesting(false)
             }
-            .clipShape(.rect(cornerRadii: cornerRadii))
             .onHover { isHovering = $0 }
     }
 }

@@ -328,28 +328,6 @@ public extension View {
         luminareContentMargins(.all, length)
     }
 
-    // MARK: Button
-
-    @ViewBuilder func luminareButtonMaterial(_ material: Material?) -> some View {
-        environment(\.luminareButtonMaterial, material)
-    }
-
-    @ViewBuilder func luminareButtonCornerRadii(_ radii: RectangleCornerRadii) -> some View {
-        environment(\.luminareButtonCornerRadii, radii)
-    }
-
-    @ViewBuilder func luminareButtonCornerRadius(_ radius: CGFloat) -> some View {
-        luminareButtonCornerRadii(.init(radius))
-    }
-
-    @ViewBuilder func luminareCompactButtonCornerRadii(_ radii: RectangleCornerRadii) -> some View {
-        environment(\.luminareCompactButtonCornerRadii, radii)
-    }
-
-    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat) -> some View {
-        luminareCompactButtonCornerRadii(.init(radius))
-    }
-
     // MARK: Form
 
     @available(macOS 15.0, *)

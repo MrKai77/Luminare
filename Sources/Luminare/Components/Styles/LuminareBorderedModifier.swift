@@ -68,7 +68,14 @@ public struct LuminareBorderedModifier<F, H>: ViewModifier where F: ShapeStyle, 
 public struct LuminareBorder<F, H>: View where F: ShapeStyle, H: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareBorderedStates) private var luminareBorderedStates
+
     @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareIsInsideSection) private var isInsideSection
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
+    @State private var disableInnerPadding: Bool? = nil
 
     private let isHovering: Bool
     private let style: LuminareBorderedStyle<F, H>
@@ -82,18 +89,39 @@ public struct LuminareBorder<F, H>: View where F: ShapeStyle, H: ShapeStyle {
     }
 
     public var body: some View {
-        if isEnabled {
-            if isHovering, luminareBorderedStates.contains(.hovering) {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .strokeBorder(style.hovering)
-            } else if luminareBorderedStates.contains(.normal) {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
+        Group {
+            let shape = getShape()
+
+            if isEnabled {
+                if isHovering, luminareBorderedStates.contains(.hovering) {
+                    shape
+                        .strokeBorder(style.hovering)
+                } else if luminareBorderedStates.contains(.normal) {
+                    shape
+                        .strokeBorder(style.normal)
+                }
+            } else {
+                shape
                     .strokeBorder(style.normal)
+                    .opacity(isEnabled ? 1 : 0.5)
             }
+        }
+        .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
+    }
+    
+    func getShape() -> UnevenRoundedRectangle {
+        if isInsideSection {
+            let disableInnerPadding = disableInnerPadding == true
+            let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
+            let defaultCornerRadius: CGFloat = 4
+            return UnevenRoundedRectangle(
+                topLeadingRadius: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
+                bottomLeadingRadius: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,
+                bottomTrailingRadius: bottomTrailingRounded ? cornerRadii.bottomTrailing : defaultCornerRadius,
+                topTrailingRadius: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius,
+            )
         } else {
-            UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                .strokeBorder(style.normal)
-                .opacity(isEnabled ? 1 : 0.5)
+            return UnevenRoundedRectangle(cornerRadii: cornerRadii)
         }
     }
 }

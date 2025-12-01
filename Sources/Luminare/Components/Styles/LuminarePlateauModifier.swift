@@ -44,7 +44,6 @@ public struct LuminarePlateauModifier: ViewModifier {
                         style: .default
                     )
                 }
-                .clipShape(.rect(cornerRadii: cornerRadii))
             }
             .shadow(
                 color: .black.opacity(colorScheme == .light ? 0.1 : 0),

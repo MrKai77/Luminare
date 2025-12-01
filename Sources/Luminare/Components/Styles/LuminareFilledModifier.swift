@@ -75,7 +75,14 @@ public struct LuminareFilledModifier<F, H, P>: ViewModifier where F: ShapeStyle,
 public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareFilledStates) private var luminareFilledStates
-    @Environment(\.luminareButtonMaterial) private var material
+    
+    @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareIsInsideSection) private var isInsideSection
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
+    @State private var disableInnerPadding: Bool? = nil
 
     private let isHovering: Bool, isPressed: Bool
     private let style: LuminareFilledStyle<F, H, P>
@@ -91,23 +98,44 @@ public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P:
     }
 
     public var body: some View {
-        if isEnabled {
-            if luminareFilledStates.contains(.pressed), isPressed {
-                Rectangle()
-                    .foregroundStyle(style.pressed)
-            } else if luminareFilledStates.contains(.hovering), isHovering {
-                Rectangle()
-                    .foregroundStyle(style.hovering)
-            } else if luminareFilledStates.contains(.normal) {
-                Rectangle()
-                    .foregroundStyle(style.normal)
+        Group {
+            let shape = getShape()
+            
+            if isEnabled {
+                if luminareFilledStates.contains(.pressed), isPressed {
+                    shape
+                        .foregroundStyle(style.pressed)
+                } else if luminareFilledStates.contains(.hovering), isHovering {
+                    shape
+                        .foregroundStyle(style.hovering)
+                } else if luminareFilledStates.contains(.normal) {
+                    shape
+                        .foregroundStyle(style.normal)
+                }
+            } else {
+                if luminareFilledStates.contains(.normal) {
+                    shape
+                        .foregroundStyle(style.normal)
+                        .opacity(isEnabled ? 1 : 0.5)
+                }
             }
+        }
+        .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
+    }
+    
+    func getShape() -> UnevenRoundedRectangle {
+        if isInsideSection {
+            let disableInnerPadding = disableInnerPadding == true
+            let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
+            let defaultCornerRadius: CGFloat = 4
+            return UnevenRoundedRectangle(
+                topLeadingRadius: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
+                bottomLeadingRadius: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,
+                bottomTrailingRadius: bottomTrailingRounded ? cornerRadii.bottomTrailing : defaultCornerRadius,
+                topTrailingRadius: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius,
+            )
         } else {
-            if luminareFilledStates.contains(.normal) {
-                Rectangle()
-                    .foregroundStyle(style.normal)
-                    .opacity(isEnabled ? 1 : 0.5)
-            }
+            return UnevenRoundedRectangle(cornerRadii: cornerRadii)
         }
     }
 }

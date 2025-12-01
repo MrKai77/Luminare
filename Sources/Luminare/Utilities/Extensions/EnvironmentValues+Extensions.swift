@@ -72,13 +72,6 @@ public extension EnvironmentValues {
     @Entry var luminareContentMarginsBottom: CGFloat = 0
     @Entry var luminareContentMarginsTrailing: CGFloat = 0
 
-    // MARK: Button
-
-    @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
-    @Entry var luminareButtonMaterial: Material? = nil
-
-    @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
-
     // MARK: Form
 
     @available(macOS 15.0, *)
@@ -93,7 +86,7 @@ public extension EnvironmentValues {
     // MARK: Section
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
-
+    @Entry var luminareIsInsideSection: Bool = false
     @Entry var luminareTopLeadingRounded: Bool = false
     @Entry var luminareTopTrailingRounded: Bool = false
     @Entry var luminareBottomLeadingRounded: Bool = false

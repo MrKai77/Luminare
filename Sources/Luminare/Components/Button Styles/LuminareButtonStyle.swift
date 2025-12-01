@@ -14,8 +14,6 @@ public struct LuminareButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareButtonMaterial) private var material
-    @Environment(\.luminareButtonCornerRadii) private var cornerRadii
 
     @State private var isHovering: Bool = false
     private let tinted: Bool
@@ -35,7 +33,6 @@ public struct LuminareButtonStyle: ButtonStyle {
                     style: fillStyle(configuration: configuration)
                 )
             )
-            .clipShape(.rect(cornerRadii: cornerRadii))
             .onHover { isHovering = $0 }
     }
 

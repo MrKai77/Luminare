@@ -93,6 +93,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .compositingGroup()
                     .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
                     .fixedSize(horizontal: maxWidth == 0, vertical: false)
+                    .environment(\.luminareIsInsideSection, true)
                     .modifier(LuminarePlateauModifier())
             } else {
                 content()

@@ -131,7 +131,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
             @Environment(\.luminareAnimation) private var animation
             @Environment(\.luminareMinHeight) private var minHeight
             @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-            @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
+            @Environment(\.luminareCornerRadii) private var cornerRadii
             @Environment(\.luminareBorderedStates) private var borderedStates
 
             var child: VariadicViewChildren.Element

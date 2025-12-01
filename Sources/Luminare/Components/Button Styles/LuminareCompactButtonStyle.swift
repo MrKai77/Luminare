@@ -16,7 +16,6 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareHorizontalPadding) private var horizontalPadding
-    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
 
     @State private var isHovering: Bool
 
@@ -44,6 +43,5 @@ public struct LuminareCompactButtonStyle: ButtonStyle {
                 )
             )
             .onHover { isHovering = $0 }
-            .luminareCornerRadii(cornerRadii)
     }
 }

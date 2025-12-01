@@ -27,4 +27,14 @@ extension RectangleCornerRadii {
             topTrailing: transform(topTrailing)
         )
     }
+    
+    func inset(by amount: CGFloat, minRadius: CGFloat = 0) -> Self {
+        RectangleCornerRadii(
+            topLeading: max(topLeading - amount, minRadius),
+            bottomLeading: max(bottomLeading - amount, minRadius),
+            bottomTrailing: max(bottomTrailing - amount, minRadius),
+            topTrailing: max(topTrailing - amount, minRadius)
+        )
+    }
 }
+
