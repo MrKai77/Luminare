@@ -1,5 +1,5 @@
 //
-//  LuminareButtonStyle.swift
+//  LuminarePlateauButtonStyle.swift
 //  Luminare
 //
 //  Created by KrLite on 2025/4/12.
@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-/// A stylized button style.
+/// A stylized button style with a border.
 ///
-/// ![LuminareButtonStyle](LuminareButtonStyle)
-public struct LuminareButtonStyle: ButtonStyle {
+/// Can be configured to disable padding when `extraCompact` is set to `true`.
+///
+/// ![LuminareCompactButtonStyle](LuminareCompactButtonStyle)
+public struct LuminarePlateauButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
@@ -27,26 +29,28 @@ public struct LuminareButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(
-                LuminareFilledModifier(
-                    isHovering: isHovering,
+                LuminarePlateauModifier(
                     isPressed: configuration.isPressed,
-                    style: fillStyle(configuration: configuration)
+                    isHovering: isHovering,
+                    overrideFillStyle: fillStyle(configuration: configuration)
                 )
             )
             .onHover { isHovering = $0 }
     }
 
-    private func fillStyle(configuration: Configuration) -> LuminareFilledStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle> {
-        let tint = buttonTint(configuration: configuration)
+    private func fillStyle(configuration: Configuration) -> LuminareFilledStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? {
+        if let tint = buttonTint(configuration: configuration) {
+            return .init(
+                normal: AnyShapeStyle(tint.opacity(0.15)),
+                hovering: AnyShapeStyle(tint.opacity(0.25)),
+                pressed: AnyShapeStyle(tint.opacity(0.4))
+            )
+        }
 
-        return .init(
-            normal: AnyShapeStyle(tint.opacity(0.15)),
-            hovering: AnyShapeStyle(tint.opacity(0.25)),
-            pressed: AnyShapeStyle(tint.opacity(0.4))
-        )
+        return nil
     }
 
-    private func buttonTint(configuration: Configuration) -> AnyShapeStyle {
+    private func buttonTint(configuration: Configuration) -> AnyShapeStyle? {
         if tinted {
             return AnyShapeStyle(.tint)
         }
@@ -56,6 +60,6 @@ public struct LuminareButtonStyle: ButtonStyle {
             return AnyShapeStyle(.red)
         }
 
-        return AnyShapeStyle(.tertiary)
+        return nil
     }
 }

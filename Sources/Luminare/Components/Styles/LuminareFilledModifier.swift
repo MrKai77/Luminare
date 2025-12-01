@@ -75,7 +75,7 @@ public struct LuminareFilledModifier<F, H, P>: ViewModifier where F: ShapeStyle,
 public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareFilledStates) private var luminareFilledStates
-    
+
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareIsInsideSection) private var isInsideSection
     @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
@@ -100,7 +100,7 @@ public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P:
     public var body: some View {
         Group {
             let shape = getShape()
-            
+
             if isEnabled {
                 if luminareFilledStates.contains(.pressed), isPressed {
                     shape
@@ -122,17 +122,17 @@ public struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P:
         }
         .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
-    
+
     func getShape() -> UnevenRoundedRectangle {
         if isInsideSection {
             let disableInnerPadding = disableInnerPadding == true
             let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
-            let defaultCornerRadius: CGFloat = 4
+            let defaultCornerRadius: CGFloat = 2
             return UnevenRoundedRectangle(
                 topLeadingRadius: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
                 bottomLeadingRadius: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,
                 bottomTrailingRadius: bottomTrailingRounded ? cornerRadii.bottomTrailing : defaultCornerRadius,
-                topTrailingRadius: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius,
+                topTrailingRadius: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius
             )
         } else {
             return UnevenRoundedRectangle(cornerRadii: cornerRadii)

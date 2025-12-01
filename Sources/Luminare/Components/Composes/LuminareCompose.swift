@@ -206,14 +206,12 @@ struct LuminareComposeIgnoreSafeAreaEdgesKey: PreferenceKey {
             Button {} label: {
                 Text("Button")
             }
-            .buttonStyle(.luminareCompact)
         }
 
         LuminareCompose("Label") {
             Button {} label: {
                 Text("Button")
             }
-            .buttonStyle(.luminareCompact)
         }
         .disabled(true)
     }

@@ -94,6 +94,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
                     .fixedSize(horizontal: maxWidth == 0, vertical: false)
                     .environment(\.luminareIsInsideSection, true)
+                    .luminareRoundingBehavior(top: false, bottom: false) // Instead let the user
                     .modifier(LuminarePlateauModifier())
             } else {
                 content()
@@ -183,5 +184,4 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
     .frame(width: 450)
-    .buttonStyle(.luminareCompact)
 }

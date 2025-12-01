@@ -190,7 +190,6 @@ struct ColorPickerModalView: View {
                         }
                     }
                 }
-                .buttonStyle(.luminareCompact)
                 .luminareAspectRatio(contentMode: .fill)
             }
         }
@@ -207,7 +206,6 @@ struct ColorPickerModalView: View {
             Image(systemName: "eyedropper.halffull")
         }
         .luminareAspectRatio(1 / 1, contentMode: .fit)
-        .buttonStyle(.luminareCompact)
     }
 
     // MARK: Functions

@@ -165,7 +165,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         }
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
     }
-    
+
     private func listItem(for item: Binding<V>) -> some View {
         let isDisabled = isDisabled(item.wrappedValue)
 
@@ -264,7 +264,7 @@ public struct LuminareListItem<Content, V>: View
 
     private let maxTintOpacity: CGFloat = 0.15
     @State private var tintOpacity: CGFloat = .zero
-    
+
     init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
@@ -360,26 +360,26 @@ public struct LuminareListItem<Content, V>: View
             return isLast
         }
     }
-    
+
     private var itemBackgroundShape: UnevenRoundedRectangle {
         let topCornerRadii =
-        if isInSelection {
-            isFirstInSelection ? itemCornerRadii : .zero
-        } else { itemCornerRadii }
+            if isInSelection {
+                isFirstInSelection ? itemCornerRadii : .zero
+            } else { itemCornerRadii }
         let bottomCornerRadii =
-        if isInSelection {
-            isLastInSelection ? itemCornerRadii : .zero
-        } else { itemCornerRadii }
-        
+            if isInSelection {
+                isLastInSelection ? itemCornerRadii : .zero
+            } else { itemCornerRadii }
+
         return .init(
             topLeadingRadius: isFirst && topLeadingRounded
-            ? cornerRadii.topLeading : topCornerRadii.topLeading,
+                ? cornerRadii.topLeading : topCornerRadii.topLeading,
             bottomLeadingRadius: isLast && bottomLeadingRounded
-            ? cornerRadii.bottomLeading : bottomCornerRadii.bottomLeading,
+                ? cornerRadii.bottomLeading : bottomCornerRadii.bottomLeading,
             bottomTrailingRadius: isLast && bottomTrailingRounded
-            ? cornerRadii.bottomTrailing : bottomCornerRadii.bottomTrailing,
+                ? cornerRadii.bottomTrailing : bottomCornerRadii.bottomTrailing,
             topTrailingRadius: isFirst && topTrailingRounded
-            ? cornerRadii.topTrailing : topCornerRadii.topTrailing
+                ? cornerRadii.topTrailing : topCornerRadii.topTrailing
         )
     }
 
@@ -388,7 +388,7 @@ public struct LuminareListItem<Content, V>: View
             Rectangle()
                 .foregroundStyle(.tint)
                 .opacity(tintOpacity)
-            
+
             if highlightOnHover, isHovering {
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))

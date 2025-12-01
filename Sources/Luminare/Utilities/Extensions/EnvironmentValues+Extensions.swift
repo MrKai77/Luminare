@@ -64,8 +64,8 @@ public extension EnvironmentValues {
     @Entry var luminareHasDividers: Bool = true
 
     @Entry var luminareAspectRatio: CGFloat?
-    @Entry var luminareAspectRatioContentMode: ContentMode? = .fit
-    @Entry var luminareAspectRatioHasFixedHeight: Bool = true
+    @Entry var luminareContentMode: ContentMode? = .fit
+    @Entry var luminareHasFixedHeight: Bool = true
 
     @Entry var luminareContentMarginsTop: CGFloat = 0
     @Entry var luminareContentMarginsLeading: CGFloat = 0
@@ -87,10 +87,10 @@ public extension EnvironmentValues {
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
     @Entry var luminareIsInsideSection: Bool = false
-    @Entry var luminareTopLeadingRounded: Bool = false
-    @Entry var luminareTopTrailingRounded: Bool = false
-    @Entry var luminareBottomLeadingRounded: Bool = false
-    @Entry var luminareBottomTrailingRounded: Bool = false
+    @Entry var luminareTopLeadingRounded: Bool = true
+    @Entry var luminareTopTrailingRounded: Bool = true
+    @Entry var luminareBottomLeadingRounded: Bool = true
+    @Entry var luminareBottomTrailingRounded: Bool = true
 
     // If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity

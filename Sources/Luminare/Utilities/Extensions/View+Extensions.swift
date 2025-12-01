@@ -10,35 +10,16 @@ import SwiftUI
 // MARK: - Internal
 
 extension View {
-    // Applies a transform to the view
-    @ViewBuilder func applying(@ViewBuilder _ transform: @escaping (Self) -> some View) -> some View {
-        transform(self)
-    }
-
     // Assigns the specified environment value, if not nil
-    @ViewBuilder func assigning<V>(
+    @ViewBuilder func environment<V>(
         _ keyPath: WritableKeyPath<EnvironmentValues, V>,
-        _ value: V?
+        ifNotNil value: V?
     ) -> some View {
         if let value {
             environment(keyPath, value)
         } else {
             self
         }
-    }
-
-    // Applies a materialized background over a style
-    @ViewBuilder func background(_ style: some ShapeStyle, with material: Material?) -> some View {
-        background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
-            .background(style)
-    }
-
-    // Applies a materialized background over a view
-    @ViewBuilder func background(with material: Material?, @ViewBuilder content: () -> some View) -> some View {
-        background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
-            .background {
-                content()
-            }
     }
 
     func readPreference<K>(
@@ -248,8 +229,8 @@ public extension View {
     // MARK: Color Picker
 
     @ViewBuilder func luminareColorPickerControls(hasCancel: Bool? = nil, hasDone: Bool? = nil) -> some View {
-        assigning(\.luminareColorPickerHasCancel, hasCancel)
-            .assigning(\.luminareColorPickerHasDone, hasDone)
+        environment(\.luminareColorPickerHasCancel, ifNotNil: hasCancel)
+            .environment(\.luminareColorPickerHasDone, ifNotNil: hasDone)
     }
 }
 
@@ -262,6 +243,7 @@ public extension View {
 
     @ViewBuilder func luminareCornerRadius(_ radius: CGFloat) -> some View {
         luminareCornerRadii(.init(radius))
+            .environment(\.luminareIsInsideSection, false)
     }
 
     @ViewBuilder func luminareMinHeight(_ height: CGFloat) -> some View {
@@ -286,7 +268,7 @@ public extension View {
 
     @ViewBuilder func luminareAspectRatio(unapplying: Bool) -> some View {
         if unapplying {
-            environment(\.luminareAspectRatioContentMode, nil)
+            environment(\.luminareContentMode, nil)
         } else {
             self
         }
@@ -296,8 +278,8 @@ public extension View {
         _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
     ) -> some View {
         environment(\.luminareAspectRatio, aspectRatio)
-            .environment(\.luminareAspectRatioContentMode, contentMode)
-            .assigning(\.luminareAspectRatioHasFixedHeight, hasFixedHeight)
+            .environment(\.luminareContentMode, contentMode)
+            .environment(\.luminareHasFixedHeight, ifNotNil: hasFixedHeight)
     }
 
     @ViewBuilder func luminareAspectRatio(
@@ -318,10 +300,10 @@ public extension View {
     }
 
     @ViewBuilder func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
-        assigning(\.luminareContentMarginsTop, edges.contains(.top) ? length : nil)
-            .assigning(\.luminareContentMarginsLeading, edges.contains(.leading) ? length : nil)
-            .assigning(\.luminareContentMarginsBottom, edges.contains(.bottom) ? length : nil)
-            .assigning(\.luminareContentMarginsTrailing, edges.contains(.trailing) ? length : nil)
+        environment(\.luminareContentMarginsTop, ifNotNil: edges.contains(.top) ? length : nil)
+            .environment(\.luminareContentMarginsLeading, ifNotNil: edges.contains(.leading) ? length : nil)
+            .environment(\.luminareContentMarginsBottom, ifNotNil: edges.contains(.bottom) ? length : nil)
+            .environment(\.luminareContentMarginsTrailing, ifNotNil: edges.contains(.trailing) ? length : nil)
     }
 
     @ViewBuilder func luminareContentMargins(_ length: CGFloat) -> some View {
@@ -350,27 +332,37 @@ public extension View {
     @ViewBuilder func luminareSectionLayout(_ layout: LuminareSectionLayout) -> some View {
         environment(\.luminareSectionLayout, layout)
     }
-    
+
     @ViewBuilder func luminareRoundingBehavior(
         topLeading: Bool? = nil,
         topTrailing: Bool? = nil,
         bottomLeading: Bool? = nil,
         bottomTrailing: Bool? = nil
     ) -> some View {
-        assigning(\.luminareTopLeadingRounded, topLeading)
-            .assigning(\.luminareTopTrailingRounded, topTrailing)
-            .assigning(\.luminareBottomLeadingRounded, bottomLeading)
-            .assigning(\.luminareBottomTrailingRounded, bottomTrailing)
+        environment(\.luminareTopLeadingRounded, ifNotNil: topLeading)
+            .environment(\.luminareTopTrailingRounded, ifNotNil: topTrailing)
+            .environment(\.luminareBottomLeadingRounded, ifNotNil: bottomLeading)
+            .environment(\.luminareBottomTrailingRounded, ifNotNil: bottomTrailing)
     }
-    
+
     @ViewBuilder func luminareRoundingBehavior(
         top: Bool? = nil,
         bottom: Bool? = nil
     ) -> some View {
-        assigning(\.luminareTopLeadingRounded, top)
-            .assigning(\.luminareTopTrailingRounded, top)
-            .assigning(\.luminareBottomLeadingRounded, bottom)
-            .assigning(\.luminareBottomTrailingRounded, bottom)
+        environment(\.luminareTopLeadingRounded, ifNotNil: top)
+            .environment(\.luminareTopTrailingRounded, ifNotNil: top)
+            .environment(\.luminareBottomLeadingRounded, ifNotNil: bottom)
+            .environment(\.luminareBottomTrailingRounded, ifNotNil: bottom)
+    }
+
+    @ViewBuilder func luminareRoundingBehavior(
+        leading: Bool? = nil,
+        trailing: Bool? = nil
+    ) -> some View {
+        environment(\.luminareTopLeadingRounded, ifNotNil: leading)
+            .environment(\.luminareTopTrailingRounded, ifNotNil: trailing)
+            .environment(\.luminareBottomLeadingRounded, ifNotNil: leading)
+            .environment(\.luminareBottomTrailingRounded, ifNotNil: trailing)
     }
 
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat?) -> some View {

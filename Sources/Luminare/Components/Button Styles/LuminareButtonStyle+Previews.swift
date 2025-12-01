@@ -94,8 +94,7 @@ import SwiftUI
 
         LuminareSection {
             HStack {
-                Button("Compact") {}
-                    .buttonStyle(.luminareCompact)
+                Button("Plateau") {}
                     .luminareAspectRatio(contentMode: .fill, hasFixedHeight: false)
                     .luminareRoundingBehavior(top: true, bottom: true)
             }
@@ -204,7 +203,6 @@ import SwiftUI
     traits: .sizeThatFitsLayout
 ) {
     Button("Click Me!") {}
-        .buttonStyle(.luminareCompact)
         .luminareAspectRatio(contentMode: .fill, hasFixedHeight: false)
         .frame(height: 40)
 }

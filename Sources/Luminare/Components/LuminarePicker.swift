@@ -23,12 +23,12 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
     let buttonCornerRadii: RectangleCornerRadii = .init(
-        topLeading: 4,
-        bottomLeading: 4,
-        bottomTrailing: 4,
-        topTrailing: 4
+        topLeading: 2,
+        bottomLeading: 2,
+        bottomTrailing: 2,
+        topTrailing: 2
     )
-    
+
     // MARK: Fields
 
     private let innerPadding: CGFloat
@@ -96,16 +96,16 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     public var body: some View {
         Group {
             if isVerticallyCompact {
-                HStack(spacing: 2) {
+                HStack(spacing: 4) {
                     ForEach(0...maxColumnIndex, id: \.self) { column in
                         pickerButton(row: 0, column: column)
                     }
                 }
                 .frame(minHeight: 34)
             } else {
-                VStack(spacing: 2) {
+                VStack(spacing: 4) {
                     ForEach(0...maxRowIndex, id: \.self) { row in
-                        HStack(spacing: 2) {
+                        HStack(spacing: 4) {
                             ForEach(0...maxColumnIndex, id: \.self) { column in
                                 pickerButton(row: row, column: column)
                             }
@@ -126,9 +126,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
         .buttonStyle(.luminare)
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
-        .onAppear {
-            print(topLeadingRounded, topTrailingRounded, bottomLeadingRounded, bottomTrailingRounded)
-        }
     }
 
     @ViewBuilder private func pickerButton(
@@ -166,6 +163,12 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             .opacity(isDisabled ? 0.5 : 1.0)
             .clipShape(shape)
             .animation(animation, value: isDisabled)
+            .luminareRoundingBehavior(
+                topLeading: row == 0 && column == 0 ? topLeadingRounded : false,
+                topTrailing: row == 0 && column == maxColumnIndex ? topTrailingRounded : false,
+                bottomLeading: row == maxRowIndex && column == 0 ? bottomLeadingRounded : false,
+                bottomTrailing: row == maxRowIndex && column == maxColumnIndex ? bottomTrailingRounded : false
+            )
         } else {
             shape
                 .strokeBorder(.quaternary, lineWidth: 1)
@@ -202,7 +205,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     private func getShape(row: Int, column: Int) -> some InsettableShape {
         // - Top leading
 
-        if column == 0 && row == 0 {
+        if column == 0, row == 0 {
             return UnevenRoundedRectangle(
                 topLeadingRadius: topLeadingRounded ? cornerRadii.topLeading - innerPadding : buttonCornerRadii.topLeading,
                 bottomLeadingRadius: (isVerticallyCompact && bottomLeadingRounded) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
@@ -210,10 +213,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topTrailingRadius: (isHorizontallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
-        
+
         // - Bottom leading
 
-        else if column == 0 && row == maxRowIndex {
+        else if column == 0, row == maxRowIndex {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: bottomLeadingRounded ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
@@ -221,10 +224,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topTrailingRadius: (isHorizontallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
-        
+
         // - Bottom trailing
 
-        else if column == maxColumnIndex && row == maxRowIndex {
+        else if column == maxColumnIndex, row == maxRowIndex {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: buttonCornerRadii.bottomLeading,
@@ -232,10 +235,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 topTrailingRadius: (isVerticallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
-        
+
         // - Top trailing
 
-        else if column == maxColumnIndex && row == 0 {
+        else if column == maxColumnIndex, row == 0 {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: (isHorizontallyCompact && bottomLeadingRounded) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,

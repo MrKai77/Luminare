@@ -229,7 +229,6 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
             Button {} label: {
                 Text("42")
             }
-            .buttonStyle(.luminareCompact)
         }
         .luminareComposeStyle(.inline)
 

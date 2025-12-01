@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Cropped Section Item
 
 /// An item with a cropped appearance, typically used in sections.
-//public struct LuminareCroppedSectionItemModifier: ViewModifier {
+// public struct LuminareCroppedSectionItemModifier: ViewModifier {
 //    // MARK: Environments
 //
 //    @Environment(\.luminareCornerRadii) private var cornerRadii
@@ -82,4 +82,4 @@ import SwiftUI
 //            UnevenRoundedRectangle(cornerRadii: .init(0))
 //        }
 //    }
-//}
+// }

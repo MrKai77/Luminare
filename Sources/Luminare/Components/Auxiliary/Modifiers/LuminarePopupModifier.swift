@@ -430,7 +430,6 @@ private struct PopupContent: View {
                 }
             }
             .padding()
-            .buttonStyle(.luminareCompact)
 
             if isExpanded {
                 Text("Expanded Content")

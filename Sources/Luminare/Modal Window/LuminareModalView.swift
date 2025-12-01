@@ -266,7 +266,6 @@ private struct ModalContent: View {
                 }
             }
             .padding()
-            .buttonStyle(.luminareCompact)
 
             if isExpanded {
                 Text("Expanded Content")
