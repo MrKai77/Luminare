@@ -95,45 +95,19 @@ struct LuminareSectionStackChildView: View {
     @State private var enableMask: Bool? = nil
 
     var body: some View {
-        Group {
-            child
-                .compositingGroup()
-                .modifier(
-                    LuminareCroppedSectionItemModifier(
-                        innerPadding: disableInnerPadding == true ? 0 : innerPadding,
-                        isFirstChild: isFirstChild,
-                        isLastChild: isLastChild,
-                        isEnabled: enableMask == true
-                    )
-                )
-                .padding(disableInnerPadding == true ? 0 : innerPadding)
-                .padding(.top, isFirstChild ? 1 : 0)
-                .padding(.bottom, isLastChild ? 1 : 0)
-                .padding(.horizontal, 1)
-        }
-        .readPreference(
-            LuminareSectionStackDisableInnerPaddingKey.self,
-            to: $disableInnerPadding
-        )
-        .readPreference(
-            LuminareSectionStackEnableMaskKey.self,
-            to: $enableMask
-        )
+        child
+            .compositingGroup()
+            .padding(disableInnerPadding == true ? 0 : innerPadding)
+            .padding(.top, isFirstChild ? 1 : 0)
+            .padding(.bottom, isLastChild ? 1 : 0)
+            .padding(.horizontal, 1)
+            .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
 }
 
 // MARK: - Preference Key
 
 struct LuminareSectionStackDisableInnerPaddingKey: PreferenceKey {
-    typealias Value = Bool?
-    static var defaultValue: Value { nil }
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = value ?? nextValue()
-    }
-}
-
-struct LuminareSectionStackEnableMaskKey: PreferenceKey {
     typealias Value = Bool?
     static var defaultValue: Value { nil }
 

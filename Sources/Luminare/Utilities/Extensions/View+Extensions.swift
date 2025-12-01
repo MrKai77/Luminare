@@ -372,13 +372,31 @@ public extension View {
     @ViewBuilder func luminareSectionLayout(_ layout: LuminareSectionLayout) -> some View {
         environment(\.luminareSectionLayout, layout)
     }
+    
+    @ViewBuilder func luminareRoundingBehavior(
+        topLeading: Bool? = nil,
+        topTrailing: Bool? = nil,
+        bottomLeading: Bool? = nil,
+        bottomTrailing: Bool? = nil
+    ) -> some View {
+        assigning(\.luminareTopLeadingRounded, topLeading)
+            .assigning(\.luminareTopTrailingRounded, topTrailing)
+            .assigning(\.luminareBottomLeadingRounded, bottomLeading)
+            .assigning(\.luminareBottomTrailingRounded, bottomTrailing)
+    }
+    
+    @ViewBuilder func luminareRoundingBehavior(
+        top: Bool? = nil,
+        bottom: Bool? = nil
+    ) -> some View {
+        assigning(\.luminareTopLeadingRounded, top)
+            .assigning(\.luminareTopTrailingRounded, top)
+            .assigning(\.luminareBottomLeadingRounded, bottom)
+            .assigning(\.luminareBottomTrailingRounded, bottom)
+    }
 
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat?) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
-    }
-
-    @ViewBuilder func luminareSectionEnableMask(_ masked: Bool) -> some View {
-        preference(key: LuminareSectionStackEnableMaskKey.self, value: masked)
     }
 
     @ViewBuilder func luminareSectionDisableInnerPadding(_ disable: Bool) -> some View {
@@ -450,32 +468,6 @@ public extension View {
 
     @ViewBuilder func luminareListFixedHeight(until height: CGFloat?) -> some View {
         environment(\.luminareListFixedHeightUntil, height)
-    }
-
-    @ViewBuilder func luminareListRoundedCorner(
-        top: LuminareListRoundedCornerBehavior? = nil,
-        bottom: LuminareListRoundedCornerBehavior? = nil
-    ) -> some View {
-        assigning(\.luminareListRoundedTopCornerBehavior, top)
-            .assigning(\.luminareListRoundedBottomCornerBehavior, bottom)
-    }
-
-    @ViewBuilder func luminareListRoundedCorner(_ all: LuminareListRoundedCornerBehavior) -> some View {
-        luminareListRoundedCorner(top: all, bottom: all)
-    }
-
-    // MARK: Picker
-
-    @ViewBuilder func luminarePickerRoundedCorner(
-        top: LuminarePickerRoundedCornerBehavior? = nil,
-        bottom: LuminarePickerRoundedCornerBehavior? = nil
-    ) -> some View {
-        assigning(\.luminarePickerRoundedTopCornerBehavior, top)
-            .assigning(\.luminarePickerRoundedBottomCornerBehavior, bottom)
-    }
-
-    @ViewBuilder func luminarePickerRoundedCorner(_ all: LuminarePickerRoundedCornerBehavior) -> some View {
-        luminarePickerRoundedCorner(top: all, bottom: all)
     }
 
     // MARK: Sidebar

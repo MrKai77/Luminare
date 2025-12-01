@@ -8,42 +8,6 @@
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
-public enum LuminareListRoundedCornerBehavior: String, Hashable, Equatable,
-    Identifiable, CaseIterable, Codable, Sendable {
-    case never
-    case always
-    case fixedHeight
-    case variableHeight
-
-    public var id: Self { self }
-
-    public var negate: Self {
-        switch self {
-        case .never:
-            .always
-        case .always:
-            .never
-        case .fixedHeight:
-            .variableHeight
-        case .variableHeight:
-            .fixedHeight
-        }
-    }
-
-    func isRounded(hasFixedHeight: Bool) -> Bool {
-        switch self {
-        case .never:
-            false
-        case .always:
-            true
-        case .fixedHeight:
-            hasFixedHeight
-        case .variableHeight:
-            !hasFixedHeight
-        }
-    }
-}
-
 // MARK: - List
 
 /// A stylized list.
@@ -61,8 +25,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     @Environment(\.luminareContentMarginsTrailing) private var contentMarginsTrailing
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListFixedHeightUntil) private var fixedHeight
-    @Environment(\.luminareListRoundedTopCornerBehavior) private var topCorner
-    @Environment(\.luminareListRoundedBottomCornerBehavior) private var bottomCorner
 
     // MARK: Fields
 
@@ -135,40 +97,22 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                             .frame(height: contentMarginsTop)
                     }
 
-                    ForEach($items, id: keyPath) { item in
-                        let isDisabled = isDisabled(item.wrappedValue)
-
-                        let roundedTop = topCorner.isRounded(hasFixedHeight: hasFixedHeight)
-                        let roundedBottom = bottomCorner.isRounded(hasFixedHeight: hasFixedHeight)
-
-                        LuminareListItem(
-                            items: $items,
-                            selection: $selection,
-                            item: item,
-                            firstItem: $firstItem,
-                            lastItem: $lastItem,
-                            roundedTop: roundedTop,
-                            roundedBottom: roundedBottom,
-                            content: content
-                        )
-                        .disabled(isDisabled)
-                        .animation(animation, value: isDisabled)
-                    }
-                    .onMove { indices, newOffset in
-                        withAnimation(animation) {
-                            items.move(
-                                fromOffsets: indices,
-                                toOffset: newOffset
-                            )
+                    ForEach($items, id: keyPath, content: listItem)
+                        .onMove { indices, newOffset in
+                            withAnimation(animation) {
+                                items.move(
+                                    fromOffsets: indices,
+                                    toOffset: newOffset
+                                )
+                            }
                         }
-                    }
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(.init())
-                    .padding(.horizontal, -10)
-                    .padding(.leading, contentMarginsLeading)
-                    .padding(.trailing, contentMarginsTrailing)
-                    .transition(.slide)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(.init())
+                        .padding(.horizontal, -10)
+                        .padding(.leading, contentMarginsLeading)
+                        .padding(.trailing, contentMarginsTrailing)
+                        .transition(.slide)
 
                     if contentMarginsBottom > 0 {
                         Spacer()
@@ -182,7 +126,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                     tableView.selectionHighlightStyle = .none
                 }
                 .luminareSectionDisableInnerPadding(true)
-                .luminareSectionEnableMask(true)
             }
         }
         .frame(height: hasFixedHeight ? totalHeight : nil)
@@ -221,6 +164,21 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             removeEventMonitor()
         }
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
+    }
+    
+    private func listItem(for item: Binding<V>) -> some View {
+        let isDisabled = isDisabled(item.wrappedValue)
+
+        return LuminareListItem(
+            items: $items,
+            selection: $selection,
+            item: item,
+            firstItem: $firstItem,
+            lastItem: $lastItem,
+            content: content
+        )
+        .disabled(isDisabled)
+        .animation(animation, value: isDisabled)
     }
 
     private var totalHeight: CGFloat {
@@ -285,18 +243,18 @@ public struct LuminareListItem<Content, V>: View
     @Environment(\.luminareListItemCornerRadii) private var itemCornerRadii
     @Environment(\.luminareListItemHeight) private var itemHeight
     @Environment(\.luminareListItemHighlightOnHover) private var highlightOnHover
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
     // MARK: Fields
 
     @Binding var items: [V]
     @Binding var selection: Set<V>
-
     @Binding var item: V
     @Binding var firstItem: V?
     @Binding var lastItem: V?
-
-    var roundedTop: Bool
-    var roundedBottom: Bool
     @ViewBuilder var content: (Binding<V>) -> Content
 
     @State private var isHovering = false
@@ -306,6 +264,22 @@ public struct LuminareListItem<Content, V>: View
 
     private let maxTintOpacity: CGFloat = 0.15
     @State private var tintOpacity: CGFloat = .zero
+    
+    init(
+        items: Binding<[V]>,
+        selection: Binding<Set<V>>,
+        item: Binding<V>,
+        firstItem: Binding<V?>,
+        lastItem: Binding<V?>,
+        @ViewBuilder content: @escaping (Binding<V>) -> Content
+    ) {
+        self._items = items
+        self._selection = selection
+        self._item = item
+        self._firstItem = firstItem
+        self._lastItem = lastItem
+        self.content = content
+    }
 
     // MARK: Body
 
@@ -371,41 +345,61 @@ public struct LuminareListItem<Content, V>: View
 
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return if
-            let firstIndex = items.firstIndex(of: item),
-            firstIndex > 0 {
-            !selection.contains(items[firstIndex - 1])
+        if let firstIndex = items.firstIndex(of: item), firstIndex > 0 {
+            return !selection.contains(items[firstIndex - 1])
         } else {
-            item == firstItem
+            return isFirst
         }
     }
 
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return if
-            let firstIndex = items.firstIndex(of: item),
-            firstIndex < items.count - 1 {
-            !selection.contains(items[firstIndex + 1])
+        if let firstIndex = items.firstIndex(of: item), firstIndex < items.count - 1 {
+            return !selection.contains(items[firstIndex + 1])
         } else {
-            item == lastItem
+            return isLast
         }
     }
+    
+    private var itemBackgroundShape: UnevenRoundedRectangle {
+        let topCornerRadii =
+        if isInSelection {
+            isFirstInSelection ? itemCornerRadii : .zero
+        } else { itemCornerRadii }
+        let bottomCornerRadii =
+        if isInSelection {
+            isLastInSelection ? itemCornerRadii : .zero
+        } else { itemCornerRadii }
+        
+        return .init(
+            topLeadingRadius: isFirst && topLeadingRounded
+            ? cornerRadii.topLeading : topCornerRadii.topLeading,
+            bottomLeadingRadius: isLast && bottomLeadingRounded
+            ? cornerRadii.bottomLeading : bottomCornerRadii.bottomLeading,
+            bottomTrailingRadius: isLast && bottomTrailingRounded
+            ? cornerRadii.bottomTrailing : bottomCornerRadii.bottomTrailing,
+            topTrailingRadius: isFirst && topTrailingRounded
+            ? cornerRadii.topTrailing : topCornerRadii.topTrailing
+        )
+    }
 
-    @ViewBuilder private func itemBackground() -> some View {
+    private func itemBackground() -> some View {
         ZStack {
             Rectangle()
                 .foregroundStyle(.tint)
                 .opacity(tintOpacity)
-
+            
             if highlightOnHover, isHovering {
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
                     .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
             }
         }
+        .clipShape(itemBackgroundShape)
     }
 
-    @ViewBuilder private func itemBorder() -> some View {
+    @ViewBuilder
+    private func itemBorder() -> some View {
         if isFirstInSelection, isLastInSelection {
             singleSelectionPart()
         } else if isFirstInSelection {
@@ -423,12 +417,12 @@ public struct LuminareListItem<Content, V>: View
 
             ZStack {
                 UnevenRoundedRectangle(
-                    topLeadingRadius: isFirst && roundedTop
+                    topLeadingRadius: isFirst && topLeadingRounded
                         ? cornerRadii.topLeading - 1
                         : itemCornerRadii.topLeading,
                     bottomLeadingRadius: 0,
                     bottomTrailingRadius: 0,
-                    topTrailingRadius: isFirst && roundedTop
+                    topTrailingRadius: isFirst && topTrailingRounded
                         ? cornerRadii.topTrailing - 1
                         : itemCornerRadii.topTrailing
                 )
@@ -486,10 +480,10 @@ public struct LuminareListItem<Content, V>: View
             ZStack {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 0,
-                    bottomLeadingRadius: isLast && roundedBottom
+                    bottomLeadingRadius: isLast && bottomLeadingRounded
                         ? cornerRadii.bottomLeading - 1
                         : itemCornerRadii.bottomLeading,
-                    bottomTrailingRadius: isLast && roundedBottom
+                    bottomTrailingRadius: isLast && bottomTrailingRounded
                         ? cornerRadii.bottomTrailing - 1
                         : itemCornerRadii.bottomTrailing,
                     topTrailingRadius: 0
@@ -530,13 +524,13 @@ public struct LuminareListItem<Content, V>: View
 
     @ViewBuilder private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
-            topLeadingRadius: isFirst && roundedTop
+            topLeadingRadius: isFirst && topLeadingRounded
                 ? cornerRadii.topLeading - 1 : itemCornerRadii.topLeading,
-            bottomLeadingRadius: isLast && roundedBottom
+            bottomLeadingRadius: isLast && bottomLeadingRounded
                 ? cornerRadii.bottomLeading - 1 : itemCornerRadii.bottomLeading,
-            bottomTrailingRadius: isLast && roundedBottom
+            bottomTrailingRadius: isLast && bottomTrailingRounded
                 ? cornerRadii.bottomTrailing - 1 : itemCornerRadii.bottomTrailing,
-            topTrailingRadius: isFirst && roundedTop
+            topTrailingRadius: isFirst && topTrailingRounded
                 ? cornerRadii.topTrailing - 1 : itemCornerRadii.topTrailing
         )
         .strokeBorder(.tint, lineWidth: lineWidth)
@@ -628,10 +622,8 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             }
             items.append(new)
         }
-        //    .luminareHasDividers(false)
-        //    .luminareListContentMargins(50)
         .luminareListFixedHeight(until: 315)
-        .luminareListRoundedCorner(bottom: .always)
+        .luminareRoundingBehavior(bottom: true)
         .padding(20)
     }
 }

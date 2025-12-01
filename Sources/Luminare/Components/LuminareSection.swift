@@ -89,13 +89,11 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     @ViewBuilder private func wrappedContent() -> some View {
         Group {
             if borderedStates.contains(.normal) {
-                LuminareSectionStack(hasDividers: hasDividers) {
-                    content()
-                }
-                .compositingGroup()
-                .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
-                .fixedSize(horizontal: maxWidth == 0, vertical: false)
-                .modifier(LuminarePlateauModifier())
+                LuminareSectionStack(hasDividers: hasDividers, content: content)
+                    .compositingGroup()
+                    .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
+                    .fixedSize(horizontal: maxWidth == 0, vertical: false)
+                    .modifier(LuminarePlateauModifier())
             } else {
                 content()
             }

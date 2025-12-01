@@ -94,6 +94,11 @@ public extension EnvironmentValues {
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
 
+    @Entry var luminareTopLeadingRounded: Bool = false
+    @Entry var luminareTopTrailingRounded: Bool = false
+    @Entry var luminareBottomLeadingRounded: Bool = false
+    @Entry var luminareBottomTrailingRounded: Bool = false
+
     // If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
 
@@ -126,14 +131,6 @@ public extension EnvironmentValues {
     @Entry var luminareListItemHighlightOnHover: Bool = true
     @Entry var luminareItemBeingHovered: Bool = false
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil
-
-    @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never
-    @Entry var luminareListRoundedBottomCornerBehavior: LuminareListRoundedCornerBehavior = .never
-
-    // MARK: Picker
-
-    @Entry var luminarePickerRoundedTopCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
-    @Entry var luminarePickerRoundedBottomCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
 
     // MARK: Sidebar
 

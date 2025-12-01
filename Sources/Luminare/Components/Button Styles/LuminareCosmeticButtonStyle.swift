@@ -63,6 +63,5 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             }
             .clipShape(.rect(cornerRadii: cornerRadii))
             .onHover { isHovering = $0 }
-            .luminareSectionEnableMask(true)
     }
 }

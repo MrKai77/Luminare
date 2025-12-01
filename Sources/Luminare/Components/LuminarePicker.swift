@@ -7,31 +7,6 @@
 
 import SwiftUI
 
-public enum LuminarePickerRoundedCornerBehavior: String, Hashable, Equatable, Identifiable, CaseIterable, Codable, Sendable {
-    case never
-    case always
-
-    public var id: Self { self }
-
-    public var negate: Self {
-        switch self {
-        case .never:
-            .always
-        case .always:
-            .never
-        }
-    }
-
-    var isRounded: Bool {
-        switch self {
-        case .never:
-            false
-        case .always:
-            true
-        }
-    }
-}
-
 // MARK: - Picker
 
 /// A stylized, grid based picker.
@@ -43,8 +18,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareButtonCornerRadii) private var buttonCornerRadii
-    @Environment(\.luminarePickerRoundedTopCornerBehavior) private var topCorner
-    @Environment(\.luminarePickerRoundedBottomCornerBehavior) private var bottomCorner
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
     // MARK: Fields
 
@@ -143,10 +120,17 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         }
         .buttonStyle(.luminare)
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
-        .luminareSectionEnableMask(true)
+        .onAppear {
+            print(topLeadingRounded, topTrailingRounded, bottomLeadingRounded, bottomTrailingRounded)
+        }
     }
 
-    @ViewBuilder private func pickerButton(row: Int, column: Int) -> some View {
+    @ViewBuilder private func pickerButton(
+        row: Int,
+        column: Int
+    ) -> some View {
+        let shape = getShape(row: row, column: column)
+
         if let element = getElement(row: row, column: column) {
             let isDisabled = isDisabled(element)
             Button {
@@ -159,10 +143,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 ZStack {
                     let isActive = internalSelection == element
 
-                    getShape(row: row, column: column)
+                    shape
                         .foregroundStyle(.tint.opacity(isActive ? 0.15 : 0))
                         .overlay {
-                            getShape(row: row, column: column)
+                            shape
                                 .strokeBorder(
                                     .tint,
                                     lineWidth: isActive ? 1.5 : 0
@@ -174,9 +158,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 }
             }
             .opacity(isDisabled ? 0.5 : 1.0)
+            .clipShape(shape)
             .animation(animation, value: isDisabled)
         } else {
-            getShape(row: row, column: column)
+            shape
                 .strokeBorder(.quaternary, lineWidth: 1)
         }
     }
@@ -209,50 +194,47 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     }
 
     private func getShape(row: Int, column: Int) -> some InsettableShape {
-        let roundedTop = topCorner.isRounded, roundedBottom = bottomCorner.isRounded
-
         // - Top leading
 
-        if column == 0, row == 0, roundedTop {
+        if column == 0 && row == 0 {
             return UnevenRoundedRectangle(
-                topLeadingRadius: cornerRadii.topLeading - innerPadding,
-                bottomLeadingRadius: (isVerticallyCompact && roundedBottom) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
+                topLeadingRadius: topLeadingRounded ? cornerRadii.topLeading - innerPadding : buttonCornerRadii.topLeading,
+                bottomLeadingRadius: (isVerticallyCompact && bottomLeadingRounded) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
                 bottomTrailingRadius: buttonCornerRadii.bottomTrailing,
-                topTrailingRadius: isHorizontallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
+                topTrailingRadius: (isHorizontallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
-
+        
         // - Bottom leading
 
-        else if column == 0, row == maxRowIndex, roundedBottom {
+        else if column == 0 && row == maxRowIndex {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
-                bottomLeadingRadius: cornerRadii.bottomLeading - innerPadding,
-                bottomTrailingRadius: isHorizontallyCompact ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
-                topTrailingRadius: buttonCornerRadii.topTrailing
+                bottomLeadingRadius: bottomLeadingRounded ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
+                bottomTrailingRadius: buttonCornerRadii.bottomTrailing,
+                topTrailingRadius: (isHorizontallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
-
+        
         // - Bottom trailing
 
-        else if column == maxColumnIndex, row == maxRowIndex, roundedBottom {
+        else if column == maxColumnIndex && row == maxRowIndex {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: buttonCornerRadii.bottomLeading,
-                bottomTrailingRadius: cornerRadii.bottomTrailing - innerPadding,
-                topTrailingRadius: isVerticallyCompact ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
+                bottomTrailingRadius: bottomLeadingRounded ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
+                topTrailingRadius: (isVerticallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
-
+        
         // - Top trailing
 
-        else if column == maxColumnIndex, row == 0, roundedTop {
+        else if column == maxColumnIndex && row == 0 {
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
-                bottomLeadingRadius: buttonCornerRadii.bottomLeading,
-                bottomTrailingRadius:
-                (isHorizontallyCompact && roundedBottom) ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
-                topTrailingRadius: cornerRadii.topTrailing - innerPadding
+                bottomLeadingRadius: (isHorizontallyCompact && bottomLeadingRounded) ? cornerRadii.bottomLeading - innerPadding : buttonCornerRadii.bottomLeading,
+                bottomTrailingRadius: (isHorizontallyCompact && bottomTrailingRounded) ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
+                topTrailingRadius: topTrailingRounded ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
 
@@ -280,7 +262,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         ) { num in
             Text("\(num)")
         }
-        .luminarePickerRoundedCorner(top: .always)
+        .luminareRoundingBehavior(top: true)
 
         LuminarePicker(
             elements: Array(32 ..< 36),
@@ -288,6 +270,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
         ) { num in
             Text("\(num)")
         }
-        .luminarePickerRoundedCorner(bottom: .always)
+        .luminareRoundingBehavior(bottom: true)
     }
 }
