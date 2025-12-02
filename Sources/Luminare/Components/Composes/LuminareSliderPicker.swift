@@ -34,7 +34,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     // MARK: Environments
 
     @Environment(\.luminareAnimation) private var animation
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareSliderPickerLayout) private var layout
 
     // MARK: Fields
@@ -394,22 +394,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             }
         }
         .luminareSliderPickerLayout(.regular)
-
-        LuminareSliderPicker(
-            Array(0...4),
-            selection: $selection
-        ) { value in
-            Text("\(value) is Chosen")
-                .monospaced()
-        } label: {
-            VStack(alignment: .leading) {
-                Text("Slide to pick a value")
-
-                Text("Composed, Compact")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
 
         LuminareSliderPicker(
             Array(0...4),

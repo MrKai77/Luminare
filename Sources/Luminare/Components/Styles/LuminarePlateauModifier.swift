@@ -11,17 +11,23 @@ public struct LuminarePlateauModifier: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareIsInsideSection) private var isInsideSection
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
+    @State private var disableInnerPadding: Bool? = nil
 
     private let isPressed: Bool
     private let isHovering: Bool
-    private let overrideFillStyle: LuminareFilledStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>?
-    private let overrideBorderStyle: LuminareBorderedStyle<AnyShapeStyle, AnyShapeStyle>?
+    private let overrideFillStyle: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>?
+    private let overrideBorderStyle: LuminareBorderStyle<AnyShapeStyle, AnyShapeStyle>?
 
     public init(
         isPressed: Bool = false,
         isHovering: Bool = false,
-        overrideFillStyle: LuminareFilledStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? = nil,
-        overrideBorderStyle: LuminareBorderedStyle<AnyShapeStyle, AnyShapeStyle>? = nil
+        overrideFillStyle: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? = nil,
+        overrideBorderStyle: LuminareBorderStyle<AnyShapeStyle, AnyShapeStyle>? = nil
     ) {
         self.isPressed = isPressed
         self.isHovering = isHovering
@@ -29,17 +35,41 @@ public struct LuminarePlateauModifier: ViewModifier {
         self.overrideBorderStyle = overrideBorderStyle
     }
 
+    private var radii: RectangleCornerRadii {
+        if isInsideSection {
+            let disableInnerPadding = disableInnerPadding == true
+            let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
+            let defaultCornerRadius: CGFloat = 2
+            
+            return RectangleCornerRadii(
+                topLeading: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
+                bottomLeading: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,
+                bottomTrailing: bottomTrailingRounded ? cornerRadii.bottomTrailing : defaultCornerRadius,
+                topTrailing: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius
+            )
+        } else {
+            return cornerRadii
+        }
+    }
+
     public func body(content: Content) -> some View {
         content
             .compositingGroup()
             .opacity(isEnabled ? 1 : 0.5)
+            .luminareCornerRadii(radii)
             .background {
                 if let overrideFillStyle {
-                    LuminareFill(isHovering: isHovering, isPressed: isPressed, style: overrideFillStyle)
+                    LuminareFill(
+                        isHovering: isHovering,
+                        isPressed: isPressed,
+                        cornerRadii: radii,
+                        style: overrideFillStyle
+                    )
                 } else {
                     LuminareFill(
                         isHovering: isHovering,
                         isPressed: isPressed,
+                        cornerRadii: radii,
                         style: .init(
                             normal: colorScheme == .light ? AnyShapeStyle(.white.opacity(0.7)) : AnyShapeStyle(.quinary),
                             hovering: colorScheme == .light ? .quinary : .quaternary,
@@ -49,9 +79,17 @@ public struct LuminarePlateauModifier: ViewModifier {
                 }
 
                 if let overrideBorderStyle {
-                    LuminareBorder(isHovering: isHovering, style: overrideBorderStyle)
+                    LuminareBorder(
+                        isHovering: isHovering,
+                        cornerRadii: radii,
+                        style: overrideBorderStyle
+                    )
                 } else {
-                    LuminareBorder(isHovering: isHovering, style: .default)
+                    LuminareBorder(
+                        isHovering: isHovering,
+                        cornerRadii: radii,
+                        style: .default
+                    )
                 }
             }
             .compositingGroup()
@@ -60,5 +98,6 @@ public struct LuminarePlateauModifier: ViewModifier {
                 radius: 1,
                 y: 1
             )
+            .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
 }

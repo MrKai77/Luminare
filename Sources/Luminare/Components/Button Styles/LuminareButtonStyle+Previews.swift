@@ -82,11 +82,9 @@ import SwiftUI
 
             HStack(spacing: 4) {
                 Button("Normal") {}
-                    .buttonStyle(.luminare)
                     .luminareRoundingBehavior(bottomLeading: true)
 
                 Button("Destructive", role: .destructive) {}
-                    .buttonStyle(.luminare)
                     .luminareRoundingBehavior(bottomTrailing: true)
             }
             .frame(height: 40)
@@ -95,12 +93,12 @@ import SwiftUI
         LuminareSection {
             HStack {
                 Button("Plateau") {}
-                    .luminareAspectRatio(contentMode: .fill, hasFixedHeight: false)
                     .luminareRoundingBehavior(top: true, bottom: true)
             }
             .frame(height: 40)
         }
     }
+    .buttonStyle(.luminare)
 }
 #endif
 
@@ -191,36 +189,6 @@ import SwiftUI
     }
     .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
     .frame(height: 72)
-}
-#endif
-
-// MARK: - LuminareCompactButtonStyle
-
-#if DEBUG
-@available(macOS 15.0, *)
-#Preview(
-    "LuminareCompactButtonStyle",
-    traits: .sizeThatFitsLayout
-) {
-    Button("Click Me!") {}
-        .luminareAspectRatio(contentMode: .fill, hasFixedHeight: false)
-        .frame(height: 40)
-}
-#endif
-
-// MARK: - LuminareBordered
-
-#if DEBUG
-@available(macOS 15.0, *)
-#Preview(
-    "LuminareBordered",
-    traits: .sizeThatFitsLayout
-) {
-    Text("Anything with a Border")
-        .fixedSize()
-        .padding(8)
-        .modifier(LuminareBorderedModifier())
-        .frame(height: 40)
 }
 #endif
 

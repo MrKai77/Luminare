@@ -64,7 +64,7 @@ public struct LuminareCompose<Label, Content>: View
 
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareComposeControlSize) private var controlSize
     @Environment(\.luminareComposeStyle) private var style
 

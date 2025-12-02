@@ -125,9 +125,7 @@ public struct LuminareColorPicker<F>: View
                     .foregroundStyle(color)
                     .padding(4)
                 }
-                .buttonStyle(.luminareCompact)
-                .luminareHorizontalPadding(0)
-                .luminareAspectRatio(1 / 1, contentMode: .fit)
+                .modifier(LuminareContentSizeModifier(aspectRatio: 1.0, contentMode: .fit, hasFixedHeight: true))
                 .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(
@@ -139,6 +137,7 @@ public struct LuminareColorPicker<F>: View
                 }
             }
         }
+        .buttonStyle(.luminare)
         .onChange(of: color) { _ in
             text = color.toHex()
         }
@@ -168,11 +167,10 @@ public struct LuminareColorPicker<F>: View
         .luminareModalStyle(.popover)
         .luminareModalContentWrapper { view in
             view
-                .luminareAspectRatio(contentMode: .fit)
                 .monospaced(false)
         }
     }
-    .luminareAspectRatio(contentMode: .fill)
     .monospaced()
     .frame(width: 300)
+    .padding()
 }

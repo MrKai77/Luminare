@@ -13,8 +13,13 @@ import SwiftUI
 public struct LuminareHoverableModifier: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareIsInsideSection) private var isInsideSection
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
+    @State private var disableInnerPadding: Bool? = nil
 
     private let isPressed: Bool
     private let isHovering: Bool
@@ -26,27 +31,43 @@ public struct LuminareHoverableModifier: ViewModifier {
         self.isPressed = isPressed
         self.isHovering = isHovering
     }
+    
+    private var radii: RectangleCornerRadii {
+        if isInsideSection {
+            let disableInnerPadding = disableInnerPadding == true
+            let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
+            let defaultCornerRadius: CGFloat = 2
+            
+            return RectangleCornerRadii(
+                topLeading: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
+                bottomLeading: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,
+                bottomTrailing: bottomTrailingRounded ? cornerRadii.bottomTrailing : defaultCornerRadius,
+                topTrailing: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius
+            )
+        } else {
+            return cornerRadii
+        }
+    }
 
     public func body(content: Content) -> some View {
         content
             .compositingGroup()
-            .padding(.horizontal, horizontalPadding)
-            .modifier(LuminareAspectRatioModifier())
             .opacity(isEnabled ? 1 : 0.5)
+            .luminareCornerRadii(radii)
             .background {
-                ZStack {
-                    LuminareFill(
-                        isHovering: isHovering,
-                        isPressed: isPressed,
-                        style: .default
-                    )
+                LuminareFill(
+                    isHovering: isHovering,
+                    isPressed: isPressed,
+                    cornerRadii: radii,
+                    style: .default
+                )
 
-                    LuminareBorder(
-                        isHovering: isHovering,
-                        style: .default
-                    )
-                }
-                .clipShape(.rect(cornerRadii: cornerRadii))
+                LuminareBorder(
+                    isHovering: isHovering,
+                    cornerRadii: radii,
+                    style: .default
+                )
             }
+            .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
 }

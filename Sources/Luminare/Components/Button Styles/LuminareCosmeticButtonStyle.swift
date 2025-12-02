@@ -40,14 +40,9 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             .frame(minHeight: minHeight)
             .opacity(isEnabled ? 1 : 0.5)
             .modifier(
-                LuminareFilledModifier(
-                    isHovering: isHovering,
+                LuminareHoverableModifier(
                     isPressed: configuration.isPressed,
-                    style: .init(
-                        normal: .clear,
-                        hovering: .quaternary.opacity(0.7),
-                        pressed: .quaternary
-                    )
+                    isHovering: isHovering,
                 )
             )
             .overlay {

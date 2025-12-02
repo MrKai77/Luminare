@@ -57,15 +57,10 @@ public extension EnvironmentValues {
 public extension EnvironmentValues {
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
     @Entry var luminareMinHeight: CGFloat = 30
-    @Entry var luminareHorizontalPadding: CGFloat = 8
 
-    @Entry var luminareBorderedStates: LuminareBorderedStates = .all
-    @Entry var luminareFilledStates: LuminareFilledStates = .all
+    @Entry var luminareBorderedStates: LuminareBorderStates = .all
+    @Entry var luminareFilledStates: LuminareFillStates = .all
     @Entry var luminareHasDividers: Bool = true
-
-    @Entry var luminareAspectRatio: CGFloat?
-    @Entry var luminareContentMode: ContentMode? = .fit
-    @Entry var luminareHasFixedHeight: Bool = true
 
     @Entry var luminareContentMarginsTop: CGFloat = 0
     @Entry var luminareContentMarginsLeading: CGFloat = 0
@@ -86,6 +81,7 @@ public extension EnvironmentValues {
     // MARK: Section
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
+    @Entry var luminareSectionHorizontalPadding: CGFloat = 8
     @Entry var luminareIsInsideSection: Bool = false
     @Entry var luminareTopLeadingRounded: Bool = true
     @Entry var luminareTopTrailingRounded: Bool = true

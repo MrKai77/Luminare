@@ -161,7 +161,6 @@ struct ColorPickerModalView: View {
                 colorPicker()
             }
         }
-        .luminareAspectRatio(contentMode: .fill)
     }
 
     @ViewBuilder private func controls() -> some View {
@@ -190,7 +189,6 @@ struct ColorPickerModalView: View {
                         }
                     }
                 }
-                .luminareAspectRatio(contentMode: .fill)
             }
         }
     }
@@ -205,7 +203,6 @@ struct ColorPickerModalView: View {
         } label: {
             Image(systemName: "eyedropper.halffull")
         }
-        .luminareAspectRatio(1 / 1, contentMode: .fit)
     }
 
     // MARK: Functions

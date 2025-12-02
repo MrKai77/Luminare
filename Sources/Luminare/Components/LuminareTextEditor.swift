@@ -16,7 +16,7 @@ public struct LuminareTextEditor: View {
     @Environment(\.font) private var font
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
 
     // MARK: Fields
 
@@ -74,9 +74,8 @@ public struct LuminareTextEditor: View {
         }
         .scrollContentBackground(.hidden)
         .font(font ?? .body)
+        .modifier(LuminareContentSizeModifier(contentMode: .fill))
         .modifier(LuminareHoverableModifier())
-        .luminareAspectRatio(unapplying: true)
-        .luminareHorizontalPadding(0)
         .onGeometryChange(for: CGSize.self) { proxy in
             proxy.size
         } action: { newValue in
@@ -108,10 +107,14 @@ public struct LuminareTextEditor: View {
     @Previewable @State var text = ""
     @Previewable @State var selection: TextSelection? = .none
 
-    LuminareTextEditor(text: $text)
+    LuminareSection {
+        LuminareTextEditor(text: $text)
+            .luminareRoundingBehavior(top: true, bottom: false)
 
-//    LuminareTextEditor(text: $text, selection: $selection)
-//
-//    LuminareTextEditor(text: $text, selection: $selection)
-//        .disabled(true)
+        LuminareTextEditor(text: $text, selection: $selection)
+
+        LuminareTextEditor(text: $text, selection: $selection)
+            .disabled(true)
+            .luminareRoundingBehavior(top: false, bottom: true)
+    }
 }

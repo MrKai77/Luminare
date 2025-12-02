@@ -250,46 +250,16 @@ public extension View {
         environment(\.luminareMinHeight, height)
     }
 
-    @ViewBuilder func luminareHorizontalPadding(_ padding: CGFloat) -> some View {
-        environment(\.luminareHorizontalPadding, padding)
-    }
-
-    @ViewBuilder func luminareBorderedStates(_ states: LuminareBorderedStates) -> some View {
+    @ViewBuilder func luminareBorderedStates(_ states: LuminareBorderStates) -> some View {
         environment(\.luminareBorderedStates, states)
     }
 
-    @ViewBuilder func luminareFilledStates(_ states: LuminareFilledStates) -> some View {
+    @ViewBuilder func luminareFilledStates(_ states: LuminareFillStates) -> some View {
         environment(\.luminareFilledStates, states)
     }
 
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool) -> some View {
         environment(\.luminareHasDividers, hasDividers)
-    }
-
-    @ViewBuilder func luminareAspectRatio(unapplying: Bool) -> some View {
-        if unapplying {
-            environment(\.luminareContentMode, nil)
-        } else {
-            self
-        }
-    }
-
-    @ViewBuilder func luminareAspectRatio(
-        _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
-    ) -> some View {
-        environment(\.luminareAspectRatio, aspectRatio)
-            .environment(\.luminareContentMode, contentMode)
-            .environment(\.luminareHasFixedHeight, ifNotNil: hasFixedHeight)
-    }
-
-    @ViewBuilder func luminareAspectRatio(
-        _ aspectRatio: CGSize, contentMode: ContentMode, hasFixedHeight: Bool? = nil
-    ) -> some View {
-        luminareAspectRatio(
-            aspectRatio.width / aspectRatio.height,
-            contentMode: contentMode,
-            hasFixedHeight: hasFixedHeight
-        )
     }
 
     @ViewBuilder func luminareContentMargins(_ insets: EdgeInsets) -> some View {
@@ -331,6 +301,10 @@ public extension View {
 
     @ViewBuilder func luminareSectionLayout(_ layout: LuminareSectionLayout) -> some View {
         environment(\.luminareSectionLayout, layout)
+    }
+
+    @ViewBuilder func luminareSectionHorizontalPadding(_ padding: CGFloat) -> some View {
+        environment(\.luminareSectionHorizontalPadding, padding)
     }
 
     @ViewBuilder func luminareRoundingBehavior(

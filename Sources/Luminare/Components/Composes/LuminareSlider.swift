@@ -41,7 +41,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareSliderLayout) private var layout
 
     @FocusState private var focusedField: FocusedField?
@@ -501,22 +501,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 Text("Slide to stride")
 
                 Text("Composed")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .luminareSliderLayout(.regular)
-
-        LuminareSlider(
-            value: $value,
-            in: 0...128,
-            format: .number.precision(.fractionLength(0...3)),
-            prefix: Text("#")
-        ) {
-            VStack(alignment: .leading) {
-                Text("Slide to stride")
-
-                Text("Composed, Compact")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

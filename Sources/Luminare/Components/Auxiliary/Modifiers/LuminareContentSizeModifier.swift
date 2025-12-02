@@ -9,9 +9,19 @@ import SwiftUI
 
 struct LuminareContentSizeModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareAspectRatio) private var aspectRatio
-    @Environment(\.luminareContentMode) private var contentMode
-    @Environment(\.luminareHasFixedHeight) private var hasFixedHeight
+    private let aspectRatio: CGFloat?
+    private let contentMode: ContentMode?
+    private let hasFixedHeight: Bool
+
+    init(
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode? = nil,
+        hasFixedHeight: Bool = false
+    ) {
+        self.aspectRatio = aspectRatio
+        self.contentMode = contentMode
+        self.hasFixedHeight = hasFixedHeight
+    }
 
     @ViewBuilder func body(content: Content) -> some View {
         if let contentMode {

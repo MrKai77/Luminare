@@ -11,6 +11,8 @@ import SwiftUI
 
 /// A stylized text field.
 public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableFormatStyle, F.FormatOutput == String {
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
+
     // MARK: Fields
 
     @Binding private var value: F.FormatInput?
@@ -112,6 +114,8 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
     public var body: some View {
         TextField(value: $value, format: format, prompt: prompt, label: label)
             .textFieldStyle(.plain)
+            .padding(.horizontal, horizontalPadding)
+            .modifier(LuminareContentSizeModifier(contentMode: .fill, hasFixedHeight: true))
             .modifier(LuminareHoverableModifier())
             .onAppear {
                 EventMonitorManager.shared.addLocalMonitor(
@@ -146,26 +150,25 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
     @Previewable @FocusState var isFocused: Bool
 
     LuminareSection {
-        VStack {
-            LuminareTextField("Text Field", text: .constant("Bordered"))
-                .focused($isFocused)
+        LuminareTextField("Text Field", text: .constant("Bordered"))
+            .focused($isFocused)
+            .luminareRoundingBehavior(top: true)
 
-            LuminareTextField("Text Field", text: .constant("No Border"))
-                .luminareBorderedStates(.none)
-                .focused($isFocused)
+        LuminareTextField("Text Field", text: .constant("No Border"))
+            .luminareBorderedStates(.none)
+            .focused($isFocused)
 
-            LuminareTextField("Text Field", text: .constant("No Background or Border"))
-                .luminareFilledStates(.none)
-                .luminareBorderedStates(.none)
-                .focused($isFocused)
+        LuminareTextField("Text Field", text: .constant("No Background or Border"))
+            .luminareFilledStates(.none)
+            .luminareBorderedStates(.none)
+            .focused($isFocused)
 
-            LuminareTextField("Text Field", text: .constant("Disabled"))
-                .disabled(true)
-                .focused($isFocused)
-        }
-        .onAppear {
-            isFocused = false
-        }
+        LuminareTextField("Text Field", text: .constant("Disabled"))
+            .disabled(true)
+            .focused($isFocused)
+            .luminareRoundingBehavior(bottom: true)
     }
-    .luminareAspectRatio(contentMode: .fill)
+    .onAppear {
+        isFocused = false
+    }
 }

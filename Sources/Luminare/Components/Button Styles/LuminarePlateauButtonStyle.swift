@@ -38,7 +38,7 @@ public struct LuminarePlateauButtonStyle: ButtonStyle {
             .onHover { isHovering = $0 }
     }
 
-    private func fillStyle(configuration: Configuration) -> LuminareFilledStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? {
+    private func fillStyle(configuration: Configuration) -> LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? {
         if let tint = buttonTint(configuration: configuration) {
             return .init(
                 normal: AnyShapeStyle(tint.opacity(0.15)),
