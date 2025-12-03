@@ -96,7 +96,7 @@ public struct LuminareColorPicker<F>: View
     // MARK: Body
 
     public var body: some View {
-        HStack {
+        HStack(spacing: 4) {
             if let format = style.format {
                 LuminareTextField(
                     "Hex Color",
@@ -119,11 +119,9 @@ public struct LuminareColorPicker<F>: View
                 Button {
                     isColorPickerPresented.toggle()
                 } label: {
-                    UnevenRoundedRectangle(
-                        cornerRadii: cornerRadii.map { max(0, $0 - 4) }
-                    )
-                    .foregroundStyle(color)
-                    .padding(4)
+                    UnevenRoundedRectangle(cornerRadii: cornerRadii.inset(by: 4))
+                        .foregroundStyle(color)
+                        .padding(4)
                 }
                 .modifier(LuminareContentSizeModifier(aspectRatio: 1.0, contentMode: .fit, hasFixedHeight: true))
                 .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {

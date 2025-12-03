@@ -28,6 +28,7 @@ public struct LuminarePlateauButtonStyle: ButtonStyle {
         configuration.label
             .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
+            .fontWeight(.medium)
             .modifier(
                 LuminarePlateauModifier(
                     isPressed: configuration.isPressed,

@@ -39,13 +39,12 @@ public struct LuminarePlateauModifier: ViewModifier {
         if isInsideSection {
             let disableInnerPadding = disableInnerPadding == true
             let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
-            let defaultCornerRadius: CGFloat = 2
-            
+
             return RectangleCornerRadii(
-                topLeading: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
-                bottomLeading: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,
-                bottomTrailing: bottomTrailingRounded ? cornerRadii.bottomTrailing : defaultCornerRadius,
-                topTrailing: topTrailingRounded ? cornerRadii.topTrailing : defaultCornerRadius
+                topLeading: topLeadingRounded ? cornerRadii.topLeading : 2,
+                bottomLeading: bottomLeadingRounded ? cornerRadii.bottomLeading : 2,
+                bottomTrailing: bottomTrailingRounded ? cornerRadii.bottomTrailing : 2,
+                topTrailing: topTrailingRounded ? cornerRadii.topTrailing : 2
             )
         } else {
             return cornerRadii

@@ -10,6 +10,8 @@ import SwiftUI
 // MARK: - Button (Compose)
 
 public struct LuminareButton<Label, Content>: View where Label: View, Content: View {
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
+
     // MARK: Fields
 
     private let role: ButtonRole?
@@ -128,7 +130,11 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
                 action()
             } label: {
                 content()
+                    .padding(.horizontal, horizontalPadding)
             }
+            .buttonStyle(.luminare)
+            .luminareRoundingBehavior(top: true, bottom: true)
+            .modifier(LuminareContentSizeModifier(contentMode: .fit, hasFixedHeight: true))
             .luminareComposeIgnoreSafeArea(edges: .trailing)
         } label: {
             label()

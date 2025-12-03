@@ -42,7 +42,7 @@ public struct LuminareCosmeticButtonStyle: ButtonStyle {
             .modifier(
                 LuminareHoverableModifier(
                     isPressed: configuration.isPressed,
-                    isHovering: isHovering,
+                    isHovering: isHovering
                 )
             )
             .overlay {

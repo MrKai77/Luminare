@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct LuminareContentSizeModifier: ViewModifier {
+public struct LuminareContentSizeModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
     private let aspectRatio: CGFloat?
     private let contentMode: ContentMode?
     private let hasFixedHeight: Bool
 
-    init(
+    public init(
         aspectRatio: CGFloat? = nil,
         contentMode: ContentMode? = nil,
         hasFixedHeight: Bool = false
@@ -23,7 +23,8 @@ struct LuminareContentSizeModifier: ViewModifier {
         self.hasFixedHeight = hasFixedHeight
     }
 
-    @ViewBuilder func body(content: Content) -> some View {
+    @ViewBuilder
+    public func body(content: Content) -> some View {
         if let contentMode {
             Group {
                 if isConstrained {

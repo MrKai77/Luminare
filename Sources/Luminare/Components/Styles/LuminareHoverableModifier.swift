@@ -31,13 +31,13 @@ public struct LuminareHoverableModifier: ViewModifier {
         self.isPressed = isPressed
         self.isHovering = isHovering
     }
-    
+
     private var radii: RectangleCornerRadii {
         if isInsideSection {
             let disableInnerPadding = disableInnerPadding == true
             let cornerRadii = disableInnerPadding ? cornerRadii : cornerRadii.inset(by: 4)
             let defaultCornerRadius: CGFloat = 2
-            
+
             return RectangleCornerRadii(
                 topLeading: topLeadingRounded ? cornerRadii.topLeading : defaultCornerRadius,
                 bottomLeading: bottomLeadingRounded ? cornerRadii.bottomLeading : defaultCornerRadius,

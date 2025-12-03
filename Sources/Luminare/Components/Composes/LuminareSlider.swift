@@ -38,7 +38,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
     // MARK: Environments
 
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
@@ -341,39 +340,39 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
     @ViewBuilder private func textBoxView() -> some View {
         HStack {
-            let view = Group {
-                if isTextBoxVisible {
-                    TextField(
-                        value: $internalValue,
-                        format: format
-                    ) {
-                        EmptyView()
-                    }
-                    .labelsHidden()
-                    .textFieldStyle(.plain)
-                    .focused($focusedField, equals: .textbox)
-                    .multilineTextAlignment(.trailing)
-                    .padding(.leading, -4)
-                    .fontDesign(.monospaced)
-                    .onSubmit(commit)
-                    .onChange(of: focusedField == .textbox) { if !$0 { commit() } }
-                } else {
-                    Button {
-                        withAnimation(animationFast) {
-                            isTextBoxVisible.toggle()
-                            focusedField = .textbox
-                        }
-                    } label: {
-                        Text(format.format(value))
-                            .contentTransition(.numericText(countsDown: countsDown))
-                            .multilineTextAlignment(.trailing)
-                            .fontDesign(.monospaced)
-                    }
-                    .buttonStyle(.plain)
+            if isTextBoxVisible {
+                let textFieldView = TextField(
+                    value: $internalValue,
+                    format: format
+                ) {
+                    EmptyView()
                 }
-            }
+                .labelsHidden()
+                .textFieldStyle(.plain)
+                .focused($focusedField, equals: .textbox)
+                .multilineTextAlignment(.trailing)
+                .padding(.leading, -4)
+                .fontDesign(.monospaced)
+                .onSubmit(commit)
+                .onChange(of: focusedField == .textbox) { if !$0 { commit() } }
 
-            content(.init(view))
+                content(.init(textFieldView))
+            } else {
+                let textView = Text(format.format(value))
+                    .contentTransition(.numericText(countsDown: countsDown))
+                    .multilineTextAlignment(.trailing)
+                    .fontDesign(.monospaced)
+
+                Button {
+                    withAnimation(animationFast) {
+                        isTextBoxVisible.toggle()
+                        focusedField = .textbox
+                    }
+                } label: {
+                    content(.init(textView))
+                }
+                .buttonStyle(.plain)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(4)
@@ -402,7 +401,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .onDisappear {
             removeEventMonitor()
         }
-        .opacity(isEnabled ? 1 : 0.5)
         .onChange(of: value) { value in
             DispatchQueue.main.async {
                 lastValue = value

@@ -83,7 +83,7 @@ struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P: ShapeS
             if luminareFilledStates.contains(.normal) {
                 UnevenRoundedRectangle(cornerRadii: cornerRadii)
                     .foregroundStyle(style.normal)
-                    .opacity(isEnabled ? 1 : 0.5)
+                    .opacity(0.5)
             }
         }
     }

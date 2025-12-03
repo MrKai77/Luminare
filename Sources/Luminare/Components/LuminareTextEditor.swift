@@ -12,7 +12,6 @@ import SwiftUI
 public struct LuminareTextEditor: View {
     // MARK: Environments
 
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.font) private var font
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight

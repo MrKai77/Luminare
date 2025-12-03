@@ -62,7 +62,6 @@ public struct LuminareCompose<Label, Content>: View
     where Label: View, Content: View {
     // MARK: Environments
 
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareComposeControlSize) private var controlSize
@@ -149,7 +148,6 @@ public struct LuminareCompose<Label, Content>: View
             if Label.self != EmptyView.self {
                 HStack(alignment: alignment, spacing: spacing) {
                     label()
-                        .opacity(isEnabled ? 1 : 0.5)
                 }
                 .layoutPriority(1)
 
