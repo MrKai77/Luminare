@@ -134,7 +134,10 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
             }
             .buttonStyle(.luminare)
             .luminareRoundingBehavior(top: true, bottom: true)
-            .modifier(LuminareContentSizeModifier(contentMode: .fit, hasFixedHeight: true))
+            .luminareContentSize(
+                contentMode: .fit,
+                hasFixedHeight: true
+            )
             .luminareComposeIgnoreSafeArea(edges: .trailing)
         } label: {
             label()

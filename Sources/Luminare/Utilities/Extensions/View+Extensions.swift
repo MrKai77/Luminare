@@ -32,28 +32,6 @@ extension View {
     }
 }
 
-// MARK: - Modifiers
-
-public extension View {
-    @ViewBuilder func booleanThrottleDebounced(
-        _ value: Bool,
-        flipOnDelay: TimeInterval = 0.5,
-        flipOffDelay: TimeInterval = .zero,
-        throttleDelay: TimeInterval = 0.25,
-        initial: Bool = false,
-        action: @escaping (Bool) -> ()
-    ) -> some View {
-        modifier(BooleanThrottleDebouncedModifier(
-            value,
-            flipOnDelay: flipOnDelay,
-            flipOffDelay: flipOffDelay,
-            throttleDelay: throttleDelay,
-            initial: initial,
-            action: action
-        ))
-    }
-}
-
 // MARK: - Convenient Wrappers
 
 public extension View {
@@ -156,6 +134,60 @@ public extension View {
             )
         )
     }
+
+    @ViewBuilder func booleanThrottleDebounced(
+        _ value: Bool,
+        flipOnDelay: TimeInterval = 0.5,
+        flipOffDelay: TimeInterval = .zero,
+        throttleDelay: TimeInterval = 0.25,
+        initial: Bool = false,
+        action: @escaping (Bool) -> ()
+    ) -> some View {
+        modifier(BooleanThrottleDebouncedModifier(
+            value,
+            flipOnDelay: flipOnDelay,
+            flipOffDelay: flipOffDelay,
+            throttleDelay: throttleDelay,
+            initial: initial,
+            action: action
+        ))
+    }
+
+    @ViewBuilder func luminareContentSize(
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode? = nil,
+        hasFixedHeight: Bool = false
+    ) -> some View {
+        modifier(
+            LuminareContentSizeModifier(
+                aspectRatio: aspectRatio,
+                contentMode: contentMode,
+                hasFixedHeight: hasFixedHeight
+            )
+        )
+    }
+
+    @ViewBuilder func luminarePlateau(
+        isPressed: Bool = false,
+        isHovering: Bool = false,
+        overrideFillStyle: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? = nil,
+        overrideBorderStyle: LuminareBorderStyle<AnyShapeStyle, AnyShapeStyle>? = nil
+    ) -> some View {
+        modifier(
+            LuminarePlateauModifier(
+                isPressed: isPressed,
+                isHovering: isHovering,
+                overrideFillStyle: overrideFillStyle,
+                overrideBorderStyle: overrideBorderStyle
+            )
+        )
+    }
+
+    @ViewBuilder func luminareBackground() -> some View {
+        modifier(
+            LuminareBackgroundEffectModifier()
+        )
+    }
 }
 
 // MARK: - Common
@@ -166,10 +198,6 @@ public extension View {
     @ViewBuilder func luminareTint(overridingWith color: Color) -> some View {
         tint(color)
             .environment(\.luminareTintColor, color)
-    }
-
-    @ViewBuilder func luminareBackground() -> some View {
-        modifier(LuminareBackgroundEffectModifier())
     }
 
     @ViewBuilder func luminareAnimation(_ animation: Animation) -> some View {

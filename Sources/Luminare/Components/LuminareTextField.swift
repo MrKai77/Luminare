@@ -115,7 +115,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
         TextField(value: $value, format: format, prompt: prompt, label: label)
             .textFieldStyle(.plain)
             .padding(.horizontal, horizontalPadding)
-            .modifier(LuminareContentSizeModifier(contentMode: .fill, hasFixedHeight: true))
+            .luminareContentSize(contentMode: .fill, hasFixedHeight: true)
             .modifier(LuminareHoverableModifier())
             .onAppear {
                 EventMonitorManager.shared.addLocalMonitor(

@@ -123,7 +123,11 @@ public struct LuminareColorPicker<F>: View
                         .foregroundStyle(color)
                         .padding(4)
                 }
-                .modifier(LuminareContentSizeModifier(aspectRatio: 1.0, contentMode: .fit, hasFixedHeight: true))
+                .luminareContentSize(
+                    aspectRatio: 1.0,
+                    contentMode: .fit,
+                    hasFixedHeight: true
+                )
                 .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(

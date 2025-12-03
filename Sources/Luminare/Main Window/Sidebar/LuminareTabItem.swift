@@ -59,14 +59,8 @@ public extension LuminareTabItem {
 private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareMinHeight) private var minHeight
-
-    private var imageSize: CGFloat {
-        boxSize - 10
-    }
-
-    private var boxSize: CGFloat {
-        minHeight - 4
-    }
+    private let imageSize: CGFloat = 16
+    private let boxSize: CGFloat = 26
 
     let tab: Tab
 
@@ -78,7 +72,7 @@ private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
                 .frame(width: imageSize, height: imageSize)
         }
         .frame(width: boxSize, height: boxSize)
-        .modifier(LuminarePlateauModifier())
+        .luminarePlateau()
         .frame(width: minHeight, height: minHeight)
         .luminareCornerRadius(6)
     }

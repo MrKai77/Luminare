@@ -7,11 +7,7 @@
 
 import SwiftUI
 
-/// A stylized button style with a border.
-///
-/// Can be configured to disable padding when `extraCompact` is set to `true`.
-///
-/// ![LuminareCompactButtonStyle](LuminareCompactButtonStyle)
+/// A stylized button style with a plateau appearance.
 public struct LuminarePlateauButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimationFast) private var animationFast
@@ -29,12 +25,10 @@ public struct LuminarePlateauButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
             .opacity(isEnabled ? 1 : 0.5)
             .fontWeight(.medium)
-            .modifier(
-                LuminarePlateauModifier(
-                    isPressed: configuration.isPressed,
-                    isHovering: isHovering,
-                    overrideFillStyle: fillStyle(configuration: configuration)
-                )
+            .luminarePlateau(
+                isPressed: configuration.isPressed,
+                isHovering: isHovering,
+                overrideFillStyle: fillStyle(configuration: configuration)
             )
             .onHover { isHovering = $0 }
     }

@@ -17,56 +17,6 @@ import SwiftUI
 ) {
     VStack {
         LuminareSection {
-            Button {} label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "app.gift.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 60)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Cosmetic")
-                            .fontWeight(.medium)
-
-                        Text("Custom Layout")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-                }
-                .padding(8)
-            }
-            .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
-            .luminareRoundingBehavior(top: true)
-            .frame(height: 72)
-
-            Button {} label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "app.gift.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 60)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Cosmetic Hovering")
-                            .fontWeight(.medium)
-
-                        Text("Custom Layout")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-                }
-                .padding(8)
-            }
-            .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
-            .luminareRoundingBehavior(bottom: true)
-            .frame(height: 72)
-        }
-
-        LuminareSection {
             HStack(spacing: 4) {
                 Button("Prominent") {}
                     .buttonStyle(.luminare(tinted: true))
@@ -131,64 +81,6 @@ import SwiftUI
     Button("My Role is Destructive", role: .destructive) {}
         .buttonStyle(.luminare)
         .frame(height: 40)
-}
-#endif
-
-// MARK: - LuminareCosmeticButtonStyle
-
-#if DEBUG
-@available(macOS 15.0, *)
-#Preview(
-    "LuminareCosmeticButtonStyle",
-    traits: .sizeThatFitsLayout
-) {
-    Button {} label: {
-        HStack(spacing: 4) {
-            Image(systemName: "app.gift.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 60)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Cosmetic")
-                    .fontWeight(.medium)
-
-                Text("Custom Layout")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-        }
-        .padding(8)
-    }
-    .buttonStyle(
-        .luminareCosmetic(icon: Image(systemName: "star.fill"))
-    )
-    .frame(height: 72)
-
-    Button {} label: {
-        HStack(spacing: 4) {
-            Image(systemName: "app.gift.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 60)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Cosmetic Hovering")
-                    .fontWeight(.medium)
-
-                Text("Custom Layout")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-        }
-        .padding(8)
-    }
-    .buttonStyle(.luminareCosmetic(icon: Image(systemName: "star.fill")))
-    .frame(height: 72)
 }
 #endif
 
