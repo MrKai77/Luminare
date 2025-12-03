@@ -67,6 +67,11 @@ public struct LuminareColorPicker<F>: View
     public typealias Style = LuminareColorPickerStyle<F>
 
     @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareIsInsideSection) private var isInsideSection
+    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
+    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
+    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
+    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
     // MARK: Fields
 
@@ -113,20 +118,33 @@ public struct LuminareColorPicker<F>: View
                     }
                 }
                 .monospaced()
+                .luminareFilledStates(.none)
+                .luminareBorderedStates(.none)
             }
 
             if style.hasColorWell {
                 Button {
                     isColorPickerPresented.toggle()
                 } label: {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii.inset(by: 4))
-                        .foregroundStyle(color)
-                        .padding(4)
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2),
+                        bottomLeadingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2),
+                        bottomTrailingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2),
+                        topTrailingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2)
+                    )
+                    .foregroundStyle(color)
+                    .padding(4)
                 }
                 .luminareContentSize(
                     aspectRatio: 1.0,
                     contentMode: .fit,
                     hasFixedHeight: true
+                )
+                .luminareRoundingBehavior(
+                    topLeading: true,
+                    topTrailing: true,
+                    bottomLeading: true,
+                    bottomTrailing: true
                 )
                 .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
                     VStack {
@@ -156,7 +174,7 @@ public struct LuminareColorPicker<F>: View
 ) {
     @Previewable @State var color = Color.accentColor
 
-    VStack {
+    LuminareSection {
         LuminareColorPicker(
             color: $color,
             style: .textFieldWithColorWell()

@@ -161,7 +161,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                 }
             }
             .opacity(isDisabled ? 0.5 : 1.0)
-            .clipShape(shape)
             .animation(animation, value: isDisabled)
             .luminareRoundingBehavior(
                 topLeading: row == 0 && column == 0 ? topLeadingRounded : false,
@@ -269,9 +268,16 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             elements: Array(32...42),
             selection: $selection
         ) { num in
-            Text("\(num)")
+            VStack {
+                Image(systemName: "\(num).circle")
+                    .font(.title)
+                Text("\(num)")
+            }
+            .frame(height: 70)
+            .background(.red)
         }
         .luminareRoundingBehavior(top: true)
+        .luminareContentSize(hasFixedHeight: true)
 
         LuminarePicker(
             elements: Array(32 ..< 36),

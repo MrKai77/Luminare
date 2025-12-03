@@ -52,6 +52,10 @@ public struct LuminareContentSizeModifier: ViewModifier {
             )
         } else {
             content
+                .fixedSize(
+                    horizontal: false,
+                    vertical: hasFixedHeight
+                )
         }
     }
 

@@ -79,9 +79,12 @@ struct ColorPickerModalView: View {
                 .luminareSectionDisableInnerPadding(true)
             }
 
-            rgbInputFields()
+            Group {
+                rgbInputFields()
 
-            controls()
+                controls()
+            }
+            .luminareCornerRadius(8)
         }
         .onAppear {
             updateComponents(selectedColor)
@@ -203,6 +206,11 @@ struct ColorPickerModalView: View {
         } label: {
             Image(systemName: "eyedropper.halffull")
         }
+        .luminareContentSize(
+            aspectRatio: 1.0,
+            contentMode: .fit,
+            hasFixedHeight: true
+        )
     }
 
     // MARK: Functions

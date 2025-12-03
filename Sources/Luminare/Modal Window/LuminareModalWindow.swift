@@ -134,7 +134,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         false
     }
 
-    override func resignMain() {
+    override func resignKey() {
         if closesOnDefocus {
             close()
         }
