@@ -153,10 +153,6 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
             false
         }
     }
-
-    @ViewBuilder func view() -> some View {
-        EmptyView()
-    }
 }
 
 @available(macOS 15.0, *)

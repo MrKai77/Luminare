@@ -22,7 +22,6 @@ public enum LuminareSectionLayout: Hashable, Equatable, Codable, Sendable {
 public struct LuminareSection<Header, Content, Footer>: View where Header: View, Content: View, Footer: View {
     // MARK: Environments
 
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareBorderedStates) private var borderedStates
     @Environment(\.luminareHasDividers) private var hasDividers

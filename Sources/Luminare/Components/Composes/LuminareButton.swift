@@ -142,7 +142,6 @@ public struct LuminareButton<Label, Content>: View where Label: View, Content: V
         } label: {
             label()
         }
-        .luminareComposeStyle(.inline)
     }
 }
 

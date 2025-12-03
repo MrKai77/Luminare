@@ -48,13 +48,6 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
     }
 }
 
-public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
-    case regular
-    case inline
-
-    public var id: Self { self }
-}
-
 // MARK: - Compose
 
 /// A stylized view that composes a content with a label.
@@ -65,7 +58,6 @@ public struct LuminareCompose<Label, Content>: View
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareComposeControlSize) private var controlSize
-    @Environment(\.luminareComposeStyle) private var style
 
     // MARK: Fields
 
@@ -213,7 +205,6 @@ struct LuminareComposeIgnoreSafeAreaEdgesKey: PreferenceKey {
         }
         .disabled(true)
     }
-    .luminareComposeStyle(.inline)
 }
 
 @available(macOS 15.0, *)

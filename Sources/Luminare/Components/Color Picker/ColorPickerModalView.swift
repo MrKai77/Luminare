@@ -30,10 +30,6 @@ struct ColorPickerModalView: View {
     @State private var greenComponent: Double = .zero
     @State private var blueComponent: Double = .zero
 
-    @State private var isRedStepperPresented: Bool = false
-    @State private var isGreenStepperPresented: Bool = false
-    @State private var isBlueStepperPresented: Bool = false
-
     @State private var hueFallback: Double = .zero
 
     private let colorSampler: NSColorSampler = .init()

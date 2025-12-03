@@ -88,22 +88,6 @@ extension Color {
         return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
     }
 
-    // Mixes with another color
-    func mixed(with other: Color, amount: CGFloat) -> Color {
-        guard amount >= 0, amount <= 1 else {
-            NSLog("Invalid mix amount: \(amount). Amount must be between 0 and 1.")
-            return self
-        }
-        let blend = { (color1: CGFloat, color2: CGFloat) -> CGFloat in color1 + (color2 - color1) * amount }
-        let selfComponents = components
-        let otherComponents = other.components
-        return Color(
-            red: blend(selfComponents.red, otherComponents.red),
-            green: blend(selfComponents.green, otherComponents.green),
-            blue: blend(selfComponents.blue, otherComponents.blue)
-        )
-    }
-
     // Extracts RGBA components
     var components: (red: Double, green: Double, blue: Double, opacity: Double) {
         get {
@@ -129,15 +113,6 @@ extension Color {
         set {
             self = .init(hsb: newValue)
         }
-    }
-
-    // Adjusts the brightness
-    func brightness(_ brightness: Double) -> Color {
-        // Ensures the new brightness is within the range [0, 1]
-        let adjustedBrightness = max(0.0, min(brightness, 1.0))
-        return Color(
-            hue: Double(hsb.hue), saturation: Double(hsb.saturation), brightness: adjustedBrightness
-        )
     }
 }
 

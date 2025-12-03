@@ -14,17 +14,11 @@ public enum LuminareCompactPickerStyle: Hashable, Equatable, Codable, Sendable {
     ///
     /// Works great in most cases, especially with an enormous amount of choises.
     case menu
+
     /// A row of segmented knobs, each representing a selectable value.
     ///
     /// Often used for brief, flatten choises.
     case segmented
-
-    var style: any PickerStyle {
-        switch self {
-        case .menu: .menu
-        case .segmented: .segmented
-        }
-    }
 }
 
 // MARK: - Compact Picker
@@ -35,7 +29,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
 
     // MARK: Environments
 
-    @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareCompactPickerStyle) private var style
 
     // MARK: Fields
@@ -98,7 +91,6 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
         @Binding var selection: V
 
         @Namespace private var namespace
-        @State private var isHolding: Bool = false
 
         var body: some View {
             HStack(spacing: 4) {
@@ -238,19 +230,16 @@ private struct PickerPreview<V>: View where V: Hashable & Equatable {
                 Text("42")
             }
         }
-        .luminareComposeStyle(.inline)
 
         LuminareCompose("Pick from a menu") {
             PickerPreview(elements: Array(0 ..< 200), selection: 42)
         }
-        .luminareComposeStyle(.inline)
 
         LuminareCompose("Pick from segments") {
             PickerPreview(elements: ["Inline", "Fixed"], selection: "Inline")
                 .luminareCompactPickerStyle(.segmented)
                 .luminareComposeIgnoreSafeArea(edges: .trailing)
         }
-        .luminareComposeStyle(.inline)
 
         PickerPreview(
             elements: ["macOS", "Linux", "Windows"],

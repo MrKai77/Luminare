@@ -236,7 +236,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 } label: {
                     label()
                 }
-                .luminareComposeStyle(.inline)
 
                 sliderView()
                     .padding(.horizontal, horizontalPadding)
@@ -254,7 +253,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     } label: {
                         label()
                     }
-                    .luminareComposeStyle(.inline)
                 } else {
                     let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
 
@@ -280,7 +278,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                             label()
                         }
                     }
-                    .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
                 }
             }
         }
@@ -299,10 +296,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .onChange(of: value) { _ in // If value changes externally, reflect that internally
             internalValue = value
         }
-    }
-
-    private var totalRange: V {
-        range.upperBound - range.lowerBound
     }
 
     private var countsDown: Bool {

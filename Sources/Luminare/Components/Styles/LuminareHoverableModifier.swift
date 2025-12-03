@@ -12,7 +12,6 @@ import SwiftUI
 /// Combines both of `LuminareFilledModifier` and `LuminareBorderedModifier`.
 public struct LuminareHoverableModifier: ViewModifier {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareIsInsideSection) private var isInsideSection
     @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded

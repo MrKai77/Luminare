@@ -261,7 +261,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 } label: {
                     label()
                 }
-                .luminareComposeStyle(.inline)
 
                 sliderView()
                     .padding(.horizontal, horizontalPadding)
@@ -279,7 +278,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                     } label: {
                         label()
                     }
-                    .luminareComposeStyle(.inline)
                 } else {
                     let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
 
@@ -304,7 +302,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                             label()
                         }
                     }
-                    .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
                 }
             }
         }

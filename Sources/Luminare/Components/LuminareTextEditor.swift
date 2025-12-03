@@ -13,7 +13,6 @@ public struct LuminareTextEditor: View {
     // MARK: Environments
 
     @Environment(\.font) private var font
-    @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
     @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
 
@@ -21,8 +20,6 @@ public struct LuminareTextEditor: View {
 
     @Binding private var text: String
     @Binding private var selection: Any? // Handle os versions below macOS 15.0
-
-    @State private var isHovering: Bool = false
     @State private var containerSize: CGSize = .zero
 
     // MARK: Initializers

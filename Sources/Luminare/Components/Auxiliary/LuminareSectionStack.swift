@@ -90,9 +90,7 @@ struct LuminareSectionStackChildView: View {
     let innerPadding: CGFloat
     let isFirstChild: Bool
     let isLastChild: Bool
-
     @State private var disableInnerPadding: Bool? = nil
-    @State private var enableMask: Bool? = nil
 
     var body: some View {
         child

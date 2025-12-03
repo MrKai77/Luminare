@@ -57,7 +57,6 @@ public extension LuminareTabItem {
 // MARK: Image View
 
 private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareMinHeight) private var minHeight
     private let imageSize: CGFloat = 16
     private let boxSize: CGFloat = 26

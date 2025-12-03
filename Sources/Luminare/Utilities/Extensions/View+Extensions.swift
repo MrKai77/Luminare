@@ -381,10 +381,6 @@ public extension View {
         environment(\.luminareComposeControlSize, controlSize)
     }
 
-    @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle) -> some View {
-        environment(\.luminareComposeStyle, style)
-    }
-
     @ViewBuilder func luminareComposeIgnoreSafeArea(edges: Edge.Set) -> some View {
         preference(
             key: LuminareComposeIgnoreSafeAreaEdgesKey.self,

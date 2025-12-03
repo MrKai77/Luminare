@@ -236,7 +236,6 @@ public struct LuminareListItem<Content, V>: View
     // MARK: Environments
 
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareHasDividers) private var hasDividers

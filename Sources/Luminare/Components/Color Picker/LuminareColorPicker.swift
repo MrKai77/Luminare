@@ -68,10 +68,6 @@ public struct LuminareColorPicker<F>: View
 
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareIsInsideSection) private var isInsideSection
-    @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
-    @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded
-    @Environment(\.luminareBottomLeadingRounded) private var bottomLeadingRounded
-    @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
     // MARK: Fields
 

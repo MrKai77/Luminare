@@ -10,7 +10,6 @@ import SwiftUI
 /// A stylized button style with a plateau appearance.
 public struct LuminarePlateauButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
 
     @State private var isHovering: Bool = false

@@ -13,8 +13,6 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
 
     private let closesOnDefocus: Bool
     private let presentation: LuminareSheetPresentation
-
-    private var view: NSView?
     private let initializedDate: Date = .now
 
     init(
@@ -41,7 +39,6 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
                 .luminareSheetCornerRadii(cornerRadii)
                 .environmentObject(self)
         )
-        self.view = view
 
         self.isMovableByWindowBackground = isMovableByWindowBackground
         collectionBehavior.insert(.fullScreenAuxiliary)
