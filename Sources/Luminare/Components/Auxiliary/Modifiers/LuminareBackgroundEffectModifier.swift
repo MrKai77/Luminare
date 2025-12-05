@@ -9,14 +9,24 @@ import SwiftUI
 
 /// A background effect that matches ``Luminare``.
 public struct LuminareBackgroundEffectModifier: ViewModifier {
+    @Environment(\.colorScheme) private var colorscheme
+
     public func body(content: Content) -> some View {
         content
             .background {
-                VisualEffectView(
-                    material: .menu,
-                    blendingMode: .behindWindow
-                )
-                .edgesIgnoringSafeArea(.top)
+                ZStack {
+                    VisualEffectView(
+                        material: .menu,
+                        blendingMode: .behindWindow
+                    )
+                    
+                    Rectangle()
+                        .foregroundStyle(.tint)
+                        .opacity(colorscheme == .light ? 0.025 : 0.1)
+                        .blendMode(.multiply)
+                }
+                .compositingGroup()
+                .ignoresSafeArea()
                 .allowsHitTesting(false)
             }
     }
