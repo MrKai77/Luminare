@@ -110,7 +110,6 @@ struct SidebarButtonStyle: ButtonStyle {
                 }
             }
             .animation(animationFast, value: isActive)
-            .animation(animationFast, value: configuration.isPressed)
             .clipShape(.rect(cornerRadius: cornerRadius))
             .contentShape(.rect)
             .onHover { isHovering = $0 }
