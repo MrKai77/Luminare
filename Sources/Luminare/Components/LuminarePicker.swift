@@ -230,7 +230,7 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             return UnevenRoundedRectangle(
                 topLeadingRadius: buttonCornerRadii.topLeading,
                 bottomLeadingRadius: buttonCornerRadii.bottomLeading,
-                bottomTrailingRadius: bottomLeadingRounded ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
+                bottomTrailingRadius: bottomTrailingRounded ? cornerRadii.bottomTrailing - innerPadding : buttonCornerRadii.bottomTrailing,
                 topTrailingRadius: (isVerticallyCompact && topTrailingRounded) ? cornerRadii.topTrailing - innerPadding : buttonCornerRadii.topTrailing
             )
         }
