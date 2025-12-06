@@ -43,15 +43,13 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         Button {
             activeTab = tab
         } label: {
-            HStack(spacing: 8) {
-                tab.decoratedImageView
-
-                titleView(for: tab)
-                    .fixedSize()
-
-                Spacer(minLength: 0)
-            }
-            .frame(minHeight: minHeight)
+            titleView(for: tab)
+                .fixedSize()
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: minHeight,
+                    alignment: .leading
+                )
         }
         .buttonStyle(SidebarButtonStyle(isActive: isActive))
         .onAppear {
@@ -63,7 +61,10 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     }
 
     @ViewBuilder private func titleView(for tab: Tab) -> some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 4) {
+            tab.icon
+                .frame(width: minHeight, height: minHeight)
+
             Text(tab.title)
 
             if tab.hasIndicator {
@@ -71,7 +72,6 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                     Circle()
                         .foregroundStyle(.tint)
                         .frame(width: 4, height: 4)
-                        .padding(.leading, 4)
                         .shadow(color: tintColor, radius: 4)
 
                     Spacer()
@@ -124,6 +124,10 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case more
 
     var id: Self { self }
+    
+    var icon: some View {
+        image
+    }
 
     var title: String {
         switch self {

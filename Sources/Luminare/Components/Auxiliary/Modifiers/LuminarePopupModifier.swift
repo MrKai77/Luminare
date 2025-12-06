@@ -90,10 +90,6 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         var panel: LuminarePopupPanel?
 
         private weak var parentView: NSView?
-        private weak var scrollView: NSScrollView?
-        private var scrollObserver: NSObjectProtocol?
-        private var parentFrameObserver: NSObjectProtocol?
-
         private let id: UUID = .init()
 
         init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
@@ -125,10 +121,6 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
             initializePopup()
             guard let panel else { return }
-            
-            if let parentView {
-                setupScrollTracking(for: parentView)
-            }
 
             if let window = parentView?.window {
                 window.addChildWindow(panel, ordered: .above)
@@ -160,11 +152,6 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         func windowWillClose(_: Notification) {
             Task { @MainActor in
                 EventMonitorManager.shared.removeMonitor(for: id)
-                
-                // Remove scroll tracking observers
-                if let scrollObserver { NotificationCenter.default.removeObserver(scrollObserver) }
-                if let parentFrameObserver { NotificationCenter.default.removeObserver(parentFrameObserver) }
-                
                 parent.isPresented = false
                 panel = nil
             }
@@ -202,59 +189,6 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 name: NSView.frameDidChangeNotification,
                 object: view
             )
-        }
-        
-        private func setupScrollTracking(for parentView: NSView) {
-            guard let scrollView = parentView.enclosingScrollView else { return }
-            self.scrollView = scrollView
-            
-            let clipView = scrollView.contentView
-            clipView.postsBoundsChangedNotifications = true
-            
-            scrollObserver = NotificationCenter.default.addObserver(
-                forName: NSView.boundsDidChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [self] _ in
-                print("SCROLLOBSERVER")
-                print(self.parentView?.frame)
-//                self?.handleParentMovement()
-            }
-            
-            // Track parent view's own frame movement
-//            parentView.postsFrameChangedNotifications = true
-//            parentFrameObserver = NotificationCenter.default.addObserver(
-//                forName: NSView.frameDidChangeNotification,
-//                object: nil,
-//                queue: .main
-//            ) { [weak self] _ in
-//                print("PARENTFRAMEOBSERVER")
-//                self?.handleParentMovement()
-//            }
-        }
-        
-        @MainActor
-        private func handleParentMovement() {
-//            guard let panel, let parentView else { return }
-//            
-//            // Ensure scroll view exists
-//            if let scroll = scrollView {
-//                // Get parent view frame in scrollView coordinates
-//                let parentRectInScroll = parentView.convert(parentView.bounds, to: scroll.documentView)
-//                let visibleRect = scroll.documentVisibleRect
-//                
-//                // Parent is no longer visible → close
-//                if !parentRectInScroll.intersects(visibleRect) {
-//                    setVisible(false)
-//                    return
-//                }
-//            }
-            
-            // Still visible ⇒ update position
-//            if let view = panel.contentView {
-//                updatePosition(for: view.frame.size)
-                print(parentView?.frame)
-//            }
         }
 
         private func updatePosition(for size: CGSize) {

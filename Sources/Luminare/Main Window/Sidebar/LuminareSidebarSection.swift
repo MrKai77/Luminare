@@ -122,6 +122,10 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case about
 
     var id: Self { self }
+    
+    var icon: some View {
+        image
+    }
 
     var title: String {
         switch self {
