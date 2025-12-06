@@ -19,7 +19,7 @@ public struct LuminareBackgroundEffectModifier: ViewModifier {
                         material: .menu,
                         blendingMode: .behindWindow
                     )
-                    
+
                     Rectangle()
                         .foregroundStyle(.tint)
                         .opacity(colorscheme == .light ? 0.025 : 0.1)

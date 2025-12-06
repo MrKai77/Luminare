@@ -38,7 +38,7 @@ public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
 
     /// The title of the tab.
     var title: String { get }
-    
+
     /// The icon for the tab.
     var icon: Content { get }
 

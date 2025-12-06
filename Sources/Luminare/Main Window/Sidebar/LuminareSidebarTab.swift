@@ -124,7 +124,7 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case more
 
     var id: Self { self }
-    
+
     var icon: some View {
         image
     }
