@@ -11,18 +11,13 @@ public extension LuminareSection {
     /// Initializes a ``LuminareSection`` whose header and footer are texts.
     ///
     /// - Parameters:
-    ///   - headerKey: the header text.
-    ///   - footerKey: the footer text.
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
-    ///   - content: the content.
     @_disfavoredOverload
     init(
         _ header: some StringProtocol,
         _ footer: some StringProtocol,
-
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
@@ -48,7 +43,6 @@ public extension LuminareSection {
     /// - Parameters:
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -56,7 +50,6 @@ public extension LuminareSection {
     init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
-
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
@@ -80,7 +73,6 @@ public extension LuminareSection {
     /// Initializes a ``LuminareSection`` without a footer.
     ///
     /// - Parameters:
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -110,7 +102,6 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - header: the header text.
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -140,7 +131,6 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - headerKey: the `LocalizedStringKey` to look up the header text.
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -168,7 +158,6 @@ public extension LuminareSection {
     /// Initializes a ``LuminareSection`` without a header.
     ///
     /// - Parameters:
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -198,7 +187,6 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - footer: the footer text.
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -228,7 +216,6 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - footerKey: the `LocalizedStringKey` to look up the footer text.
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -256,7 +243,6 @@ public extension LuminareSection {
     /// Initializes a ``LuminareSection`` without a header and a footer.
     ///
     /// - Parameters:
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.

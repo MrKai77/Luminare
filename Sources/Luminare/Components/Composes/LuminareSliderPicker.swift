@@ -57,7 +57,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// - Parameters:
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     ///   - label: the label.
     public init(
@@ -78,7 +77,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -101,7 +99,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     public init(
         _ titleKey: LocalizedStringKey,
@@ -122,7 +119,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// - Parameters:
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     ///   - label: the label.
     @_disfavoredOverload
@@ -145,7 +141,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// - Parameters:
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     ///   - label: the label.
     public init(
@@ -168,7 +163,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -190,7 +184,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -212,7 +205,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -234,7 +226,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     public init(
         _ titleKey: LocalizedStringKey,

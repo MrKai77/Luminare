@@ -196,7 +196,9 @@ struct ColorPickerModalView: View {
         Button {
             colorSampler.show { nsColor in
                 if let nsColor {
-                    updateComponents(Color(nsColor: nsColor))
+                    MainActor.assumeIsolated {
+                        updateComponents(Color(nsColor: nsColor))
+                    }
                 }
             }
         } label: {

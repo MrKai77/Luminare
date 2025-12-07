@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension Text.Case: Codable {
+extension Text.Case: @retroactive Codable {
     enum CodingKeys: String, CodingKey {
         case rawValue
     }

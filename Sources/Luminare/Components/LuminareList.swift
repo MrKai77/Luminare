@@ -47,7 +47,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     /// - Parameters:
     ///   - items: the binding of the listed items.
     ///   - selection: the binding of the set of selected items.
-    ///   - id: the key path for the identifiers of each element.
     ///   - content: the content generator that accepts a value binding.
     ///   - emptyView: the view to display when nothing is inside the list.
     public init(
@@ -68,7 +67,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     /// - Parameters:
     ///   - items: the binding of the listed items.
     ///   - selection: the binding of the set of selected items.
-    ///   - id: the key path for the identifiers of each element.
     ///   - content: the content generator that accepts a value binding.
     public init(
         items: Binding<[V]>,
