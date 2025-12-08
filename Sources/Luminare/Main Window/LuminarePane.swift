@@ -88,7 +88,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
     public var body: some View {
         VStack(spacing: 0) {
             wrappedHeader
-            
+
             Divider()
 
             wrappedContent
@@ -96,7 +96,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         .luminareListFixedHeight(until: .infinity)
         .luminareBackground()
     }
-    
+
     private var wrappedHeader: some View {
         header()
             .luminareCornerRadius(6)
@@ -105,7 +105,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             .padding(.trailing, 5)
             .frame(height: titleBarHeight, alignment: .leading)
     }
-    
+
     private var wrappedContent: some View {
         Group {
             switch layout {

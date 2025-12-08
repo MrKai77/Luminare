@@ -16,9 +16,9 @@ public class LuminareWindow: NSWindow {
     ].compactMap { type in
         standardWindowButton(type)
     }
-    
+
     private var trafficLightsOrigin: CGPoint? = .init(x: 18.5, y: 18.5)
-    
+
     /// Initializes a ``LuminareWindow``.
     ///
     /// - Parameters:
@@ -51,8 +51,8 @@ public class LuminareWindow: NSWindow {
     }
 
     // MARK: Overrides & window customization
-    
-    public override func layoutIfNeeded() {
+
+    override public func layoutIfNeeded() {
         super.layoutIfNeeded()
         relocateTrafficLights()
     }
@@ -69,7 +69,7 @@ public class LuminareWindow: NSWindow {
         guard let contentView, let trafficLightsOrigin else {
             return
         }
-        
+
         relocateTrafficLightButtons(trafficLightsOrigin: trafficLightsOrigin)
         refreshTrafficLightTrackingAreas()
     }
@@ -78,7 +78,7 @@ public class LuminareWindow: NSWindow {
         guard let contentView else {
             return
         }
-        
+
         let buttonAreaWidth = (trafficLightButtons.last?.frame.minX ?? 0) - (trafficLightButtons.first?.frame.minX ?? 0)
         let buttonSpacingX = buttonAreaWidth / CGFloat(trafficLightButtons.count - 1)
 
@@ -86,14 +86,13 @@ public class LuminareWindow: NSWindow {
             if button.superview != contentView {
                 button.removeFromSuperview()
                 contentView.addSubview(button)
-                
-                let xPosition: CGFloat
-                if windowTitlebarLayoutDirection == .leftToRight {
-                    xPosition = trafficLightsOrigin.x + CGFloat(index) * buttonSpacingX
+
+                let xPosition: CGFloat = if windowTitlebarLayoutDirection == .leftToRight {
+                    trafficLightsOrigin.x + CGFloat(index) * buttonSpacingX
                 } else {
-                    xPosition = trafficLightsOrigin.x + (buttonAreaWidth - CGFloat(index) * buttonSpacingX)
+                    trafficLightsOrigin.x + (buttonAreaWidth - CGFloat(index) * buttonSpacingX)
                 }
-                
+
                 button.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     button.topAnchor.constraint(equalTo: contentView.topAnchor, constant: trafficLightsOrigin.y),
