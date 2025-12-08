@@ -1,5 +1,5 @@
 //
-//  LuminareAspectRatioModifier.swift
+//  LuminareContentSizeModifier.swift
 //  Luminare
 //
 //  Created by KrLite on 2025/4/12.
@@ -7,13 +7,24 @@
 
 import SwiftUI
 
-struct LuminareAspectRatioModifier: ViewModifier {
+public struct LuminareContentSizeModifier: ViewModifier {
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareAspectRatio) private var aspectRatio
-    @Environment(\.luminareAspectRatioContentMode) private var contentMode
-    @Environment(\.luminareAspectRatioHasFixedHeight) private var hasFixedHeight
+    private let aspectRatio: CGFloat?
+    private let contentMode: ContentMode?
+    private let hasFixedHeight: Bool
 
-    @ViewBuilder func body(content: Content) -> some View {
+    public init(
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode? = nil,
+        hasFixedHeight: Bool = false
+    ) {
+        self.aspectRatio = aspectRatio
+        self.contentMode = contentMode
+        self.hasFixedHeight = hasFixedHeight
+    }
+
+    @ViewBuilder
+    public func body(content: Content) -> some View {
         if let contentMode {
             Group {
                 if isConstrained {
@@ -41,6 +52,10 @@ struct LuminareAspectRatioModifier: ViewModifier {
             )
         } else {
             content
+                .fixedSize(
+                    horizontal: false,
+                    vertical: hasFixedHeight
+                )
         }
     }
 

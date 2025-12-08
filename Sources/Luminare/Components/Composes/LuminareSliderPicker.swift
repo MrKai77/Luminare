@@ -34,7 +34,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     // MARK: Environments
 
     @Environment(\.luminareAnimation) private var animation
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareSliderPickerLayout) private var layout
 
     // MARK: Fields
@@ -57,7 +57,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// - Parameters:
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     ///   - label: the label.
     public init(
@@ -78,7 +77,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -101,7 +99,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     public init(
         _ titleKey: LocalizedStringKey,
@@ -122,7 +119,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// - Parameters:
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     ///   - label: the label.
     @_disfavoredOverload
@@ -145,7 +141,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     /// - Parameters:
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     ///   - label: the label.
     public init(
@@ -168,7 +163,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -190,7 +184,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - title: the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -212,7 +205,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - content: the content generator that accepts a value.
     @_disfavoredOverload
     public init(
@@ -234,7 +226,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - titleKey: the `LocalizedStringKey` to look up the label text.
     ///   - options: the available options.
     ///   - selection: the binding of the selected value.
-    ///   - height: the height of the composed view.
     ///   - contentKey: the content generator that accepts a value.
     public init(
         _ titleKey: LocalizedStringKey,
@@ -261,7 +252,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 } label: {
                     label()
                 }
-                .luminareComposeStyle(.inline)
 
                 sliderView()
                     .padding(.horizontal, horizontalPadding)
@@ -279,7 +269,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                     } label: {
                         label()
                     }
-                    .luminareComposeStyle(.inline)
                 } else {
                     let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
 
@@ -304,7 +293,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                             label()
                         }
                     }
-                    .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
                 }
             }
         }
@@ -340,9 +328,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         ) { isEditing in
             isSliderEditing = isEditing
         }
-        .onHover { isHovering in
-            isSliderHovering = isHovering
-        }
+        .onHover { isSliderHovering = $0 }
     }
 
     @ViewBuilder private func textBoxView() -> some View {
@@ -396,22 +382,6 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             }
         }
         .luminareSliderPickerLayout(.regular)
-
-        LuminareSliderPicker(
-            Array(0...4),
-            selection: $selection
-        ) { value in
-            Text("\(value) is Chosen")
-                .monospaced()
-        } label: {
-            VStack(alignment: .leading) {
-                Text("Slide to pick a value")
-
-                Text("Composed, Compact")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
 
         LuminareSliderPicker(
             Array(0...4),

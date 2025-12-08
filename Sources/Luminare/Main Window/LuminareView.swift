@@ -16,12 +16,10 @@ public struct LuminareView<Content>: View where Content: View {
     // MARK: Environments
 
     @Environment(\.luminareTintColor) private var tintColor
-    @Environment(\.luminareWindow) private var window
 
     // MARK: Fields
 
     @ViewBuilder public let content: () -> Content
-    @State private var contentSize: CGSize = .zero
 
     public init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content

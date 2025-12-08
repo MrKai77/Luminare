@@ -12,18 +12,14 @@ import SwiftUI
 public struct LuminareTextEditor: View {
     // MARK: Environments
 
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.font) private var font
-    @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
 
     // MARK: Fields
 
     @Binding private var text: String
     @Binding private var selection: Any? // Handle os versions below macOS 15.0
-
-    @State private var isHovering: Bool = false
     @State private var containerSize: CGSize = .zero
 
     // MARK: Initializers
@@ -74,9 +70,8 @@ public struct LuminareTextEditor: View {
         }
         .scrollContentBackground(.hidden)
         .font(font ?? .body)
+        .luminareContentSize(contentMode: .fill)
         .modifier(LuminareHoverableModifier())
-        .luminareAspectRatio(unapplying: true)
-        .luminareHorizontalPadding(0)
         .onGeometryChange(for: CGSize.self) { proxy in
             proxy.size
         } action: { newValue in
@@ -108,10 +103,14 @@ public struct LuminareTextEditor: View {
     @Previewable @State var text = ""
     @Previewable @State var selection: TextSelection? = .none
 
-    LuminareTextEditor(text: $text)
+    LuminareSection {
+        LuminareTextEditor(text: $text)
+            .luminareRoundingBehavior(top: true, bottom: false)
 
-//    LuminareTextEditor(text: $text, selection: $selection)
-//
-//    LuminareTextEditor(text: $text, selection: $selection)
-//        .disabled(true)
+        LuminareTextEditor(text: $text, selection: $selection)
+
+        LuminareTextEditor(text: $text, selection: $selection)
+            .disabled(true)
+            .luminareRoundingBehavior(top: false, bottom: true)
+    }
 }

@@ -23,16 +23,12 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     // MARK: Environments
 
     @Environment(\.luminareCornerRadii) private var cornerRadii
-    @Environment(\.luminareIsBordered) private var isBordered
+    @Environment(\.luminareBorderedStates) private var borderedStates
     @Environment(\.luminareHasDividers) private var hasDividers
     @Environment(\.luminareSectionLayout) private var layout
-    @Environment(\.luminareSectionMaterial) private var material
     @Environment(\.luminareSectionMaxWidth) private var maxWidth
-    @Environment(\.luminareSectionIsMasked) private var isMasked
 
     // MARK: Fields
-
-    private let hasPadding: Bool
 
     private let headerSpacing: CGFloat, footerSpacing: CGFloat
     private let outerPadding: CGFloat
@@ -44,7 +40,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     /// Initializes a ``LuminareSection``.
     ///
     /// - Parameters:
-    ///   - hasPadding: whether to have paddings between divided contents.
     ///   - headerSpacing: the spacing between header and content.
     ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
@@ -52,7 +47,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - header: the header.
     ///   - footer: the footer.
     public init(
-        hasPadding: Bool = true,
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
@@ -60,7 +54,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
     ) {
-        self.hasPadding = hasPadding
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
         self.outerPadding = outerPadding
@@ -94,20 +87,16 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
     @ViewBuilder private func wrappedContent() -> some View {
         Group {
-            if isBordered {
-                DividedVStack(isMasked: hasPadding, hasDividers: hasDividers) {
-                    content()
-                }
-                .frame(maxWidth: maxWidth)
-                .background(.quinary, with: material)
-                .clipShape(.rect(cornerRadii: cornerRadii))
-                .overlay {
-                    UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                        .strokeBorder(.quaternary)
-                }
+            if borderedStates.contains(.normal) {
+                LuminareSectionStack(hasDividers: hasDividers, content: content)
+                    .compositingGroup()
+                    .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
+                    .fixedSize(horizontal: maxWidth == 0, vertical: false)
+                    .environment(\.luminareIsInsideSection, true)
+                    .luminareRoundingBehavior(top: false, bottom: false) // Instead let the user
+                    .luminarePlateau()
             } else {
                 content()
-                    .clipShape(.rect(cornerRadii: isMasked ? cornerRadii : .zero))
             }
         }
         .padding(.vertical, outerPadding)
@@ -119,6 +108,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .foregroundStyle(.secondary)
                 .padding(.bottom, headerSpacing)
                 .padding(.horizontal, outerPadding)
+                .padding(.leading, cornerRadii.topLeading / 2)
+                .padding(.trailing, cornerRadii.topTrailing / 2)
         }
     }
 
@@ -128,6 +119,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .foregroundStyle(.secondary)
                 .padding(.top, footerSpacing)
                 .padding(.horizontal, outerPadding)
+                .padding(.leading, cornerRadii.bottomLeading / 2)
+                .padding(.trailing, cornerRadii.bottomTrailing / 2)
         }
     }
 }
@@ -163,6 +156,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         .padding(8)
         .foregroundStyle(.secondary)
         .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
     } header: {
         HStack(alignment: .bottom) {
             Text("Section Header")
@@ -189,5 +183,4 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
     .frame(width: 450)
-    .buttonStyle(.luminareCompact)
 }

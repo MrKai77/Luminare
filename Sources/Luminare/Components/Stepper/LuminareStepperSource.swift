@@ -81,15 +81,6 @@ public enum LuminareStepperSource<V> where V: Strideable & BinaryFloatingPoint, 
         }
     }
 
-    var total: V? {
-        switch self {
-        case let .finite(range, _), let .finiteContinuous(range, _):
-            range.upperBound - range.lowerBound
-        case .infinite, .infiniteContinuous:
-            nil
-        }
-    }
-
     var step: V {
         switch self {
         case let .finite(_, step), let .finiteContinuous(_, step),

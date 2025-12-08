@@ -7,26 +7,7 @@
 
 import SwiftUI
 
-// MARK: - LuminareButtonStyle
-
-public extension ButtonStyle where Self == LuminareButtonStyle {
+public extension ButtonStyle where Self == LuminarePlateauButtonStyle {
     static var luminare: Self { .init() }
-}
-
-// MARK: - LuminareProminentButtonStyle
-
-public extension ButtonStyle where Self == LuminareProminentButtonStyle {
-    static var luminareProminent: Self { .init() }
-}
-
-// MARK: - LuminareCosmeticButtonStyle
-
-public extension ButtonStyle where Self == LuminareCosmeticButtonStyle {
-    static func luminareCosmetic(icon: Image) -> Self { .init(icon: icon) }
-}
-
-// MARK: - LuminareCompactButtonStyle
-
-public extension ButtonStyle where Self == LuminareCompactButtonStyle {
-    static var luminareCompact: Self { .init() }
+    static func luminare(tinted _: Bool = false) -> Self { .init() }
 }

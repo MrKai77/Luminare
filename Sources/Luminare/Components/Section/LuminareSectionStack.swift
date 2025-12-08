@@ -1,5 +1,5 @@
 //
-//  DividedVStack.swift
+//  LuminareSectionStack.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-04-02.
@@ -12,28 +12,24 @@ import VariadicViews
 // MARK: - Divided Vertical Stack
 
 /// A vertical stack with optional dividers between elements.
-public struct DividedVStack<Content>: View where Content: View {
+public struct LuminareSectionStack<Content>: View where Content: View {
     // MARK: Fields
 
-    private let isMasked: Bool
     private let hasDividers: Bool
 
     @ViewBuilder private var content: () -> Content
 
     // MARK: Initializers
 
-    /// Initializes a ``DividedVStack``.
+    /// Initializes a ``LuminareSectionStack``.
     ///
     /// - Parameters:
-    ///   - isMasked: whether the elements are masked to match their borders.
     ///   - hasDividers: whether to show the dividers between elements.
     ///   - content: the content.
     public init(
-        isMasked: Bool = true,
         hasDividers: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.isMasked = isMasked
         self.hasDividers = hasDividers
         self.content = content
     }
@@ -44,7 +40,6 @@ public struct DividedVStack<Content>: View where Content: View {
         UnaryVariadicView(content()) { children in
             DividedVStackVariadic(
                 children: children,
-                isMasked: isMasked,
                 hasDividers: hasDividers
             )
         }
@@ -56,18 +51,15 @@ public struct DividedVStack<Content>: View where Content: View {
 struct DividedVStackVariadic: View {
     let children: VariadicViewChildren
     let innerPadding: CGFloat
-    let isMasked: Bool
     let hasDividers: Bool
 
     init(
         children: VariadicViewChildren,
         innerPadding: CGFloat = 4,
-        isMasked: Bool,
         hasDividers: Bool
     ) {
         self.children = children
         self.innerPadding = innerPadding
-        self.isMasked = isMasked
         self.hasDividers = hasDividers
     }
 
@@ -77,12 +69,11 @@ struct DividedVStackVariadic: View {
 
         VStack(spacing: 0) {
             ForEach(children) { child in
-                DividedVStackChildView(
+                LuminareSectionStackChildView(
                     child: child,
                     innerPadding: innerPadding,
                     isFirstChild: child.id == first,
-                    isLastChild: child.id == last,
-                    isMasked: isMasked
+                    isLastChild: child.id == last
                 )
 
                 if hasDividers, child.id != last {
@@ -94,47 +85,27 @@ struct DividedVStackVariadic: View {
     }
 }
 
-struct DividedVStackChildView: View {
+struct LuminareSectionStackChildView: View {
     let child: VariadicViewChildren.Element
     let innerPadding: CGFloat
     let isFirstChild: Bool
     let isLastChild: Bool
-    let isMasked: Bool
-
-    @State private var overrideDisableInnerPadding: Bool? = nil
+    @State private var disableInnerPadding: Bool? = nil
 
     var body: some View {
-        Group {
-            if isMasked {
-                child
-                    .compositingGroup() // IMPORTANT: This prevents cropping the subviews recursively
-                    .modifier(
-                        LuminareCroppedSectionItemModifier(
-                            innerPadding: overrideDisableInnerPadding == true ? 0 : innerPadding,
-                            isFirstChild: isFirstChild,
-                            isLastChild: isLastChild
-                        )
-                    )
-                    .padding(.top, isFirstChild ? 1 : 0)
-                    .padding(.bottom, isLastChild ? 1 : 0)
-                    .padding(.horizontal, 1)
-                    .padding(.top, overrideDisableInnerPadding != true ? innerPadding : 0)
-                    .padding(.bottom, overrideDisableInnerPadding != true ? innerPadding : 0)
-            } else {
-                child
-                    .mask(Rectangle()) // IMPORTANT: this fixes the hover areas for some reason
-            }
-        }
-        .readPreference(
-            DisableDividedStackInnerPaddingKey.self,
-            to: $overrideDisableInnerPadding
-        )
+        child
+            .compositingGroup()
+            .padding(disableInnerPadding == true ? 0 : innerPadding)
+            .padding(.top, isFirstChild ? 1 : 0)
+            .padding(.bottom, isLastChild ? 1 : 0)
+            .padding(.horizontal, 1)
+            .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
 }
 
 // MARK: - Preference Key
 
-struct DisableDividedStackInnerPaddingKey: PreferenceKey {
+struct LuminareSectionStackDisableInnerPaddingKey: PreferenceKey {
     typealias Value = Bool?
     static var defaultValue: Value { nil }
 
@@ -147,7 +118,7 @@ struct DisableDividedStackInnerPaddingKey: PreferenceKey {
 
 #Preview {
     LuminareSection {
-        DividedVStack {
+        LuminareSectionStack {
             ForEach(37 ..< 43) { num in
                 Text("\(num)")
             }

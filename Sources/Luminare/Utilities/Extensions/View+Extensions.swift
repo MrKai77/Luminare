@@ -10,35 +10,16 @@ import SwiftUI
 // MARK: - Internal
 
 extension View {
-    // Applies a transform to the view
-    @ViewBuilder func applying(@ViewBuilder _ transform: @escaping (Self) -> some View) -> some View {
-        transform(self)
-    }
-
     // Assigns the specified environment value, if not nil
-    @ViewBuilder func assigning<V>(
+    @ViewBuilder func environment<V>(
         _ keyPath: WritableKeyPath<EnvironmentValues, V>,
-        _ value: V?
+        ifNotNil value: V?
     ) -> some View {
         if let value {
             environment(keyPath, value)
         } else {
             self
         }
-    }
-
-    // Applies a materialized background over a style
-    @ViewBuilder func background(_ style: some ShapeStyle, with material: Material?) -> some View {
-        background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
-            .background(style)
-    }
-
-    // Applies a materialized background over a view
-    @ViewBuilder func background(with material: Material?, @ViewBuilder content: () -> some View) -> some View {
-        background(material.map(AnyShapeStyle.init(_:)) ?? AnyShapeStyle(.clear))
-            .background {
-                content()
-            }
     }
 
     func readPreference<K>(
@@ -48,28 +29,6 @@ extension View {
         onPreferenceChange(key) { value in
             binding.wrappedValue = value
         }
-    }
-}
-
-// MARK: - Modifiers
-
-public extension View {
-    @ViewBuilder func booleanThrottleDebounced(
-        _ value: Bool,
-        flipOnDelay: TimeInterval = 0.5,
-        flipOffDelay: TimeInterval = .zero,
-        throttleDelay: TimeInterval = 0.25,
-        initial: Bool = false,
-        action: @escaping (Bool) -> ()
-    ) -> some View {
-        modifier(BooleanThrottleDebouncedModifier(
-            value,
-            flipOnDelay: flipOnDelay,
-            flipOffDelay: flipOffDelay,
-            throttleDelay: throttleDelay,
-            initial: initial,
-            action: action
-        ))
     }
 }
 
@@ -175,6 +134,60 @@ public extension View {
             )
         )
     }
+
+    @ViewBuilder func booleanThrottleDebounced(
+        _ value: Bool,
+        flipOnDelay: TimeInterval = 0.5,
+        flipOffDelay: TimeInterval = .zero,
+        throttleDelay: TimeInterval = 0.25,
+        initial: Bool = false,
+        action: @escaping (Bool) -> ()
+    ) -> some View {
+        modifier(BooleanThrottleDebouncedModifier(
+            value,
+            flipOnDelay: flipOnDelay,
+            flipOffDelay: flipOffDelay,
+            throttleDelay: throttleDelay,
+            initial: initial,
+            action: action
+        ))
+    }
+
+    @ViewBuilder func luminareContentSize(
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode? = nil,
+        hasFixedHeight: Bool = false
+    ) -> some View {
+        modifier(
+            LuminareContentSizeModifier(
+                aspectRatio: aspectRatio,
+                contentMode: contentMode,
+                hasFixedHeight: hasFixedHeight
+            )
+        )
+    }
+
+    @ViewBuilder func luminarePlateau(
+        isPressed: Bool = false,
+        isHovering: Bool = false,
+        overrideFillStyle: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? = nil,
+        overrideBorderStyle: LuminareBorderStyle<AnyShapeStyle, AnyShapeStyle>? = nil
+    ) -> some View {
+        modifier(
+            LuminarePlateauModifier(
+                isPressed: isPressed,
+                isHovering: isHovering,
+                overrideFillStyle: overrideFillStyle,
+                overrideBorderStyle: overrideBorderStyle
+            )
+        )
+    }
+
+    @ViewBuilder func luminareBackground() -> some View {
+        modifier(
+            LuminareBackgroundEffectModifier()
+        )
+    }
 }
 
 // MARK: - Common
@@ -185,10 +198,6 @@ public extension View {
     @ViewBuilder func luminareTint(overridingWith color: Color) -> some View {
         tint(color)
             .environment(\.luminareTintColor, color)
-    }
-
-    @ViewBuilder func luminareBackground() -> some View {
-        modifier(LuminareBackgroundEffectModifier())
     }
 
     @ViewBuilder func luminareAnimation(_ animation: Animation) -> some View {
@@ -237,7 +246,7 @@ public extension View {
 
     // MARK: Popup
 
-    @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 12) -> some View {
+    @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 4) -> some View {
         environment(\.luminarePopupPadding, padding)
     }
 
@@ -248,8 +257,8 @@ public extension View {
     // MARK: Color Picker
 
     @ViewBuilder func luminareColorPickerControls(hasCancel: Bool? = nil, hasDone: Bool? = nil) -> some View {
-        assigning(\.luminareColorPickerHasCancel, hasCancel)
-            .assigning(\.luminareColorPickerHasDone, hasDone)
+        environment(\.luminareColorPickerHasCancel, ifNotNil: hasCancel)
+            .environment(\.luminareColorPickerHasDone, ifNotNil: hasDone)
     }
 }
 
@@ -262,52 +271,23 @@ public extension View {
 
     @ViewBuilder func luminareCornerRadius(_ radius: CGFloat) -> some View {
         luminareCornerRadii(.init(radius))
+            .environment(\.luminareIsInsideSection, false)
     }
 
     @ViewBuilder func luminareMinHeight(_ height: CGFloat) -> some View {
         environment(\.luminareMinHeight, height)
     }
 
-    @ViewBuilder func luminareHorizontalPadding(_ padding: CGFloat) -> some View {
-        environment(\.luminareHorizontalPadding, padding)
+    @ViewBuilder func luminareBorderedStates(_ states: LuminareBorderStates) -> some View {
+        environment(\.luminareBorderedStates, states)
     }
 
-    @ViewBuilder func luminareBordered(_ bordered: Bool) -> some View {
-        environment(\.luminareIsBordered, bordered)
-    }
-
-    @ViewBuilder func luminareHasBackground(_ hasBackground: Bool) -> some View {
-        environment(\.luminareHasBackground, hasBackground)
+    @ViewBuilder func luminareFilledStates(_ states: LuminareFillStates) -> some View {
+        environment(\.luminareFilledStates, states)
     }
 
     @ViewBuilder func luminareHasDividers(_ hasDividers: Bool) -> some View {
         environment(\.luminareHasDividers, hasDividers)
-    }
-
-    @ViewBuilder func luminareAspectRatio(unapplying: Bool) -> some View {
-        if unapplying {
-            environment(\.luminareAspectRatioContentMode, nil)
-        } else {
-            self
-        }
-    }
-
-    @ViewBuilder func luminareAspectRatio(
-        _ aspectRatio: CGFloat? = nil, contentMode: ContentMode, hasFixedHeight: Bool? = nil
-    ) -> some View {
-        environment(\.luminareAspectRatio, aspectRatio)
-            .environment(\.luminareAspectRatioContentMode, contentMode)
-            .assigning(\.luminareAspectRatioHasFixedHeight, hasFixedHeight)
-    }
-
-    @ViewBuilder func luminareAspectRatio(
-        _ aspectRatio: CGSize, contentMode: ContentMode, hasFixedHeight: Bool? = nil
-    ) -> some View {
-        luminareAspectRatio(
-            aspectRatio.width / aspectRatio.height,
-            contentMode: contentMode,
-            hasFixedHeight: hasFixedHeight
-        )
     }
 
     @ViewBuilder func luminareContentMargins(_ insets: EdgeInsets) -> some View {
@@ -318,40 +298,14 @@ public extension View {
     }
 
     @ViewBuilder func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
-        assigning(\.luminareContentMarginsTop, edges.contains(.top) ? length : nil)
-            .assigning(\.luminareContentMarginsLeading, edges.contains(.leading) ? length : nil)
-            .assigning(\.luminareContentMarginsBottom, edges.contains(.bottom) ? length : nil)
-            .assigning(\.luminareContentMarginsTrailing, edges.contains(.trailing) ? length : nil)
+        environment(\.luminareContentMarginsTop, ifNotNil: edges.contains(.top) ? length : nil)
+            .environment(\.luminareContentMarginsLeading, ifNotNil: edges.contains(.leading) ? length : nil)
+            .environment(\.luminareContentMarginsBottom, ifNotNil: edges.contains(.bottom) ? length : nil)
+            .environment(\.luminareContentMarginsTrailing, ifNotNil: edges.contains(.trailing) ? length : nil)
     }
 
     @ViewBuilder func luminareContentMargins(_ length: CGFloat) -> some View {
         luminareContentMargins(.all, length)
-    }
-
-    // MARK: Button
-
-    @ViewBuilder func luminareButtonMaterial(_ material: Material?) -> some View {
-        environment(\.luminareButtonMaterial, material)
-    }
-
-    @ViewBuilder func luminareButtonCornerRadii(_ radii: RectangleCornerRadii) -> some View {
-        environment(\.luminareButtonCornerRadii, radii)
-    }
-
-    @ViewBuilder func luminareButtonCornerRadius(_ radius: CGFloat) -> some View {
-        luminareButtonCornerRadii(.init(radius))
-    }
-
-    @ViewBuilder func luminareButtonHighlightOnHover(_ highlight: Bool) -> some View {
-        environment(\.luminareButtonHighlightOnHover, highlight)
-    }
-
-    @ViewBuilder func luminareCompactButtonCornerRadii(_ radii: RectangleCornerRadii) -> some View {
-        environment(\.luminareCompactButtonCornerRadii, radii)
-    }
-
-    @ViewBuilder func luminareCompactButtonCornerRadius(_ radius: CGFloat) -> some View {
-        luminareCompactButtonCornerRadii(.init(radius))
     }
 
     // MARK: Form
@@ -377,26 +331,54 @@ public extension View {
         environment(\.luminareSectionLayout, layout)
     }
 
-    @ViewBuilder func luminareSectionMaterial(_ material: Material?) -> some View {
-        environment(\.luminareSectionMaterial, material)
+    @ViewBuilder func luminareSectionHorizontalPadding(_ padding: CGFloat) -> some View {
+        environment(\.luminareSectionHorizontalPadding, padding)
+    }
+
+    @ViewBuilder func luminareRoundingBehavior(
+        topLeading: Bool? = nil,
+        topTrailing: Bool? = nil,
+        bottomLeading: Bool? = nil,
+        bottomTrailing: Bool? = nil
+    ) -> some View {
+        environment(\.luminareTopLeadingRounded, ifNotNil: topLeading)
+            .environment(\.luminareTopTrailingRounded, ifNotNil: topTrailing)
+            .environment(\.luminareBottomLeadingRounded, ifNotNil: bottomLeading)
+            .environment(\.luminareBottomTrailingRounded, ifNotNil: bottomTrailing)
+    }
+
+    @ViewBuilder func luminareRoundingBehavior(
+        top: Bool? = nil,
+        bottom: Bool? = nil
+    ) -> some View {
+        environment(\.luminareTopLeadingRounded, ifNotNil: top)
+            .environment(\.luminareTopTrailingRounded, ifNotNil: top)
+            .environment(\.luminareBottomLeadingRounded, ifNotNil: bottom)
+            .environment(\.luminareBottomTrailingRounded, ifNotNil: bottom)
+    }
+
+    @ViewBuilder func luminareRoundingBehavior(
+        leading: Bool? = nil,
+        trailing: Bool? = nil
+    ) -> some View {
+        environment(\.luminareTopLeadingRounded, ifNotNil: leading)
+            .environment(\.luminareTopTrailingRounded, ifNotNil: trailing)
+            .environment(\.luminareBottomLeadingRounded, ifNotNil: leading)
+            .environment(\.luminareBottomTrailingRounded, ifNotNil: trailing)
     }
 
     @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat?) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
 
-    @ViewBuilder func luminareSectionMasked(_ masked: Bool) -> some View {
-        environment(\.luminareSectionIsMasked, masked)
+    @ViewBuilder func luminareSectionDisableInnerPadding(_ disable: Bool) -> some View {
+        preference(key: LuminareSectionStackDisableInnerPaddingKey.self, value: disable)
     }
 
     // MARK: Compose
 
     @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
-    }
-
-    @ViewBuilder func luminareComposeStyle(_ style: LuminareComposeStyle) -> some View {
-        environment(\.luminareComposeStyle, style)
     }
 
     @ViewBuilder func luminareComposeIgnoreSafeArea(edges: Edge.Set) -> some View {
@@ -454,32 +436,6 @@ public extension View {
 
     @ViewBuilder func luminareListFixedHeight(until height: CGFloat?) -> some View {
         environment(\.luminareListFixedHeightUntil, height)
-    }
-
-    @ViewBuilder func luminareListRoundedCorner(
-        top: LuminareListRoundedCornerBehavior? = nil,
-        bottom: LuminareListRoundedCornerBehavior? = nil
-    ) -> some View {
-        assigning(\.luminareListRoundedTopCornerBehavior, top)
-            .assigning(\.luminareListRoundedBottomCornerBehavior, bottom)
-    }
-
-    @ViewBuilder func luminareListRoundedCorner(_ all: LuminareListRoundedCornerBehavior) -> some View {
-        luminareListRoundedCorner(top: all, bottom: all)
-    }
-
-    // MARK: Picker
-
-    @ViewBuilder func luminarePickerRoundedCorner(
-        top: LuminarePickerRoundedCornerBehavior? = nil,
-        bottom: LuminarePickerRoundedCornerBehavior? = nil
-    ) -> some View {
-        assigning(\.luminarePickerRoundedTopCornerBehavior, top)
-            .assigning(\.luminarePickerRoundedBottomCornerBehavior, bottom)
-    }
-
-    @ViewBuilder func luminarePickerRoundedCorner(_ all: LuminarePickerRoundedCornerBehavior) -> some View {
-        luminarePickerRoundedCorner(top: all, bottom: all)
     }
 
     // MARK: Sidebar

@@ -13,9 +13,7 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
 
     private let closesOnDefocus: Bool
     private let presentation: LuminareSheetPresentation
-
-    private var view: NSView?
-    private let initializedDate = Date.now
+    private let initializedDate: Date = .now
 
     init(
         isPresented: Binding<Bool>,
@@ -41,7 +39,6 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
                 .luminareSheetCornerRadii(cornerRadii)
                 .environmentObject(self)
         )
-        self.view = view
 
         self.isMovableByWindowBackground = isMovableByWindowBackground
         collectionBehavior.insert(.fullScreenAuxiliary)
@@ -55,9 +52,9 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         animationBehavior = .documentWindow
+        layoutIfNeeded()
 
         DispatchQueue.main.async {
-            self.displayIfNeeded()
             self.updatePosition()
         }
     }
@@ -131,10 +128,10 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
     }
 
     override var canBecomeMain: Bool {
-        true
+        false
     }
 
-    override func resignMain() {
+    override func resignKey() {
         if closesOnDefocus {
             close()
         }

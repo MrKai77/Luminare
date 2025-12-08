@@ -21,15 +21,6 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
 
     public var id: Self { self }
 
-    var isAlternate: Bool {
-        switch self {
-        case .horizontal, .vertical:
-            false
-        case .horizontalAlternate, .verticalAlternate:
-            true
-        }
-    }
-
     var axis: Axis {
         switch self {
         case .horizontal, .horizontalAlternate:
@@ -98,25 +89,6 @@ public enum LuminareStepperDirection: String, Equatable, Hashable, Identifiable,
             size.width
         case .vertical, .verticalAlternate:
             size.height
-        }
-    }
-
-    func offset(of point: CGPoint) -> CGFloat {
-        switch self {
-        case .horizontal, .horizontalAlternate:
-            point.x
-        case .vertical, .verticalAlternate:
-            point.y
-        }
-    }
-
-    func percentage(in total: CGFloat, at index: CGFloat) -> CGFloat {
-        let percentage = index / total
-        return switch self {
-        case .horizontal, .verticalAlternate:
-            percentage
-        case .vertical, .horizontalAlternate:
-            1 - percentage
         }
     }
 

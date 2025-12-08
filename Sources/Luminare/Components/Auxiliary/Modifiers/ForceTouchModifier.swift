@@ -121,7 +121,7 @@ struct ForceTouch<Content>: NSViewRepresentable where Content: View {
 
     @State private var longPressTimerTask: Task<(), Never>? = nil
 
-    private let id = UUID()
+    private let id: UUID = .init()
 
     init(
         configuration: NSPressureConfiguration = .init(pressureBehavior: .primaryDefault),

@@ -51,7 +51,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     // MARK: Environments
 
     @Environment(\.luminareTintColor) private var tintColor
-    @Environment(\.luminareAnimationFast) private var animationFast
     @Environment(\.luminareStepperAlignment) private var alignment
     @Environment(\.luminareStepperDirection) private var direction
 
@@ -62,7 +61,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     @State private var internalValue: V // do not use computed vars, otherwise lagging occurs
     private let source: Source
 
-    private let allowsDragging: Bool
     private let indicatorSpacing: CGFloat, maxSize: CGFloat, margin: CGFloat
 
     private let hasHierarchy: Bool, hasMask: Bool, hasBlur: Bool
@@ -86,8 +84,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     /// - Parameters:
     ///   - value: the value to be edited.
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
-    ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
-    ///   Overscrolling is not allowed when dragging inside a finite range.
     ///   - indicatorSpacing: the spacing between indicators.
     ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
@@ -103,7 +99,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         source: Source,
 
-        allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
         margin: CGFloat = 8,
@@ -120,7 +115,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         self._value = value
         self.source = source
 
-        self.allowsDragging = allowsDragging
         self.indicatorSpacing = indicatorSpacing
         self.maxSize = maxSize
         self.margin = margin
@@ -147,8 +141,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
     /// - Parameters:
     ///   - value: the value to be edited.
     ///   - source: the ``LuminareStepperSource`` that defines how the value will be clamped and snapped.
-    ///   - allowsDragging: whether mouse dragging is allowed as an alternative of scrolling.
-    ///   Overscrolling is not allowed when dragging inside a finite range.
     ///   - indicatorSpacing: the spacing between indicators.
     ///   This directly influnces the sensitivity since the span between two indicators will always be a step.
     ///   - maxSize: the max length of the span that perpendiculars to the stepper direction.
@@ -166,7 +158,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         value: Binding<V>,
         source: Source,
 
-        allowsDragging: Bool = true,
         indicatorSpacing: CGFloat = 25,
         maxSize: CGFloat = 70,
         margin: CGFloat = 8,
@@ -185,7 +176,6 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
             value: value,
             source: source,
 
-            allowsDragging: allowsDragging,
             indicatorSpacing: indicatorSpacing,
             maxSize: maxSize,
             margin: margin,
@@ -532,36 +522,6 @@ private struct StepperPreview<Label, V>: View
 //                }
             }
         }
-    }
-}
-
-@available(macOS 15.0, *)
-private struct StepperPopoverPreview: View {
-    @State private var isPresented: Bool = false
-    @State private var value: CGFloat = 42
-
-    var body: some View {
-        HStack {
-            Button("Toggle Popover") {
-                isPresented.toggle()
-            }
-            .popover(isPresented: $isPresented) {
-                LuminareStepper(
-                    value: $value,
-                    source: .finite(in: 0...100, step: 1),
-                    indicatorSpacing: 10,
-                    maxSize: 32
-                )
-                .luminareTint(overridingWith: .primary)
-                .frame(width: 100, height: 32)
-            }
-
-//            Button("42") {
-//                value = 42
-//            }
-        }
-
-        Text(String(format: "%.1f", value))
     }
 }
 

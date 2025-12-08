@@ -38,10 +38,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
     // MARK: Environments
 
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareAnimation) private var animation
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareSliderLayout) private var layout
 
     @FocusState private var focusedField: FocusedField?
@@ -63,7 +62,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     @State private var isSliderEditing: Bool = false
     @State private var composeWidth: CGFloat = .zero
 
-    private let id = UUID()
+    private let id: UUID = .init()
 
     // MARK: Initializers
 
@@ -237,7 +236,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 } label: {
                     label()
                 }
-                .luminareComposeStyle(.inline)
 
                 sliderView()
                     .padding(.horizontal, horizontalPadding)
@@ -255,7 +253,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     } label: {
                         label()
                     }
-                    .luminareComposeStyle(.inline)
                 } else {
                     let isAlternativeTextBoxVisible = isSliderDebouncedHovering || isSliderEditing
 
@@ -281,7 +278,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                             label()
                         }
                     }
-                    .luminareComposeStyle(isAlternativeTextBoxVisible ? .regular : .inline)
                 }
             }
         }
@@ -302,16 +298,12 @@ public struct LuminareSlider<Label, Content, V, F>: View
         }
     }
 
-    private var totalRange: V {
-        range.upperBound - range.lowerBound
-    }
-
     private var countsDown: Bool {
         value > lastValue
     }
 
     @ViewBuilder private func sliderView() -> some View {
-        let binding: Binding<V> = .init {
+        let binding = Binding<V> {
             value
         } set: { newValue in
             value = newValue
@@ -336,46 +328,44 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 }
             }
         }
-        .onHover { isHovering in
-            isSliderHovering = isHovering
-        }
+        .onHover { isSliderHovering = $0 }
     }
 
     @ViewBuilder private func textBoxView() -> some View {
         HStack {
-            let view = Group {
-                if isTextBoxVisible {
-                    TextField(
-                        value: $internalValue,
-                        format: format
-                    ) {
-                        EmptyView()
-                    }
-                    .labelsHidden()
-                    .textFieldStyle(.plain)
-                    .focused($focusedField, equals: .textbox)
-                    .multilineTextAlignment(.trailing)
-                    .padding(.leading, -4)
-                    .fontDesign(.monospaced)
-                    .onSubmit(commit)
-                    .onChange(of: focusedField == .textbox) { if !$0 { commit() } }
-                } else {
-                    Button {
-                        withAnimation(animationFast) {
-                            isTextBoxVisible.toggle()
-                            focusedField = .textbox
-                        }
-                    } label: {
-                        Text(format.format(value))
-                            .contentTransition(.numericText(countsDown: countsDown))
-                            .multilineTextAlignment(.trailing)
-                            .fontDesign(.monospaced)
-                    }
-                    .buttonStyle(.plain)
+            if isTextBoxVisible {
+                let textFieldView = TextField(
+                    value: $internalValue,
+                    format: format
+                ) {
+                    EmptyView()
                 }
-            }
+                .labelsHidden()
+                .textFieldStyle(.plain)
+                .focused($focusedField, equals: .textbox)
+                .multilineTextAlignment(.trailing)
+                .padding(.leading, -4)
+                .fontDesign(.monospaced)
+                .onSubmit(commit)
+                .onChange(of: focusedField == .textbox) { if !$0 { commit() } }
 
-            content(.init(view))
+                content(.init(textFieldView))
+            } else {
+                let textView = Text(format.format(value))
+                    .contentTransition(.numericText(countsDown: countsDown))
+                    .multilineTextAlignment(.trailing)
+                    .fontDesign(.monospaced)
+
+                Button {
+                    withAnimation(animationFast) {
+                        isTextBoxVisible.toggle()
+                        focusedField = .textbox
+                    }
+                } label: {
+                    content(.init(textView))
+                }
+                .buttonStyle(.plain)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(4)
@@ -404,7 +394,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .onDisappear {
             removeEventMonitor()
         }
-        .opacity(isEnabled ? 1 : 0.5)
         .onChange(of: value) { value in
             DispatchQueue.main.async {
                 lastValue = value
@@ -413,7 +402,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     }
 
     // MARK: Functions
-    
+
     private func commit() {
         if clampsLower, clampsUpper {
             value = internalValue.clamped(to: range)
@@ -425,7 +414,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             value = internalValue
         }
         internalValue = value
-        
+
         withAnimation(animationFast) {
             isTextBoxVisible = false
         }
@@ -503,22 +492,6 @@ public struct LuminareSlider<Label, Content, V, F>: View
                 Text("Slide to stride")
 
                 Text("Composed")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .luminareSliderLayout(.regular)
-
-        LuminareSlider(
-            value: $value,
-            in: 0...128,
-            format: .number.precision(.fractionLength(0...3)),
-            prefix: Text("#")
-        ) {
-            VStack(alignment: .leading) {
-                Text("Slide to stride")
-
-                Text("Composed, Compact")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

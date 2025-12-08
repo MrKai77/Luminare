@@ -43,23 +43,15 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         Button {
             activeTab = tab
         } label: {
-            HStack(spacing: 8) {
-                tab.decoratedImageView
-
-                titleView(for: tab)
-                    .fixedSize()
-
-                Spacer(minLength: 0)
-            }
-            .frame(minHeight: minHeight)
+            titleView(for: tab)
+                .fixedSize()
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: minHeight,
+                    alignment: .leading
+                )
         }
-        .buttonStyle(SidebarButtonStyle(isActive: $isActive))
-        .overlay {
-            if isActive {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
-        }
+        .buttonStyle(SidebarButtonStyle(isActive: isActive))
         .onAppear {
             processActiveTab()
         }
@@ -69,7 +61,10 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     }
 
     @ViewBuilder private func titleView(for tab: Tab) -> some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 4) {
+            tab.icon
+                .frame(width: minHeight, height: minHeight)
+
             Text(tab.title)
 
             if tab.hasIndicator {
@@ -77,7 +72,6 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
                     Circle()
                         .foregroundStyle(.tint)
                         .frame(width: 4, height: 4)
-                        .padding(.leading, 4)
                         .shadow(color: tintColor, radius: 4)
 
                     Spacer()
@@ -103,7 +97,7 @@ struct SidebarButtonStyle: ButtonStyle {
 
     let cornerRadius: CGFloat = 12
     @State var isHovering: Bool = false
-    @Binding var isActive: Bool
+    let isActive: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -115,14 +109,10 @@ struct SidebarButtonStyle: ButtonStyle {
                     Rectangle().foregroundStyle(.quaternary.opacity(0.7))
                 }
             }
-            .animation(animationFast, value: isHovering)
             .animation(animationFast, value: isActive)
-            .animation(animationFast, value: configuration.isPressed)
             .clipShape(.rect(cornerRadius: cornerRadius))
             .contentShape(.rect)
-            .onHover { isHovering in
-                self.isHovering = isHovering
-            }
+            .onHover { isHovering = $0 }
     }
 }
 
@@ -133,6 +123,10 @@ private enum Tab: LuminareTabItem, CaseIterable, Identifiable {
     case more
 
     var id: Self { self }
+
+    var icon: some View {
+        image
+    }
 
     var title: String {
         switch self {

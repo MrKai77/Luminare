@@ -66,9 +66,8 @@ public struct LuminareColorPicker<F>: View
     where F: ParseableFormatStyle, F.FormatInput == String, F.FormatOutput == String {
     public typealias Style = LuminareColorPickerStyle<F>
 
-    // MARK: Environments
-
-    @Environment(\.luminareCompactButtonCornerRadii) private var cornerRadii
+    @Environment(\.luminareCornerRadii) private var cornerRadii
+    @Environment(\.luminareIsInsideSection) private var isInsideSection
 
     // MARK: Fields
 
@@ -98,7 +97,7 @@ public struct LuminareColorPicker<F>: View
     // MARK: Body
 
     public var body: some View {
-        HStack {
+        HStack(spacing: 4) {
             if let format = style.format {
                 LuminareTextField(
                     "Hex Color",
@@ -115,6 +114,8 @@ public struct LuminareColorPicker<F>: View
                     }
                 }
                 .monospaced()
+                .luminareFilledStates(.none)
+                .luminareBorderedStates(.none)
             }
 
             if style.hasColorWell {
@@ -122,14 +123,25 @@ public struct LuminareColorPicker<F>: View
                     isColorPickerPresented.toggle()
                 } label: {
                     UnevenRoundedRectangle(
-                        cornerRadii: cornerRadii.map { max(0, $0 - 4) }
+                        topLeadingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2),
+                        bottomLeadingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2),
+                        bottomTrailingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2),
+                        topTrailingRadius: max(cornerRadii.topLeading - 4 - (isInsideSection ? 4 : 0), 2)
                     )
                     .foregroundStyle(color)
                     .padding(4)
                 }
-                .buttonStyle(.luminareCompact)
-                .luminareHorizontalPadding(0)
-                .luminareAspectRatio(1 / 1, contentMode: .fit)
+                .luminareContentSize(
+                    aspectRatio: 1.0,
+                    contentMode: .fit,
+                    hasFixedHeight: true
+                )
+                .luminareRoundingBehavior(
+                    topLeading: true,
+                    topTrailing: true,
+                    bottomLeading: true,
+                    bottomTrailing: true
+                )
                 .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(
@@ -141,6 +153,7 @@ public struct LuminareColorPicker<F>: View
                 }
             }
         }
+        .buttonStyle(.luminare)
         .onChange(of: color) { _ in
             text = color.toHex()
         }
@@ -155,9 +168,9 @@ public struct LuminareColorPicker<F>: View
     "LuminareColorPicker",
     traits: .sizeThatFitsLayout
 ) {
-    @Previewable @State var color: Color = .accentColor
+    @Previewable @State var color = Color.accentColor
 
-    VStack {
+    LuminareSection {
         LuminareColorPicker(
             color: $color,
             style: .textFieldWithColorWell()
@@ -170,11 +183,10 @@ public struct LuminareColorPicker<F>: View
         .luminareModalStyle(.popover)
         .luminareModalContentWrapper { view in
             view
-                .luminareAspectRatio(contentMode: .fit)
                 .monospaced(false)
         }
     }
-    .luminareAspectRatio(contentMode: .fill)
     .monospaced()
     .frame(width: 300)
+    .padding()
 }

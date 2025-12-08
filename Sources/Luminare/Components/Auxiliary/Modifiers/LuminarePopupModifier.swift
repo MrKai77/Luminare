@@ -84,15 +84,13 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
     // MARK: - Coordinator
 
-    @MainActor class Coordinator<InnerContent>: NSObject, NSWindowDelegate
-        where InnerContent: View {
+    @MainActor class Coordinator<InnerContent>: NSObject, NSWindowDelegate where InnerContent: View {
         private let parent: LuminarePopup
         private var content: () -> InnerContent
         var panel: LuminarePopupPanel?
 
         private weak var parentView: NSView?
-
-        private let id = UUID()
+        private let id: UUID = .init()
 
         init(_ parent: LuminarePopup, content: @escaping () -> InnerContent) {
             self.parent = parent
@@ -102,11 +100,19 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
         // View is optional bevause it is not needed to close the popup
         func setVisible(
-            _ isPresented: Bool, relativeTo parentView: NSView? = nil
+            _ isPresented: Bool,
+            relativeTo parentView: NSView? = nil
         ) {
             // If we're going to be closing the window
             guard isPresented else {
-                panel?.close()
+                if let panel {
+                    if let window = panel.parent {
+                        window.removeChildWindow(panel)
+                    }
+
+                    panel.close()
+                }
+
                 return
             }
 
@@ -116,13 +122,14 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
             initializePopup()
             guard let panel else { return }
 
-            DispatchQueue.main.async {
-                panel.displayIfNeeded()
-                panel.makeKeyAndOrderFront(nil)
+            if let window = parentView?.window {
+                window.addChildWindow(panel, ordered: .above)
+            }
 
-                if let view = panel.contentView {
-                    self.updatePosition(for: view.frame.size)
-                }
+            panel.makeKeyAndOrderFront(nil)
+
+            if let view = panel.contentView {
+                updatePosition(for: view.frame.size)
             }
 
             EventMonitorManager.shared.addLocalMonitor(
@@ -145,7 +152,6 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
         func windowWillClose(_: Notification) {
             Task { @MainActor in
                 EventMonitorManager.shared.removeMonitor(for: id)
-
                 parent.isPresented = false
                 panel = nil
             }
@@ -173,6 +179,8 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                 )
             )
             panel.contentView = view
+            panel.layoutIfNeeded()
+            panel.center()
 
             view.postsFrameChangedNotifications = true
             NotificationCenter.default.addObserver(
@@ -232,19 +240,9 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                         x: globalFrame.maxX + parent.padding,
                         y: globalFrame.maxY + parent.padding
                     )
-                case .leadingLastTextBaseline:
-                    .init(
-                        x: globalFrame.minX,
-                        y: globalFrame.minY - size.height - parent.padding
-                    )
                 case .bottomLeading:
                     .init(
                         x: globalFrame.minX - size.width - parent.padding,
-                        y: globalFrame.minY - size.height - parent.padding
-                    )
-                case .trailingLastTextBaseline:
-                    .init(
-                        x: globalFrame.maxX - size.width,
                         y: globalFrame.minY - size.height - parent.padding
                     )
                 case .bottomTrailing:
@@ -257,9 +255,14 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
                         x: globalFrame.midX - size.width / 2,
                         y: globalFrame.midY - size.height / 2
                     )
+                case .trailingLastTextBaseline:
+                    .init(
+                        x: globalFrame.maxX - size.width + parent.cornerRadii.topTrailing,
+                        y: globalFrame.minY - size.height - parent.padding
+                    )
                 default: // Same as leadingLastTextBaseline
                     .init(
-                        x: globalFrame.minX,
+                        x: globalFrame.minX - parent.cornerRadii.topLeading,
                         y: globalFrame.minY - size.height - parent.padding
                     )
                 }
@@ -278,7 +281,7 @@ struct LuminarePopup<Content>: NSViewRepresentable where Content: View {
 
 public class LuminarePopupPanel: NSPanel, ObservableObject {
     private let closesOnDefocus: Bool
-    private let initializedDate = Date.now
+    private let initializedDate: Date = .now
 
     public init(
         closesOnDefocus: Bool = false
@@ -295,7 +298,6 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
         collectionBehavior.insert(.fullScreenAuxiliary)
         level = .floating
         backgroundColor = .clear
-        contentView?.wantsLayer = true
         ignoresMouseEvents = false
         isOpaque = false
         hasShadow = true
@@ -391,8 +393,10 @@ struct LuminarePopupWrappingView<Content>: View where Content: View {
 
     private func windowBorder() -> some View {
         ZStack {
-            UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+            if #unavailable(macOS 26.0) {
+                UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+            }
 
             UnevenRoundedRectangle(cornerRadii: cornerRadii)
                 .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
@@ -424,7 +428,6 @@ private struct PopupContent: View {
                 }
             }
             .padding()
-            .buttonStyle(.luminareCompact)
 
             if isExpanded {
                 Text("Expanded Content")

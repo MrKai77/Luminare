@@ -17,6 +17,7 @@ struct ColorSaturationBrightnessView: View {
     // MARK: Fields
 
     @Binding var selectedColor: HSBColor
+    let backgroundClipShape: UnevenRoundedRectangle
 
     @State private var circlePosition: CGPoint = .zero
     @State private var isDragging: Bool = false
@@ -45,7 +46,10 @@ struct ColorSaturationBrightnessView: View {
                     startPoint: .top,
                     endPoint: .bottom
                 )
-
+            }
+            .compositingGroup()
+            .clipShape(backgroundClipShape)
+            .overlay {
                 ColorPickerCircle(
                     selectedColor: $selectedColor,
                     isDragging: $isDragging,
@@ -147,6 +151,10 @@ struct ColorPickerCircle: View {
             .animation(animation, value: isDragging)
             .onHover { hovering in
                 isHovering = hovering
+
+                if !isDragging {
+                    NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+                }
             }
     }
 }
@@ -158,7 +166,10 @@ struct ColorPickerCircle: View {
     @Previewable @State var color: HSBColor = Color.accentColor.hsb
 
     LuminareSection(outerPadding: 0) {
-        ColorSaturationBrightnessView(selectedColor: $color)
+        ColorSaturationBrightnessView(
+            selectedColor: $color,
+            backgroundClipShape: .rect(cornerRadii: .init(0))
+        )
     }
     .padding()
 }

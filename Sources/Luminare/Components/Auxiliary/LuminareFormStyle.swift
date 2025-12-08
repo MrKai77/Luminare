@@ -34,7 +34,6 @@ public struct LuminareFormStyle: FormStyle {
             } footer: {
                 section.footer
             }
-            .buttonStyle(.luminareCompact)
             .toggleStyle(.switch)
         }
     }

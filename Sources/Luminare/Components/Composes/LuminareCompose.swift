@@ -48,13 +48,6 @@ public enum LuminareComposeControlSize: String, Equatable, Hashable, Identifiabl
     }
 }
 
-public enum LuminareComposeStyle: String, Equatable, Hashable, Identifiable, CaseIterable, Codable, Sendable {
-    case regular
-    case inline
-
-    public var id: Self { self }
-}
-
 // MARK: - Compose
 
 /// A stylized view that composes a content with a label.
@@ -62,11 +55,9 @@ public struct LuminareCompose<Label, Content>: View
     where Label: View, Content: View {
     // MARK: Environments
 
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareMinHeight) private var minHeight
-    @Environment(\.luminareHorizontalPadding) private var horizontalPadding
+    @Environment(\.luminareSectionHorizontalPadding) private var horizontalPadding
     @Environment(\.luminareComposeControlSize) private var controlSize
-    @Environment(\.luminareComposeStyle) private var style
 
     // MARK: Fields
 
@@ -149,9 +140,9 @@ public struct LuminareCompose<Label, Content>: View
             if Label.self != EmptyView.self {
                 HStack(alignment: alignment, spacing: spacing) {
                     label()
-                        .opacity(isEnabled ? 1 : 0.5)
                 }
                 .layoutPriority(1)
+                .padding(labelInsets)
 
                 Spacer()
             } else {
@@ -164,16 +155,25 @@ public struct LuminareCompose<Label, Content>: View
             LuminareComposeIgnoreSafeAreaEdgesKey.self,
             to: $ignoreSafeAreaEdgesKey
         )
+        .padding(enclosingInsets)
         .frame(maxWidth: .infinity, minHeight: minHeight)
-        .padding(insets)
     }
 
-    private var insets: EdgeInsets {
+    private var enclosingInsets: EdgeInsets {
         .init(
             top: 0,
             leading: ignoreSafeAreaEdgesKey?.contains(.leading) == true ? 0 : horizontalPadding,
             bottom: 0,
             trailing: ignoreSafeAreaEdgesKey?.contains(.trailing) == true ? 0 : horizontalPadding
+        )
+    }
+
+    private var labelInsets: EdgeInsets {
+        .init(
+            top: ignoreSafeAreaEdgesKey?.contains(.top) == true ? 0 : horizontalPadding / 2,
+            leading: 0,
+            bottom: ignoreSafeAreaEdgesKey?.contains(.bottom) == true ? 0 : horizontalPadding / 2,
+            trailing: 0
         )
     }
 
@@ -206,18 +206,15 @@ struct LuminareComposeIgnoreSafeAreaEdgesKey: PreferenceKey {
             Button {} label: {
                 Text("Button")
             }
-            .buttonStyle(.luminareCompact)
         }
 
         LuminareCompose("Label") {
             Button {} label: {
                 Text("Button")
             }
-            .buttonStyle(.luminareCompact)
         }
         .disabled(true)
     }
-    .luminareComposeStyle(.inline)
 }
 
 @available(macOS 15.0, *)

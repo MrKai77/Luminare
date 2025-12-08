@@ -87,65 +87,56 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     public var body: some View {
         VStack(spacing: 0) {
-            header()
-                .buttonStyle(TabHeaderButtonStyle())
-                .padding(.horizontal, 10)
-                .padding(.trailing, 5)
-                .frame(height: titleBarHeight, alignment: .leading)
-            
+            wrappedHeader
+
             Divider()
 
-            Group {
-                switch layout {
-                case .none:
-                    content()
-                case .form:
-                    if #available(macOS 15.0, *) {
-                        Form {
-                            content()
-                        }
-                        .formStyle(.luminare)
-                        .clipped()
-                    }
-                case let .stacked(spacing):
-                    AutoScrollView(showsIndicators: false) {
-                        LazyVStack(alignment: .leading, spacing: spacing) {
-                            content()
-                        }
-                        .padding(12)
-                    }
-                    .clipped()
-                }
-            }
-            .environment(\.luminareClickedOutside, luminareClickedOutside)
-            .background {
-                Color.white.opacity(0.0001)
-                    .onTapGesture {
-                        luminareClickedOutside.toggle()
-                    }
-                    .ignoresSafeArea()
-            }
+            wrappedContent
         }
         .luminareListFixedHeight(until: .infinity)
         .luminareBackground()
     }
-}
 
-// MARK: - Button Style (Tab Header)
+    private var wrappedHeader: some View {
+        header()
+            .luminareCornerRadius(6)
+            .luminareMinHeight(26)
+            .padding(.horizontal, 10)
+            .padding(.trailing, 5)
+            .frame(height: titleBarHeight, alignment: .leading)
+    }
 
-struct TabHeaderButtonStyle: ButtonStyle {
-    @Environment(\.luminareAnimationFast) private var animationFast
-
-    @State var isHovering: Bool = false
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .foregroundStyle(isHovering ? .primary : .secondary)
-            .onHover { isHovering in
-                withAnimation(animationFast) {
-                    self.isHovering = isHovering
+    private var wrappedContent: some View {
+        Group {
+            switch layout {
+            case .none:
+                content()
+            case .form:
+                if #available(macOS 15.0, *) {
+                    Form {
+                        content()
+                    }
+                    .formStyle(.luminare)
+                    .clipped()
                 }
+            case let .stacked(spacing):
+                AutoScrollView(showsIndicators: false) {
+                    LazyVStack(alignment: .leading, spacing: spacing) {
+                        content()
+                    }
+                    .padding(12)
+                }
+                .clipped()
             }
+        }
+        .environment(\.luminareClickedOutside, luminareClickedOutside)
+        .background {
+            Color.white.opacity(0.0001)
+                .onTapGesture {
+                    luminareClickedOutside.toggle()
+                }
+                .ignoresSafeArea()
+        }
     }
 }
 

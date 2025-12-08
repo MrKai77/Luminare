@@ -30,19 +30,15 @@ struct ColorPickerModalView: View {
     @State private var greenComponent: Double = .zero
     @State private var blueComponent: Double = .zero
 
-    @State private var isRedStepperPresented: Bool = false
-    @State private var isGreenStepperPresented: Bool = false
-    @State private var isBlueStepperPresented: Bool = false
-
     @State private var hueFallback: Double = .zero
 
-    private let colorSampler = NSColorSampler()
+    private let colorSampler: NSColorSampler = .init()
 
     // MARK: Body
 
     var body: some View {
         Group {
-            LuminareSection(hasPadding: false, outerPadding: 0) {
+            LuminareSection(outerPadding: 0) {
                 VStack(spacing: 2) {
                     let color = Binding {
                         internalHSBColor
@@ -52,17 +48,16 @@ struct ColorPickerModalView: View {
                         selectedColor = newValue.rgb
                     }
 
-                    ColorSaturationBrightnessView(selectedColor: color)
-                        .scaledToFill()
-                        .compositingGroup() // Fixes a weird clipping issue
-                        .clipShape(
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: 8,
-                                bottomLeadingRadius: 2,
-                                bottomTrailingRadius: 2,
-                                topTrailingRadius: 8
-                            )
+                    ColorSaturationBrightnessView(
+                        selectedColor: color,
+                        backgroundClipShape: UnevenRoundedRectangle(
+                            topLeadingRadius: 8,
+                            bottomLeadingRadius: 2,
+                            bottomTrailingRadius: 2,
+                            topTrailingRadius: 8
                         )
+                    )
+                    .scaledToFill()
 
                     ColorHueSliderView(selectedColor: color, roundedBottom: true)
                         .scaledToFill()
@@ -77,11 +72,15 @@ struct ColorPickerModalView: View {
                         )
                 }
                 .padding(4)
+                .luminareSectionDisableInnerPadding(true)
             }
 
-            rgbInputFields()
+            Group {
+                rgbInputFields()
 
-            controls()
+                controls()
+            }
+            .luminareCornerRadius(8)
         }
         .onAppear {
             updateComponents(selectedColor)
@@ -161,7 +160,6 @@ struct ColorPickerModalView: View {
                 colorPicker()
             }
         }
-        .luminareAspectRatio(contentMode: .fill)
     }
 
     @ViewBuilder private func controls() -> some View {
@@ -190,8 +188,6 @@ struct ColorPickerModalView: View {
                         }
                     }
                 }
-                .buttonStyle(.luminareCompact)
-                .luminareAspectRatio(contentMode: .fill)
             }
         }
     }
@@ -200,14 +196,19 @@ struct ColorPickerModalView: View {
         Button {
             colorSampler.show { nsColor in
                 if let nsColor {
-                    updateComponents(Color(nsColor: nsColor))
+                    MainActor.assumeIsolated {
+                        updateComponents(Color(nsColor: nsColor))
+                    }
                 }
             }
         } label: {
             Image(systemName: "eyedropper.halffull")
         }
-        .luminareAspectRatio(1 / 1, contentMode: .fit)
-        .buttonStyle(.luminareCompact)
+        .luminareContentSize(
+            aspectRatio: 1.0,
+            contentMode: .fit,
+            hasFixedHeight: true
+        )
     }
 
     // MARK: Functions

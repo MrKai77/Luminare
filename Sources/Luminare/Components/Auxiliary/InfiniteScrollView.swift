@@ -164,31 +164,31 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
 
     #if DEBUG
-        init(
-            debug: Bool,
-            direction: Direction = .horizontal,
-            allowsDragging: Bool = true,
-            size: CGSize,
-            spacing: CGFloat,
-            snapping: Bool = true,
-            wrapping: Bool = true,
-            initialOffset: CGFloat = .zero,
-            shouldReset: Binding<Bool> = .constant(false),
-            offset: Binding<CGFloat>,
-            page: Binding<Int>
-        ) {
-            self.debug = debug
-            self.direction = direction
-            self.allowsDragging = allowsDragging
-            self.size = size
-            self.spacing = spacing
-            self.snapping = snapping
-            self.wrapping = wrapping
-            self.initialOffset = initialOffset
-            self._shouldReset = shouldReset
-            self._offset = offset
-            self._page = page
-        }
+    init(
+        debug: Bool,
+        direction: Direction = .horizontal,
+        allowsDragging: Bool = true,
+        size: CGSize,
+        spacing: CGFloat,
+        snapping: Bool = true,
+        wrapping: Bool = true,
+        initialOffset: CGFloat = .zero,
+        shouldReset: Binding<Bool> = .constant(false),
+        offset: Binding<CGFloat>,
+        page: Binding<Int>
+    ) {
+        self.debug = debug
+        self.direction = direction
+        self.allowsDragging = allowsDragging
+        self.size = size
+        self.spacing = spacing
+        self.snapping = snapping
+        self.wrapping = wrapping
+        self.initialOffset = initialOffset
+        self._shouldReset = shouldReset
+        self._offset = offset
+        self._page = page
+    }
     #endif
 
     var length: CGFloat {
@@ -310,7 +310,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
         private var draggingStage: DraggingStage = .invalid
 
-        private let id = UUID()
+        private let id: UUID = .init()
 
         init(_ parent: InfiniteScrollView) {
             self.parent = parent
@@ -566,66 +566,66 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
 #if DEBUG
 
-    // MARK: - Preview
+// MARK: - Preview
 
-    private struct InfiniteScrollPreview: View {
-        var direction: InfiniteScrollViewDirection = .horizontal
-        var size: CGSize = .init(width: 500, height: 100)
+private struct InfiniteScrollPreview: View {
+    var direction: InfiniteScrollViewDirection = .horizontal
+    var size: CGSize = .init(width: 500, height: 100)
 
-        @State private var offset: CGFloat = 0
-        @State private var page: Int = 0
-        @State private var shouldReset: Bool = true
-        @State private var wrapping: Bool = true
+    @State private var offset: CGFloat = 0
+    @State private var page: Int = 0
+    @State private var shouldReset: Bool = true
+    @State private var wrapping: Bool = true
 
-        var body: some View {
-            InfiniteScrollView(
-                debug: true,
-                direction: direction,
+    var body: some View {
+        InfiniteScrollView(
+            debug: true,
+            direction: direction,
 
-                size: size,
-                spacing: 50,
-                snapping: true,
-                wrapping: wrapping,
-                initialOffset: 0,
+            size: size,
+            spacing: 50,
+            snapping: true,
+            wrapping: wrapping,
+            initialOffset: 0,
 
-                shouldReset: $shouldReset,
-                offset: $offset,
-                page: $page
-            )
-            .frame(width: size.width, height: size.height)
-            .border(.red)
+            shouldReset: $shouldReset,
+            offset: $offset,
+            page: $page
+        )
+        .frame(width: size.width, height: size.height)
+        .border(.red)
 
-            HStack {
-                Button("Reset Offset") {
-                    shouldReset = true
-                }
-
-                Button(wrapping ? "Disable Wrapping" : "Enable Wrapping") {
-                    wrapping.toggle()
-                }
+        HStack {
+            Button("Reset Offset") {
+                shouldReset = true
             }
-            .frame(maxWidth: .infinity)
 
-            HStack {
-                Text(String(format: "Offset: %.1f", offset))
-
-                Text("Page: \(page)")
-                    .foregroundStyle(.tint)
+            Button(wrapping ? "Disable Wrapping" : "Enable Wrapping") {
+                wrapping.toggle()
             }
-            .monospaced()
-            .frame(height: 12)
         }
-    }
+        .frame(maxWidth: .infinity)
 
-    #Preview {
-        VStack {
-            InfiniteScrollPreview()
+        HStack {
+            Text(String(format: "Offset: %.1f", offset))
 
-            Divider()
-
-            InfiniteScrollPreview(direction: .vertical, size: .init(width: 100, height: 500))
+            Text("Page: \(page)")
+                .foregroundStyle(.tint)
         }
-        .padding()
-        .contentTransition(.numericText())
+        .monospaced()
+        .frame(height: 12)
     }
+}
+
+#Preview {
+    VStack {
+        InfiniteScrollPreview()
+
+        Divider()
+
+        InfiniteScrollPreview(direction: .vertical, size: .init(width: 100, height: 500))
+    }
+    .padding()
+    .contentTransition(.numericText())
+}
 #endif

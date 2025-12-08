@@ -34,11 +34,13 @@ import SwiftUI
 /// }
 /// ```
 public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
+    associatedtype Content: View
+
     /// The title of the tab.
     var title: String { get }
 
-    /// The `Image` that will be displayed next to the leading edge of the ``title``.
-    var image: Image { get }
+    /// The icon for the tab.
+    var icon: Content { get }
 
     /// Whether this tab displays an indicator at the trailing top edge of the title.
     /// Typically used to attract users' attention.
@@ -47,30 +49,4 @@ public protocol LuminareTabItem: Equatable, Hashable, Identifiable {
 
 public extension LuminareTabItem {
     var hasIndicator: Bool { false }
-
-    @MainActor
-    var decoratedImageView: some View {
-        DecoratedImageView(tab: self)
-    }
-}
-
-// MARK: Image View
-
-private struct DecoratedImageView<Tab>: View where Tab: LuminareTabItem {
-    @Environment(\.luminareMinHeight) private var minHeight
-    let tab: Tab
-
-    var body: some View {
-        tab.image
-            .resizable()
-            .scaledToFit()
-            .frame(width: 18, height: 18) // First, resize image to bounds (TODO: make this configurable)
-            .frame(width: minHeight, height: minHeight) // This is the size of the enclosing square
-            .background(.quinary)
-            .clipShape(.rect(cornerRadius: 8))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(.quaternary, lineWidth: 1)
-            }
-    }
 }

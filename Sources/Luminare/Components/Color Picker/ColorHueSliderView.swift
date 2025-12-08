@@ -26,7 +26,7 @@ struct ColorHueSliderView: View {
     @State private var selectionWidth: CGFloat = 0
 
     // gradient for the color spectrum slider
-    private let colorSpectrumGradient = Gradient(
+    private let colorSpectrumGradient: Gradient = .init(
         colors: stride(from: 0.0, through: 1.0, by: 0.01)
             .map { Color(hue: $0, saturation: 1, brightness: 1) }
     )
@@ -98,7 +98,10 @@ struct ColorHueSliderView: View {
         selectionPosition = clampedX
         let percentage = selectionPosition / viewSize
 
-        if percentage != lastPercentage, percentage == 5.5 / viewSize || percentage == (viewSize - 5.5) / viewSize {
+        let edgeTarget = 5.5 / viewSize
+        let isAtEdge = abs(percentage - edgeTarget) == 0 || abs(percentage - (1 - edgeTarget)) == 0
+
+        if percentage != lastPercentage, isAtEdge {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
 

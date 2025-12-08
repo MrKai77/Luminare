@@ -10,8 +10,6 @@ import SwiftUI
 // MARK: - Internal
 
 extension EnvironmentValues {
-    @Entry var luminareWindow: LuminareWindow?
-
     @Entry var luminareClickedOutside: Bool = false
 }
 
@@ -43,9 +41,8 @@ public extension EnvironmentValues {
 
     // MARK: Popup
 
-    @Entry var luminarePopupCornerRadii: RectangleCornerRadii = .init(12)
-
-    @Entry var luminarePopupPadding: CGFloat = 12
+    @Entry var luminarePopupCornerRadii: RectangleCornerRadii = .init(16)
+    @Entry var luminarePopupPadding: CGFloat = 4
 
     // MARK: Color Picker
 
@@ -58,28 +55,15 @@ public extension EnvironmentValues {
 public extension EnvironmentValues {
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
     @Entry var luminareMinHeight: CGFloat = 30
-    @Entry var luminareHorizontalPadding: CGFloat = 8
 
-    @Entry var luminareIsBordered: Bool = true
-    @Entry var luminareHasBackground: Bool = true
+    @Entry var luminareBorderedStates: LuminareBorderStates = .all
+    @Entry var luminareFilledStates: LuminareFillStates = .all
     @Entry var luminareHasDividers: Bool = true
-
-    @Entry var luminareAspectRatio: CGFloat?
-    @Entry var luminareAspectRatioContentMode: ContentMode? = .fit
-    @Entry var luminareAspectRatioHasFixedHeight: Bool = true
 
     @Entry var luminareContentMarginsTop: CGFloat = 0
     @Entry var luminareContentMarginsLeading: CGFloat = 0
     @Entry var luminareContentMarginsBottom: CGFloat = 0
     @Entry var luminareContentMarginsTrailing: CGFloat = 0
-
-    // MARK: Button
-
-    @Entry var luminareButtonCornerRadii: RectangleCornerRadii = .init(2)
-    @Entry var luminareButtonMaterial: Material? = nil
-    @Entry var luminareButtonHighlightOnHover: Bool = true
-
-    @Entry var luminareCompactButtonCornerRadii: RectangleCornerRadii = .init(8)
 
     // MARK: Form
 
@@ -95,14 +79,19 @@ public extension EnvironmentValues {
     // MARK: Section
 
     @Entry var luminareSectionLayout: LuminareSectionLayout = .stacked
-    @Entry var luminareSectionMaterial: Material? = nil
+    @Entry var luminareSectionHorizontalPadding: CGFloat = 8
+    @Entry var luminareIsInsideSection: Bool = false
+    @Entry var luminareTopLeadingRounded: Bool = true
+    @Entry var luminareTopTrailingRounded: Bool = true
+    @Entry var luminareBottomLeadingRounded: Bool = true
+    @Entry var luminareBottomTrailingRounded: Bool = true
+
+    // If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
-    @Entry var luminareSectionIsMasked: Bool = false
 
     // MARK: Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .automatic
-    @Entry var luminareComposeStyle: LuminareComposeStyle = .regular
 
     // MARK: Popover
 
@@ -128,14 +117,6 @@ public extension EnvironmentValues {
     @Entry var luminareListItemHighlightOnHover: Bool = true
     @Entry var luminareItemBeingHovered: Bool = false
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil
-
-    @Entry var luminareListRoundedTopCornerBehavior: LuminareListRoundedCornerBehavior = .never
-    @Entry var luminareListRoundedBottomCornerBehavior: LuminareListRoundedCornerBehavior = .never
-
-    // MARK: Picker
-
-    @Entry var luminarePickerRoundedTopCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
-    @Entry var luminarePickerRoundedBottomCornerBehavior: LuminarePickerRoundedCornerBehavior = .never
 
     // MARK: Sidebar
 
