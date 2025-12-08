@@ -10,8 +10,6 @@ import SwiftUI
 // MARK: - Internal
 
 extension EnvironmentValues {
-    @Entry var luminareWindow: LuminareWindow?
-
     @Entry var luminareClickedOutside: Bool = false
 }
 

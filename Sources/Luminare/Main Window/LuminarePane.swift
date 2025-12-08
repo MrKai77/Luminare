@@ -87,48 +87,56 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     public var body: some View {
         VStack(spacing: 0) {
-            header()
-                .luminareCornerRadius(6)
-                .luminareMinHeight(26)
-                .padding(.horizontal, 10)
-                .padding(.trailing, 5)
-                .frame(height: titleBarHeight, alignment: .leading)
-
+            wrappedHeader
+            
             Divider()
 
-            Group {
-                switch layout {
-                case .none:
-                    content()
-                case .form:
-                    if #available(macOS 15.0, *) {
-                        Form {
-                            content()
-                        }
-                        .formStyle(.luminare)
-                        .clipped()
-                    }
-                case let .stacked(spacing):
-                    AutoScrollView(showsIndicators: false) {
-                        LazyVStack(alignment: .leading, spacing: spacing) {
-                            content()
-                        }
-                        .padding(12)
-                    }
-                    .clipped()
-                }
-            }
-            .environment(\.luminareClickedOutside, luminareClickedOutside)
-            .background {
-                Color.white.opacity(0.0001)
-                    .onTapGesture {
-                        luminareClickedOutside.toggle()
-                    }
-                    .ignoresSafeArea()
-            }
+            wrappedContent
         }
         .luminareListFixedHeight(until: .infinity)
         .luminareBackground()
+    }
+    
+    private var wrappedHeader: some View {
+        header()
+            .luminareCornerRadius(6)
+            .luminareMinHeight(26)
+            .padding(.horizontal, 10)
+            .padding(.trailing, 5)
+            .frame(height: titleBarHeight, alignment: .leading)
+    }
+    
+    private var wrappedContent: some View {
+        Group {
+            switch layout {
+            case .none:
+                content()
+            case .form:
+                if #available(macOS 15.0, *) {
+                    Form {
+                        content()
+                    }
+                    .formStyle(.luminare)
+                    .clipped()
+                }
+            case let .stacked(spacing):
+                AutoScrollView(showsIndicators: false) {
+                    LazyVStack(alignment: .leading, spacing: spacing) {
+                        content()
+                    }
+                    .padding(12)
+                }
+                .clipped()
+            }
+        }
+        .environment(\.luminareClickedOutside, luminareClickedOutside)
+        .background {
+            Color.white.opacity(0.0001)
+                .onTapGesture {
+                    luminareClickedOutside.toggle()
+                }
+                .ignoresSafeArea()
+        }
     }
 }
 
