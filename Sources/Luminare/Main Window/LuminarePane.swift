@@ -99,10 +99,9 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
     private var wrappedHeader: some View {
         header()
-            .luminareCornerRadius(6)
+            .luminareCornerRadius(8)
             .luminareMinHeight(26)
-            .padding(.horizontal, 10)
-            .padding(.trailing, 5)
+            .padding(.horizontal, 12)
             .frame(height: titleBarHeight, alignment: .leading)
     }
 
@@ -125,18 +124,21 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                         content()
                     }
                     .padding(12)
+                    .background(content: clickedOutsideObserver)
                 }
                 .clipped()
             }
         }
         .environment(\.luminareClickedOutside, luminareClickedOutside)
-        .background {
-            Color.white.opacity(0.0001)
-                .onTapGesture {
-                    luminareClickedOutside.toggle()
-                }
-                .ignoresSafeArea()
-        }
+        .background(content: clickedOutsideObserver)
+    }
+    
+    private func clickedOutsideObserver() -> some View {
+        Color.white.opacity(0.0001)
+            .onTapGesture {
+                luminareClickedOutside.toggle()
+            }
+            .ignoresSafeArea()
     }
 }
 
