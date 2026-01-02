@@ -34,6 +34,14 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     private let outerPadding: CGFloat
 
     @ViewBuilder private var content: () -> Content, header: () -> Header, footer: () -> Footer
+    
+    private var showHeader: Bool {
+        Header.self != EmptyView.self
+    }
+    
+    private var showFooter: Bool {
+        Footer.self != EmptyView.self
+    }
 
     // MARK: Initializers
 
@@ -99,11 +107,12 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 content()
             }
         }
-        .padding(.vertical, outerPadding)
+        .padding(.top, showHeader ? outerPadding : 0)
+        .padding(.top, showFooter ? outerPadding : 0)
     }
 
     @ViewBuilder private func wrappedHeader() -> some View {
-        if Header.self != EmptyView.self {
+        if showHeader {
             header()
                 .foregroundStyle(.secondary)
                 .padding(.bottom, headerSpacing)
@@ -114,7 +123,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     }
 
     @ViewBuilder private func wrappedFooter() -> some View {
-        if Footer.self != EmptyView.self {
+        if showFooter {
             footer()
                 .foregroundStyle(.secondary)
                 .padding(.top, footerSpacing)
