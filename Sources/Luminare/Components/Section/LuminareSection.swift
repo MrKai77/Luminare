@@ -108,7 +108,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
         }
         .padding(.top, showHeader ? outerPadding : 0)
-        .padding(.top, showFooter ? outerPadding : 0)
+        .padding(.bottom, showFooter ? outerPadding : 0)
     }
 
     @ViewBuilder private func wrappedHeader() -> some View {

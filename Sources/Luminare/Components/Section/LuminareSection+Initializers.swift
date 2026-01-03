@@ -34,7 +34,7 @@ public extension LuminareSection {
                 .fontWeight(.medium)
         } footer: {
             Text(footer)
-                .fontWeight(.medium)
+                .font(.caption)
         }
     }
 
@@ -66,7 +66,7 @@ public extension LuminareSection {
                 .fontWeight(.medium)
         } footer: {
             Text(footerKey)
-                .fontWeight(.medium)
+                .font(.caption)
         }
     }
 
@@ -208,7 +208,7 @@ public extension LuminareSection {
             content()
         } footer: {
             Text(footer)
-                .fontWeight(.medium)
+                .font(.caption)
         }
     }
 
@@ -236,7 +236,7 @@ public extension LuminareSection {
             content()
         } footer: {
             Text(footerKey)
-                .fontWeight(.medium)
+                .font(.caption)
         }
     }
 
