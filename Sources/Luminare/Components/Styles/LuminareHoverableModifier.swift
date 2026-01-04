@@ -51,7 +51,6 @@ public struct LuminareHoverableModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .compositingGroup()
-            .opacity(isEnabled ? 1 : 0.5)
             .luminareCornerRadii(radii)
             .background {
                 LuminareFill(
@@ -67,6 +66,7 @@ public struct LuminareHoverableModifier: ViewModifier {
                     style: .default
                 )
             }
+            .opacity(isEnabled ? 1 : 0.5)
             .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
 }

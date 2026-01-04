@@ -22,13 +22,13 @@ public struct LuminarePlateauButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
-            .opacity(isEnabled ? 1 : 0.5)
             .fontWeight(.medium)
             .luminarePlateau(
                 isPressed: configuration.isPressed,
                 isHovering: isHovering,
                 overrideFillStyle: fillStyle(configuration: configuration)
             )
+            .opacity(isEnabled ? 1 : 0.5)
             .onHover { isHovering = $0 }
     }
 

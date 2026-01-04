@@ -8,7 +8,6 @@
 import SwiftUI
 
 public struct LuminarePlateauModifier: ViewModifier {
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.luminareCornerRadii) private var cornerRadii
     @Environment(\.luminareIsInsideSection) private var isInsideSection
@@ -54,7 +53,6 @@ public struct LuminarePlateauModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .compositingGroup()
-            .opacity(isEnabled ? 1 : 0.5)
             .luminareCornerRadii(radii)
             .background {
                 if let overrideFillStyle {

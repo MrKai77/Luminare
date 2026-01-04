@@ -47,7 +47,6 @@ public struct LuminareFillStyle<F: ShapeStyle, H: ShapeStyle, P: ShapeStyle>: Se
 }
 
 struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P: ShapeStyle {
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareFilledStates) private var luminareFilledStates
 
     private let isHovering: Bool
@@ -68,23 +67,15 @@ struct LuminareFill<F, H, P>: View where F: ShapeStyle, H: ShapeStyle, P: ShapeS
     }
 
     var body: some View {
-        if isEnabled {
-            if luminareFilledStates.contains(.pressed), isPressed {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .foregroundStyle(style.pressed)
-            } else if luminareFilledStates.contains(.hovering), isHovering {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .foregroundStyle(style.hovering)
-            } else if luminareFilledStates.contains(.normal) {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .foregroundStyle(style.normal)
-            }
-        } else {
-            if luminareFilledStates.contains(.normal) {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .foregroundStyle(style.normal)
-                    .opacity(0.5)
-            }
+        if luminareFilledStates.contains(.pressed), isPressed {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .foregroundStyle(style.pressed)
+        } else if luminareFilledStates.contains(.hovering), isHovering {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .foregroundStyle(style.hovering)
+        } else if luminareFilledStates.contains(.normal) {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .foregroundStyle(style.normal)
         }
     }
 }

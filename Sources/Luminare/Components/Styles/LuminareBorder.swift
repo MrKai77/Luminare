@@ -42,7 +42,6 @@ public struct LuminareBorderStyle<F: ShapeStyle, H: ShapeStyle>: Sendable {
 }
 
 struct LuminareBorder<F, H>: View where F: ShapeStyle, H: ShapeStyle {
-    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.luminareBorderedStates) private var luminareBorderedStates
 
     private let isHovering: Bool
@@ -60,18 +59,12 @@ struct LuminareBorder<F, H>: View where F: ShapeStyle, H: ShapeStyle {
     }
 
     var body: some View {
-        if isEnabled {
-            if isHovering, luminareBorderedStates.contains(.hovering) {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .strokeBorder(style.hovering)
-            } else if luminareBorderedStates.contains(.normal) {
-                UnevenRoundedRectangle(cornerRadii: cornerRadii)
-                    .strokeBorder(style.normal)
-            }
-        } else {
+        if isHovering, luminareBorderedStates.contains(.hovering) {
+            UnevenRoundedRectangle(cornerRadii: cornerRadii)
+                .strokeBorder(style.hovering)
+        } else if luminareBorderedStates.contains(.normal) {
             UnevenRoundedRectangle(cornerRadii: cornerRadii)
                 .strokeBorder(style.normal)
-                .opacity(isEnabled ? 1 : 0.5)
         }
     }
 }
