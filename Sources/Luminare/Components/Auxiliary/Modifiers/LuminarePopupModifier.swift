@@ -345,6 +345,17 @@ public class LuminarePopupPanel: NSPanel, ObservableObject {
             close()
         }
     }
+    
+    override public func keyDown(with event: NSEvent) {
+        let kVK_Escape: CGKeyCode = 0x35
+
+        if event.type == .keyDown, event.keyCode == kVK_Escape {
+            alphaValue = 0 // Prevents a little flicker in NSVisualEffectView when closing
+            close()
+        } else {
+            super.keyDown(with: event)
+        }
+    }
 }
 
 // MARK: - View

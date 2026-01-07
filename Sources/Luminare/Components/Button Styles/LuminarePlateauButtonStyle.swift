@@ -14,9 +14,14 @@ public struct LuminarePlateauButtonStyle: ButtonStyle {
 
     @State private var isHovering: Bool = false
     private let tinted: Bool
+    private let overrideIsHovering: Bool
 
-    public init(tinted: Bool = false) {
+    public init(
+        tinted: Bool = false,
+        overrideIsHovering: Bool = false
+    ) {
         self.tinted = tinted
+        self.overrideIsHovering = overrideIsHovering
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -25,7 +30,7 @@ public struct LuminarePlateauButtonStyle: ButtonStyle {
             .fontWeight(.medium)
             .luminarePlateau(
                 isPressed: configuration.isPressed,
-                isHovering: isHovering,
+                isHovering: isHovering || overrideIsHovering,
                 overrideFillStyle: fillStyle(configuration: configuration)
             )
             .opacity(isEnabled ? 1 : 0.5)

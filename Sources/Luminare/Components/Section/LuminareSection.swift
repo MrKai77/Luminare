@@ -30,8 +30,10 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
 
     // MARK: Fields
 
-    private let headerSpacing: CGFloat, footerSpacing: CGFloat
+    private let headerSpacing: CGFloat
+    private let footerSpacing: CGFloat
     private let outerPadding: CGFloat
+    private let clipped: Bool
 
     @ViewBuilder private var content: () -> Content, header: () -> Header, footer: () -> Footer
     
@@ -58,6 +60,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder footer: @escaping () -> Footer
@@ -65,6 +68,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         self.headerSpacing = headerSpacing
         self.footerSpacing = footerSpacing
         self.outerPadding = outerPadding
+        self.clipped = clipped
         self.content = content
         self.header = header
         self.footer = footer
@@ -92,8 +96,19 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
         }
     }
+    
+    @ViewBuilder
+    private func wrappedContent() -> some View {
+        if clipped {
+            styledContent()
+                .clipped()
+        } else {
+            styledContent()
+        }
+    }
 
-    @ViewBuilder private func wrappedContent() -> some View {
+    @ViewBuilder
+    private func styledContent() -> some View {
         Group {
             if borderedStates.contains(.normal) {
                 LuminareSectionStack(hasDividers: hasDividers, content: content)
@@ -101,7 +116,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                     .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
                     .fixedSize(horizontal: maxWidth == 0, vertical: false)
                     .environment(\.luminareIsInsideSection, true)
-                    .clipped()
                     .luminareRoundingBehavior(top: false, bottom: false)
                     .luminarePlateau()
             } else {

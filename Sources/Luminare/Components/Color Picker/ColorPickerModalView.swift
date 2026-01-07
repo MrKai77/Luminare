@@ -38,7 +38,7 @@ struct ColorPickerModalView: View {
 
     var body: some View {
         Group {
-            LuminareSection(outerPadding: 0) {
+            LuminareSection(outerPadding: 0, clipped: false) {
                 VStack(spacing: 2) {
                     let color = Binding {
                         internalHSBColor

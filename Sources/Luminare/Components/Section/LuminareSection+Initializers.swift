@@ -21,12 +21,14 @@ public extension LuminareSection {
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == Text {
         self.init(
             headerSpacing: headerSpacing,
             footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
@@ -53,12 +55,14 @@ public extension LuminareSection {
         headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == Text {
         self.init(
             headerSpacing: headerSpacing,
             footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
@@ -74,21 +78,21 @@ public extension LuminareSection {
     ///
     /// - Parameters:
     ///   - headerSpacing: the spacing between header and content.
-    ///   - footerSpacing: the spacing between footer and content.
     ///   - outerPadding: the padding around the contents.
     ///   - content: the content.
     ///   - header: the header.
     init(
         headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder header: @escaping () -> Header
     ) where Footer == EmptyView {
         self.init(
             headerSpacing: headerSpacing,
-            footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            footerSpacing: 2,
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
@@ -109,16 +113,15 @@ public extension LuminareSection {
     @_disfavoredOverload
     init(
         _ header: some StringProtocol,
-
         headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == EmptyView {
         self.init(
             headerSpacing: headerSpacing,
-            footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
@@ -137,16 +140,15 @@ public extension LuminareSection {
     ///   - content: the content.
     init(
         _ headerKey: LocalizedStringKey,
-
         headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == Text, Footer == EmptyView {
         self.init(
             headerSpacing: headerSpacing,
-            footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
@@ -164,16 +166,17 @@ public extension LuminareSection {
     ///   - content: the content.
     ///   - footer: the footer.
     init(
-        headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder footer: @escaping () -> Footer
     ) where Header == EmptyView {
         self.init(
-            headerSpacing: headerSpacing,
+            headerSpacing: 2,
             footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
@@ -194,16 +197,15 @@ public extension LuminareSection {
     @_disfavoredOverload
     init(
         footer: some StringProtocol,
-
-        headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == Text {
         self.init(
-            headerSpacing: headerSpacing,
             footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } footer: {
@@ -222,16 +224,15 @@ public extension LuminareSection {
     ///   - content: the content.
     init(
         footerKey: LocalizedStringKey,
-
-        headerSpacing: CGFloat = 2,
         footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == Text {
         self.init(
-            headerSpacing: headerSpacing,
             footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } footer: {
@@ -248,15 +249,15 @@ public extension LuminareSection {
     ///   - outerPadding: the padding around the contents.
     ///   - content: the content.
     init(
-        headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
         outerPadding: CGFloat = 4,
+        clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == EmptyView {
         self.init(
-            headerSpacing: headerSpacing,
-            footerSpacing: footerSpacing,
-            outerPadding: outerPadding
+            headerSpacing: 2,
+            footerSpacing: 2,
+            outerPadding: outerPadding,
+            clipped: clipped
         ) {
             content()
         } header: {
