@@ -240,8 +240,8 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
         }
 
         DispatchQueue.main.async {
-            panel.orderFrontRegardless()
-            panel.makeKey()
+            panel.makeKeyAndOrderFront(nil)
+            panel.makeFirstResponder(panel.contentView)
         }
 
         panelController = .init(window: panel)
