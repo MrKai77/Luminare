@@ -111,4 +111,12 @@ public class LuminareWindow: NSWindow {
         themeView.viewWillStartLiveResize()
         themeView.viewDidEndLiveResize()
     }
+    
+    public override var canBecomeKey: Bool {
+        true
+    }
+    
+    public override var canBecomeMain: Bool {
+        true
+    }
 }
