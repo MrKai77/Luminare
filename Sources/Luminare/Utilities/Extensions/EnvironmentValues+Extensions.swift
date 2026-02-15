@@ -93,10 +93,10 @@ public extension EnvironmentValues {
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .automatic
 
-    // MARK: Popover
+    // MARK: Tool Tip
 
-    @Entry var luminarePopoverTrigger: LuminarePopoverTrigger = .hover
-    @Entry var luminarePopoverShade: LuminarePopoverShade = .styled
+    @Entry var luminareToolTipTrigger: LuminareToolTipTrigger = .hover
+    @Entry var luminareToolTipShade: LuminareToolTipShade = .styled
 
     // MARK: Stepper
 

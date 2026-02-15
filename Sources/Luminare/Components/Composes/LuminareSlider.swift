@@ -513,7 +513,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             prefix: Text("#")
         ) {
             Text("With an info")
-                .luminarePopover(attachedTo: .topTrailing) {
+                .luminareToolTip(attachedTo: .topTrailing) {
                     Text("Incididunt Lorem pariatur eiusmod laboris laboris.")
                         .padding()
                 }

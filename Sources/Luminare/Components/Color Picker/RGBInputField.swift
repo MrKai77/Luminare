@@ -31,7 +31,7 @@ struct RGBInputField<Label>: View where Label: View {
                         fractionLimits: 0...2
                     ))
                 )
-                .luminarePopover(arrowEdge: .top) {
+                .luminareToolTip(arrowEdge: .top) {
                     LuminareStepper(
                         value: $value,
                         source: .finiteContinuous(in: 0...255, step: 5),
@@ -42,7 +42,7 @@ struct RGBInputField<Label>: View where Label: View {
                     .padding(.vertical, 2)
                     .luminareTint(overridingWith: .primary)
                 }
-                .luminarePopoverTrigger(.forceTouch())
+                .luminareToolTipTrigger(.forceTouch())
             } else {
                 LuminareTextField(
                     "", value: .init($value),

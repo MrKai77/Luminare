@@ -37,31 +37,31 @@ extension View {
 public extension View {
     // MARK: Popover
 
-    @ViewBuilder func luminarePopover(
+    @ViewBuilder func luminareToolTip(
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         hidden: Bool = false,
-        @ViewBuilder popoverContent: @escaping () -> some View
+        @ViewBuilder toolTipContent: @escaping () -> some View
     ) -> some View {
         if !hidden {
-            modifier(LuminarePopoverModifier(
+            modifier(LuminareToolTipModifier(
                 attachmentAnchor: attachmentAnchor,
                 arrowEdge: arrowEdge,
                 padding: padding,
-                popoverContent: popoverContent
+                toolTipContent: toolTipContent
             ))
         }
     }
 
-    @ViewBuilder func luminarePopover(
+    @ViewBuilder func luminareToolTip(
         attachedTo alignment: Alignment,
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         dotSize: CGFloat = 4,
         hidden: Bool = false,
-        @ViewBuilder popoverContent: @escaping () -> some View
+        @ViewBuilder toolTipContent: @escaping () -> some View
     ) -> some View {
         overlay(alignment: alignment) {
             Color.clear
@@ -71,31 +71,37 @@ public extension View {
                         .foregroundStyle(.tint)
                         .frame(width: dotSize, height: dotSize)
                         .padding(2)
-                        .luminarePopover(
+                        .luminareToolTip(
                             attachmentAnchor: attachmentAnchor,
                             arrowEdge: arrowEdge,
                             padding: padding,
                             hidden: hidden,
-                            popoverContent: popoverContent
+                            toolTipContent: toolTipContent
                         )
                 }
         }
     }
 
-    // MARK: Popup
+    // MARK: Popover
 
-    @ViewBuilder func luminarePopup(
+    func luminarePopover<Content: View>(
         isPresented: Binding<Bool>,
-        alignment: Alignment = .bottom,
-        material: NSVisualEffectView.Material = .popover,
-        @ViewBuilder popupContent: @escaping () -> some View
+        arrowEdge: Edge = .bottom,
+        behavior: NSPopover.Behavior = .semitransient,
+        shouldHideAnchor: Bool? = nil,
+        shouldAnimate: Bool = true,
+        @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        modifier(LuminarePopupModifier(
-            isPresented: isPresented,
-            alignment: alignment,
-            material: material,
-            popupContent: popupContent
-        ))
+        self.modifier(
+            LuminarePopoverModifier(
+                isPresented: isPresented,
+                arrowEdge: arrowEdge,
+                behavior: behavior,
+                shouldHideAnchor: shouldHideAnchor,
+                shouldAnimate: shouldAnimate,
+                popoverContent: content
+            )
+        )
     }
 
     // MARK: Modal
@@ -388,14 +394,14 @@ public extension View {
         )
     }
 
-    // MARK: Popover
+    // MARK: Tool Tip
 
-    @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger) -> some View {
-        environment(\.luminarePopoverTrigger, trigger)
+    @ViewBuilder func luminareToolTipTrigger(_ trigger: LuminareToolTipTrigger) -> some View {
+        environment(\.luminareToolTipTrigger, trigger)
     }
 
-    @ViewBuilder func luminarePopoverShade(_ shade: LuminarePopoverShade) -> some View {
-        environment(\.luminarePopoverShade, shade)
+    @ViewBuilder func luminareToolTipShade(_ shade: LuminareToolTipShade) -> some View {
+        environment(\.luminareToolTipShade, shade)
     }
 
     // MARK: Stepper

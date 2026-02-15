@@ -408,7 +408,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 .monospaced()
         } label: {
             Text("With an info")
-                .luminarePopover(attachedTo: .topTrailing) {
+                .luminareToolTip(attachedTo: .topTrailing) {
                     Text("Sunt in nisi do labore velit et culpa laborum cupidatat tempor.")
                         .padding()
                 }
