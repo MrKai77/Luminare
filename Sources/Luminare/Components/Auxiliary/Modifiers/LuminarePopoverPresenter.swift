@@ -14,6 +14,11 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
     let shouldHideAnchor: Bool?
     let shouldAnimate: Bool
     let content: () -> Content
+
+    private func closePopover(_ context: Context) {
+        context.coordinator.isPresented = false
+        context.coordinator.popover?.close()
+    }
     
     public func makeNSView(context: Context) -> NSView {
         NSView()
@@ -22,7 +27,10 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
     public func updateNSView(_ nsView: NSView, context: Context) {
         if isPresented && context.coordinator.popover == nil && nsView.window != nil {
             let popover = NSPopover()
-            let hostingController = NSHostingController(rootView: content())
+            let hostingController = NSHostingController(
+                rootView: content()
+                    .environment(\.luminareDismiss, { closePopover(context) })
+            )
             
             hostingController.view.layoutSubtreeIfNeeded()
             let contentSize = hostingController.view.fittingSize

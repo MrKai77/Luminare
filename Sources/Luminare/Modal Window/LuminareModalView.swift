@@ -111,17 +111,10 @@ public struct LuminareSheetPresentation: Equatable, Hashable, Codable, Sendable 
 // MARK: - Modal View
 
 struct LuminareModalView<Content>: View where Content: View {
-    @EnvironmentObject private var floatingPanel: LuminareModalWindow<Content>
-
     @Environment(\.luminareSheetCornerRadii) private var cornerRadii
 
-    @ViewBuilder private var content: () -> Content
-
-    init(
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.content = content
-    }
+    @ViewBuilder var content: () -> Content
+    let setWindowSize: (CGSize) -> Void
 
     var body: some View {
         VStack {
@@ -132,7 +125,7 @@ struct LuminareModalView<Content>: View where Content: View {
             }
             .buttonStyle(.luminare)
             .fixedSize()
-            .onGeometryChange(for: CGSize.self, of: \.size, action: floatingPanel.setSize(_:))
+            .onGeometryChange(for: CGSize.self, of: \.size, action: setWindowSize)
             .frame(minWidth: 12, minHeight: 12, alignment: .top)
 
             Spacer(minLength: 0)

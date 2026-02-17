@@ -16,10 +16,7 @@ public class LuminareTrafficLightedWindow<Content>: NSWindow, ObservableObject w
             defer: true
         )
 
-        let hostingView = NSHostingView(
-            rootView: LuminareTrafficLightedWindowView(content: view)
-                .environmentObject(self)
-        )
+        let hostingView = NSHostingView(rootView: LuminareTrafficLightedWindowView(content: view))
 
         backgroundColor = .clear
         contentView = hostingView

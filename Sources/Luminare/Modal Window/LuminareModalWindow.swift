@@ -35,9 +35,10 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
         )
 
         let view = NSHostingView(
-            rootView: LuminareModalView(content: content)
-                .luminareSheetCornerRadii(cornerRadii)
-                .environmentObject(self)
+            rootView: LuminareModalView(content: content) { [weak self] in
+                self?.setSize($0)
+            }
+            .luminareSheetCornerRadii(cornerRadii)
         )
 
         self.isMovableByWindowBackground = isMovableByWindowBackground

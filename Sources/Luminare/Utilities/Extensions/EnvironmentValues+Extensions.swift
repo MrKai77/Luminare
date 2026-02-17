@@ -23,6 +23,8 @@ public extension EnvironmentValues {
 
     @Entry var luminareAnimation: Animation = .smooth(duration: 0.2)
     @Entry var luminareAnimationFast: Animation = .easeInOut(duration: 0.1)
+    
+    @Entry var luminareDismiss: () -> Void = { }
 }
 
 // MARK: - Modal
