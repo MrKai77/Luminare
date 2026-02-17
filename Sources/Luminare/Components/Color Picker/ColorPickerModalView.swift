@@ -123,7 +123,7 @@ struct ColorPickerModalView: View {
         hasCancel && hasDone
     }
 
-    @ViewBuilder private func rgbInputFields() -> some View {
+    private func rgbInputFields() -> some View {
         HStack(alignment: .bottom, spacing: 4) {
             RGBInputField(value: $redComponent) {
                 Text("Red")
@@ -192,7 +192,7 @@ struct ColorPickerModalView: View {
         }
     }
 
-    @ViewBuilder private func colorPicker() -> some View {
+    private func colorPicker() -> some View {
         Button {
             colorSampler.show { nsColor in
                 if let nsColor {

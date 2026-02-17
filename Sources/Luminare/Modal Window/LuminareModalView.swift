@@ -114,7 +114,7 @@ struct LuminareModalView<Content>: View where Content: View {
     @Environment(\.luminareSheetCornerRadii) private var cornerRadii
 
     @ViewBuilder var content: () -> Content
-    let setWindowSize: (CGSize) -> Void
+    let setWindowSize: (CGSize) -> ()
 
     var body: some View {
         VStack {

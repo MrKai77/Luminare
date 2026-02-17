@@ -331,7 +331,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .onHover { isSliderHovering = $0 }
     }
 
-    @ViewBuilder private func textBoxView() -> some View {
+    private func textBoxView() -> some View {
         HStack {
             if isTextBoxVisible {
                 let textFieldView = TextField(

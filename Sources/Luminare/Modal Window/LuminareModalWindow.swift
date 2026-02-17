@@ -112,9 +112,9 @@ class LuminareModalWindow<Content>: NSWindow, ObservableObject where Content: Vi
             close()
             return
         }
-        
-        /// Produces NSSound.beep() on keydown?
-        /// `super.keyDown(with: event)`
+
+        // Produces NSSound.beep() on keydown?
+        // `super.keyDown(with: event)`
     }
 
     override func mouseDown(with event: NSEvent) {

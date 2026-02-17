@@ -180,7 +180,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 )
             }
 
-            @ViewBuilder private func knob() -> some View {
+            private func knob() -> some View {
                 Group {
                     if isParentHovering {
                         Rectangle()

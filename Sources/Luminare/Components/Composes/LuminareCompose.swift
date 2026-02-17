@@ -177,7 +177,7 @@ public struct LuminareCompose<Label, Content>: View
         )
     }
 
-    @ViewBuilder private func wrappedContent() -> some View {
+    private func wrappedContent() -> some View {
         content()
             .controlSize(controlSize.proposal ?? .regular)
     }

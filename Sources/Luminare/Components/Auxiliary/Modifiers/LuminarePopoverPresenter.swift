@@ -1,5 +1,5 @@
 //
-//  CustomPopoverPresenter.swift
+//  LuminarePopoverPresenter.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2026-01-17.
@@ -19,19 +19,19 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         context.coordinator.isPresented = false
         context.coordinator.popover?.close()
     }
-    
-    public func makeNSView(context: Context) -> NSView {
+
+    public func makeNSView(context _: Context) -> NSView {
         NSView()
     }
-    
+
     public func updateNSView(_ nsView: NSView, context: Context) {
-        if isPresented && context.coordinator.popover == nil && nsView.window != nil {
+        if isPresented, context.coordinator.popover == nil, nsView.window != nil {
             let popover = NSPopover()
             let hostingController = NSHostingController(
                 rootView: content()
-                    .environment(\.luminareDismiss, { closePopover(context) })
+                    .environment(\.luminareDismiss) { closePopover(context) }
             )
-            
+
             hostingController.view.layoutSubtreeIfNeeded()
             let contentSize = hostingController.view.fittingSize
             popover.contentSize = contentSize
@@ -41,7 +41,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
             if let shouldHide = shouldHideAnchor {
                 popover.setValue(NSNumber(value: shouldHide), forKey: "shouldHideAnchor")
             }
-            
+
             popover.contentViewController = hostingController
             popover.delegate = context.coordinator
 
@@ -56,7 +56,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
                 preferredEdge: edgeToNSRectEdge(arrowEdge)
             )
             context.coordinator.popover = popover
-            
+
             if let parentWindow = nsView.window {
                 context.coordinator.startObservingWindow(parentWindow)
             }
@@ -65,53 +65,53 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
             context.coordinator.popover = nil
         }
     }
-    
+
     public func makeCoordinator() -> Coordinator {
         Coordinator(isPresented: $isPresented)
     }
-    
+
     public class Coordinator: NSObject, NSPopoverDelegate {
         @Binding var isPresented: Bool
         var popover: NSPopover?
-        
+
         init(isPresented: Binding<Bool>) {
             _isPresented = isPresented
             super.init()
         }
-        
+
         func startObservingWindow(_ window: NSWindow) {
-            /// Observe when the window loses focus
+            // Observe when the window loses focus
             NotificationCenter.default.addObserver(
                 forName: NSWindow.didResignKeyNotification,
                 object: window,
                 queue: .main
             ) { [weak self] _ in
-                guard let self = self else { return }
-                /// The parent window is no longer focused, close the popover
+                guard let self else { return }
+                // The parent window is no longer focused, close the popover
                 DispatchQueue.main.async {
                     self.isPresented = false
                     self.popover?.close()
                 }
             }
         }
-        
-        public func popoverWillClose(_ notification: Notification) {
+
+        public func popoverWillClose(_: Notification) {
             DispatchQueue.main.async {
                 self.isPresented = false
             }
         }
-        
-        public func popoverDidClose(_ notification: Notification) {
+
+        public func popoverDidClose(_: Notification) {
             popover = nil
         }
     }
-    
+
     private func edgeToNSRectEdge(_ edge: Edge) -> NSRectEdge {
         switch edge {
-        case .top: return .minY
-        case .leading: return .minX
-        case .bottom: return .maxY
-        case .trailing: return .maxX
+        case .top: .minY
+        case .leading: .minX
+        case .bottom: .maxY
+        case .trailing: .maxX
         }
     }
 }

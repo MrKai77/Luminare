@@ -37,7 +37,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // Stacks the given elements according to the direction
+    /// Stacks the given elements according to the direction
     @ViewBuilder func stack(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) -> some View {
         switch self {
         case .horizontal:
@@ -47,7 +47,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // Gets the length from the given 2D size according to the direction
+    /// Gets the length from the given 2D size according to the direction
     func length(of size: CGSize) -> CGFloat {
         switch self {
         case .horizontal:
@@ -57,7 +57,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // Gets the offset from the given 2D point according to the direction
+    /// Gets the offset from the given 2D point according to the direction
     func offset(of point: CGPoint) -> CGFloat {
         switch self {
         case .horizontal:
@@ -67,7 +67,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // Forms a point from the given offset according to the direction
+    /// Forms a point from the given offset according to the direction
     func point(from offset: CGFloat) -> CGPoint {
         switch self {
         case .horizontal:
@@ -77,7 +77,7 @@ public enum InfiniteScrollViewDirection: String, Equatable, Hashable, Identifiab
         }
     }
 
-    // Forms a size from the given length according to the direction
+    /// Forms a size from the given length according to the direction
     func size(from length: CGFloat, fallback: CGFloat) -> CGSize {
         switch self {
         case .horizontal:
@@ -164,31 +164,31 @@ public struct InfiniteScrollView: NSViewRepresentable {
     }
 
     #if DEBUG
-    init(
-        debug: Bool,
-        direction: Direction = .horizontal,
-        allowsDragging: Bool = true,
-        size: CGSize,
-        spacing: CGFloat,
-        snapping: Bool = true,
-        wrapping: Bool = true,
-        initialOffset: CGFloat = .zero,
-        shouldReset: Binding<Bool> = .constant(false),
-        offset: Binding<CGFloat>,
-        page: Binding<Int>
-    ) {
-        self.debug = debug
-        self.direction = direction
-        self.allowsDragging = allowsDragging
-        self.size = size
-        self.spacing = spacing
-        self.snapping = snapping
-        self.wrapping = wrapping
-        self.initialOffset = initialOffset
-        self._shouldReset = shouldReset
-        self._offset = offset
-        self._page = page
-    }
+        init(
+            debug: Bool,
+            direction: Direction = .horizontal,
+            allowsDragging: Bool = true,
+            size: CGSize,
+            spacing: CGFloat,
+            snapping: Bool = true,
+            wrapping: Bool = true,
+            initialOffset: CGFloat = .zero,
+            shouldReset: Binding<Bool> = .constant(false),
+            offset: Binding<CGFloat>,
+            page: Binding<Int>
+        ) {
+            self.debug = debug
+            self.direction = direction
+            self.allowsDragging = allowsDragging
+            self.size = size
+            self.spacing = spacing
+            self.snapping = snapping
+            self.wrapping = wrapping
+            self.initialOffset = initialOffset
+            self._shouldReset = shouldReset
+            self._offset = offset
+            self._page = page
+        }
     #endif
 
     var length: CGFloat {
@@ -216,7 +216,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
         .frame(width: size.width, height: size.height)
     }
 
-    @ViewBuilder private func centerView() -> some View {
+    private func centerView() -> some View {
         Color.clear
             .frame(width: size.width, height: size.height)
     }
@@ -355,10 +355,11 @@ public struct InfiniteScrollView: NSViewRepresentable {
                         case .dragging:
                             // ends dragging
                             draggingStage = .invalid
-                            didEndLiveScroll(.init(
-                                name: NSScrollView.didEndLiveScrollNotification,
-                                object: scrollView
-                            )
+                            didEndLiveScroll(
+                                .init(
+                                    name: NSScrollView.didEndLiveScrollNotification,
+                                    object: scrollView
+                                )
                             )
                         }
                     case .leftMouseDragged:
@@ -399,7 +400,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             }
         }
 
-        // Should be called whenever a scroll happens.
+        /// Should be called whenever a scroll happens.
         @objc func didLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
@@ -448,7 +449,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             updateBounds(scrollView.contentView)
         }
 
-        // Should be called whenever a scroll starts.
+        /// Should be called whenever a scroll starts.
         @objc func willStartLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
@@ -460,7 +461,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             updateBounds(scrollView.contentView)
         }
 
-        // Should be called whenever a scroll ends.
+        /// Should be called whenever a scroll ends.
         @objc func didEndLiveScroll(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
 
@@ -479,13 +480,13 @@ public struct InfiniteScrollView: NSViewRepresentable {
             parent.onBoundsChange(clipView.bounds, animate: animate)
         }
 
-        // Accumulates the page for wrapping
+        /// Accumulates the page for wrapping
         private func accumulatePage(_ offset: Int) {
             parent.page += offset
             pageOrigin = parent.page
         }
 
-        // Overrides the page, not for wrapping
+        /// Overrides the page, not for wrapping
         private func overridePage(_ offset: Int) {
             parent.page = pageOrigin + offset
         }
@@ -499,7 +500,7 @@ public struct InfiniteScrollView: NSViewRepresentable {
             updateBounds(clipView, animate: animate)
         }
 
-        // Snaps to the nearest available page anchor
+        /// Snaps to the nearest available page anchor
         private func snapScrollViewPosition(_ clipView: NSClipView) {
             let center = parent.direction.offset(of: parent.centerRect.origin)
             let offset = parent.direction.offset(of: clipView.bounds.origin)
@@ -566,66 +567,66 @@ public struct InfiniteScrollView: NSViewRepresentable {
 
 #if DEBUG
 
-// MARK: - Preview
+    // MARK: - Preview
 
-private struct InfiniteScrollPreview: View {
-    var direction: InfiniteScrollViewDirection = .horizontal
-    var size: CGSize = .init(width: 500, height: 100)
+    private struct InfiniteScrollPreview: View {
+        var direction: InfiniteScrollViewDirection = .horizontal
+        var size: CGSize = .init(width: 500, height: 100)
 
-    @State private var offset: CGFloat = 0
-    @State private var page: Int = 0
-    @State private var shouldReset: Bool = true
-    @State private var wrapping: Bool = true
+        @State private var offset: CGFloat = 0
+        @State private var page: Int = 0
+        @State private var shouldReset: Bool = true
+        @State private var wrapping: Bool = true
 
-    var body: some View {
-        InfiniteScrollView(
-            debug: true,
-            direction: direction,
+        var body: some View {
+            InfiniteScrollView(
+                debug: true,
+                direction: direction,
 
-            size: size,
-            spacing: 50,
-            snapping: true,
-            wrapping: wrapping,
-            initialOffset: 0,
+                size: size,
+                spacing: 50,
+                snapping: true,
+                wrapping: wrapping,
+                initialOffset: 0,
 
-            shouldReset: $shouldReset,
-            offset: $offset,
-            page: $page
-        )
-        .frame(width: size.width, height: size.height)
-        .border(.red)
+                shouldReset: $shouldReset,
+                offset: $offset,
+                page: $page
+            )
+            .frame(width: size.width, height: size.height)
+            .border(.red)
 
-        HStack {
-            Button("Reset Offset") {
-                shouldReset = true
+            HStack {
+                Button("Reset Offset") {
+                    shouldReset = true
+                }
+
+                Button(wrapping ? "Disable Wrapping" : "Enable Wrapping") {
+                    wrapping.toggle()
+                }
             }
+            .frame(maxWidth: .infinity)
 
-            Button(wrapping ? "Disable Wrapping" : "Enable Wrapping") {
-                wrapping.toggle()
+            HStack {
+                Text(String(format: "Offset: %.1f", offset))
+
+                Text("Page: \(page)")
+                    .foregroundStyle(.tint)
             }
+            .monospaced()
+            .frame(height: 12)
         }
-        .frame(maxWidth: .infinity)
+    }
 
-        HStack {
-            Text(String(format: "Offset: %.1f", offset))
+    #Preview {
+        VStack {
+            InfiniteScrollPreview()
 
-            Text("Page: \(page)")
-                .foregroundStyle(.tint)
+            Divider()
+
+            InfiniteScrollPreview(direction: .vertical, size: .init(width: 100, height: 500))
         }
-        .monospaced()
-        .frame(height: 12)
+        .padding()
+        .contentTransition(.numericText())
     }
-}
-
-#Preview {
-    VStack {
-        InfiniteScrollPreview()
-
-        Divider()
-
-        InfiniteScrollPreview(direction: .vertical, size: .init(width: 100, height: 500))
-    }
-    .padding()
-    .contentTransition(.numericText())
-}
 #endif

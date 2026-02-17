@@ -61,14 +61,12 @@ public struct LuminareDividedStack<Content>: View where Content: View {
         }
     }
 
-    @ViewBuilder
     private func makeHorizontalStack() -> some View {
         UnaryVariadicView(content()) { children in
             LuminareDividedHStackVariadic(children: children)
         }
     }
 
-    @ViewBuilder
     private func makeVerticalStack() -> some View {
         UnaryVariadicView(content()) { children in
             LuminareDividedVStackVariadic(children: children)
