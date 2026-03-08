@@ -7,7 +7,7 @@
 --before-marks 
 --binary-grouping 4,8
 --blank-line-after-switch-case multiline-only
---call-site-paren default
+--call-site-paren balanced
 --category-mark "MARK: %c"
 --class-threshold 0
 --closing-paren balanced
@@ -41,7 +41,7 @@
 --header ignore
 --hex-grouping 4,8
 --hex-literal-case uppercase
---ifdef no-indent
+--ifdef indent
 --import-grouping alpha
 --indent 4
 --indent-case false
@@ -73,6 +73,7 @@
 --organization-mode visibility
 --organize-types actor,class,enum,struct
 --pattern-let hoist
+--prefer-synthesized-init-for-internal-structs never
 --preserve-acronyms 
 --preserve-decls 
 --preserved-property-types Package
@@ -110,7 +111,7 @@
 --visibility-marks 
 --visibility-order 
 --void-type tuple
---wrap-arguments preserve
+--wrap-arguments before-first
 --wrap-collections preserve
 --wrap-conditions preserve
 --wrap-effects preserve
@@ -123,5 +124,5 @@
 --xcode-indentation disabled
 --xctest-symbols 
 --yoda-swap always
---disable wrapMultilineStatementBraces
---enable isEmpty,propertyTypes
+--disable genericExtensions,redundantProperty,simplifyGenericConstraints,wrapMultilineStatementBraces,wrapPropertyBodies
+--enable isEmpty

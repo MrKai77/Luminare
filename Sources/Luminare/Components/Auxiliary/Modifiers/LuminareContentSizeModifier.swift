@@ -23,7 +23,6 @@ public struct LuminareContentSizeModifier: ViewModifier {
         self.hasFixedHeight = hasFixedHeight
     }
 
-    @ViewBuilder
     public func body(content: Content) -> some View {
         if let contentMode {
             Group {

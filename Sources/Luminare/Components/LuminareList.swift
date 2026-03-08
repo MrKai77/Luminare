@@ -408,7 +408,7 @@ public struct LuminareListItem<Content, V>: View
         }
     }
 
-    @ViewBuilder private func firstItemPart() -> some View {
+    private func firstItemPart() -> some View {
         VStack(spacing: 0) {
             // - Top half
 
@@ -457,7 +457,7 @@ public struct LuminareListItem<Content, V>: View
         }
     }
 
-    @ViewBuilder private func lastItemPart() -> some View {
+    private func lastItemPart() -> some View {
         VStack(spacing: 0) {
             // - Top half
 
@@ -506,7 +506,7 @@ public struct LuminareListItem<Content, V>: View
         }
     }
 
-    @ViewBuilder private func doubleLinePart() -> some View {
+    private func doubleLinePart() -> some View {
         HStack {
             Rectangle()
                 .frame(width: lineWidth)
@@ -519,7 +519,7 @@ public struct LuminareListItem<Content, V>: View
         .foregroundStyle(.tint)
     }
 
-    @ViewBuilder private func singleSelectionPart() -> some View {
+    private func singleSelectionPart() -> some View {
         UnevenRoundedRectangle(
             topLeadingRadius: isFirst && topLeadingRounded
                 ? cornerRadii.topLeading - 1 : itemCornerRadii.topLeading,

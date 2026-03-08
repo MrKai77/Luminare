@@ -16,13 +16,15 @@ extension EnvironmentValues {
 // MARK: - Common
 
 public extension EnvironmentValues {
-    // Currently, it is impossible to read the `.tint()` modifier on a view
-    // this is a custom environement value as an alternative implementation of it
-    // in practice, it should always be synchronized with `.tint()`
+    /// Currently, it is impossible to read the `.tint()` modifier on a view
+    /// this is a custom environement value as an alternative implementation of it
+    /// in practice, it should always be synchronized with `.tint()`
     @Entry var luminareTintColor: Color = .accentColor
 
     @Entry var luminareAnimation: Animation = .smooth(duration: 0.2)
     @Entry var luminareAnimationFast: Animation = .easeInOut(duration: 0.1)
+
+    @Entry var luminareDismiss: () -> () = {}
 }
 
 // MARK: - Modal
@@ -73,7 +75,7 @@ public extension EnvironmentValues {
     // MARK: Pane
 
     @Entry var luminarePaneLayout: LuminarePaneLayout = .stacked
-    // A naming convention: `titleBar` for SwiftUI, `titlebar` for AppKit, and `title bar` for natural language
+    /// A naming convention: `titleBar` for SwiftUI, `titlebar` for AppKit, and `title bar` for natural language
     @Entry var luminareTitleBarHeight: CGFloat = 50
 
     // MARK: Section
@@ -86,17 +88,17 @@ public extension EnvironmentValues {
     @Entry var luminareBottomLeadingRounded: Bool = true
     @Entry var luminareBottomTrailingRounded: Bool = true
 
-    // If 0, then luminareSection will be of fixed size.
+    /// If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
 
     // MARK: Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .automatic
 
-    // MARK: Popover
+    // MARK: Tool Tip
 
-    @Entry var luminarePopoverTrigger: LuminarePopoverTrigger = .hover
-    @Entry var luminarePopoverShade: LuminarePopoverShade = .styled
+    @Entry var luminareToolTipTrigger: LuminareToolTipTrigger = .hover
+    @Entry var luminareToolTipShade: LuminareToolTipShade = .styled
 
     // MARK: Stepper
 

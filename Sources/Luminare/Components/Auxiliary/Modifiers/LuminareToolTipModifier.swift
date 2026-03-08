@@ -1,5 +1,5 @@
 //
-//  LuminarePopoverModifier.swift
+//  LuminareToolTipModifier.swift
 //  Luminare
 //
 //  Created by Kai Azim on 2024-06-02.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public enum LuminarePopoverTrigger {
+public enum LuminareToolTipTrigger {
     case hover(
         showDelay: TimeInterval = 0.5,
         hideDelay: TimeInterval = 0.5,
@@ -27,7 +27,7 @@ public enum LuminarePopoverTrigger {
     }
 }
 
-public enum LuminarePopoverShade {
+public enum LuminareToolTipShade {
     case none
     case styled(_ style: AnyShapeStyle)
 
@@ -47,17 +47,17 @@ public enum LuminarePopoverShade {
     }
 }
 
-// MARK: - Popover
+// MARK: - Tool Tip
 
-public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where PopoverContent: View {
-    public typealias Trigger = LuminarePopoverTrigger
-    public typealias Shade = LuminarePopoverShade
+public struct LuminareToolTipModifier<ToolTipContent>: ViewModifier where ToolTipContent: View {
+    public typealias Trigger = LuminareToolTipTrigger
+    public typealias Shade = LuminareToolTipShade
 
     // MARK: Environments
 
     @Environment(\.luminareAnimationFast) private var animationFast
-    @Environment(\.luminarePopoverTrigger) private var trigger
-    @Environment(\.luminarePopoverShade) private var shade
+    @Environment(\.luminareToolTipTrigger) private var trigger
+    @Environment(\.luminareToolTipShade) private var shade
     @Environment(\.luminareCornerRadii) private var cornerRadii
 
     // MARK: Fields
@@ -66,7 +66,7 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
     private let arrowEdge: Edge?
     private let padding: CGFloat
 
-    @ViewBuilder private var popoverContent: () -> PopoverContent
+    @ViewBuilder private var toolTipContent: () -> ToolTipContent
 
     @State private var isPopoverPresented: Bool = false
     @State private var isHovering: Bool = false
@@ -81,12 +81,12 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
-        @ViewBuilder popoverContent: @escaping () -> PopoverContent
+        @ViewBuilder toolTipContent: @escaping () -> ToolTipContent
     ) {
         self.attachmentAnchor = attachmentAnchor
         self.arrowEdge = arrowEdge
         self.padding = padding
-        self.popoverContent = popoverContent
+        self.toolTipContent = toolTipContent
     }
 
     // MARK: Body
@@ -139,7 +139,7 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
             Group {
                 switch trigger {
                 case let .hover(showDelay, hideDelay, throttleDelay):
-                    popoverContent()
+                    toolTipContent()
                         .onHover { isHovering = $0 }
                         .booleanThrottleDebounced(
                             isHovering,
@@ -150,7 +150,7 @@ public struct LuminarePopoverModifier<PopoverContent>: ViewModifier where Popove
                             isPopoverPresented = debouncedValue
                         }
                 case .forceTouch:
-                    popoverContent()
+                    toolTipContent()
                         .opacity(normalizedForceTouchProgress)
                         .scaleEffect(forceTouchRecognized ? 1.1 : 1, anchor: .center)
                         .animation(.bouncy, value: forceTouchRecognized)
@@ -211,13 +211,13 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
 
     var body: some View {
         badge()
-            .luminarePopover(
+            .luminareToolTip(
                 arrowEdge: arrowEdge,
                 padding: padding
             ) {
                 content(gesture, recognized)
             }
-            .luminarePopoverTrigger(.forceTouch { gesture, recognized in
+            .luminareToolTipTrigger(.forceTouch { gesture, recognized in
                 self.gesture = gesture
                 self.recognized = recognized
             })
@@ -228,16 +228,16 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
     LuminareSection {
         LuminareCompose {} label: {
             Text("Pops to top *on hover*")
-                .luminarePopover {
+                .luminareToolTip {
                     Text("Here's to the *crazy* ones.")
                         .padding()
                 }
-                .luminarePopoverShade(.none)
+                .luminareToolTipShade(.none)
         }
 
         LuminareCompose {} label: {
             Text("Pops to trailing with highlight *on hover*")
-                .luminarePopover {
+                .luminareToolTip {
                     VStack(alignment: .leading) {
                         Text("The **misfits.** The ~rebels.~")
                         Text("The [troublemakers](https://apple.com).")
@@ -248,7 +248,7 @@ private struct PopoverForceTouchPreview<Content, Badge>: View where Content: Vie
 
         LuminareCompose {} label: {
             Text("Pops from a dot ↗")
-                .luminarePopover(attachedTo: .topTrailing, arrowEdge: .top) {
+                .luminareToolTip(attachedTo: .topTrailing, arrowEdge: .top) {
                     VStack(alignment: .leading) {
                         Text("The round pegs in the square holes.")
                         Text("The ones **who see things differently.**")

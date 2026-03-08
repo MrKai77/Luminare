@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Internal
 
 extension View {
-    // Assigns the specified environment value, if not nil
+    /// Assigns the specified environment value, if not nil
     @ViewBuilder func environment<V>(
         _ keyPath: WritableKeyPath<EnvironmentValues, V>,
         ifNotNil value: V?
@@ -37,31 +37,31 @@ extension View {
 public extension View {
     // MARK: Popover
 
-    @ViewBuilder func luminarePopover(
+    @ViewBuilder func luminareToolTip(
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         hidden: Bool = false,
-        @ViewBuilder popoverContent: @escaping () -> some View
+        @ViewBuilder toolTipContent: @escaping () -> some View
     ) -> some View {
         if !hidden {
-            modifier(LuminarePopoverModifier(
+            modifier(LuminareToolTipModifier(
                 attachmentAnchor: attachmentAnchor,
                 arrowEdge: arrowEdge,
                 padding: padding,
-                popoverContent: popoverContent
+                toolTipContent: toolTipContent
             ))
         }
     }
 
-    @ViewBuilder func luminarePopover(
+    func luminareToolTip(
         attachedTo alignment: Alignment,
         attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         dotSize: CGFloat = 4,
         hidden: Bool = false,
-        @ViewBuilder popoverContent: @escaping () -> some View
+        @ViewBuilder toolTipContent: @escaping () -> some View
     ) -> some View {
         overlay(alignment: alignment) {
             Color.clear
@@ -71,36 +71,42 @@ public extension View {
                         .foregroundStyle(.tint)
                         .frame(width: dotSize, height: dotSize)
                         .padding(2)
-                        .luminarePopover(
+                        .luminareToolTip(
                             attachmentAnchor: attachmentAnchor,
                             arrowEdge: arrowEdge,
                             padding: padding,
                             hidden: hidden,
-                            popoverContent: popoverContent
+                            toolTipContent: toolTipContent
                         )
                 }
         }
     }
 
-    // MARK: Popup
+    // MARK: Popover
 
-    @ViewBuilder func luminarePopup(
+    func luminarePopover(
         isPresented: Binding<Bool>,
-        alignment: Alignment = .bottom,
-        material: NSVisualEffectView.Material = .popover,
-        @ViewBuilder popupContent: @escaping () -> some View
+        arrowEdge: Edge = .bottom,
+        behavior: NSPopover.Behavior = .semitransient,
+        shouldHideAnchor: Bool? = nil,
+        shouldAnimate: Bool = true,
+        @ViewBuilder content: @escaping () -> some View
     ) -> some View {
-        modifier(LuminarePopupModifier(
-            isPresented: isPresented,
-            alignment: alignment,
-            material: material,
-            popupContent: popupContent
-        ))
+        modifier(
+            LuminarePopoverModifier(
+                isPresented: isPresented,
+                arrowEdge: arrowEdge,
+                behavior: behavior,
+                shouldHideAnchor: shouldHideAnchor,
+                shouldAnimate: shouldAnimate,
+                popoverContent: content
+            )
+        )
     }
 
     // MARK: Modal
 
-    @ViewBuilder func luminareModal(
+    func luminareModal(
         isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> some View
     ) -> some View {
@@ -112,7 +118,7 @@ public extension View {
         )
     }
 
-    @ViewBuilder func luminareModalWithPredefinedSheetStyle(
+    func luminareModalWithPredefinedSheetStyle(
         isPresented: Binding<Bool>,
         isCompact: Bool = true,
         @ViewBuilder content: @escaping () -> some View
@@ -127,15 +133,15 @@ public extension View {
         )
         .luminareSheetCornerRadii(
             .init(
-                topLeading: 12 + (isCompact ? 8 : 16),
-                bottomLeading: 8 + (isCompact ? 8 : 16),
-                bottomTrailing: 8 + (isCompact ? 8 : 16),
-                topTrailing: 12 + (isCompact ? 8 : 16)
+                topLeading: CGFloat(12 + (isCompact ? 8 : 16)),
+                bottomLeading: CGFloat(8 + (isCompact ? 8 : 16)),
+                bottomTrailing: CGFloat(8 + (isCompact ? 8 : 16)),
+                topTrailing: CGFloat(12 + (isCompact ? 8 : 16))
             )
         )
     }
 
-    @ViewBuilder func booleanThrottleDebounced(
+    func booleanThrottleDebounced(
         _ value: Bool,
         flipOnDelay: TimeInterval = 0.5,
         flipOffDelay: TimeInterval = .zero,
@@ -153,7 +159,7 @@ public extension View {
         ))
     }
 
-    @ViewBuilder func luminareContentSize(
+    func luminareContentSize(
         aspectRatio: CGFloat? = nil,
         contentMode: ContentMode? = nil,
         hasFixedHeight: Bool = false
@@ -167,7 +173,7 @@ public extension View {
         )
     }
 
-    @ViewBuilder func luminarePlateau(
+    func luminarePlateau(
         isPressed: Bool = false,
         isHovering: Bool = false,
         overrideFillStyle: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? = nil,
@@ -183,7 +189,7 @@ public extension View {
         )
     }
 
-    @ViewBuilder func luminareBackground() -> some View {
+    func luminareBackground() -> some View {
         modifier(
             LuminareBackgroundEffectModifier()
         )
@@ -195,16 +201,16 @@ public extension View {
 public extension View {
     /// Adjusts the tint of the view, synchronously changing the `.tint()` modifier and the `luminareTintColor` environment
     /// value.
-    @ViewBuilder func luminareTint(overridingWith color: Color) -> some View {
+    func luminareTint(overridingWith color: Color) -> some View {
         tint(color)
             .environment(\.luminareTintColor, color)
     }
 
-    @ViewBuilder func luminareAnimation(_ animation: Animation) -> some View {
+    func luminareAnimation(_ animation: Animation) -> some View {
         environment(\.luminareAnimation, animation)
     }
 
-    @ViewBuilder func luminareAnimationFast(_ animation: Animation) -> some View {
+    func luminareAnimationFast(_ animation: Animation) -> some View {
         environment(\.luminareAnimationFast, animation)
     }
 }
@@ -212,11 +218,11 @@ public extension View {
 // MARK: - Modals
 
 public extension View {
-    @ViewBuilder func luminareModalStyle(_ style: LuminareModalStyle) -> some View {
+    func luminareModalStyle(_ style: LuminareModalStyle) -> some View {
         environment(\.luminareModalStyle, style)
     }
 
-    @ViewBuilder func luminareModalContentWrapper(@ViewBuilder content: @escaping (AnyView) -> some View) -> some View {
+    func luminareModalContentWrapper(@ViewBuilder content: @escaping (AnyView) -> some View) -> some View {
         environment(\.luminareModalContentWrapper) { view in
             AnyView(content(view))
         }
@@ -224,39 +230,39 @@ public extension View {
 
     // MARK: Sheet
 
-    @ViewBuilder func luminareSheetCornerRadii(_ radii: RectangleCornerRadii) -> some View {
+    func luminareSheetCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminareSheetCornerRadii, radii)
     }
 
-    @ViewBuilder func luminareSheetCornerRadius(_ radius: CGFloat) -> some View {
+    func luminareSheetCornerRadius(_ radius: CGFloat) -> some View {
         luminareSheetCornerRadii(.init(radius))
     }
 
-    @ViewBuilder func luminareSheetPresentation(_ presentation: LuminareSheetPresentation) -> some View {
+    func luminareSheetPresentation(_ presentation: LuminareSheetPresentation) -> some View {
         environment(\.luminareSheetPresentation, presentation)
     }
 
-    @ViewBuilder func luminareSheetMovableByWindowBackground(_ movable: Bool = true) -> some View {
+    func luminareSheetMovableByWindowBackground(_ movable: Bool = true) -> some View {
         environment(\.luminareSheetIsMovableByWindowBackground, movable)
     }
 
-    @ViewBuilder func luminareSheetClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
+    func luminareSheetClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
         environment(\.luminareSheetClosesOnDefocus, closesOnDefocus)
     }
 
     // MARK: Popup
 
-    @ViewBuilder func luminarePopupPadding(_ padding: CGFloat = 4) -> some View {
+    func luminarePopupPadding(_ padding: CGFloat = 4) -> some View {
         environment(\.luminarePopupPadding, padding)
     }
 
-    @ViewBuilder func luminarePopupCornerRadii(_ radii: RectangleCornerRadii) -> some View {
+    func luminarePopupCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminarePopupCornerRadii, radii)
     }
 
     // MARK: Color Picker
 
-    @ViewBuilder func luminareColorPickerControls(hasCancel: Bool? = nil, hasDone: Bool? = nil) -> some View {
+    func luminareColorPickerControls(hasCancel: Bool? = nil, hasDone: Bool? = nil) -> some View {
         environment(\.luminareColorPickerHasCancel, ifNotNil: hasCancel)
             .environment(\.luminareColorPickerHasDone, ifNotNil: hasDone)
     }
@@ -265,77 +271,77 @@ public extension View {
 // MARK: - View
 
 public extension View {
-    @ViewBuilder func luminareCornerRadii(_ radii: RectangleCornerRadii) -> some View {
+    func luminareCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminareCornerRadii, radii)
     }
 
-    @ViewBuilder func luminareCornerRadius(_ radius: CGFloat) -> some View {
+    func luminareCornerRadius(_ radius: CGFloat) -> some View {
         luminareCornerRadii(.init(radius))
             .environment(\.luminareIsInsideSection, false)
     }
 
-    @ViewBuilder func luminareMinHeight(_ height: CGFloat) -> some View {
+    func luminareMinHeight(_ height: CGFloat) -> some View {
         environment(\.luminareMinHeight, height)
     }
 
-    @ViewBuilder func luminareBorderedStates(_ states: LuminareBorderStates) -> some View {
+    func luminareBorderedStates(_ states: LuminareBorderStates) -> some View {
         environment(\.luminareBorderedStates, states)
     }
 
-    @ViewBuilder func luminareFilledStates(_ states: LuminareFillStates) -> some View {
+    func luminareFilledStates(_ states: LuminareFillStates) -> some View {
         environment(\.luminareFilledStates, states)
     }
 
-    @ViewBuilder func luminareHasDividers(_ hasDividers: Bool) -> some View {
+    func luminareHasDividers(_ hasDividers: Bool) -> some View {
         environment(\.luminareHasDividers, hasDividers)
     }
 
-    @ViewBuilder func luminareContentMargins(_ insets: EdgeInsets) -> some View {
+    func luminareContentMargins(_ insets: EdgeInsets) -> some View {
         environment(\.luminareContentMarginsTop, insets.top)
             .environment(\.luminareContentMarginsLeading, insets.leading)
             .environment(\.luminareContentMarginsBottom, insets.bottom)
             .environment(\.luminareContentMarginsTrailing, insets.trailing)
     }
 
-    @ViewBuilder func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
+    func luminareContentMargins(_ edges: Edge.Set, _ length: CGFloat) -> some View {
         environment(\.luminareContentMarginsTop, ifNotNil: edges.contains(.top) ? length : nil)
             .environment(\.luminareContentMarginsLeading, ifNotNil: edges.contains(.leading) ? length : nil)
             .environment(\.luminareContentMarginsBottom, ifNotNil: edges.contains(.bottom) ? length : nil)
             .environment(\.luminareContentMarginsTrailing, ifNotNil: edges.contains(.trailing) ? length : nil)
     }
 
-    @ViewBuilder func luminareContentMargins(_ length: CGFloat) -> some View {
+    func luminareContentMargins(_ length: CGFloat) -> some View {
         luminareContentMargins(.all, length)
     }
 
     // MARK: Form
 
     @available(macOS 15.0, *)
-    @ViewBuilder func luminareFormSpacing(_ spacing: CGFloat) -> some View {
+    func luminareFormSpacing(_ spacing: CGFloat) -> some View {
         environment(\.luminareFormSpacing, spacing)
     }
 
     // MARK: Pane
 
-    @ViewBuilder func luminarePaneLayout(_ layout: LuminarePaneLayout) -> some View {
+    func luminarePaneLayout(_ layout: LuminarePaneLayout) -> some View {
         environment(\.luminarePaneLayout, layout)
     }
 
-    @ViewBuilder func luminareTitleBarHeight(_ height: CGFloat) -> some View {
+    func luminareTitleBarHeight(_ height: CGFloat) -> some View {
         environment(\.luminareTitleBarHeight, height)
     }
 
     // MARK: Section
 
-    @ViewBuilder func luminareSectionLayout(_ layout: LuminareSectionLayout) -> some View {
+    func luminareSectionLayout(_ layout: LuminareSectionLayout) -> some View {
         environment(\.luminareSectionLayout, layout)
     }
 
-    @ViewBuilder func luminareSectionHorizontalPadding(_ padding: CGFloat) -> some View {
+    func luminareSectionHorizontalPadding(_ padding: CGFloat) -> some View {
         environment(\.luminareSectionHorizontalPadding, padding)
     }
 
-    @ViewBuilder func luminareRoundingBehavior(
+    func luminareRoundingBehavior(
         topLeading: Bool? = nil,
         topTrailing: Bool? = nil,
         bottomLeading: Bool? = nil,
@@ -347,7 +353,7 @@ public extension View {
             .environment(\.luminareBottomTrailingRounded, ifNotNil: bottomTrailing)
     }
 
-    @ViewBuilder func luminareRoundingBehavior(
+    func luminareRoundingBehavior(
         top: Bool? = nil,
         bottom: Bool? = nil
     ) -> some View {
@@ -357,7 +363,7 @@ public extension View {
             .environment(\.luminareBottomTrailingRounded, ifNotNil: bottom)
     }
 
-    @ViewBuilder func luminareRoundingBehavior(
+    func luminareRoundingBehavior(
         leading: Bool? = nil,
         trailing: Bool? = nil
     ) -> some View {
@@ -367,92 +373,92 @@ public extension View {
             .environment(\.luminareBottomTrailingRounded, ifNotNil: trailing)
     }
 
-    @ViewBuilder func luminareSectionMaxWidth(_ maxWidth: CGFloat?) -> some View {
+    func luminareSectionMaxWidth(_ maxWidth: CGFloat?) -> some View {
         environment(\.luminareSectionMaxWidth, maxWidth)
     }
 
-    @ViewBuilder func luminareSectionDisableInnerPadding(_ disable: Bool) -> some View {
+    func luminareSectionDisableInnerPadding(_ disable: Bool) -> some View {
         preference(key: LuminareSectionStackDisableInnerPaddingKey.self, value: disable)
     }
 
     // MARK: Compose
 
-    @ViewBuilder func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize) -> some View {
+    func luminareComposeControlSize(_ controlSize: LuminareComposeControlSize) -> some View {
         environment(\.luminareComposeControlSize, controlSize)
     }
 
-    @ViewBuilder func luminareComposeIgnoreSafeArea(edges: Edge.Set) -> some View {
+    func luminareComposeIgnoreSafeArea(edges: Edge.Set) -> some View {
         preference(
             key: LuminareComposeIgnoreSafeAreaEdgesKey.self,
             value: edges
         )
     }
 
-    // MARK: Popover
+    // MARK: Tool Tip
 
-    @ViewBuilder func luminarePopoverTrigger(_ trigger: LuminarePopoverTrigger) -> some View {
-        environment(\.luminarePopoverTrigger, trigger)
+    func luminareToolTipTrigger(_ trigger: LuminareToolTipTrigger) -> some View {
+        environment(\.luminareToolTipTrigger, trigger)
     }
 
-    @ViewBuilder func luminarePopoverShade(_ shade: LuminarePopoverShade) -> some View {
-        environment(\.luminarePopoverShade, shade)
+    func luminareToolTipShade(_ shade: LuminareToolTipShade) -> some View {
+        environment(\.luminareToolTipShade, shade)
     }
 
     // MARK: Stepper
 
     @available(macOS 15.0, *)
-    @ViewBuilder func luminareStepperAlignment(_ alignment: LuminareStepperAlignment) -> some View {
+    func luminareStepperAlignment(_ alignment: LuminareStepperAlignment) -> some View {
         environment(\.luminareStepperAlignment, alignment)
     }
 
     @available(macOS 15.0, *)
-    @ViewBuilder func luminareStepperDirection(_ direction: LuminareStepperDirection) -> some View {
+    func luminareStepperDirection(_ direction: LuminareStepperDirection) -> some View {
         environment(\.luminareStepperDirection, direction)
     }
 
     // MARK: Compact Picker
 
-    @ViewBuilder func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle) -> some View {
+    func luminareCompactPickerStyle(_ style: LuminareCompactPickerStyle) -> some View {
         environment(\.luminareCompactPickerStyle, style)
     }
 
     // MARK: List
 
-    @ViewBuilder func luminareListItemCornerRadii(_ radii: RectangleCornerRadii) -> some View {
+    func luminareListItemCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminareListItemCornerRadii, radii)
     }
 
-    @ViewBuilder func luminareListItemCornerRadius(_ radius: CGFloat) -> some View {
+    func luminareListItemCornerRadius(_ radius: CGFloat) -> some View {
         luminareListItemCornerRadii(.init(radius))
     }
 
-    @ViewBuilder func luminareListItemHeight(_ height: CGFloat) -> some View {
+    func luminareListItemHeight(_ height: CGFloat) -> some View {
         environment(\.luminareListItemHeight, height)
     }
 
-    @ViewBuilder func luminareListItemHighlightOnHover(_ highlight: Bool) -> some View {
+    func luminareListItemHighlightOnHover(_ highlight: Bool) -> some View {
         environment(\.luminareListItemHighlightOnHover, highlight)
     }
 
-    @ViewBuilder func luminareListFixedHeight(until height: CGFloat?) -> some View {
+    func luminareListFixedHeight(until height: CGFloat?) -> some View {
         environment(\.luminareListFixedHeightUntil, height)
     }
 
     // MARK: Sidebar
 
-    @ViewBuilder func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
+    func luminareSizebarOverflow(_ overflow: CGFloat) -> some View {
         environment(\.luminareSidebarOverflow, overflow)
     }
 
     // MARK: Slider
 
-    @ViewBuilder func luminareSliderLayout(_ layout: LuminareSliderLayout) -> some View {
+    func luminareSliderLayout(_ layout: LuminareSliderLayout) -> some View {
         environment(\.luminareSliderLayout, layout)
     }
 
     // MARK: Slider Picker
 
-    @ViewBuilder func luminareSliderPickerLayout(_ layout: LuminareSliderPickerLayout) -> some View {
+    func luminareSliderPickerLayout(_ layout: LuminareSliderPickerLayout) -> some View {
         environment(\.luminareSliderPickerLayout, layout)
     }
 }

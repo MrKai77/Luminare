@@ -331,7 +331,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .onHover { isSliderHovering = $0 }
     }
 
-    @ViewBuilder private func textBoxView() -> some View {
+    private func textBoxView() -> some View {
         HStack {
             if isTextBoxVisible {
                 let textFieldView = TextField(
@@ -513,7 +513,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
             prefix: Text("#")
         ) {
             Text("With an info")
-                .luminarePopover(attachedTo: .topTrailing) {
+                .luminareToolTip(attachedTo: .topTrailing) {
                     Text("Incididunt Lorem pariatur eiusmod laboris laboris.")
                         .padding()
                 }

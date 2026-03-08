@@ -313,7 +313,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         options.firstIndex(of: selection)! > options.firstIndex(of: lastSelection)!
     }
 
-    @ViewBuilder private func sliderView() -> some View {
+    private func sliderView() -> some View {
         Slider(
             value: Binding<Double>(
                 get: {
@@ -331,7 +331,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         .onHover { isSliderHovering = $0 }
     }
 
-    @ViewBuilder private func textBoxView() -> some View {
+    private func textBoxView() -> some View {
         content(selection)
             .contentTransition(.numericText(countsDown: countsDown))
             .multilineTextAlignment(.trailing)
@@ -408,7 +408,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 .monospaced()
         } label: {
             Text("With an info")
-                .luminarePopover(attachedTo: .topTrailing) {
+                .luminareToolTip(attachedTo: .topTrailing) {
                     Text("Sunt in nisi do labore velit et culpa laborum cupidatat tempor.")
                         .padding()
                 }

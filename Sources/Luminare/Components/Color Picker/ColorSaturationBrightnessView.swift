@@ -85,7 +85,7 @@ struct ColorSaturationBrightnessView: View {
 
     // MARK: Functions
 
-    // Update the position of the circle based on user interaction
+    /// Update the position of the circle based on user interaction
     private func updateColor(_ location: CGPoint, _ viewSize: CGSize) {
         let adjustedX = max(0, min(location.x, viewSize.width))
         let adjustedY = max(0, min(location.y, viewSize.height))
@@ -104,7 +104,7 @@ struct ColorSaturationBrightnessView: View {
         }
     }
 
-    // Initialize the position of the circle based on the current color
+    /// Initialize the position of the circle based on the current color
     private func updateCirclePositionFromColor(_ viewSize: CGSize) {
         if selectedColor.saturation <= 0.0001 {
             circlePosition = CGPoint(

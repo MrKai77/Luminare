@@ -8,7 +8,7 @@
 import AppKit
 import SwiftUI
 
-// A shorthand for storing colors in hue-saturation-brightness format
+/// A shorthand for storing colors in hue-saturation-brightness format
 struct HSBColor: Equatable, Hashable, Codable, Sendable {
     var hue: Double
     var saturation: Double
@@ -37,9 +37,9 @@ struct HSBColor: Equatable, Hashable, Codable, Sendable {
     }
 }
 
-// Adds functionality to `Color`
+/// Adds functionality to `Color`
 extension Color {
-    // Initializes with a hex value, supporting both 3 and 6 characters
+    /// Initializes with a hex value, supporting both 3 and 6 characters
     init?(hex: String) {
         let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")
         let expandedHex: String = if hexSanitized.count == 3 {
@@ -68,7 +68,7 @@ extension Color {
         self.init(hue: hsb.hue, saturation: hsb.saturation, brightness: hsb.brightness, opacity: hsb.opacity)
     }
 
-    // Converts to hex representation
+    /// Converts to hex representation
     func toHex() -> String {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? .black
         return String(
@@ -77,7 +77,7 @@ extension Color {
         )
     }
 
-    // Converts to HSB representatoin
+    /// Converts to HSB representatoin
     func toHSB() -> HSBColor {
         let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black
         var hue: CGFloat = 0
@@ -88,7 +88,7 @@ extension Color {
         return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
     }
 
-    // Extracts RGBA components
+    /// Extracts RGBA components
     var components: (red: Double, green: Double, blue: Double, opacity: Double) {
         get {
             let nsColor = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor.black

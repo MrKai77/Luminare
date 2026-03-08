@@ -78,7 +78,7 @@ public struct LuminareToggle<Label>: View where Label: View {
 
         LuminareToggle(isOn: $value) {
             Text("With an info in orange")
-                .luminarePopover(attachedTo: .topTrailing) {
+                .luminareToolTip(attachedTo: .topTrailing) {
                     Text("Dolore pariatur quis cupidatat irure Lorem exercitation do nulla culpa sint.")
                         .padding()
                 }

@@ -132,7 +132,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
         .environment(\.luminareClickedOutside, luminareClickedOutside)
         .background(content: clickedOutsideObserver)
     }
-    
+
     private func clickedOutsideObserver() -> some View {
         Color.white.opacity(0.0001)
             .onTapGesture {

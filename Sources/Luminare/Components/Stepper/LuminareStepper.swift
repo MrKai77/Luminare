@@ -297,7 +297,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         }
     }
 
-    @ViewBuilder private func scrollOverlay() -> some View {
+    private func scrollOverlay() -> some View {
         GeometryReader { proxy in
             Color.clear
                 .overlay {
@@ -346,7 +346,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
         }
     }
 
-    @ViewBuilder private func infiniteScrollView(proxy: GeometryProxy) -> some View {
+    private func infiniteScrollView(proxy: GeometryProxy) -> some View {
         InfiniteScrollView(
             direction: .init(axis: direction.axis),
 

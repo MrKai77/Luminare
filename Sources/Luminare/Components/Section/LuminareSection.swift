@@ -36,11 +36,11 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     private let clipped: Bool
 
     @ViewBuilder private var content: () -> Content, header: () -> Header, footer: () -> Footer
-    
+
     private var showHeader: Bool {
         Header.self != EmptyView.self
     }
-    
+
     private var showFooter: Bool {
         Footer.self != EmptyView.self
     }
@@ -96,7 +96,7 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             }
         }
     }
-    
+
     @ViewBuilder
     private func wrappedContent() -> some View {
         if clipped {
@@ -107,7 +107,6 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
 
-    @ViewBuilder
     private func styledContent() -> some View {
         Group {
             if borderedStates.contains(.normal) {

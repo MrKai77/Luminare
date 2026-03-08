@@ -60,7 +60,7 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
         }
     }
 
-    @ViewBuilder private func titleView(for tab: Tab) -> some View {
+    private func titleView(for tab: Tab) -> some View {
         HStack(spacing: 4) {
             tab.icon
                 .frame(width: minHeight, height: minHeight)
