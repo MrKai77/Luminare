@@ -94,16 +94,15 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         }
 
         func stopObservingWindow() {
-            guard let window = observedWindow else { return }
             NotificationCenter.default.removeObserver(
                 self,
                 name: NSWindow.didResignKeyNotification,
-                object: window
+                object: observedWindow
             )
             observedWindow = nil
         }
 
-        @objc private func windowDidResignKey() {
+		@objc private func windowDidResignKey(_ notification: Notification) {
             isPresented = false
             popover?.close()
         }
