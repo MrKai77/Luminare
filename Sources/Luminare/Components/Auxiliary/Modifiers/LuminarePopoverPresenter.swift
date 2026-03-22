@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminarePopoverPresenter<Content: View & Sendable>: NSViewRepresentable {
+public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
     @Binding var isPresented: Bool
     let arrowEdge: Edge
     let behavior: NSPopover.Behavior
@@ -74,6 +74,7 @@ public struct LuminarePopoverPresenter<Content: View & Sendable>: NSViewRepresen
     public class Coordinator: NSObject, NSPopoverDelegate {
         @Binding var isPresented: Bool
         var popover: NSPopover?
+        private weak var observedWindow: NSWindow?
 
         init(isPresented: Binding<Bool>) {
             _isPresented = isPresented
@@ -81,26 +82,38 @@ public struct LuminarePopoverPresenter<Content: View & Sendable>: NSViewRepresen
         }
 
         func startObservingWindow(_ window: NSWindow) {
-            // Observe when the window loses focus
+			// Observe when the window loses focus
+            stopObservingWindow()
+            observedWindow = window
             NotificationCenter.default.addObserver(
-                    forName: NSWindow.didResignKeyNotification,
-                    object: window,
-                    queue: .main
-                ) { [weak self] _ in
-                    Task { @MainActor [weak self] in
-                        guard let self else { return }
-                        // The parent window is no longer focused, close the popover
-                        self.isPresented = false
-                        self.popover?.close()
-                }
-            }
+                self,
+                selector: #selector(windowDidResignKey),
+                name: NSWindow.didResignKeyNotification,
+                object: window
+            )
+        }
+
+        func stopObservingWindow() {
+            guard let window = observedWindow else { return }
+            NotificationCenter.default.removeObserver(
+                self,
+                name: NSWindow.didResignKeyNotification,
+                object: window
+            )
+            observedWindow = nil
+        }
+
+        @objc private func windowDidResignKey() {
+            isPresented = false
+            popover?.close()
         }
 
         public func popoverWillClose(_: Notification) {
-            self.isPresented = false
+            isPresented = false
         }
 
         public func popoverDidClose(_: Notification) {
+            stopObservingWindow()
             popover = nil
         }
     }
@@ -115,7 +128,7 @@ public struct LuminarePopoverPresenter<Content: View & Sendable>: NSViewRepresen
     }
 }
 
-public struct LuminarePopoverModifier<PopoverContent: View & Sendable>: ViewModifier {
+public struct LuminarePopoverModifier<PopoverContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     let arrowEdge: Edge
     let behavior: NSPopover.Behavior

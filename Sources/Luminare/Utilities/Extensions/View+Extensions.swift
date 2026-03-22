@@ -90,7 +90,7 @@ public extension View {
         behavior: NSPopover.Behavior = .semitransient,
         shouldHideAnchor: Bool? = nil,
         shouldAnimate: Bool = true,
-        @ViewBuilder content: @escaping () -> some View & Sendable
+        @ViewBuilder content: @escaping () -> some View
     ) -> some View {
         modifier(
             LuminarePopoverModifier(
