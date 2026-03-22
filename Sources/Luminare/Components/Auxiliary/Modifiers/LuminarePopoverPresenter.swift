@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
+public struct LuminarePopoverPresenter<Content: View & Sendable>: NSViewRepresentable {
     @Binding var isPresented: Bool
     let arrowEdge: Edge
     let behavior: NSPopover.Behavior
@@ -70,6 +70,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         Coordinator(isPresented: $isPresented)
     }
 
+    @MainActor
     public class Coordinator: NSObject, NSPopoverDelegate {
         @Binding var isPresented: Bool
         var popover: NSPopover?
@@ -82,23 +83,21 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         func startObservingWindow(_ window: NSWindow) {
             // Observe when the window loses focus
             NotificationCenter.default.addObserver(
-                forName: NSWindow.didResignKeyNotification,
-                object: window,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self else { return }
-                // The parent window is no longer focused, close the popover
-                DispatchQueue.main.async {
-                    self.isPresented = false
-                    self.popover?.close()
+                    forName: NSWindow.didResignKeyNotification,
+                    object: window,
+                    queue: .main
+                ) { [weak self] _ in
+                    Task { @MainActor [weak self] in
+                        guard let self else { return }
+                        // The parent window is no longer focused, close the popover
+                        self.isPresented = false
+                        self.popover?.close()
                 }
             }
         }
 
         public func popoverWillClose(_: Notification) {
-            DispatchQueue.main.async {
-                self.isPresented = false
-            }
+            self.isPresented = false
         }
 
         public func popoverDidClose(_: Notification) {
@@ -116,7 +115,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
     }
 }
 
-public struct LuminarePopoverModifier<PopoverContent: View>: ViewModifier {
+public struct LuminarePopoverModifier<PopoverContent: View & Sendable>: ViewModifier {
     @Binding var isPresented: Bool
     let arrowEdge: Edge
     let behavior: NSPopover.Behavior
