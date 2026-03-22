@@ -82,7 +82,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         }
 
         func startObservingWindow(_ window: NSWindow) {
-			// Observe when the window loses focus
+            // Observe when the window loses focus
             stopObservingWindow()
             observedWindow = window
             NotificationCenter.default.addObserver(
