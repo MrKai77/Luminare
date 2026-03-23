@@ -189,6 +189,7 @@ public extension View {
         )
     }
 
+    /// Applies the standard Luminare background effect using the blur style from the environment.
     func luminareBackground() -> some View {
         modifier(
             LuminareBackgroundEffectModifier()

@@ -16,6 +16,7 @@ public struct LuminareView<Content>: View where Content: View {
     // MARK: Environments
 
     @Environment(\.luminareTintColor) private var tintColor
+    @Environment(\.luminareBackgroundBlurStyle) private var backgroundBlurStyle
 
     // MARK: Fields
 
@@ -32,5 +33,19 @@ public struct LuminareView<Content>: View where Content: View {
             .focusable(false)
             .buttonStyle(.luminare)
             .luminareTint(overridingWith: tintColor)
+            .background {
+                if case .custom = backgroundBlurStyle {
+                    ZStack {
+                        VisualEffectView(
+                            material: .menu,
+                            blendingMode: .behindWindow,
+                            blurStyle: backgroundBlurStyle
+                        )
+                        LuminareBackgroundTintOverlay()
+                    }
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                }
+            }
     }
 }

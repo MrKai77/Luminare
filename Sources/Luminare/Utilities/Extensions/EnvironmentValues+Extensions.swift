@@ -11,6 +11,7 @@ import SwiftUI
 
 extension EnvironmentValues {
     @Entry var luminareClickedOutside: Bool = false
+    @Entry var luminareBackgroundBlurStyle: LuminareBackgroundBlurStyle = .regular
 }
 
 // MARK: - Common

@@ -22,8 +22,12 @@ public class LuminareWindow: NSWindow {
     /// Initializes a ``LuminareWindow``.
     ///
     /// - Parameters:
+    ///   - backgroundBlurStyle: the default blur style used by ``luminareBackground()`` within the window.
     ///   - content: the content view of the window, wrapped in a ``LuminareView``.
-    public init(content: @escaping () -> some View) {
+    public init(
+        backgroundBlurStyle: LuminareBackgroundBlurStyle = .regular,
+        content: @escaping () -> some View
+    ) {
         super.init(
             contentRect: .zero,
             styleMask: [.titled, .fullSizeContentView, .closable],
@@ -33,7 +37,10 @@ public class LuminareWindow: NSWindow {
 
         // Wrapping the NSHostingView in a parent NSView allows us to reposition the traffic lights, since NSHostingViews cannot have subviews directly.
         let view = NSView()
-        let luminareView = NSHostingView(rootView: LuminareView(content: content))
+        let luminareView = NSHostingView(
+            rootView: LuminareView(content: content)
+                .environment(\.luminareBackgroundBlurStyle, backgroundBlurStyle)
+        )
         view.addSubview(luminareView)
 
         luminareView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,7 +73,7 @@ public class LuminareWindow: NSWindow {
     }
 
     func relocateTrafficLights() {
-        guard let contentView, let trafficLightsOrigin else {
+        guard contentView != nil, let trafficLightsOrigin else {
             return
         }
 
