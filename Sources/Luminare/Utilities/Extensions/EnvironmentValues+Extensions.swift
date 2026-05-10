@@ -38,11 +38,6 @@ public extension EnvironmentValues {
     @Entry var luminareModalIsMovableByWindowBackground: Bool = false
     @Entry var luminareModalClosesOnDefocus: Bool = false
 
-    // MARK: Popup
-
-    @Entry var luminarePopupCornerRadii: RectangleCornerRadii = .init(16)
-    @Entry var luminarePopupPadding: CGFloat = 4
-
     // MARK: Color Picker
 
     @Entry var luminareColorPickerHasCancel: Bool = false

@@ -215,16 +215,6 @@ public extension View {
         environment(\.luminareModalClosesOnDefocus, closesOnDefocus)
     }
 
-    // MARK: Popup
-
-    func luminarePopupPadding(_ padding: CGFloat = 4) -> some View {
-        environment(\.luminarePopupPadding, padding)
-    }
-
-    func luminarePopupCornerRadii(_ radii: RectangleCornerRadii) -> some View {
-        environment(\.luminarePopupCornerRadii, radii)
-    }
-
     // MARK: Color Picker
 
     func luminareColorPickerControls(hasCancel: Bool? = nil, hasDone: Bool? = nil) -> some View {
