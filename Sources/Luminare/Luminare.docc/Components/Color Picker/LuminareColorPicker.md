@@ -27,7 +27,7 @@
         
         If using `format` rather than `parseStrategy`, see ``StringFormatStyle`` for more formatting options for the hex color code.
         
-        If it is required for the color picker to be closed when focus is lost, make sure to add the `                .luminareSheetClosesOnDefocus()` modifier to the view.
+        If it is required for the color picker to be closed when focus is lost, make sure to add the `.luminareModalClosesOnDefocus()` modifier to the view.
     }
 
     @Column {

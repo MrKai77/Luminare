@@ -27,19 +27,16 @@ public extension EnvironmentValues {
     @Entry var luminareDismiss: () -> () = {}
 }
 
-// MARK: - Modal
+// MARK: - Windows
 
 public extension EnvironmentValues {
+    // MARK: Modal
+
     @Entry var luminareModalStyle: LuminareModalStyle = .sheet
-    @Entry var luminareModalContentWrapper: (AnyView) -> AnyView = { view in view }
-
-    // MARK: Sheet
-
-    @Entry var luminareSheetCornerRadii: RectangleCornerRadii = .init(12)
-
-    @Entry var luminareSheetPresentation: LuminareSheetPresentation = .windowCenter
-    @Entry var luminareSheetIsMovableByWindowBackground: Bool = false
-    @Entry var luminareSheetClosesOnDefocus: Bool = false
+    @Entry var luminareModalCornerRadius: CGFloat = 12
+    @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
+    @Entry var luminareModalIsMovableByWindowBackground: Bool = false
+    @Entry var luminareModalClosesOnDefocus: Bool = false
 
     // MARK: Popup
 

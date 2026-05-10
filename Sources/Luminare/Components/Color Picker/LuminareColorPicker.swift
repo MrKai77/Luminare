@@ -142,7 +142,7 @@ public struct LuminareColorPicker<F>: View
                     bottomLeading: true,
                     bottomTrailing: true
                 )
-                .luminareModalWithPredefinedSheetStyle(isPresented: $isColorPickerPresented) {
+                .luminareModal(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(
                             selectedColor: $color,
@@ -150,7 +150,9 @@ public struct LuminareColorPicker<F>: View
                         )
                     }
                     .frame(width: 260)
+                    .padding(8)
                 }
+                .luminareModalCornerRadius(20)
             }
         }
         .buttonStyle(.luminare)
@@ -181,10 +183,6 @@ public struct LuminareColorPicker<F>: View
             style: .textFieldWithColorWell()
         )
         .luminareModalStyle(.popover)
-        .luminareModalContentWrapper { view in
-            view
-                .monospaced(false)
-        }
     }
     .monospaced()
     .frame(width: 300)

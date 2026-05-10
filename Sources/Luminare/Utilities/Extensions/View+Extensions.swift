@@ -118,29 +118,6 @@ public extension View {
         )
     }
 
-    func luminareModalWithPredefinedSheetStyle(
-        isPresented: Binding<Bool>,
-        isCompact: Bool = true,
-        @ViewBuilder content: @escaping () -> some View
-    ) -> some View {
-        modifier(
-            LuminareModalModifier(
-                isPresented: isPresented
-            ) {
-                content()
-                    .padding(isCompact ? 8 : 16)
-            }
-        )
-        .luminareSheetCornerRadii(
-            .init(
-                topLeading: CGFloat(12 + (isCompact ? 8 : 16)),
-                bottomLeading: CGFloat(8 + (isCompact ? 8 : 16)),
-                bottomTrailing: CGFloat(8 + (isCompact ? 8 : 16)),
-                topTrailing: CGFloat(12 + (isCompact ? 8 : 16))
-            )
-        )
-    }
-
     func booleanThrottleDebounced(
         _ value: Bool,
         flipOnDelay: TimeInterval = 0.5,
@@ -222,32 +199,20 @@ public extension View {
         environment(\.luminareModalStyle, style)
     }
 
-    func luminareModalContentWrapper(@ViewBuilder content: @escaping (AnyView) -> some View) -> some View {
-        environment(\.luminareModalContentWrapper) { view in
-            AnyView(content(view))
-        }
+    func luminareModalCornerRadius(_ radius: CGFloat) -> some View {
+        environment(\.luminareModalCornerRadius, radius)
     }
 
-    // MARK: Sheet
-
-    func luminareSheetCornerRadii(_ radii: RectangleCornerRadii) -> some View {
-        environment(\.luminareSheetCornerRadii, radii)
+    func luminareModalPresentation(_ presentation: LuminareModalPresentation) -> some View {
+        environment(\.luminareModalPresentation, presentation)
     }
 
-    func luminareSheetCornerRadius(_ radius: CGFloat) -> some View {
-        luminareSheetCornerRadii(.init(radius))
+    func luminareModalMovableByWindowBackground(_ movable: Bool = true) -> some View {
+        environment(\.luminareModalIsMovableByWindowBackground, movable)
     }
 
-    func luminareSheetPresentation(_ presentation: LuminareSheetPresentation) -> some View {
-        environment(\.luminareSheetPresentation, presentation)
-    }
-
-    func luminareSheetMovableByWindowBackground(_ movable: Bool = true) -> some View {
-        environment(\.luminareSheetIsMovableByWindowBackground, movable)
-    }
-
-    func luminareSheetClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
-        environment(\.luminareSheetClosesOnDefocus, closesOnDefocus)
+    func luminareModalClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
+        environment(\.luminareModalClosesOnDefocus, closesOnDefocus)
     }
 
     // MARK: Popup

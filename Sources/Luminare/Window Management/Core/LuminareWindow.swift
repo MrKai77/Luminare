@@ -1,0 +1,175 @@
+//
+//  LuminareWindow.swift
+//  Luminare
+//
+//  Created by Kai Azim on 2024-09-29.
+//
+
+import SwiftUI
+
+/// A stylized window with a materialized appearance.
+public class LuminareWindow: LuminareStyledWindow {
+    private let resizeAnimator: LuminareWindowResizeAnimator
+    private let windowCanBecomeMain: Bool
+    private let closesOnDefocus: Bool
+    private let initialOrigin: ((CGRect) -> CGPoint)?
+    private let onClose: (() -> Void)?
+    private var hasPositionedWindow = false
+
+    public convenience init<Content: View>(
+        titleBarButtonConfiguration: LuminareTitleBarButtonConfiguration? = .default,
+        cornerRadius: CGFloat = LuminareStyledWindow.defaultCornerRadius,
+        content: @escaping () -> Content
+    ) {
+        self.init(
+            _internalConfiguration: (),
+            titleBarButtonConfiguration: titleBarButtonConfiguration,
+            cornerRadius: cornerRadius,
+            content: content
+        )
+    }
+
+    /// Initializes a ``LuminareWindow``.
+    ///
+    /// - Parameters:
+    ///   - titleBarButtonConfiguration: The titlebar button padding and spacing.
+    ///   - cornerRadius: The window corner radius.
+    ///   - level: The AppKit window level.
+    ///   - collectionBehavior: Additional AppKit collection behavior.
+    ///   - isMovableByWindowBackground: Whether the window can be dragged by its background.
+    ///   - canBecomeMain: Whether the window can become the main window.
+    ///   - closesOnDefocus: Whether the window closes when it resigns key status.
+    ///   - dragRegionHeight: A top-edge region that can drag the window.
+    ///   - initialOrigin: Optional initial origin provider after first sizing.
+    ///   - onClose: A callback invoked when the window closes.
+    ///   - content: the content view of the window, wrapped in a ``LuminareView``.
+    init<Content: View>(
+        _internalConfiguration _: Void = (),
+        titleBarButtonConfiguration: LuminareTitleBarButtonConfiguration? = .default,
+        cornerRadius: CGFloat = LuminareStyledWindow.defaultCornerRadius,
+        level: NSWindow.Level = .normal,
+        collectionBehavior: NSWindow.CollectionBehavior = [],
+        isMovableByWindowBackground: Bool = false,
+        canBecomeMain: Bool = true,
+        closesOnDefocus: Bool = false,
+        initialOrigin: ((CGRect) -> CGPoint)? = nil,
+        onClose: (() -> Void)? = nil,
+        content: @escaping () -> Content
+    ) {
+        self.resizeAnimator = .init()
+        self.windowCanBecomeMain = canBecomeMain
+        self.closesOnDefocus = closesOnDefocus
+        self.initialOrigin = initialOrigin
+        self.onClose = onClose
+
+        super.init(
+            contentRect: .zero,
+            styleMask: [.titled, .fullSizeContentView, .closable],
+            backing: .buffered,
+            defer: false
+        )
+
+        let luminareView = LuminareWindowHostingView(
+            rootView: LuminareWindowMeasuredContentView(content: content) { [weak self] in
+                self?.setSize($0)
+            }
+        )
+        let view = LuminareWindowHostingContainerView(hostedView: luminareView)
+
+        self.titleBarButtonConfiguration = titleBarButtonConfiguration
+        luminareCornerRadius = cornerRadius
+        self.level = level
+        self.collectionBehavior.formUnion(collectionBehavior)
+        self.isMovableByWindowBackground = isMovableByWindowBackground
+        alphaValue = 0
+        contentView = view
+        relocateTrafficLights()
+        contentView?.wantsLayer = true
+        titlebarAppearsTransparent = true
+        titleVisibility = .hidden
+        animationBehavior = .documentWindow
+        layoutIfNeeded()
+        resizeAnimator.onUpdate = { [weak self] size in
+            self?.applyAnimatedSize(size)
+        }
+
+        DispatchQueue.main.async { [weak self, weak luminareView] in
+            guard let self, !self.hasPositionedWindow, let luminareView else {
+                return
+            }
+
+            self.snapToInitialSize(luminareView.fittingSize)
+        }
+    }
+
+    func setSize(_ size: CGSize) {
+        let newSize = CGSize(
+            width: ceil(size.width),
+            height: ceil(size.height)
+        )
+
+        guard newSize.width > 0, newSize.height > 0 else {
+            return
+        }
+
+        if resizeAnimator.hasNoTarget {
+            snapToInitialSize(newSize)
+            return
+        }
+
+        resizeAnimator.animate(to: newSize)
+    }
+
+    private func snapToInitialSize(_ size: CGSize) {
+        let newSize = CGSize(
+            width: ceil(size.width),
+            height: ceil(size.height)
+        )
+
+        guard newSize.width > 0, newSize.height > 0 else {
+            return
+        }
+
+        resizeAnimator.snap(to: newSize)
+        applyContentSize(newSize)
+        if !hasPositionedWindow {
+            if let initialOrigin {
+                setFrameOrigin(initialOrigin(frame))
+            } else {
+                center()
+            }
+            alphaValue = 1
+            hasPositionedWindow = true
+        }
+    }
+
+    private func applyAnimatedSize(_ size: CGSize) {
+        applyContentSize(size)
+    }
+
+    private func applyContentSize(_ size: CGSize) {
+        let newOrigin = NSPoint(
+            x: frame.origin.x,
+            y: frame.maxY - size.height
+        )
+
+        setFrame(.init(origin: newOrigin, size: size), display: true)
+    }
+
+    override public func close() {
+        resizeAnimator.stop()
+        super.close()
+        onClose?()
+    }
+
+    override public var canBecomeMain: Bool {
+        windowCanBecomeMain
+    }
+
+    override public func resignKey() {
+        super.resignKey()
+        if closesOnDefocus {
+            close()
+        }
+    }
+}
