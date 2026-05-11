@@ -35,8 +35,6 @@ public class LuminareWindow: LuminareStyledWindow {
     ///   - titleBarButtonConfiguration: The titlebar button padding and spacing.
     ///   - cornerRadius: The window corner radius.
     ///   - level: The AppKit window level.
-    ///   - collectionBehavior: Additional AppKit collection behavior.
-    ///   - isMovableByWindowBackground: Whether the window can be dragged by its background.
     ///   - canBecomeMain: Whether the window can become the main window.
     ///   - closesOnDefocus: Whether the window closes when it resigns key status.
     ///   - dragRegionHeight: A top-edge region that can drag the window.
@@ -47,9 +45,6 @@ public class LuminareWindow: LuminareStyledWindow {
         _internalConfiguration _: Void = (),
         titleBarButtonConfiguration: LuminareTitleBarButtonConfiguration? = .default,
         cornerRadius: CGFloat = LuminareStyledWindow.defaultCornerRadius,
-        level: NSWindow.Level = .normal,
-        collectionBehavior: NSWindow.CollectionBehavior = [],
-        isMovableByWindowBackground: Bool = false,
         canBecomeMain: Bool = true,
         closesOnDefocus: Bool = false,
         initialOrigin: ((CGRect) -> CGPoint)? = nil,
@@ -78,16 +73,12 @@ public class LuminareWindow: LuminareStyledWindow {
 
         self.titleBarButtonConfiguration = titleBarButtonConfiguration
         luminareCornerRadius = cornerRadius
-        self.level = level
-        self.collectionBehavior.formUnion(collectionBehavior)
-        self.isMovableByWindowBackground = isMovableByWindowBackground
         alphaValue = 0
         contentView = view
         relocateTrafficLights()
         contentView?.wantsLayer = true
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
-        animationBehavior = .documentWindow
         layoutIfNeeded()
         resizeAnimator.onUpdate = { [weak self] size in
             self?.applyAnimatedSize(size)

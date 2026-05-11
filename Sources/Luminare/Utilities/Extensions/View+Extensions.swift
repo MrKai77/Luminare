@@ -207,10 +207,6 @@ public extension View {
         environment(\.luminareModalPresentation, presentation)
     }
 
-    func luminareModalMovableByWindowBackground(_ movable: Bool = true) -> some View {
-        environment(\.luminareModalIsMovableByWindowBackground, movable)
-    }
-
     func luminareModalClosesOnDefocus(_ closesOnDefocus: Bool = true) -> some View {
         environment(\.luminareModalClosesOnDefocus, closesOnDefocus)
     }

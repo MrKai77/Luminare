@@ -35,7 +35,6 @@ public extension EnvironmentValues {
     @Entry var luminareModalStyle: LuminareModalStyle = .sheet
     @Entry var luminareModalCornerRadius: CGFloat = 12
     @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
-    @Entry var luminareModalIsMovableByWindowBackground: Bool = false
     @Entry var luminareModalClosesOnDefocus: Bool = false
 
     // MARK: Color Picker

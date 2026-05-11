@@ -182,6 +182,8 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         }
 
         func closePopoverDuringDismantle() {
+            cancelPendingPresentation()
+
             guard popover.isShown else {
                 releaseContent()
                 return

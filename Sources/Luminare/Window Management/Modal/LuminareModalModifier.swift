@@ -13,7 +13,6 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
     @Environment(\.luminareModalStyle) private var style
     @Environment(\.luminareModalCornerRadius) private var modalCornerRadius
     @Environment(\.luminareModalPresentation) private var modalPresentation
-    @Environment(\.luminareModalIsMovableByWindowBackground) private var modalIsMovableByWindowBackground
     @Environment(\.luminareModalClosesOnDefocus) private var modalClosesOnDefocus
 
     @State private var panelController: NSWindowController?
@@ -55,9 +54,6 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
             _internalConfiguration: (),
             titleBarButtonConfiguration: nil,
             cornerRadius: modalCornerRadius,
-            level: .floating,
-            collectionBehavior: [.fullScreenAuxiliary],
-            isMovableByWindowBackground: modalIsMovableByWindowBackground,
             canBecomeMain: false,
             closesOnDefocus: modalClosesOnDefocus,
             initialOrigin: { modalPresentation.origin(of: $0) },
@@ -70,6 +66,9 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
                     .luminareTint(overridingWith: tintColor)
             }
         }
+        panel.level = .floating
+        panel.collectionBehavior.formUnion(.fullScreenAuxiliary)
+        panel.animationBehavior = .documentWindow
 
         DispatchQueue.main.async {
             panel.makeKeyAndOrderFront(nil)
