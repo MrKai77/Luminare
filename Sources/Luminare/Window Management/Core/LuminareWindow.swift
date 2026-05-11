@@ -81,7 +81,7 @@ public class LuminareWindow: LuminareStyledWindow {
         titleVisibility = .hidden
         layoutIfNeeded()
         resizeAnimator.onUpdate = { [weak self] size in
-            self?.applyAnimatedSize(size)
+            self?.applyContentSize(size)
         }
 
         DispatchQueue.main.async { [weak self, weak luminareView] in
@@ -132,10 +132,6 @@ public class LuminareWindow: LuminareStyledWindow {
             alphaValue = 1
             hasPositionedWindow = true
         }
-    }
-
-    private func applyAnimatedSize(_ size: CGSize) {
-        applyContentSize(size)
     }
 
     private func applyContentSize(_ size: CGSize) {

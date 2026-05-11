@@ -34,7 +34,7 @@ final class LuminareWindowResizeAnimator: NSObject {
         duration: TimeInterval = 0.2
     ) {
         // `Spring.smooth(duration: 0.2, extraBounce: 0)` resolves to a
-        // critically damped spring with response 0.2, so omega = 2π / response.
+        // critically damped spring with response 0.2, so omega = 2pi / response.
         self.angularFrequency = CGFloat(2 * Double.pi / duration)
         super.init()
     }
@@ -69,7 +69,7 @@ final class LuminareWindowResizeAnimator: NSObject {
         }
 
         let timer = Timer(
-            timeInterval: 1 / 120,
+            timeInterval: 1 / 60,
             target: self,
             selector: #selector(timerFired),
             userInfo: nil,
