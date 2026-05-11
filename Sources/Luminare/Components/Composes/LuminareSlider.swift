@@ -53,6 +53,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
     private let range: ClosedRange<V>, step: V.Stride?
     private let format: F
     private let clampsUpper: Bool, clampsLower: Bool
+    private let onEditingChanged: (Bool) -> Void
+    private let onEditingCommit: () -> Void
 
     @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
@@ -73,6 +75,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
@@ -84,6 +88,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         self.format = format
         self.clampsUpper = clampsUpper
         self.clampsLower = clampsLower
+        self.onEditingChanged = onEditingChanged
+        self.onEditingCommit = onEditingCommit
 
         self.content = content
         self.label = label
@@ -98,6 +104,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
@@ -107,6 +115,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
             format: format,
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit,
             content: content
         ) {
             Text(title)
@@ -121,6 +131,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
@@ -130,6 +142,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
             format: format,
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit,
             content: content
         ) {
             Text(titleKey)
@@ -145,6 +159,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         clampsLower: Bool = true,
         prefix: Text? = nil,
         suffix: Text? = nil,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder label: @escaping () -> Label
     ) where Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
         self.init(
@@ -153,7 +169,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
             step: step,
             format: format,
             clampsUpper: clampsUpper,
-            clampsLower: clampsLower
+            clampsLower: clampsLower,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) { view in
             HStack(spacing: 0) {
                 if let prefix {
@@ -183,7 +201,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
         prefix: Text? = nil,
-        suffix: Text? = nil
+        suffix: Text? = nil,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {}
     ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
         self.init(
             value: value,
@@ -193,7 +213,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
             prefix: prefix,
-            suffix: suffix
+            suffix: suffix,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) {
             Text(title)
         }
@@ -208,7 +230,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
         prefix: Text? = nil,
-        suffix: Text? = nil
+        suffix: Text? = nil,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {}
     ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
         self.init(
             value: value,
@@ -218,7 +242,9 @@ public struct LuminareSlider<Label, Content, V, F>: View
             clampsUpper: clampsUpper,
             clampsLower: clampsLower,
             prefix: prefix,
-            suffix: suffix
+            suffix: suffix,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) {
             Text(titleKey)
         }
@@ -317,14 +343,14 @@ public struct LuminareSlider<Label, Content, V, F>: View
                     in: range,
                     step: step
                 ) { isEditing in
-                    isSliderEditing = isEditing
+                    handleEditingChanged(isEditing)
                 }
             } else {
                 Slider(
                     value: binding,
                     in: range
                 ) { isEditing in
-                    isSliderEditing = isEditing
+                    handleEditingChanged(isEditing)
                 }
             }
         }
@@ -417,6 +443,15 @@ public struct LuminareSlider<Label, Content, V, F>: View
 
         withAnimation(animationFast) {
             isTextBoxVisible = false
+        }
+    }
+
+    private func handleEditingChanged(_ isEditing: Bool) {
+        isSliderEditing = isEditing
+        onEditingChanged(isEditing)
+
+        if !isEditing {
+            onEditingCommit()
         }
     }
 

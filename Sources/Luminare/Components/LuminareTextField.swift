@@ -20,8 +20,6 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
     private let prompt: Text?
     @ViewBuilder private var label: () -> Label
 
-    private let id: UUID = .init()
-
     // MARK: Initializers
 
     public init(
@@ -117,26 +115,6 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
             .padding(.horizontal, horizontalPadding)
             .luminareContentSize(contentMode: .fill, hasFixedHeight: true)
             .modifier(LuminareHoverableModifier())
-            .onAppear {
-                EventMonitorManager.shared.addLocalMonitor(
-                    for: id,
-                    matching: .keyDown
-                ) { event in
-                    if let window = NSApp.keyWindow, window.animationBehavior == .documentWindow {
-                        window.keyDown(with: event)
-
-                        // Fixes cmd+w to close window.
-                        let wKey = 13
-                        if event.keyCode == wKey, event.modifierFlags.contains(.command) {
-                            return nil
-                        }
-                    }
-                    return event
-                }
-            }
-            .onDisappear {
-                EventMonitorManager.shared.removeMonitor(for: id)
-            }
     }
 }
 

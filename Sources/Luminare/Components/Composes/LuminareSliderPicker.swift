@@ -43,6 +43,8 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
 
     private let options: [V]
     @Binding private var selection: V
+    private let onEditingChanged: (Bool) -> Void
+    private let onEditingCommit: () -> Void
 
     @State private var lastSelection: V
     @State private var isSliderHovering: Bool = false
@@ -61,6 +63,8 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - label: the label.
     public init(
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder content: @escaping (V) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
@@ -69,6 +73,8 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
         self.options = options
         self._selection = selection
         self.lastSelection = selection.wrappedValue
+        self.onEditingChanged = onEditingChanged
+        self.onEditingCommit = onEditingCommit
     }
 
     /// Initializes a ``LuminareSliderPicker`` where the label is a localized text.
@@ -82,10 +88,15 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     public init(
         _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder content: @escaping (V) -> Content
     ) where Label == Text {
         self.init(
-            options, selection: selection
+            options,
+            selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) { value in
             content(value)
         } label: {
@@ -103,10 +114,15 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     public init(
         _ titleKey: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         @ViewBuilder content: @escaping (V) -> Content
     ) where Label == Text {
         self.init(
-            options, selection: selection
+            options,
+            selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) { value in
             content(value)
         } label: {
@@ -124,11 +140,16 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     @_disfavoredOverload
     public init(
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         content: @escaping (V) -> some StringProtocol,
         @ViewBuilder label: @escaping () -> Label
     ) where Content == Text {
         self.init(
-            options, selection: selection
+            options,
+            selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) { value in
             Text(content(value))
         } label: {
@@ -145,11 +166,16 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     ///   - label: the label.
     public init(
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         contentKey: @escaping (V) -> LocalizedStringKey,
         @ViewBuilder label: @escaping () -> Label
     ) where Content == Text {
         self.init(
-            options, selection: selection
+            options,
+            selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit
         ) { value in
             Text(contentKey(value))
         } label: {
@@ -168,10 +194,14 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     public init(
         _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         content: @escaping (V) -> some StringProtocol
     ) where Label == Text, Content == Text {
         self.init(
             options, selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit,
             content: content
         ) {
             Text(title)
@@ -189,10 +219,14 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     public init(
         _ title: some StringProtocol,
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         contentKey: @escaping (V) -> LocalizedStringKey
     ) where Label == Text, Content == Text {
         self.init(
             options, selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit,
             contentKey: contentKey
         ) {
             Text(title)
@@ -210,10 +244,14 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     public init(
         _ titleKey: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         content: @escaping (V) -> some StringProtocol
     ) where Label == Text, Content == Text {
         self.init(
             options, selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit,
             content: content
         ) {
             Text(titleKey)
@@ -230,10 +268,14 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     public init(
         _ titleKey: LocalizedStringKey,
         _ options: [V], selection: Binding<V>,
+        onEditingChanged: @escaping (Bool) -> Void = { _ in },
+        onEditingCommit: @escaping () -> Void = {},
         contentKey: @escaping (V) -> LocalizedStringKey
     ) where Label == Text, Content == Text {
         self.init(
             options, selection: selection,
+            onEditingChanged: onEditingChanged,
+            onEditingCommit: onEditingCommit,
             contentKey: contentKey
         ) {
             Text(titleKey)
@@ -326,7 +368,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             in: 0...Double(options.count - 1),
             step: 1
         ) { isEditing in
-            isSliderEditing = isEditing
+            handleEditingChanged(isEditing)
         }
         .onHover { isSliderHovering = $0 }
     }
@@ -353,6 +395,15 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                     lastSelection = value
                 }
             }
+    }
+
+    private func handleEditingChanged(_ isEditing: Bool) {
+        isSliderEditing = isEditing
+        onEditingChanged(isEditing)
+
+        if !isEditing {
+            onEditingCommit()
+        }
     }
 }
 

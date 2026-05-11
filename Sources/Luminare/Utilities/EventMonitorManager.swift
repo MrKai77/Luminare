@@ -16,6 +16,7 @@ final class EventMonitorManager {
         matching mask: NSEvent.EventTypeMask,
         handler: @escaping (NSEvent) -> NSEvent?
     ) {
+        
         removeMonitor(for: id)
 
         monitors[id] = NSEvent.addLocalMonitorForEvents(
