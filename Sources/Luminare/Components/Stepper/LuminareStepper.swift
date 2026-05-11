@@ -440,8 +440,7 @@ public struct LuminareStepper<V>: View where V: Strideable & BinaryFloatingPoint
 
     private func magnifyFactor(at index: Int) -> CGFloat {
         let standardDeviation = 0.5
-        let value = bellCurve(shift(at: index), standardDeviation: standardDeviation)
-        return value
+        return bellCurve(shift(at: index), standardDeviation: standardDeviation)
     }
 
     private func blurFactor(at index: Int) -> CGFloat {

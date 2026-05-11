@@ -44,7 +44,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
 
     fileprivate struct HostedContent: View {
         let content: Content
-        let dismiss: () -> Void
+        let dismiss: () -> ()
 
         var body: some View {
             content
@@ -72,7 +72,7 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
 
         init(isPresented: Binding<Bool>) {
             _isPresented = isPresented
-            popover = NSPopover()
+            self.popover = NSPopover()
             super.init()
 
             popover.delegate = self
@@ -152,15 +152,15 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
             DispatchQueue.main.async { [weak self, weak anchorView] in
                 guard let self else { return }
                 guard presentationID == self.presentationID else { return }
-                guard self.isPresented, !self.popover.isShown else { return }
+                guard isPresented, !popover.isShown else { return }
                 guard let anchorView, anchorView.window != nil else {
-                    self.releaseContent()
+                    releaseContent()
                     return
                 }
-                guard let hostingController = self.hostingController else { return }
+                guard let hostingController else { return }
 
-                self.popover.contentViewController = hostingController
-                self.popover.show(
+                popover.contentViewController = hostingController
+                popover.show(
                     relativeTo: anchorRect,
                     of: anchorView,
                     preferredEdge: preferredEdge

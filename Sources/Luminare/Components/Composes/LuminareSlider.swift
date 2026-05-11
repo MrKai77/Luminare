@@ -53,8 +53,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
     private let range: ClosedRange<V>, step: V.Stride?
     private let format: F
     private let clampsUpper: Bool, clampsLower: Bool
-    private let onEditingChanged: (Bool) -> Void
-    private let onEditingCommit: () -> Void
+    private let onEditingChanged: (Bool) -> ()
+    private let onEditingCommit: () -> ()
 
     @ViewBuilder private var content: (AnyView) -> Content, label: () -> Label
 
@@ -75,8 +75,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onEditingCommit: @escaping () -> Void = {},
+        onEditingChanged: @escaping (Bool) -> () = { _ in },
+        onEditingCommit: @escaping () -> () = {},
         @ViewBuilder content: @escaping (AnyView) -> Content,
         @ViewBuilder label: @escaping () -> Label
     ) {
@@ -104,8 +104,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onEditingCommit: @escaping () -> Void = {},
+        onEditingChanged: @escaping (Bool) -> () = { _ in },
+        onEditingCommit: @escaping () -> () = {},
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
@@ -131,8 +131,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         format: F,
         clampsUpper: Bool = true,
         clampsLower: Bool = true,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onEditingCommit: @escaping () -> Void = {},
+        onEditingChanged: @escaping (Bool) -> () = { _ in },
+        onEditingCommit: @escaping () -> () = {},
         @ViewBuilder content: @escaping (AnyView) -> Content
     ) where Label == Text {
         self.init(
@@ -159,8 +159,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         clampsLower: Bool = true,
         prefix: Text? = nil,
         suffix: Text? = nil,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onEditingCommit: @escaping () -> Void = {},
+        onEditingChanged: @escaping (Bool) -> () = { _ in },
+        onEditingCommit: @escaping () -> () = {},
         @ViewBuilder label: @escaping () -> Label
     ) where Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
         self.init(
@@ -202,8 +202,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         clampsLower: Bool = true,
         prefix: Text? = nil,
         suffix: Text? = nil,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onEditingCommit: @escaping () -> Void = {}
+        onEditingChanged: @escaping (Bool) -> () = { _ in },
+        onEditingCommit: @escaping () -> () = {}
     ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
         self.init(
             value: value,
@@ -231,8 +231,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         clampsLower: Bool = true,
         prefix: Text? = nil,
         suffix: Text? = nil,
-        onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onEditingCommit: @escaping () -> Void = {}
+        onEditingChanged: @escaping (Bool) -> () = { _ in },
+        onEditingCommit: @escaping () -> () = {}
     ) where Label == Text, Content == HStack<TupleView<(Text?, AnyView, Text?)>> {
         self.init(
             value: value,

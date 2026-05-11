@@ -13,13 +13,13 @@ public class LuminareWindow: LuminareStyledWindow {
     private let windowCanBecomeMain: Bool
     private let closesOnDefocus: Bool
     private let initialOrigin: ((CGRect) -> CGPoint)?
-    private let onClose: (() -> Void)?
+    private let onClose: (() -> ())?
     private var hasPositionedWindow = false
 
-    public convenience init<Content: View>(
+    public convenience init(
         titleBarButtonConfiguration: LuminareTitleBarButtonConfiguration? = .default,
         cornerRadius: CGFloat = LuminareStyledWindow.defaultCornerRadius,
-        content: @escaping () -> Content
+        content: @escaping () -> some View
     ) {
         self.init(
             _internalConfiguration: (),
@@ -41,15 +41,15 @@ public class LuminareWindow: LuminareStyledWindow {
     ///   - initialOrigin: Optional initial origin provider after first sizing.
     ///   - onClose: A callback invoked when the window closes.
     ///   - content: the content view of the window, wrapped in a ``LuminareView``.
-    init<Content: View>(
-        _internalConfiguration _: Void = (),
+    init(
+        _internalConfiguration _: () = (),
         titleBarButtonConfiguration: LuminareTitleBarButtonConfiguration? = .default,
         cornerRadius: CGFloat = LuminareStyledWindow.defaultCornerRadius,
         canBecomeMain: Bool = true,
         closesOnDefocus: Bool = false,
         initialOrigin: ((CGRect) -> CGPoint)? = nil,
-        onClose: (() -> Void)? = nil,
-        content: @escaping () -> Content
+        onClose: (() -> ())? = nil,
+        content: @escaping () -> some View
     ) {
         self.resizeAnimator = .init()
         self.windowCanBecomeMain = canBecomeMain
@@ -89,7 +89,7 @@ public class LuminareWindow: LuminareStyledWindow {
                 return
             }
 
-            self.snapToInitialSize(luminareView.fittingSize)
+            snapToInitialSize(luminareView.fittingSize)
         }
     }
 

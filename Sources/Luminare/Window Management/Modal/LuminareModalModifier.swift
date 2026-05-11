@@ -62,7 +62,7 @@ struct LuminareModalModifier<ModalContent>: ViewModifier
             }
         ) {
             LuminareModalView {
-                self.content()
+                content()
                     .luminareTint(overridingWith: tintColor)
             }
         }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LuminareWindowMeasuredContentView<Content>: View where Content: View {
     @ViewBuilder let content: () -> Content
-    let setWindowSize: (CGSize) -> Void
+    let setWindowSize: (CGSize) -> ()
 
     var body: some View {
         ZStack(alignment: .topLeading) {

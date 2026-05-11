@@ -15,9 +15,11 @@ open class LuminareStyledWindow: NSWindow {
     ].compactMap { type in
         standardWindowButton(type)
     }
+
     private lazy var trafficLightButtonSizes: [NSButton: NSSize] = trafficLightButtons.reduce(into: [:]) { sizes, button in
         sizes[button] = button.frame.size
     }
+
     private var trafficLightButtonConstraints: [NSLayoutConstraint] = []
     private weak var constrainedContentView: NSView?
 
@@ -52,7 +54,7 @@ open class LuminareStyledWindow: NSWindow {
             NSLayoutConstraint.deactivate(trafficLightButtonConstraints)
             trafficLightButtonConstraints.removeAll()
             constrainedContentView = nil
-            trafficLightButtons.forEach { button in
+            for button in trafficLightButtons {
                 button.isHidden = true
             }
             return
