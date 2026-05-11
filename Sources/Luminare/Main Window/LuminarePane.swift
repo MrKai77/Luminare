@@ -120,7 +120,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
                 }
             case let .stacked(spacing):
                 AutoScrollView(showsIndicators: false) {
-                    LazyVStack(alignment: .leading, spacing: spacing) {
+                    VStack(alignment: .leading, spacing: spacing) {
                         content()
                     }
                     .padding(12)
