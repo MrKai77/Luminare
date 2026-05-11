@@ -87,7 +87,7 @@ public extension View {
     func luminarePopover(
         isPresented: Binding<Bool>,
         arrowEdge: Edge = .bottom,
-        behavior: NSPopover.Behavior = .semitransient,
+        behavior: NSPopover.Behavior = .transient,
         shouldHideAnchor: Bool? = nil,
         shouldAnimate: Bool = true,
         @ViewBuilder content: @escaping () -> some View
