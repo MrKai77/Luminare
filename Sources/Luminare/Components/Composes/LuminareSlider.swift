@@ -334,6 +334,13 @@ public struct LuminareSlider<Label, Content, V, F>: View
         } set: { newValue in
             value = newValue
             isTextBoxVisible = false
+            
+            if step != nil {
+                NSHapticFeedbackManager.defaultPerformer.perform(
+                    .alignment,
+                    performanceTime: .drawCompleted
+                )
+            }
         }
 
         Group {

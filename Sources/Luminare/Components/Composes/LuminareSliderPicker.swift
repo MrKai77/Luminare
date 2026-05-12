@@ -363,6 +363,11 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
                 },
                 set: { newIndex in
                     selection = options[Int(newIndex)]
+
+                    NSHapticFeedbackManager.defaultPerformer.perform(
+                        .alignment,
+                        performanceTime: .drawCompleted
+                    )
                 }
             ),
             in: 0...Double(options.count - 1),
