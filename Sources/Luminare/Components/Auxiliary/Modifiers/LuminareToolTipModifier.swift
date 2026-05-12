@@ -62,7 +62,6 @@ public struct LuminareToolTipModifier<ToolTipContent>: ViewModifier where ToolTi
 
     // MARK: Fields
 
-    private let attachmentAnchor: PopoverAttachmentAnchor
     private let arrowEdge: Edge?
     private let padding: CGFloat
 
@@ -78,12 +77,10 @@ public struct LuminareToolTipModifier<ToolTipContent>: ViewModifier where ToolTi
     // MARK: Initializers
 
     public init(
-        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         @ViewBuilder toolTipContent: @escaping () -> ToolTipContent
     ) {
-        self.attachmentAnchor = attachmentAnchor
         self.arrowEdge = arrowEdge
         self.padding = padding
         self.toolTipContent = toolTipContent
@@ -133,7 +130,6 @@ public struct LuminareToolTipModifier<ToolTipContent>: ViewModifier where ToolTi
         }
         .popover(
             isPresented: $isPopoverPresented,
-            attachmentAnchor: attachmentAnchor,
             arrowEdge: arrowEdge
         ) {
             Group {
@@ -157,6 +153,7 @@ public struct LuminareToolTipModifier<ToolTipContent>: ViewModifier where ToolTi
                 }
             }
             .multilineTextAlignment(.center)
+            .fontWeight(.regular)
         }
         .padding(-padding)
         .animation(animationFast, value: isPopoverPresented)

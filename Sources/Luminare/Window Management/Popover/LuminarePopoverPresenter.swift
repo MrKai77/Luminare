@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
+    private let positioningOutset: CGFloat = 24
+
     @Binding var isPresented: Bool
     let arrowEdge: Edge
     let behavior: NSPopover.Behavior
@@ -16,11 +18,13 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
     let content: () -> Content
 
     public func makeNSView(context _: Context) -> NSView {
-        NSView()
+        PopoverAnchorContainerView(positioningOutset: positioningOutset)
     }
 
     public func updateNSView(_ nsView: NSView, context: Context) {
         let coordinator = context.coordinator
+        guard let anchorContainer = nsView as? PopoverAnchorContainerView else { return }
+        let positioningView = anchorContainer.positioningView
 
         coordinator.configure(
             behavior: behavior,
@@ -29,8 +33,8 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         )
         coordinator.reconcile(
             isPresented: isPresented,
-            anchorView: nsView,
-            anchorRect: anchorRect(for: nsView),
+            anchorView: positioningView,
+            anchorRect: anchorRect(for: anchorContainer, in: positioningView),
             preferredEdge: edgeToNSRectEdge(arrowEdge)
         ) {
             HostedContent(
@@ -58,6 +62,27 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
 
     public func makeCoordinator() -> Coordinator {
         Coordinator(isPresented: $isPresented)
+    }
+
+    final class PopoverAnchorContainerView: NSView {
+        let positioningView = NSView()
+        private let positioningOutset: CGFloat
+
+        init(positioningOutset: CGFloat) {
+            self.positioningOutset = positioningOutset
+            super.init(frame: .zero)
+            addSubview(positioningView)
+        }
+
+        @available(*, unavailable)
+        required init?(coder _: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func layout() {
+            super.layout()
+            positioningView.frame = bounds.insetBy(dx: -positioningOutset, dy: -positioningOutset)
+        }
     }
 
     @MainActor
@@ -216,12 +241,23 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         }
     }
 
-    private func anchorRect(for nsView: NSView) -> NSRect {
-        let insetFactor: CGFloat = shouldHideAnchor == true ? 4 : 0
-        var anchorRect = nsView.bounds.insetBy(dx: insetFactor, dy: insetFactor)
-        if anchorRect.width < 0 { anchorRect.size.width = 0 }
-        if anchorRect.height < 0 { anchorRect.size.height = 0 }
-        return anchorRect
+    private func anchorRect(for nsView: NSView, in positioningView: NSView) -> NSRect {
+        let translationAmount: CGFloat = shouldHideAnchor == true ? 4 : 0
+        let anchorRect = positioningView.convert(nsView.bounds, from: nsView)
+        let translatedRect: NSRect
+
+        switch arrowEdge {
+        case .top:
+            translatedRect = anchorRect.offsetBy(dx: 0, dy: translationAmount)
+        case .leading:
+            translatedRect = anchorRect.offsetBy(dx: -translationAmount, dy: 0)
+        case .bottom:
+            translatedRect = anchorRect.offsetBy(dx: 0, dy: -translationAmount)
+        case .trailing:
+            translatedRect = anchorRect.offsetBy(dx: translationAmount, dy: 0)
+        }
+
+        return translatedRect.intersection(positioningView.bounds)
     }
 
     private func edgeToNSRectEdge(_ edge: Edge) -> NSRectEdge {

@@ -38,7 +38,6 @@ public extension View {
     // MARK: Popover
 
     @ViewBuilder func luminareToolTip(
-        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         hidden: Bool = false,
@@ -46,7 +45,6 @@ public extension View {
     ) -> some View {
         if !hidden {
             modifier(LuminareToolTipModifier(
-                attachmentAnchor: attachmentAnchor,
                 arrowEdge: arrowEdge,
                 padding: padding,
                 toolTipContent: toolTipContent
@@ -56,7 +54,6 @@ public extension View {
 
     func luminareToolTip(
         attachedTo alignment: Alignment,
-        attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds),
         arrowEdge: Edge? = nil,
         padding: CGFloat = 4,
         dotSize: CGFloat = 4,
@@ -72,7 +69,6 @@ public extension View {
                         .frame(width: dotSize, height: dotSize)
                         .padding(2)
                         .luminareToolTip(
-                            attachmentAnchor: attachmentAnchor,
                             arrowEdge: arrowEdge,
                             padding: padding,
                             hidden: hidden,
