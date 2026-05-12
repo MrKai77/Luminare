@@ -14,11 +14,13 @@ public extension ButtonStyle where Self == LuminareSurfaceButtonStyle {
 
     static func luminare(
         tinted: Bool = false,
+        overrideUseMainStyle: Bool = false,
         overrideIsHovering: Bool = false,
         overrideIsPressed: Bool = false
     ) -> Self {
         LuminareSurfaceButtonStyle(
             tinted: tinted,
+            overrideUseMainStyle: overrideUseMainStyle,
             overrideIsHovering: overrideIsHovering,
             overrideIsPressed: overrideIsPressed
         )

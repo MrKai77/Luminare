@@ -59,13 +59,13 @@ public struct LuminareSurfaceModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        let fillStyle = colorScheme == .dark ? style.darkFillStyle ?? style.fillStyle : style.fillStyle
+        let resolvedStyle = colorScheme == .dark ? style.darkStyle : style.lightStyle
 
         content
             .compositingGroup()
             .luminareCornerRadii(radii)
             .background {
-                if let fillStyle {
+                if let fillStyle = resolvedStyle.fillStyle {
                     LuminareFill(
                         isHovering: isHovering,
                         isPressed: isPressed,
@@ -74,7 +74,7 @@ public struct LuminareSurfaceModifier: ViewModifier {
                     )
                 }
 
-                if let borderStyle = style.borderStyle {
+                if let borderStyle = resolvedStyle.borderStyle {
                     LuminareBorder(
                         isHovering: isHovering,
                         isPressed: isPressed,
@@ -85,10 +85,10 @@ public struct LuminareSurfaceModifier: ViewModifier {
             }
             .compositingGroup()
             .shadow(
-                color: style.shadowStyle?.color(for: colorScheme) ?? .clear,
-                radius: style.shadowStyle?.radius ?? 0,
-                x: style.shadowStyle?.x ?? 0,
-                y: style.shadowStyle?.y ?? 0
+                color: resolvedStyle.shadowStyle?.color ?? .clear,
+                radius: resolvedStyle.shadowStyle?.radius ?? 0,
+                x: resolvedStyle.shadowStyle?.x ?? 0,
+                y: resolvedStyle.shadowStyle?.y ?? 0
             )
             .opacity(!respectsDisablement || isEnabled ? 1 : 0.5)
             .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
