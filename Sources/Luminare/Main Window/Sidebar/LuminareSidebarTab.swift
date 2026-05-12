@@ -84,35 +84,27 @@ public struct LuminareSidebarTab<Tab>: View where Tab: LuminareTabItem {
     // MARK: Functions
 
     private func processActiveTab() {
-        withAnimation(animationFast) {
-            isActive = activeTab == tab
-        }
+        isActive = activeTab == tab
     }
 }
 
 // MARK: - Button Style (Sidebar)
 
 struct SidebarButtonStyle: ButtonStyle {
-    @Environment(\.luminareAnimationFast) private var animationFast
-
     let cornerRadius: CGFloat = 12
-    @State var isHovering: Bool = false
     let isActive: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(4)
             .background {
-                if configuration.isPressed {
-                    Rectangle().foregroundStyle(.quaternary)
-                } else if isHovering || isActive {
-                    Rectangle().foregroundStyle(.quaternary.opacity(0.7))
+                if isActive {
+                    Rectangle()
+                        .foregroundStyle(.quaternary.opacity(0.7))
                 }
             }
-            .animation(animationFast, value: isActive)
             .clipShape(.rect(cornerRadius: cornerRadius))
             .contentShape(.rect)
-            .onHover { isHovering = $0 }
     }
 }
 

@@ -142,6 +142,7 @@ public struct LuminareColorPicker<F>: View
                     bottomLeading: true,
                     bottomTrailing: true
                 )
+                .luminareSurfaceStyle(.flat)
                 .luminareModal(isPresented: $isColorPickerPresented) {
                     VStack {
                         ColorPickerModalView(

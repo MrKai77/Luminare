@@ -396,19 +396,8 @@ public struct LuminareSlider<Label, Content, V, F>: View
         .frame(maxWidth: .infinity)
         .padding(4)
         .padding(.horizontal, 4)
-        .background {
-            Capsule()
-                .strokeBorder(.quaternary, lineWidth: 1)
-        }
-        .background {
-            if isTextBoxVisible {
-                Capsule()
-                    .foregroundStyle(.quinary)
-            } else {
-                Capsule()
-                    .foregroundStyle(.quinary.opacity(0.5))
-            }
-        }
+        .luminareSurface(isPressed: isTextBoxVisible, style: .flat)
+        .luminareCornerRadius(999)
         .clipShape(.capsule)
         .onChange(of: isTextBoxVisible) { _ in
             if isTextBoxVisible {

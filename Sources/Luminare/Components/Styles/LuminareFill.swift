@@ -19,6 +19,7 @@ public struct LuminareFillStates: OptionSet, Sendable {
     public static let pressed: Self = .init(rawValue: 1 << 2)
 
     public static let all: Self = [.normal, .hovering, .pressed]
+    public static let `default`: Self = [.normal, .pressed]
     public static let none: Self = []
 }
 
@@ -41,7 +42,7 @@ public struct LuminareFillStyle<F: ShapeStyle, H: ShapeStyle, P: ShapeStyle>: Se
         .init(
             normal: .quinary,
             hovering: .quaternary,
-            pressed: .tertiary
+            pressed: .quaternary
         )
     }
 }

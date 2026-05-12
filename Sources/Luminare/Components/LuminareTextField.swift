@@ -114,7 +114,7 @@ public struct LuminareTextField<Label, F>: View where Label: View, F: ParseableF
             .textFieldStyle(.plain)
             .padding(.horizontal, horizontalPadding)
             .luminareContentSize(contentMode: .fill, hasFixedHeight: true)
-            .modifier(LuminareHoverableModifier())
+            .luminareSurface(style: .flat)
     }
 }
 

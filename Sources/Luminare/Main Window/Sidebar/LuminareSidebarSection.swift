@@ -104,8 +104,10 @@ public struct LuminareSidebarSection<Label, Tab>: View where Label: View, Tab: L
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            ForEach(items) { item in
-                LuminareSidebarTab(item, .init($selection))
+            VStack(spacing: 0) {
+                ForEach(items) { item in
+                    LuminareSidebarTab(item, .init($selection))
+                }
             }
         }
     }

@@ -75,7 +75,7 @@ public struct LuminareCompactPicker<Content, V>: View where Content: View, V: Ha
                 .padding(.horizontal, 4)
             }
         }
-        .modifier(LuminareHoverableModifier(isHovering: isHovering))
+        .luminareSurface(style: .flat)
         .onHover { isHovering = $0 }
     }
 

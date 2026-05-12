@@ -49,8 +49,9 @@ public extension EnvironmentValues {
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
     @Entry var luminareMinHeight: CGFloat = 30
 
-    @Entry var luminareBorderedStates: LuminareBorderStates = .all
-    @Entry var luminareFilledStates: LuminareFillStates = .all
+    @Entry var luminareBorderedStates: LuminareBorderStates = .default
+    @Entry var luminareFilledStates: LuminareFillStates = .default
+    @Entry var luminareSurfaceStyle: LuminareSurfaceStyle = .plateau
     @Entry var luminareHasDividers: Bool = true
 
     @Entry var luminareContentMarginsTop: CGFloat = 0
@@ -107,7 +108,7 @@ public extension EnvironmentValues {
     @Entry var luminareListItemCornerRadii: RectangleCornerRadii = .init(2)
 
     @Entry var luminareListItemHeight: CGFloat = 50
-    @Entry var luminareListItemHighlightOnHover: Bool = true
+    @Entry var luminareListItemHighlightOnHover: Bool = false
     @Entry var luminareItemBeingHovered: Bool = false
     @Entry var luminareListFixedHeightUntil: CGFloat? = nil
 
@@ -122,4 +123,12 @@ public extension EnvironmentValues {
     // MARK: Slider Picker
 
     @Entry var luminareSliderPickerLayout: LuminareSliderPickerLayout = .regular
+}
+
+public extension EnvironmentValues {
+    @available(*, deprecated, renamed: "luminareSurfaceStyle")
+    var luminarePlateauStyle: LuminareSurfaceStyle {
+        get { luminareSurfaceStyle }
+        set { luminareSurfaceStyle = newValue }
+    }
 }

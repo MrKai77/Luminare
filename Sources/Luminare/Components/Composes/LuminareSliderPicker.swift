@@ -380,15 +380,8 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
             .frame(maxWidth: .infinity)
             .padding(4)
             .padding(.horizontal, 4)
-            .background {
-                ZStack {
-                    Capsule()
-                        .strokeBorder(.quaternary, lineWidth: 1)
-
-                    Capsule()
-                        .foregroundStyle(.quinary.opacity(0.5))
-                }
-            }
+            .luminareSurface(style: .flat)
+            .luminareCornerRadius(999)
             .clipShape(.capsule)
             .onChange(of: selection) { value in
                 DispatchQueue.main.async {

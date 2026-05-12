@@ -97,28 +97,24 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
         }
     }
 
-    @ViewBuilder
     private func wrappedContent() -> some View {
-        if clipped {
-            styledContent()
-                .clipped()
-        } else {
-            styledContent()
-        }
+        styledContent()
     }
 
     private func styledContent() -> some View {
         Group {
             if borderedStates.contains(.normal) {
                 LuminareSectionStack(hasDividers: hasDividers, content: content)
+                    .modifier(SectionContentClipModifier(isClipped: clipped))
                     .compositingGroup()
                     .frame(maxWidth: maxWidth == 0 ? nil : maxWidth)
                     .fixedSize(horizontal: maxWidth == 0, vertical: false)
                     .environment(\.luminareIsInsideSection, true)
                     .luminareRoundingBehavior(top: false, bottom: false)
-                    .luminarePlateau()
+                    .modifier(LuminareSurfaceModifier(respectsDisablement: false))
             } else {
                 content()
+                    .modifier(SectionContentClipModifier(isClipped: clipped))
             }
         }
         .padding(.top, showHeader ? outerPadding : 0)
@@ -144,6 +140,18 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
                 .padding(.horizontal, outerPadding)
                 .padding(.leading, cornerRadii.bottomLeading / 2)
                 .padding(.trailing, cornerRadii.bottomTrailing / 2)
+        }
+    }
+}
+
+private struct SectionContentClipModifier: ViewModifier {
+    let isClipped: Bool
+
+    func body(content: Content) -> some View {
+        if isClipped {
+            content.clipped()
+        } else {
+            content
         }
     }
 }

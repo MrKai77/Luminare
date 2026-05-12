@@ -71,7 +71,7 @@ public struct LuminareTextEditor: View {
         .scrollContentBackground(.hidden)
         .font(font ?? .body)
         .luminareContentSize(contentMode: .fill)
-        .modifier(LuminareHoverableModifier())
+        .luminareSurface(style: .flat)
         .onGeometryChange(for: CGSize.self) { proxy in
             proxy.size
         } action: { newValue in

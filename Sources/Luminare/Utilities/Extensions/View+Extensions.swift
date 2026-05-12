@@ -150,19 +150,28 @@ public extension View {
         )
     }
 
-    func luminarePlateau(
-        isPressed: Bool = false,
+    func luminareSurface(
         isHovering: Bool = false,
-        overrideFillStyle: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle>? = nil,
-        overrideBorderStyle: LuminareBorderStyle<AnyShapeStyle, AnyShapeStyle>? = nil
+        isPressed: Bool = false,
+        style: LuminareSurfaceStyle? = nil
     ) -> some View {
         modifier(
-            LuminarePlateauModifier(
-                isPressed: isPressed,
+            LuminareSurfaceModifier(
                 isHovering: isHovering,
-                overrideFillStyle: overrideFillStyle,
-                overrideBorderStyle: overrideBorderStyle
+                isPressed: isPressed
             )
+        )
+        .environment(\.luminareSurfaceStyle, ifNotNil: style)
+    }
+
+    @available(*, deprecated, renamed: "luminareSurface(isPressed:isHovering:style:)")
+    func luminarePlateau(
+        isPressed: Bool = false,
+        isHovering: Bool = false
+    ) -> some View {
+        luminareSurface(
+            isHovering: isHovering,
+            isPressed: isPressed
         )
     }
 
@@ -224,11 +233,11 @@ public extension View {
 public extension View {
     func luminareCornerRadii(_ radii: RectangleCornerRadii) -> some View {
         environment(\.luminareCornerRadii, radii)
+            .environment(\.luminareIsInsideSection, false)
     }
 
     func luminareCornerRadius(_ radius: CGFloat) -> some View {
         luminareCornerRadii(.init(radius))
-            .environment(\.luminareIsInsideSection, false)
     }
 
     func luminareMinHeight(_ height: CGFloat) -> some View {
@@ -241,6 +250,15 @@ public extension View {
 
     func luminareFilledStates(_ states: LuminareFillStates) -> some View {
         environment(\.luminareFilledStates, states)
+    }
+
+    func luminareSurfaceStyle(_ style: LuminareSurfaceStyle) -> some View {
+        environment(\.luminareSurfaceStyle, style)
+    }
+
+    @available(*, deprecated, renamed: "luminareSurfaceStyle(_:)")
+    func luminarePlateauStyle(_ style: LuminareSurfaceStyle) -> some View {
+        luminareSurfaceStyle(style)
     }
 
     func luminareHasDividers(_ hasDividers: Bool) -> some View {

@@ -180,6 +180,7 @@ public struct LuminareCompose<Label, Content>: View
     private func wrappedContent() -> some View {
         content()
             .controlSize(controlSize.proposal ?? .regular)
+            .luminareSurfaceStyle(.flat)
     }
 }
 

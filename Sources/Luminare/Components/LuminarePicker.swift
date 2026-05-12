@@ -23,10 +23,10 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
     @Environment(\.luminareBottomTrailingRounded) private var bottomTrailingRounded
 
     let buttonCornerRadii: RectangleCornerRadii = .init(
-        topLeading: 2,
-        bottomLeading: 2,
-        bottomTrailing: 2,
-        topTrailing: 2
+        topLeading: 4,
+        bottomLeading: 4,
+        bottomTrailing: 4,
+        topTrailing: 4
     )
 
     // MARK: Fields
@@ -138,23 +138,20 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
             let isDisabled = isDisabled(element)
             Button {
                 guard !isDisabled else { return }
-
-                withAnimation(animation) {
-                    internalSelection = element
-                }
+                internalSelection = element
             } label: {
                 ZStack {
                     let isActive = internalSelection == element
 
                     shape
                         .foregroundStyle(.tint.opacity(isActive ? 0.15 : 0))
-                        .overlay {
-                            shape
-                                .strokeBorder(
-                                    .tint,
-                                    lineWidth: isActive ? 1.5 : 0
-                                )
-                        }
+
+                    shape
+                        .strokeBorder(
+                            .tint,
+                            lineWidth: isActive ? 1.5 : 0
+                        )
+                        .animation(animation, value: isActive)
 
                     content(element)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -94,19 +94,15 @@ import SwiftUI
     ) {
         Text("Not Bordered")
             .fixedSize()
-            .modifier(LuminareHoverableModifier())
+            .luminareSurface(style: .flat)
             .luminareBorderedStates(.none)
 
         Text("Bordered")
             .fixedSize()
-            .modifier(LuminareHoverableModifier())
-
-        Text("Bordered, Hovering")
-            .fixedSize()
-            .modifier(LuminareHoverableModifier(isHovering: true))
+            .luminareSurface(style: .flat)
 
         Text("Bordered, Pressed")
             .fixedSize()
-            .modifier(LuminareHoverableModifier(isPressed: true))
+            .luminareSurface(isPressed: true, style: .flat)
     }
 #endif
