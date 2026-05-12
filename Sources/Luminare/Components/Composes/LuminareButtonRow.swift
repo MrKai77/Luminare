@@ -39,7 +39,7 @@ public struct LuminareButtonBuilder {
 }
 
 public struct LuminareButtonRow: View {
-    @Environment(\.luminareButtonComposeSpacing) private var spacing
+    @Environment(\.luminareButtonRowSpacing) private var spacing
 
     @Environment(\.luminareTopLeadingRounded) private var topLeadingRounded
     @Environment(\.luminareTopTrailingRounded) private var topTrailingRounded

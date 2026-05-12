@@ -83,9 +83,9 @@ public extension EnvironmentValues {
     /// If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
 
-    // MARK: Button Compose
+    // MARK: Button Row
 
-    @Entry var luminareButtonComposeSpacing: CGFloat = 4
+    @Entry var luminareButtonRowSpacing: CGFloat = 4
 
     // MARK: Compose
 
@@ -127,12 +127,4 @@ public extension EnvironmentValues {
     // MARK: Slider Picker
 
     @Entry var luminareSliderPickerLayout: LuminareSliderPickerLayout = .regular
-}
-
-public extension EnvironmentValues {
-    @available(*, deprecated, renamed: "luminareSurfaceStyle")
-    var luminarePlateauStyle: LuminareSurfaceStyle {
-        get { luminareSurfaceStyle }
-        set { luminareSurfaceStyle = newValue }
-    }
 }

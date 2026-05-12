@@ -94,9 +94,3 @@ public struct LuminareSurfaceModifier: ViewModifier {
             .readPreference(LuminareSectionStackDisableInnerPaddingKey.self, to: $disableInnerPadding)
     }
 }
-
-@available(*, deprecated, renamed: "LuminareSurfaceModifier")
-public typealias LuminareSurface = LuminareSurfaceModifier
-
-@available(*, deprecated, renamed: "LuminareSurfaceModifier")
-public typealias LuminarePlateauModifier = LuminareSurfaceModifier

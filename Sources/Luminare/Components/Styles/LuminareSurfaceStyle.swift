@@ -115,9 +115,6 @@ public struct LuminareSurfaceStyle: Sendable {
     }
 }
 
-@available(*, deprecated, renamed: "LuminareSurfaceStyle")
-public typealias LuminarePlateauStyle = LuminareSurfaceStyle
-
 private extension LuminareFillStyle {
     var erased: LuminareFillStyle<AnyShapeStyle, AnyShapeStyle, AnyShapeStyle> {
         .init(

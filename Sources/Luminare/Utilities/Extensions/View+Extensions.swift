@@ -164,17 +164,6 @@ public extension View {
         .environment(\.luminareSurfaceStyle, ifNotNil: style)
     }
 
-    @available(*, deprecated, renamed: "luminareSurface(isPressed:isHovering:style:)")
-    func luminarePlateau(
-        isPressed: Bool = false,
-        isHovering: Bool = false
-    ) -> some View {
-        luminareSurface(
-            isHovering: isHovering,
-            isPressed: isPressed
-        )
-    }
-
     func luminareBackground() -> some View {
         modifier(
             LuminareBackgroundEffectModifier()
@@ -254,11 +243,6 @@ public extension View {
 
     func luminareSurfaceStyle(_ style: LuminareSurfaceStyle) -> some View {
         environment(\.luminareSurfaceStyle, style)
-    }
-
-    @available(*, deprecated, renamed: "luminareSurfaceStyle(_:)")
-    func luminarePlateauStyle(_ style: LuminareSurfaceStyle) -> some View {
-        luminareSurfaceStyle(style)
     }
 
     func luminareHasDividers(_ hasDividers: Bool) -> some View {
@@ -363,10 +347,10 @@ public extension View {
         )
     }
 
-    // MARK: Button Compose
+    // MARK: Button Row
 
-    func luminareButtonComposeSpacing(_ spacing: CGFloat) -> some View {
-        environment(\.luminareButtonComposeSpacing, spacing)
+    func luminareButtonRowSpacing(_ spacing: CGFloat) -> some View {
+        environment(\.luminareButtonRowSpacing, spacing)
     }
 
     // MARK: Tool Tip
