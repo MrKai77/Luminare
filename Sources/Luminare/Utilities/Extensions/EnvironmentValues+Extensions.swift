@@ -83,6 +83,10 @@ public extension EnvironmentValues {
     /// If 0, then luminareSection will be of fixed size.
     @Entry var luminareSectionMaxWidth: CGFloat? = .infinity
 
+    // MARK: Button Compose
+
+    @Entry var luminareButtonComposeSpacing: CGFloat = 4
+
     // MARK: Compose
 
     @Entry var luminareComposeControlSize: LuminareComposeControlSize = .automatic

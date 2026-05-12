@@ -363,6 +363,12 @@ public extension View {
         )
     }
 
+    // MARK: Button Compose
+
+    func luminareButtonComposeSpacing(_ spacing: CGFloat) -> some View {
+        environment(\.luminareButtonComposeSpacing, spacing)
+    }
+
     // MARK: Tool Tip
 
     func luminareToolTipTrigger(_ trigger: LuminareToolTipTrigger) -> some View {
