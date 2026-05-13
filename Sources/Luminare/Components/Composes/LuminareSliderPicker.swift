@@ -286,7 +286,7 @@ public struct LuminareSliderPicker<Label, Content, V>: View where Label: View, C
     // MARK: Body
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 4) {
             switch layout {
             case .regular:
                 LuminareCompose {

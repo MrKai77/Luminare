@@ -254,7 +254,7 @@ public struct LuminareSlider<Label, Content, V, F>: View
     // MARK: Body
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 4) {
             switch layout {
             case .regular:
                 LuminareCompose {

@@ -9,11 +9,7 @@ import SwiftUI
 
 public enum LuminareSectionLayout: Hashable, Equatable, Codable, Sendable {
     case section
-    case stacked(spacing: CGFloat = 0)
-
-    public static var stacked: Self {
-        .stacked()
-    }
+    case stacked
 }
 
 // MARK: - Section
@@ -57,8 +53,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
     ///   - header: the header.
     ///   - footer: the footer.
     public init(
-        headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
+        headerSpacing: CGFloat = 4,
+        footerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content,
@@ -86,8 +82,8 @@ public struct LuminareSection<Header, Content, Footer>: View where Header: View,
             } footer: {
                 wrappedFooter()
             }
-        case let .stacked(spacing):
-            VStack(alignment: .leading, spacing: spacing) {
+        case let .stacked:
+            VStack(alignment: .leading, spacing: 0) {
                 wrappedHeader()
 
                 wrappedContent()

@@ -47,7 +47,7 @@ public extension EnvironmentValues {
 
 public extension EnvironmentValues {
     @Entry var luminareCornerRadii: RectangleCornerRadii = .init(12)
-    @Entry var luminareMinHeight: CGFloat = 30
+    @Entry var luminareMinHeight: CGFloat = 32
 
     @Entry var luminareBorderedStates: LuminareBorderStates = .default
     @Entry var luminareFilledStates: LuminareFillStates = .default

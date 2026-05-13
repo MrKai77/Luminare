@@ -11,7 +11,7 @@ public enum LuminarePaneLayout: Equatable, Hashable, Codable, Sendable {
     case none
     @available(macOS 15.0, *)
     case form
-    case stacked(spacing: CGFloat = 15)
+    case stacked(spacing: CGFloat = 16)
 
     public static var stacked: Self { .stacked() }
 }

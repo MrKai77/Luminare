@@ -35,6 +35,7 @@ public struct LuminareSidebar<Content>: View where Content: View {
         }
         .luminareContentMargins(.top, overflow + contentMarginsTop)
         .luminareContentMargins(.bottom, overflow + contentMarginsBottom)
+        .luminareMinHeight(30)
         .scrollIndicators(.never)
         .scrollContentBackground(.hidden)
         .padding(.horizontal, 12)

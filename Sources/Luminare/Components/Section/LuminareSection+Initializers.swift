@@ -18,8 +18,8 @@ public extension LuminareSection {
     init(
         _ header: some StringProtocol,
         _ footer: some StringProtocol,
-        headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
+        headerSpacing: CGFloat = 4,
+        footerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -52,8 +52,8 @@ public extension LuminareSection {
     init(
         _ headerKey: LocalizedStringKey,
         _ footerKey: LocalizedStringKey,
-        headerSpacing: CGFloat = 2,
-        footerSpacing: CGFloat = 2,
+        headerSpacing: CGFloat = 4,
+        footerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -82,7 +82,7 @@ public extension LuminareSection {
     ///   - content: the content.
     ///   - header: the header.
     init(
-        headerSpacing: CGFloat = 2,
+        headerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content,
@@ -90,7 +90,7 @@ public extension LuminareSection {
     ) where Footer == EmptyView {
         self.init(
             headerSpacing: headerSpacing,
-            footerSpacing: 2,
+            footerSpacing: 4,
             outerPadding: outerPadding,
             clipped: clipped
         ) {
@@ -113,7 +113,7 @@ public extension LuminareSection {
     @_disfavoredOverload
     init(
         _ header: some StringProtocol,
-        headerSpacing: CGFloat = 2,
+        headerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -140,7 +140,7 @@ public extension LuminareSection {
     ///   - content: the content.
     init(
         _ headerKey: LocalizedStringKey,
-        headerSpacing: CGFloat = 2,
+        headerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -166,14 +166,14 @@ public extension LuminareSection {
     ///   - content: the content.
     ///   - footer: the footer.
     init(
-        footerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder footer: @escaping () -> Footer
     ) where Header == EmptyView {
         self.init(
-            headerSpacing: 2,
+            headerSpacing: 4,
             footerSpacing: footerSpacing,
             outerPadding: outerPadding,
             clipped: clipped
@@ -197,7 +197,7 @@ public extension LuminareSection {
     @_disfavoredOverload
     init(
         footer: some StringProtocol,
-        footerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -224,7 +224,7 @@ public extension LuminareSection {
     ///   - content: the content.
     init(
         footerKey: LocalizedStringKey,
-        footerSpacing: CGFloat = 2,
+        footerSpacing: CGFloat = 4,
         outerPadding: CGFloat = 4,
         clipped: Bool = true,
         @ViewBuilder content: @escaping () -> Content
@@ -254,8 +254,8 @@ public extension LuminareSection {
         @ViewBuilder content: @escaping () -> Content
     ) where Header == EmptyView, Footer == EmptyView {
         self.init(
-            headerSpacing: 2,
-            footerSpacing: 2,
+            headerSpacing: 4,
+            footerSpacing: 4,
             outerPadding: outerPadding,
             clipped: clipped
         ) {
