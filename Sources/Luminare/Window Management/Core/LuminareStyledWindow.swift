@@ -69,7 +69,7 @@ open class LuminareStyledWindow: NSWindow {
             return
         }
 
-        guard constrainedContentView !== contentView else {
+        guard !trafficLightButtonsAreConstrained(to: contentView) else {
             return
         }
 
@@ -108,6 +108,15 @@ open class LuminareStyledWindow: NSWindow {
         }
 
         NSLayoutConstraint.activate(trafficLightButtonConstraints)
+    }
+
+    private func trafficLightButtonsAreConstrained(to contentView: NSView) -> Bool {
+        constrainedContentView === contentView
+            && !trafficLightButtonConstraints.isEmpty
+            && trafficLightButtonConstraints.allSatisfy(\.isActive)
+            && trafficLightButtons.allSatisfy { button in
+                button.superview === contentView && !button.isHidden
+            }
     }
 
     // Reference: https://github.com/Automattic/simplenote-macos/blob/7b1d6d736e337ec99fb8f3c5e2ab973040b2ac9b/Simplenote/Window.swift#L148

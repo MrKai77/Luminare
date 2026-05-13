@@ -101,7 +101,6 @@ public struct LuminarePicker<Content, V>: View where Content: View, V: Equatable
                         pickerButton(row: 0, column: column)
                     }
                 }
-                .frame(minHeight: 34)
             } else {
                 VStack(spacing: 4) {
                     ForEach(0...maxRowIndex, id: \.self) { row in

@@ -264,16 +264,13 @@ public extension View {
     }
 
     // MARK: Form
-
-    @available(macOS 15.0, *)
+    
     func luminareFormSpacing(_ spacing: CGFloat) -> some View {
         environment(\.luminareFormSpacing, spacing)
     }
 
-    // MARK: Pane
-
-    func luminarePaneLayout(_ layout: LuminarePaneLayout) -> some View {
-        environment(\.luminarePaneLayout, layout)
+    func luminareFormLayout(_ layout: LuminareFormLayout) -> some View {
+        environment(\.luminareFormLayout, layout)
     }
 
     func luminareTitleBarHeight(_ height: CGFloat) -> some View {

@@ -75,7 +75,6 @@ public class LuminareWindow: LuminareStyledWindow {
         luminareCornerRadius = cornerRadius
         alphaValue = 0
         contentView = view
-        relocateTrafficLights()
         contentView?.wantsLayer = true
         titlebarAppearsTransparent = true
         titleVisibility = .hidden

@@ -12,6 +12,7 @@ struct LuminareModalView<Content>: View where Content: View {
 
     var body: some View {
         content()
+            .environment(\.luminareIsInsideModal, true)
             .buttonStyle(.luminare)
             .background {
                 backgroundWindow()

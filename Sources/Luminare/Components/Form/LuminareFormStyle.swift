@@ -11,6 +11,7 @@ import VariadicViews
 @available(macOS 15.0, *)
 public struct LuminareFormStyle: FormStyle {
     @Environment(\.luminareFormSpacing) private var spacing
+    @Environment(\.luminareIsInsideModal) private var isInsideModal
 
     public func makeBody(configuration: Configuration) -> some View {
         AutoScrollView {
@@ -19,7 +20,7 @@ public struct LuminareFormStyle: FormStyle {
                     FormSection(section: section)
                 }
             }
-            .padding(12)
+            .padding(isInsideModal ? 16 : 12)
         }
     }
 

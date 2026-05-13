@@ -7,27 +7,13 @@
 
 import SwiftUI
 
-public enum LuminarePaneLayout: Equatable, Hashable, Codable, Sendable {
-    case none
-    @available(macOS 15.0, *)
-    case form
-    case stacked(spacing: CGFloat = 16)
-
-    public static var stacked: Self { .stacked() }
-}
-
-// MARK: - Pane
-
 /// A stylized pane that well distributes its content to cooperate with the ``LuminareWindow``.
 public struct LuminarePane<Header, Content>: View where Header: View, Content: View {
-    @Environment(\.luminarePaneLayout) private var layout
     @Environment(\.luminareTitleBarHeight) private var titleBarHeight
 
     // MARK: Fields
 
     @ViewBuilder private var content: () -> Content, header: () -> Header
-
-    @State private var luminareClickedOutside = false
 
     // MARK: Initializers
 
@@ -91,7 +77,7 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
 
             Divider()
 
-            wrappedContent
+            content()
         }
         .luminareListFixedHeight(until: .infinity)
         .luminareBackground()
@@ -103,42 +89,6 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             .luminareMinHeight(26)
             .padding(.horizontal, 12)
             .frame(height: titleBarHeight, alignment: .leading)
-    }
-
-    private var wrappedContent: some View {
-        Group {
-            switch layout {
-            case .none:
-                content()
-            case .form:
-                if #available(macOS 15.0, *) {
-                    Form {
-                        content()
-                    }
-                    .formStyle(.luminare)
-                    .clipped()
-                }
-            case let .stacked(spacing):
-                AutoScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: spacing) {
-                        content()
-                    }
-                    .padding(12)
-                    .background(content: clickedOutsideObserver)
-                }
-                .clipped()
-            }
-        }
-        .environment(\.luminareClickedOutside, luminareClickedOutside)
-        .background(content: clickedOutsideObserver)
-    }
-
-    private func clickedOutsideObserver() -> some View {
-        Color.white.opacity(0.0001)
-            .onTapGesture {
-                luminareClickedOutside.toggle()
-            }
-            .ignoresSafeArea()
     }
 }
 
@@ -200,5 +150,5 @@ public struct LuminarePane<Header, Content>: View where Header: View, Content: V
             )
         }
     }
-    .luminarePaneLayout(.form)
+    .luminareFormLayout(.form)
 }

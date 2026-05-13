@@ -36,6 +36,7 @@ public extension EnvironmentValues {
     @Entry var luminareModalCornerRadius: CGFloat = 12
     @Entry var luminareModalPresentation: LuminareModalPresentation = .windowCenter
     @Entry var luminareModalClosesOnDefocus: Bool = false
+    @Entry var luminareIsInsideModal: Bool = false
 
     // MARK: Color Picker
 
@@ -61,12 +62,9 @@ public extension EnvironmentValues {
 
     // MARK: Form
 
-    @available(macOS 15.0, *)
-    @Entry var luminareFormSpacing: CGFloat = 15
+    @Entry var luminareFormSpacing: CGFloat = 16
+    @Entry var luminareFormLayout: LuminareFormLayout = .stacked
 
-    // MARK: Pane
-
-    @Entry var luminarePaneLayout: LuminarePaneLayout = .stacked
     /// A naming convention: `titleBar` for SwiftUI, `titlebar` for AppKit, and `title bar` for natural language
     @Entry var luminareTitleBarHeight: CGFloat = 50
 
