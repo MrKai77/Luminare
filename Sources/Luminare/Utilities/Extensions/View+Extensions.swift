@@ -84,6 +84,7 @@ public extension View {
         isPresented: Binding<Bool>,
         arrowEdge: Edge = .bottom,
         behavior: NSPopover.Behavior = .transient,
+        attachmentAnchor: Alignment? = nil,
         shouldHideAnchor: Bool? = nil,
         shouldAnimate: Bool = true,
         @ViewBuilder content: @escaping () -> some View
@@ -93,6 +94,7 @@ public extension View {
                 isPresented: isPresented,
                 arrowEdge: arrowEdge,
                 behavior: behavior,
+                attachmentAnchor: attachmentAnchor,
                 shouldHideAnchor: shouldHideAnchor,
                 shouldAnimate: shouldAnimate,
                 popoverContent: content

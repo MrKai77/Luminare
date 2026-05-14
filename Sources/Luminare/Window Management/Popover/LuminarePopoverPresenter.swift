@@ -8,17 +8,18 @@
 import SwiftUI
 
 public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
-    private let positioningOutset: CGFloat = 24
+    private let minimumPositioningOutset: CGFloat = 24
 
     @Binding var isPresented: Bool
     let arrowEdge: Edge
     let behavior: NSPopover.Behavior
+    let attachmentAnchor: Alignment?
     let shouldHideAnchor: Bool?
     let shouldAnimate: Bool
     let content: () -> Content
 
     public func makeNSView(context _: Context) -> NSView {
-        PopoverAnchorContainerView(positioningOutset: positioningOutset)
+        PopoverAnchorContainerView(minimumPositioningOutset: minimumPositioningOutset)
     }
 
     public func updateNSView(_ nsView: NSView, context: Context) {
@@ -33,8 +34,11 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         )
         coordinator.reconcile(
             isPresented: isPresented,
+            anchorContainer: anchorContainer,
             anchorView: positioningView,
-            anchorRect: anchorRect(for: anchorContainer, in: positioningView),
+            attachmentAnchor: attachmentAnchor,
+            arrowEdge: arrowEdge,
+            shouldHideAnchor: shouldHideAnchor,
             preferredEdge: edgeToNSRectEdge(arrowEdge)
         ) {
             HostedContent(
@@ -66,10 +70,12 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
 
     final class PopoverAnchorContainerView: NSView {
         let positioningView = NSView()
-        private let positioningOutset: CGFloat
+        private let minimumPositioningOutset: CGFloat
+        private var positioningOutset: CGFloat
 
-        init(positioningOutset: CGFloat) {
-            self.positioningOutset = positioningOutset
+        init(minimumPositioningOutset: CGFloat) {
+            self.minimumPositioningOutset = minimumPositioningOutset
+            self.positioningOutset = minimumPositioningOutset
             super.init(frame: .zero)
             addSubview(positioningView)
         }
@@ -82,6 +88,14 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         override func layout() {
             super.layout()
             positioningView.frame = bounds.insetBy(dx: -positioningOutset, dy: -positioningOutset)
+        }
+
+        func updatePositioningOutset(for contentSize: CGSize) {
+            let nextOutset = max(minimumPositioningOutset, contentSize.width, contentSize.height)
+            guard nextOutset != positioningOutset else { return }
+
+            positioningOutset = nextOutset
+            needsLayout = true
         }
     }
 
@@ -142,8 +156,11 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
 
         fileprivate func reconcile(
             isPresented: Bool,
+            anchorContainer: PopoverAnchorContainerView,
             anchorView: NSView,
-            anchorRect: NSRect,
+            attachmentAnchor: Alignment?,
+            arrowEdge: Edge,
+            shouldHideAnchor: Bool?,
             preferredEdge: NSRectEdge,
             content: () -> HostedContent
         ) {
@@ -151,7 +168,23 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
                 guard anchorView.window != nil else { return }
 
                 updateContent(content())
-                guard !popover.isShown else { return }
+                anchorContainer.updatePositioningOutset(for: popover.contentSize)
+                anchorContainer.layoutSubtreeIfNeeded()
+
+                let anchorRect = LuminarePopoverPresenter<Content>.anchorRect(
+                    for: anchorContainer,
+                    in: anchorView,
+                    attachmentAnchor: attachmentAnchor,
+                    arrowEdge: arrowEdge,
+                    preferredEdge: preferredEdge,
+                    popoverSize: popover.contentSize,
+                    shouldHideAnchor: shouldHideAnchor
+                )
+
+                if popover.isShown {
+                    popover.positioningRect = anchorRect
+                    return
+                }
 
                 schedulePresentation(
                     anchorView: anchorView,
@@ -241,23 +274,88 @@ public struct LuminarePopoverPresenter<Content: View>: NSViewRepresentable {
         }
     }
 
-    private func anchorRect(for nsView: NSView, in positioningView: NSView) -> NSRect {
+    private static func anchorRect(
+        for nsView: NSView,
+        in positioningView: NSView,
+        attachmentAnchor: Alignment?,
+        arrowEdge: Edge,
+        preferredEdge: NSRectEdge,
+        popoverSize: CGSize,
+        shouldHideAnchor: Bool?
+    ) -> NSRect {
         let translationAmount: CGFloat = shouldHideAnchor == true ? 4 : 0
         let anchorRect = positioningView.convert(nsView.bounds, from: nsView)
+        let baseRect: NSRect
+
+        if let attachmentAnchor {
+            baseRect = Self.alignedAnchorRect(
+                in: anchorRect,
+                attachmentAnchor: attachmentAnchor,
+                preferredEdge: preferredEdge,
+                popoverSize: popoverSize
+            )
+        } else {
+            baseRect = anchorRect
+        }
+
         let translatedRect: NSRect
 
         switch arrowEdge {
         case .top:
-            translatedRect = anchorRect.offsetBy(dx: 0, dy: translationAmount)
+            translatedRect = baseRect.offsetBy(dx: 0, dy: translationAmount)
         case .leading:
-            translatedRect = anchorRect.offsetBy(dx: -translationAmount, dy: 0)
+            translatedRect = baseRect.offsetBy(dx: -translationAmount, dy: 0)
         case .bottom:
-            translatedRect = anchorRect.offsetBy(dx: 0, dy: -translationAmount)
+            translatedRect = baseRect.offsetBy(dx: 0, dy: -translationAmount)
         case .trailing:
-            translatedRect = anchorRect.offsetBy(dx: translationAmount, dy: 0)
+            translatedRect = baseRect.offsetBy(dx: translationAmount, dy: 0)
         }
 
-        return translatedRect.intersection(positioningView.bounds)
+        return translatedRect
+    }
+
+    private static func alignedAnchorRect(
+        in rect: NSRect,
+        attachmentAnchor: Alignment,
+        preferredEdge: NSRectEdge,
+        popoverSize: CGSize
+    ) -> NSRect {
+        let roundedCornerAdjustment: CGFloat = 24
+        let horizontalAlignmentWidth = max(popoverSize.width - roundedCornerAdjustment, 1)
+        let verticalAlignmentHeight = max(popoverSize.height - roundedCornerAdjustment, 1)
+
+        let minX: CGFloat = switch attachmentAnchor {
+        case .topLeading, .leading, .bottomLeading:
+            rect.minX
+        case .top, .center, .bottom:
+            rect.midX - horizontalAlignmentWidth / 2
+        case .topTrailing, .trailing, .bottomTrailing:
+            rect.maxX - horizontalAlignmentWidth
+        default:
+            rect.midX - horizontalAlignmentWidth / 2
+        }
+
+        let minY: CGFloat = switch attachmentAnchor {
+        case .bottomLeading, .bottom, .bottomTrailing:
+            rect.minY
+        case .leading, .center, .trailing:
+            rect.midY - verticalAlignmentHeight / 2
+        case .topLeading, .top, .topTrailing:
+            rect.maxY - verticalAlignmentHeight
+        default:
+            rect.midY - verticalAlignmentHeight / 2
+        }
+
+        switch preferredEdge {
+        case .minY, .maxY:
+            let y = preferredEdge == .minY ? rect.minY : rect.maxY - 1
+            return NSRect(x: minX, y: y, width: horizontalAlignmentWidth, height: 1)
+        case .minX, .maxX:
+            let x = preferredEdge == .minX ? rect.maxX - 1 : rect.minX
+            return NSRect(x: x, y: minY, width: 1, height: verticalAlignmentHeight)
+        @unknown default:
+            return NSRect(x: minX, y: rect.maxY - 1, width: horizontalAlignmentWidth, height: 1)
+        }
     }
 
     private func edgeToNSRectEdge(_ edge: Edge) -> NSRectEdge {
