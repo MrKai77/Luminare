@@ -30,14 +30,14 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 
     @Binding private var items: [V]
     @Binding private var selection: Set<V>
+    @State private var internalSelection: Set<V>
     private let keyPath: KeyPath<V, ID>
 
     @ViewBuilder private var content: (Binding<V>) -> ContentA,
                              emptyView: () -> ContentB
 
-    @State private var firstItem: V?
-    @State private var lastItem: V?
     @State private var animateSelection = true
+    @State private var hasPendingKeyboardSelectionChange = false
     @State private var keyboardMonitorID: UUID = .init()
 
     // MARK: Initializers
@@ -57,6 +57,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     ) {
         self._items = items
         self._selection = selection
+        self._internalSelection = State(initialValue: selection.wrappedValue)
         self.keyPath = keyPath
         self.content = content
         self.emptyView = emptyView
@@ -89,7 +90,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             if items.isEmpty {
                 emptyView()
             } else {
-                List(selection: $selection) {
+                List(selection: $internalSelection) {
                     if contentMarginsTop > 0 {
                         Spacer()
                             .frame(height: contentMarginsTop)
@@ -127,20 +128,36 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             }
         }
         .frame(height: fixedHeight.map { min(totalHeight, $0) }, alignment: .top)
+        .animation(animation, value: items)
         .onChange(of: luminareClickedOutside) { _ in
-            selection = []
+            setSelection([])
         }
         .onChange(of: items) { _ in
             guard !items.isEmpty else {
-                selection = []
+                setSelection([])
                 return
             }
 
-            selection = selection.intersection(items)
-            processSelection() // update first and last item
+            setSelection(internalSelection.intersection(items))
         }
-        .onChange(of: selection) { _ in
-            processSelection()
+        .onChange(of: selection) { newValue in
+            guard internalSelection != newValue else { return }
+            internalSelection = newValue
+        }
+        .onChange(of: internalSelection) { newValue in
+            if hasPendingKeyboardSelectionChange {
+                hasPendingKeyboardSelectionChange = false
+
+                DispatchQueue.main.async {
+                    animateSelection = true
+                }
+            }
+
+            guard selection != newValue else { return }
+            DispatchQueue.main.async {
+                guard selection != newValue else { return }
+                selection = newValue
+            }
         }
         .onAppear {
             addKeyboardSelectionMonitor()
@@ -149,7 +166,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             removeKeyboardSelectionMonitor()
         }
         .onExitCommand {
-            selection = []
+            setSelection([])
         }
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
     }
@@ -159,7 +176,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 
         return LuminareListItem(
             items: $items,
-            selection: $selection,
+            selection: $internalSelection,
             item: item,
             itemValue: item.wrappedValue,
             animateSelection: animateSelection,
@@ -185,14 +202,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         (element as? LuminareSelectionData)?.isSelectable == false
     }
 
-    private func processSelection() {
-        if items.isEmpty || selection.isEmpty {
-            firstItem = nil
-            lastItem = nil
-        } else {
-            firstItem = items.first { selection.contains($0) }
-            lastItem = items.last { selection.contains($0) }
-        }
+    private func setSelection(_ newValue: Set<V>) {
+        guard internalSelection != newValue else { return }
+        internalSelection = newValue
     }
 
     private func addKeyboardSelectionMonitor() {
@@ -214,9 +226,13 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             }
 
             animateSelection = false
+            hasPendingKeyboardSelectionChange = true
 
             DispatchQueue.main.async {
-                animateSelection = true
+                if hasPendingKeyboardSelectionChange {
+                    hasPendingKeyboardSelectionChange = false
+                    animateSelection = true
+                }
             }
 
             return event
@@ -640,7 +656,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             guard items.count < 100 else { return }
             let random = { Int.random(in: 0 ..< 100) }
             var new = random()
-            while items.contains([new]) {
+            while items.contains(new) {
                 new = random()
             }
             items.append(new)
