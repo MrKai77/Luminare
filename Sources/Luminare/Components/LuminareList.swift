@@ -37,6 +37,8 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
 
     @State private var firstItem: V?
     @State private var lastItem: V?
+    @State private var animateSelection = true
+    @State private var keyboardMonitorID: UUID = .init()
 
     // MARK: Initializers
 
@@ -114,6 +116,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                             .frame(height: contentMarginsBottom)
                     }
                 }
+                .frame(maxHeight: .infinity, alignment: .top)
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .scrollDisabled(hasFixedHeight)
@@ -123,6 +126,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 .luminareSectionDisableInnerPadding(true)
             }
         }
+        .frame(height: fixedHeight.map { min(totalHeight, $0) }, alignment: .top)
         .onChange(of: luminareClickedOutside) { _ in
             selection = []
         }
@@ -138,6 +142,12 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         .onChange(of: selection) { _ in
             processSelection()
         }
+        .onAppear {
+            addKeyboardSelectionMonitor()
+        }
+        .onDisappear {
+            removeKeyboardSelectionMonitor()
+        }
         .onExitCommand {
             selection = []
         }
@@ -152,6 +162,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             selection: $selection,
             item: item,
             itemValue: item.wrappedValue,
+            animateSelection: animateSelection,
             content: content
         )
         .disabled(isDisabled)
@@ -183,6 +194,38 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             lastItem = items.last { selection.contains($0) }
         }
     }
+
+    private func addKeyboardSelectionMonitor() {
+        EventMonitorManager.shared.addLocalMonitor(
+            for: keyboardMonitorID,
+            matching: .keyDown
+        ) { event in
+            let selectionKeyCodes: Set<UInt16> = [
+                0x7E, // up arrow
+                0x7D, // down arrow
+                0x74, // page up
+                0x79, // page down
+                0x73, // home
+                0x77  // end
+            ]
+
+            guard selectionKeyCodes.contains(event.keyCode) else {
+                return event
+            }
+
+            animateSelection = false
+
+            DispatchQueue.main.async {
+                animateSelection = true
+            }
+
+            return event
+        }
+    }
+
+    private func removeKeyboardSelectionMonitor() {
+        EventMonitorManager.shared.removeMonitor(for: keyboardMonitorID)
+    }
 }
 
 // MARK: - List Item
@@ -209,6 +252,7 @@ public struct LuminareListItem<Content, V>: View
     @Binding var selection: Set<V>
     @Binding var item: V
     let itemValue: V
+    let animateSelection: Bool
     @ViewBuilder var content: (Binding<V>) -> Content
 
     @State private var isHovering = false
@@ -223,12 +267,14 @@ public struct LuminareListItem<Content, V>: View
         selection: Binding<Set<V>>,
         item: Binding<V>,
         itemValue: V,
+        animateSelection: Bool,
         @ViewBuilder content: @escaping (Binding<V>) -> Content
     ) {
         self._items = items
         self._selection = selection
         self._item = item
         self.itemValue = itemValue
+        self.animateSelection = animateSelection
         self.content = content
     }
 
@@ -258,7 +304,7 @@ public struct LuminareListItem<Content, V>: View
                 if isEnabled {
                     ZStack {
                         itemBorder()
-                            .animation(animationFast, value: isInSelection)
+                            .animation(animateSelection ? animationFast : nil, value: isInSelection)
 
                         itemBackground()
                     }
