@@ -38,8 +38,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
     @State private var firstItem: V?
     @State private var lastItem: V?
 
-    private let id: UUID = .init()
-
     // MARK: Initializers
 
     /// Initializes a ``LuminareList``.
@@ -110,7 +108,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                         .padding(.horizontal, -10)
                         .padding(.leading, contentMarginsLeading)
                         .padding(.trailing, contentMarginsTrailing)
-                        .transition(.slide)
 
                     if contentMarginsBottom > 0 {
                         Spacer()
@@ -126,14 +123,8 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
                 .luminareSectionDisableInnerPadding(true)
             }
         }
-        .frame(height: hasFixedHeight ? totalHeight : nil)
-        .frame(maxHeight: hasFixedHeight ? nil : fixedHeight)
-        .animation(animation, value: items)
-        .animation(animation, value: selection)
         .onChange(of: luminareClickedOutside) { _ in
-            withAnimation(animation) {
-                selection = []
-            }
+            selection = []
         }
         .onChange(of: items) { _ in
             guard !items.isEmpty else {
@@ -146,20 +137,9 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
         }
         .onChange(of: selection) { _ in
             processSelection()
-
-            if selection.isEmpty {
-                removeEventMonitor()
-            } else {
-                addEventMonitor()
-            }
         }
-        .onAppear {
-            if !selection.isEmpty {
-                addEventMonitor()
-            }
-        }
-        .onDisappear {
-            removeEventMonitor()
+        .onExitCommand {
+            selection = []
         }
         .luminareTint(overridingWith: appearsActive ? tintColor : .disabledControlTextColor)
     }
@@ -171,8 +151,7 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             items: $items,
             selection: $selection,
             item: item,
-            firstItem: $firstItem,
-            lastItem: $lastItem,
+            itemValue: item.wrappedValue,
             content: content
         )
         .disabled(isDisabled)
@@ -204,27 +183,6 @@ public struct LuminareList<ContentA, ContentB, V, ID>: View
             lastItem = items.last { selection.contains($0) }
         }
     }
-
-    private func addEventMonitor() {
-        EventMonitorManager.shared.addLocalMonitor(
-            for: id,
-            matching: .keyDown
-        ) { event in
-            let kVK_Escape: CGKeyCode = 0x35
-
-            if event.keyCode == kVK_Escape {
-                withAnimation(animation) {
-                    selection = []
-                }
-                return nil
-            }
-            return event
-        }
-    }
-
-    private func removeEventMonitor() {
-        EventMonitorManager.shared.removeMonitor(for: id)
-    }
 }
 
 // MARK: - List Item
@@ -250,45 +208,43 @@ public struct LuminareListItem<Content, V>: View
     @Binding var items: [V]
     @Binding var selection: Set<V>
     @Binding var item: V
-    @Binding var firstItem: V?
-    @Binding var lastItem: V?
+    let itemValue: V
     @ViewBuilder var content: (Binding<V>) -> Content
 
     @State private var isHovering = false
 
     private let maxLineWidth: CGFloat = 1.5
-    @State private var lineWidth: CGFloat = .zero
+    @State private var displayedSelectionPart: SelectionPart = .none
 
     private let maxTintOpacity: CGFloat = 0.15
-    @State private var tintOpacity: CGFloat = .zero
 
     init(
         items: Binding<[V]>,
         selection: Binding<Set<V>>,
         item: Binding<V>,
-        firstItem: Binding<V?>,
-        lastItem: Binding<V?>,
+        itemValue: V,
         @ViewBuilder content: @escaping (Binding<V>) -> Content
     ) {
         self._items = items
         self._selection = selection
         self._item = item
-        self._firstItem = firstItem
-        self._lastItem = lastItem
+        self.itemValue = itemValue
         self.content = content
     }
 
     // MARK: Body
 
     public var body: some View {
-        Color.clear
-            .frame(minHeight: itemHeight)
-            .overlay {
-                content($item)
-                    .environment(\.luminareItemBeingHovered, isHovering)
-                    .foregroundStyle(isEnabled ? .primary : .secondary)
-            }
-            .tag(item)
+        ZStack {
+            Color.clear
+
+            content($item)
+                .environment(\.luminareItemBeingHovered, isHovering)
+                .foregroundStyle(isEnabled ? .primary : .secondary)
+        }
+            .frame(height: itemHeight)
+            .contentShape(Rectangle())
+            .tag(itemValue)
             .background {
                 if hasDividers, !isLast {
                     VStack {
@@ -302,9 +258,10 @@ public struct LuminareListItem<Content, V>: View
                 if isEnabled {
                     ZStack {
                         itemBorder()
+                            .animation(animationFast, value: isInSelection)
+
                         itemBackground()
                     }
-                    .animation(animationFast, value: [lineWidth, tintOpacity])
                     .padding(.horizontal, 1)
                     .padding(.leading, 1) // it's nuanced
                 }
@@ -312,37 +269,32 @@ public struct LuminareListItem<Content, V>: View
             .onHover { isHovering = $0 }
             .onChange(of: selection) { _ in
                 guard isEnabled else { return }
-                updateSelection()
+                updateDisplayedSelectionPart()
             }
             .onAppear {
-                DispatchQueue.main.async {
-                    // Initialize selection
-                    updateSelection()
-
-                    // Reset hovering state
-                    isHovering = false
-                }
+                updateDisplayedSelectionPart()
+                isHovering = false
             }
     }
 
     private var isFirst: Bool {
         guard !items.isEmpty else { return false }
-        return item == items.first
+        return itemValue == items.first
     }
 
     private var isLast: Bool {
         guard !items.isEmpty else { return false }
-        return item == items.last
+        return itemValue == items.last
     }
 
     private var isInSelection: Bool {
         guard !items.isEmpty else { return false }
-        return selection.contains(item)
+        return selection.contains(itemValue)
     }
 
     private var isFirstInSelection: Bool {
         guard !items.isEmpty else { return false }
-        if let firstIndex = items.firstIndex(of: item), firstIndex > 0 {
+        if let firstIndex = items.firstIndex(of: itemValue), firstIndex > 0 {
             return !selection.contains(items[firstIndex - 1])
         } else {
             return isFirst
@@ -351,7 +303,7 @@ public struct LuminareListItem<Content, V>: View
 
     private var isLastInSelection: Bool {
         guard !items.isEmpty else { return false }
-        if let firstIndex = items.firstIndex(of: item), firstIndex < items.count - 1 {
+        if let firstIndex = items.firstIndex(of: itemValue), firstIndex < items.count - 1 {
             return !selection.contains(items[firstIndex + 1])
         } else {
             return isLast
@@ -384,27 +336,29 @@ public struct LuminareListItem<Content, V>: View
         ZStack {
             Rectangle()
                 .foregroundStyle(.tint)
-                .opacity(tintOpacity)
+                .opacity(isInSelection ? maxTintOpacity : .zero)
 
             if highlightOnHover, isHovering {
                 Rectangle()
                     .foregroundStyle(.quaternary.opacity(0.7))
-                    .opacity((maxTintOpacity - tintOpacity) * (1 / maxTintOpacity))
             }
         }
         .clipShape(itemBackgroundShape)
     }
 
-    @ViewBuilder
     private func itemBorder() -> some View {
-        if isFirstInSelection, isLastInSelection {
+        ZStack {
             singleSelectionPart()
-        } else if isFirstInSelection {
+                .opacity(borderOpacity(for: .single))
+
             firstItemPart()
-        } else if isLastInSelection {
+                .opacity(borderOpacity(for: .first))
+
             lastItemPart()
-        } else if isInSelection {
+                .opacity(borderOpacity(for: .last))
+
             doubleLinePart()
+                .opacity(borderOpacity(for: .middle))
         }
     }
 
@@ -535,15 +489,44 @@ public struct LuminareListItem<Content, V>: View
 
     // MARK: Functions
 
-    private func updateSelection() {
-        guard !selection.isEmpty else {
-            tintOpacity = .zero
-            lineWidth = .zero
-            return
+    private func updateDisplayedSelectionPart() {
+        if isInSelection {
+            displayedSelectionPart = selectionPart
         }
+    }
 
-        tintOpacity = selection.contains(item) ? maxTintOpacity : .zero
-        lineWidth = selection.contains(item) ? maxLineWidth : .zero
+    private var selectionPart: SelectionPart {
+        if isFirstInSelection, isLastInSelection {
+            .single
+        } else if isFirstInSelection {
+            .first
+        } else if isLastInSelection {
+            .last
+        } else if isInSelection {
+            .middle
+        } else {
+            .none
+        }
+    }
+
+    private func borderOpacity(for part: SelectionPart) -> Double {
+        renderedSelectionPart == part ? 1 : 0
+    }
+
+    private var renderedSelectionPart: SelectionPart {
+        isInSelection ? selectionPart : displayedSelectionPart
+    }
+
+    private var lineWidth: CGFloat {
+        isInSelection ? maxLineWidth : .zero
+    }
+
+    private enum SelectionPart {
+        case none
+        case single
+        case first
+        case middle
+        case last
     }
 }
 
@@ -556,11 +539,9 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
 
     var body: some View {
         LuminareSection {
-            HStack(spacing: 2) {
+            LuminareButtonRow {
                 Button("Add") {
-                    withAnimation {
-                        add(&items)
-                    }
+                    add(&items)
                 }
 
                 Button("Sort") {
@@ -575,8 +556,7 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                 }
                 .disabled(selection.isEmpty)
             }
-            .buttonStyle(.luminare)
-            .frame(height: 40)
+            .luminareRoundingBehavior(top: true)
 
             LuminareList(
                 items: $items,
@@ -600,16 +580,16 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
                 Text("Empty")
                     .foregroundStyle(.secondary)
             }
+            .luminareRoundingBehavior(bottom: true)
         }
     }
 }
 
 @available(macOS 15.0, *)
 #Preview(
-    "LuminareList",
-    traits: .sizeThatFitsLayout
+    "LuminareList"
 ) {
-    VStack {
+    LuminareForm {
         ListPreview(items: [37, 42, 1, 0], selection: [42]) { items in
             guard items.count < 100 else { return }
             let random = { Int.random(in: 0 ..< 100) }
@@ -620,7 +600,5 @@ private struct ListPreview<V>: View where V: Hashable & Comparable {
             items.append(new)
         }
         .luminareListFixedHeight(until: 315)
-        .luminareRoundingBehavior(bottom: true)
-        .padding(20)
     }
 }
